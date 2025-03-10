@@ -13159,10 +13159,11 @@ div#notebook {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="%C4%86wiczenie-II.1">Ćwiczenie II.1<a class="anchor-link" href="#%C4%86wiczenie-II.1">¶</a></h3><p>W pętli:</p>
 <div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">j</span> <span class="o">=</span> <span class="n">n</span>
+<span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
     <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
 </pre></div>
 <p>zidentyfikuj niezmienik pętli i zaimplementuj go za pomocą instrukcji <code>assert</code>.</p>
 </div>

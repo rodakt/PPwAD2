@@ -17,9 +17,11 @@
 *.html
 !wyklad_[I-V].html
 !wyklad_II.html
+!wyklad_III.html
 !wyklad_[0-9][0-9].html
 !lab_I.html
 !lab_II.html
+!lab_III.html
 
 # Jupyter Notebook
 .ipynb_checkpoints

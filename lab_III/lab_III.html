@@ -13111,7 +13111,37 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-III.2">Zadanie III.2<a class="anchor-link" href="#Zadanie-III.2">¶</a></h3><p>Napisz moduł <code>rotate_seq.py</code> zawierający funkcje</p>
+<h3 id="Zadanie-III.2">Zadanie III.2<a class="anchor-link" href="#Zadanie-III.2">¶</a></h3><p>Dokończ definicję funkcji:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">is_arithmetic</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Zwraca True, jeśli seq jest ciągiem arytmetycznym; w przeciwnym razie zwraca False.</span>
+
+<span class="sd">    Parametry:</span>
+<span class="sd">    seq -- ciąg liczb</span>
+<span class="sd">    </span>
+<span class="sd">    Przykłady:</span>
+<span class="sd">    &gt;&gt;&gt; is_arithmetic([])</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; is_arithmetic([2])</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; is_arithmetic([5, -1])</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; is_arithmetic([1, 2, 3])</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; is_arithmetic(range(100, -1000, -7))</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; is_arithmetic((2, 5, 8, 10, 13))</span>
+<span class="sd">    False</span>
+<span class="sd">    """</span>
+    <span class="k">pass</span>
+</pre></div>
+<p>Sprawdź poprawność implementacji na przykładach podanych w docstringu. Wykorzystaj funkcję <code>doctest.testmod()</code>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Zadanie-III.3">Zadanie III.3<a class="anchor-link" href="#Zadanie-III.3">¶</a></h3><p>Napisz moduł <code>rotate_seq.py</code> zawierający funkcje</p>
 <ul>
 <li><code>rotate(seq, n)</code> - zwraca sekwencję <code>seq</code> przesuniętą cyklicznie o <code>n</code> miejsc - jeśli <code>n</code> jest ujemne, to przesunięcie jest w lewo, w przeciwnym razie w prawo</li>
 <li><code>rotate_left(seq, n)</code> - zwraca sekwencję <code>seq</code> przesuniętą cyklicznie o <code>n</code> miejsc w lewo; jeśli <code>n</code> jest ujemne, to zgłasza wyjątek <code>ValueError</code> z komunikatem <code>n musi być liczbą nieujemną</code></li>
@@ -13124,7 +13154,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-III.3">Zadanie III.3<a class="anchor-link" href="#Zadanie-III.3">¶</a></h3><p>Napisz moduł <code>rot13.py</code> zawierający funkcje</p>
+<h3 id="Zadanie-III.4">Zadanie III.4<a class="anchor-link" href="#Zadanie-III.4">¶</a></h3><p>Napisz moduł <code>rot13.py</code> zawierający funkcje</p>
 <ul>
 <li><code>is_ascii(s)</code> - zwraca <code>True</code>, jeśli łańcuch <code>s</code> składa się wyłącznie z znaków ASCII, w przeciwnym razie <code>False</code></li>
 <li><code>rot13(s, use_ascii_only=False)</code> - zwraca łańcuch zaszyfrowany szyfrem ROT13</li>
@@ -13140,7 +13170,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-III.4">Zadanie III.4<a class="anchor-link" href="#Zadanie-III.4">¶</a></h3><p>Napisz moduł <code>simple_integer_roots.py</code> zawierający funkcje</p>
+<h3 id="Zadanie-III.5">Zadanie III.5<a class="anchor-link" href="#Zadanie-III.5">¶</a></h3><p>Napisz moduł <code>simple_integer_roots.py</code> zawierający funkcje</p>
 <ul>
 <li><code>integer_square_root(n)</code> - zwraca największą liczbę całkowitą <code>m</code> taką, że <code>m**2 &lt;= n</code>; jeśli <code>n</code> jest ujemne, to zgłasza wyjątek <code>ValueError</code> z komunikatem <code>argument musi być nieujemny</code></li>
 <li><code>integer_cube_root(n)</code> - zwraca największą liczbę całkowitą <code>m</code> taką, że <code>m**3 &lt;= n</code>; jeśli <code>n</code> jest ujemne, to zgłasza wyjątek <code>ValueError</code> z komunikatem <code>argument musi być nieujemny</code></li>

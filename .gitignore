@@ -18,10 +18,32 @@
 !wyklad_[I-V].html
 !wyklad_II.html
 !wyklad_III.html
-!wyklad_[0-9][0-9].html
+!wyklad_IV.html
+!wyklad_V.html
+!wyklad_VI.html
+!wyklad_VII.html
+!wyklad_VIII.html
+!wyklad_IX.html
+!wyklad_X.html
+!wyklad_XI.html
+!wyklad_XII.html
+!wyklad_XIII.html
+!wyklad_XIV.html
 !lab_I.html
 !lab_II.html
 !lab_III.html
+!lab_IV.html
+!lab_V.html
+!lab_VI.html
+!lab_VII.html
+!lab_VIII.html
+!lab_IX.html
+!lab_X.html
+!lab_XI.html
+!lab_XII.html
+!lab_XIII.html
+!lab_XIV.html
+
 
 # Jupyter Notebook
 .ipynb_checkpoints

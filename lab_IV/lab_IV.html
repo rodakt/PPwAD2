@@ -13096,7 +13096,76 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-IV.1">Zadanie IV.1<a class="anchor-link" href="#Zadanie-IV.1">¶</a></h3><p>Celem zadania jest napisanie modułu zawierającego kilka funkcji związanych z algorytmem Euklidesa.</p>
+<h3 id="Zadanie-IV.1">Zadanie IV.1<a class="anchor-link" href="#Zadanie-IV.1">¶</a></h3><p>Dokończ definicje funkcji:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">remove_all</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Removes all occurrences of value from seq.</span>
+<span class="sd">    </span>
+<span class="sd">    Raises ValueError if value is not present.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        seq: a list or tuple</span>
+<span class="sd">        value: an object</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        new seq with all occurrences of value removed</span>
+<span class="sd">    </span>
+<span class="sd">    Example:</span>
+<span class="sd">    &gt;&gt;&gt; remove_all([1, 3, 2, 3, 4], 3)</span>
+<span class="sd">    [1, 2, 4]</span>
+<span class="sd">    &gt;&gt;&gt; remove_all("hello", "l")</span>
+<span class="sd">    'heo'</span>
+<span class="sd">    &gt;&gt;&gt; remove_all((2, 2, 2), 2)</span>
+<span class="sd">    ()</span>
+<span class="sd">    &gt;&gt;&gt; remove_all((1, 2, 3), 4)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">    ValueError: 4 not in seq</span>
+<span class="sd">    """</span>
+    <span class="k">pass</span>
+
+
+<span class="k">def</span> <span class="nf">remove_all_in_place</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Removes all occurrences of value from seq.</span>
+<span class="sd">    </span>
+<span class="sd">    Raises ValueError if value is not present.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        seq: a list</span>
+<span class="sd">        value: an object</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    Example:</span>
+<span class="sd">    &gt;&gt;&gt; seq = [1, 3, 2, 3, 4]</span>
+<span class="sd">    &gt;&gt;&gt; remove_all_in_place(seq, 3)</span>
+<span class="sd">    &gt;&gt;&gt; seq</span>
+<span class="sd">    [1, 2, 4]</span>
+<span class="sd">    &gt;&gt;&gt; seq = list("hello")</span>
+<span class="sd">    &gt;&gt;&gt; remove_all_in_place(seq, "l")</span>
+<span class="sd">    &gt;&gt;&gt; seq</span>
+<span class="sd">    ['h', 'e', 'o']</span>
+<span class="sd">    &gt;&gt;&gt; seq = [2, 2, 2]</span>
+<span class="sd">    &gt;&gt;&gt; remove_all_in_place(seq, 2)</span>
+<span class="sd">    &gt;&gt;&gt; seq</span>
+<span class="sd">    []</span>
+<span class="sd">    &gt;&gt;&gt; seq = bytearray(b"hello")</span>
+<span class="sd">    &gt;&gt;&gt; remove_all_in_place(seq, 108)</span>
+<span class="sd">    &gt;&gt;&gt; seq</span>
+<span class="sd">    bytearray(b'heo')</span>
+<span class="sd">    &gt;&gt;&gt; seq = [1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; remove_all_in_place(seq, 4)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">    ValueError: 4 not in seq</span>
+<span class="sd">    """</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Zadanie-IV.2">Zadanie IV.2<a class="anchor-link" href="#Zadanie-IV.2">¶</a></h3><p>Celem zadania jest napisanie modułu zawierającego kilka funkcji związanych z algorytmem Euklidesa.</p>
 <p>Algorytm Euklidesa w wersji dla liczb całkowitych jest zdefiniowany rekurencyjnie w następujący sposób. Niech $r_1$ i $r_2$ będą liczbami całkowitymi, przy czym $r_2 &gt; 0$. Dzielimy $r_1$ przez $r_2$ z resztą uzyskując
 $$
 r_1 = q_1 r_2 + r_3,
@@ -13167,7 +13236,7 @@ $$</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-IV.2">Zadanie IV.2<a class="anchor-link" href="#Zadanie-IV.2">¶</a></h3><p>Uzupełnij moduł <code>basic_arithmetic_ops.py</code>:</p>
+<h3 id="Zadanie-IV.3">Zadanie IV.3<a class="anchor-link" href="#Zadanie-IV.3">¶</a></h3><p>Uzupełnij moduł <code>basic_arithmetic_ops.py</code>:</p>
 <div class="highlight"><pre><span></span><span class="sd">"""Moduł zawiera funkcje realizujące podstawowe operacje arytmetyczne</span>
 
 <span class="sd">Funkcje:</span>

@@ -13119,10 +13119,12 @@ div#notebook {
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
 <span class="sd">    ValueError: 4 not in seq</span>
+<span class="sd">    &gt;&gt;&gt; remove_all(1_000_000*(1,), 1) # test wydajnościowy</span>
+<span class="sd">    ()</span>
 <span class="sd">    """</span>
     <span class="k">pass</span>
 
-
+    
 <span class="k">def</span> <span class="nf">remove_all_in_place</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Removes all occurrences of value from seq.</span>
 <span class="sd">    </span>
@@ -13156,6 +13158,10 @@ div#notebook {
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
 <span class="sd">    ValueError: 4 not in seq</span>
+<span class="sd">    &gt;&gt;&gt; seq = 1_000_000*[1] # test wydajnościowy</span>
+<span class="sd">    &gt;&gt;&gt; remove_all_in_place(seq, 1)</span>
+<span class="sd">    &gt;&gt;&gt; seq</span>
+<span class="sd">    []</span>
 <span class="sd">    """</span>
     <span class="k">pass</span>
 </pre></div>

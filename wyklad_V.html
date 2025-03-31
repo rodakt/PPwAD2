@@ -13248,7 +13248,7 @@ Przykłady obiektów wbudowanych:</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Nazwy zdefiniowane w module zobaczysz wywołując funkcję <code>dir()</code>. Zwracana wartość zależy od modułu, w którym funkcja została wywołana oraz od tego jakie nazwy aż do momentu jej wywołania zostały zdefiniowane. Oto wynik w dopiero co otwartej konsoli Pythona:</p>
+<p>Nazwy zdefiniowane w module zobaczysz wywołując w tym module funkcję <code>dir()</code>. Zwracana wartość zależy od modułu, w którym funkcja została wywołana oraz od tego jakie nazwy aż do momentu jej wywołania zostały zdefiniowane. Oto wynik w dopiero co otwartej konsoli Pythona:</p>
 <pre><code>Python 3.7.6 (default, Jan  8 2020, 19:59:22) 
 [GCC 7.3.0] :: Anaconda, Inc. on linux
 Type "help", "copyright", "credits" or "license" for more information.
@@ -13266,7 +13266,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 <pre><code>Moduł: __main__
 </code></pre>
 <p>Ten sam efekt będzie miało wykonanie tego programu z poziomu np. IDLE czy Thonny, czyli poprzez wciśnięcie przycisku <code>Run</code>.</p>
-<p>Podsumowując, <code>__main__</code> jest nazwą globalnej przestrzeni nazw stanowiącej szczytowe środowisko uruchomieniowe języka Python. Możesz myśleć, że jest po prostu kolejna globalna przestrzeń nazw. Pochodzi ona z modułu <a href="https://docs.python.org/3/library/__main__.html"><code>__main__</code></a> z biblioteki standardowej a jej wyjątkowość polega na tym, że musi zostać utworzona po to, aby w ogóle cokolwiek mogło działać.</p>
+<p>Podsumowując, <code>__main__</code> jest nazwą globalnej przestrzeni nazw stanowiącej <a href="https://docs.python.org/3/library/__main__.html#what-is-the-top-level-code-environment">szczytowe środowisko uruchomieniowe</a> języka Python. Możesz myśleć, że jest po prostu kolejna globalna przestrzeń nazw. Pochodzi ona z modułu <a href="https://docs.python.org/3/library/__main__.html"><code>__main__</code></a> z biblioteki standardowej a jej wyjątkowość polega na tym, że musi zostać utworzona po to, aby w ogóle cokolwiek mogło działać.</p>
 </div>
 </div>
 </div>
@@ -13296,7 +13296,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Tym co odróżnia rodzaje przestrzeni nazw jest porządek w jakim interpreter je przeszukuje oraz czas ich życia. Globalna przestrzeń nazw zaczyna być dostępna po wykonaniu importu i żyje aż do końca działania skryptu. Jeśli jest to przestrzeń <code>__main__</code>, to istnieje i jest dostępna przez cały czas działania skryptu. Zmienne, do których wykonane jest odwołanie w globalnej przestrzeni nazw są poszukiwane najpierw w tej przestrzeni, a dopiero potem w przestrzeni nazw obiektów wbudowanych.</p>
+<p>Tym co odróżnia rodzaje przestrzeni nazw jest porządek w jakim interpreter je przeszukuje (LEGB) oraz czas ich życia. Globalna przestrzeń nazw modułu zaczyna być dostępna po uruchomieniu go jako programu głównego (wtedy jest przestrzeń <code>__main__</code>) lub po wykonaniu importu i żyje aż do końca działania skryptu. Jeśli jest to przestrzeń <code>__main__</code>, to istnieje i jest dostępna przez cały czas działania skryptu. Zmienne, do których wykonane jest odwołanie w globalnej przestrzeni nazw są poszukiwane najpierw w tej przestrzeni, a dopiero potem w przestrzeni nazw obiektów wbudowanych.</p>
 <p>Co się dzieje, gdy z poziomu <code>__main__</code> odwołujesz się do np. do funkcji <code>sum()</code>?</p>
 <p>W module <code>__main__</code> takiej nazwy nie ma, a tam właśnie interpreter będzie szukał najpierw. Ponieważ spotka go niepowodzenie, więc przeniesie się na wyższy poziom ogólności, czyli poszuka nazwy <code>sum</code> w przestrzeni nazw obiektów wbudowanych. Tam ta nazwa faktycznie się znajduje i wskazuje na funkcję wbudowaną obliczającą sumę.</p>
 <p>A co się dzieje z wbudowaną funkcją <code>sum()</code>, gdy wykonamy coś takiego:</p>
@@ -13317,6 +13317,12 @@ Type "help", "copyright", "credits" or "license" for more information.
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Odwołanie do <code>sum</code> zmusza interpreter do rozpoczęcia poszukiwań nazwy, najpierw w module gdzie odwołanie zostało wykonane, czyli w naszym przypadku w <code>__main__</code>. Ponieważ już tutaj ta nazwa zostaje znaleziona, więc dalszych poszukiwań interpreter nie prowadzi -- zmienna <code>sum</code> jest liczbą całkowitą 123321. Nazwa <code>sum</code> nie została przeniesiona z funkcji na liczbę całkowitą, została raczej <strong>przesłonięta</strong>.</p>
+<p>Ten sam efekt wystąpi, gdy wewnątrz jakiegoś modułu napiszesz:</p>
+<div class="highlight"><pre><span></span><span class="c1"># modul.py</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">)</span> <span class="c1"># Wbudowana funkcja sum()</span>
+<span class="nb">sum</span> <span class="o">=</span> <span class="mi">123321</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">)</span> <span class="c1"># Liczba całkowita 123321, nazwa sum przesłonięta</span>
+</pre></div>
 </div>
 </div>
 </div>

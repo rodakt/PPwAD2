@@ -13612,36 +13612,6 @@ def ekstra_napis(f):
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<!-- from functools import reduce
-
-@timethis
-def suma_pętlą_for(seq):
-    suma = 0
-    
-    for w in seq:
-        suma += w
-    
-    return suma
-
-@timethis
-def suma_pętlą_while(seq):
-    i, suma = 0, 0
-    
-    while i < len(seq):
-        suma += seq[i]
-        i += 1
-    
-    return suma
-
-from operator import add
-
-@timethis
-def suma_funkcją_reduce(seq):
-    return reduce(add, seq, 0)
-
-@timethis
-def suma_funkcją_sum(seq):
-    return sum(seq) -->
 <div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nd">@timethis</span>
 <span class="o">...</span> <span class="k">def</span> <span class="nf">suma_pętlą_for</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
@@ -13666,12 +13636,16 @@ def suma_funkcją_sum(seq):
 <span class="o">&gt;&gt;&gt;</span> <span class="n">seq</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">suma_pętlą_for</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
 <span class="n">suma_pętlą_for</span><span class="p">:</span> <span class="mf">0.028646794002270326</span> <span class="n">sekund</span><span class="o">.</span>
+<span class="mi">499999500000</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">suma_pętlą_while</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
 <span class="n">suma_pętlą_while</span><span class="p">:</span> <span class="mf">0.08484931400744244</span> <span class="n">sekund</span><span class="o">.</span>
+<span class="mi">499999500000</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">suma_funkcją_reduce</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
 <span class="n">suma_funkcją_reduce</span><span class="p">:</span> <span class="mf">0.02702571201371029</span> <span class="n">sekund</span><span class="o">.</span>
+<span class="mi">499999500000</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">suma_funkcją_sum</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
 <span class="n">suma_funkcją_sum</span><span class="p">:</span> <span class="mf">0.01586138500715606</span> <span class="n">sekund</span><span class="o">.</span>
+<span class="mi">499999500000</span>
 </pre></div>
 </div>
 </div>
@@ -13680,6 +13654,27 @@ def suma_funkcją_sum(seq):
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Testy poniżej warto wykonać kilka razy i w różnej kolejności. Jeśli akurat w danej chwili system jest obciążony innymi zadaniami, to fakt ten wpłynie na wynik. Do bardziej profesjonalnych zastosowań wykorzystuje się moduł <code>timeit</code>. Ponadto w notatniku Jupyter dostępna jest funkcja specjalna  <code>%%timeit</code> powtarzająca wielokrotnie wywołania, obliczająca średni czas wykonania i inne parametry statystyczne.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [1]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="nb">sum</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[1]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>499999500000</pre>
+</div>
+</div>
 </div>
 </div>
 </div>

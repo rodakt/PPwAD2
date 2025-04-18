@@ -13096,7 +13096,118 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-VII.1">Zadanie VII.1<a class="anchor-link" href="#Zadanie-VII.1">¶</a></h3><p>Napisz moduł <code>seq_info.py</code>, zawierający funkcje:</p>
+<h3 id="Zadanie-VII.1">Zadanie VII.1<a class="anchor-link" href="#Zadanie-VII.1">¶</a></h3><p>Dokończ implementację funkcji <code>make_counter(start=0, step=1)</code>:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_counter</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Zwraca funkcję, która jest licznikem. Funkcja ta, po każdym wywołaniu,</span>
+<span class="sd">    zwraca kolejną liczbę, zaczynając od `start` z odstępem `step`.</span>
+
+<span class="sd">    Parametry:</span>
+<span class="sd">    start -- liczba, od której zaczynamy zliczać</span>
+<span class="sd">    step -- liczba, o którą zmieniamy licznik po każdym wywołaniu</span>
+<span class="sd">    </span>
+<span class="sd">    Zwraca:</span>
+<span class="sd">    funkcję, która zlicza od start do nieskończoności</span>
+<span class="sd">    </span>
+<span class="sd">    Przykłady:</span>
+<span class="sd">    &gt;&gt;&gt; counter = make_counter()</span>
+<span class="sd">    &gt;&gt;&gt; counter()</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; counter()</span>
+<span class="sd">    1</span>
+<span class="sd">    &gt;&gt;&gt; counter()</span>
+<span class="sd">    2</span>
+<span class="sd">    &gt;&gt;&gt; new_counter = make_counter(10)</span>
+<span class="sd">    &gt;&gt;&gt; new_counter()</span>
+<span class="sd">    10</span>
+<span class="sd">    &gt;&gt;&gt; new_counter()</span>
+<span class="sd">    11</span>
+<span class="sd">    &gt;&gt;&gt; yet_another_counter = make_counter(10, 2)</span>
+<span class="sd">    &gt;&gt;&gt; yet_another_counter()</span>
+<span class="sd">    10</span>
+<span class="sd">    &gt;&gt;&gt; yet_another_counter()</span>
+<span class="sd">    12</span>
+<span class="sd">    &gt;&gt;&gt; yet_another_counter()</span>
+<span class="sd">    14</span>
+<span class="sd">    &gt;&gt;&gt; counter()</span>
+<span class="sd">    3</span>
+<span class="sd">    &gt;&gt;&gt; new_counter()</span>
+<span class="sd">    12</span>
+<span class="sd">    &gt;&gt;&gt; float_counter = make_counter(0.5, -0.5)</span>
+<span class="sd">    &gt;&gt;&gt; float_counter()</span>
+<span class="sd">    0.5</span>
+<span class="sd">    &gt;&gt;&gt; float_counter()</span>
+<span class="sd">    0.0</span>
+<span class="sd">    &gt;&gt;&gt; float_counter()</span>
+<span class="sd">    -0.5</span>
+<span class="sd">    """</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Zadanie-VII.2">Zadanie VII.2<a class="anchor-link" href="#Zadanie-VII.2">¶</a></h3><p>Dokończ implementację funkcji <code>compose(f, g)</code>:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compose</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Zwraca funkcję, która jest złożeniem funkcji `f` i `g`. Funkcja `f` jest</span>
+<span class="sd">    wywoływana na wyniku funkcji `g`.</span>
+
+<span class="sd">    Parametry:</span>
+<span class="sd">    f -- funkcja, która ma być wywołana na wyniku funkcji g</span>
+<span class="sd">    g -- funkcja, która ma być wywołana jako pierwsza</span>
+<span class="sd">    </span>
+<span class="sd">    Zwraca:</span>
+<span class="sd">    funkcję, która jest złożeniem f i g</span>
+<span class="sd">    </span>
+<span class="sd">    Przykłady:</span>
+<span class="sd">    &gt;&gt;&gt; def add_one(x):</span>
+<span class="sd">    ...     return x + 1</span>
+<span class="sd">    &gt;&gt;&gt; def square(x):</span>
+<span class="sd">    ...     return x * x</span>
+<span class="sd">    &gt;&gt;&gt; add_one_square = compose(add_one, square)</span>
+<span class="sd">    &gt;&gt;&gt; add_one_square(2)</span>
+<span class="sd">    5</span>
+<span class="sd">    &gt;&gt;&gt; square_add_one = compose(square, add_one)</span>
+<span class="sd">    &gt;&gt;&gt; square_add_one(2)</span>
+<span class="sd">    9</span>
+<span class="sd">    """</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Zadanie-VII.3">Zadanie VII.3<a class="anchor-link" href="#Zadanie-VII.3">¶</a></h3><p>Dana jest funkcja:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calculator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">operation</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s1">'+'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+    <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s1">'-'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span>
+    <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s1">'*'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
+    <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s1">'/'</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Dzielenie przez zero"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="n">y</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Nieznana operacja"</span><span class="p">)</span>
+</pre></div>
+<p>Napisz funkcję <code>make_calculator()</code> stanowiącą równoważny wariant funkcji <code>calculator()</code> w postaci złożenia trzech jednoparametrowych funkcji:</p>
+<div class="highlight"><pre><span></span><span class="n">calculator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">operation</span><span class="p">)</span> <span class="o">==</span> <span class="n">make_calculator</span><span class="p">(</span><span class="n">operation</span><span class="p">)(</span><span class="n">x</span><span class="p">)(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+<p>Technikę polegającą na zapisywaniu funkcji wieloparametrowych jako złożenia funkcji jednoparametrowych nazywamy <a href="https://en.wikipedia.org/wiki/Currying"><em>curryingiem</em></a> (rozwijaniem funkcji).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Zadanie-VII.4">Zadanie VII.4<a class="anchor-link" href="#Zadanie-VII.4">¶</a></h3><p>Napisz moduł <code>seq_info.py</code>, zawierający funkcje:</p>
 <ol>
 <li><code>check_adjacent(seq, pred)</code> - zwraca <code>True</code>, jeśli dla każdej pary <strong>sąsiednich</strong> elementów <code>x</code>, <code>y</code> sekwencji <code>seq</code> zachodzi <code>pred(x, y)</code> (gdzie <code>pred</code> jest funkcją dwuargumentową), w przeciwnym razie zwraca <code>False</code>.</li>
 <li><code>is_ascending(seq)</code> - zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest niemalejąca.</li>
@@ -13110,14 +13221,17 @@ div#notebook {
 <li><code>is_arithmetic(seq, r=None)</code> - <code>seq</code> jest sekwencją liczb całkowitych. Jeśli <code>r</code> jest <code>None</code>, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem arytmetycznym, w przeciwnym razie zwraca <code>False</code>. Jeśli <code>r</code> jest podane, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem arytmetycznym o różnicy <code>r</code>, w przeciwnym razie zwraca <code>False</code>.</li>
 <li><code>is_geometric(seq, q=None)</code> - <code>seq</code> jest sekwencją liczb całkowitych. Jeśli <code>q</code> jest <code>None</code>, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem geometrycznym o całkowitym ilorazie, w przeciwnym razie zwraca <code>False</code>. Jeśli <code>q</code> jest podane, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem geometrycznym o ilorazie <code>q</code>, w przeciwnym razie zwraca <code>False</code>.</li>
 </ol>
-<p>Wszystkie funkcje powinny korzystać z funkcji <code>check_adjacent()</code> dla odpowiednich predykatów.</p>
+<p><strong>Wszystkie funkcje powinny korzystać z funkcji <code>check_adjacent()</code> dla odpowiednich predykatów.</strong></p>
+<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_seq_info.py"><code>test_seq_info.py</code></a></p>
+<div class="highlight"><pre><span></span>
+</pre></div>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-VII.2">Zadanie VII.2<a class="anchor-link" href="#Zadanie-VII.2">¶</a></h3><p>Napisz moduł <code>fprobs.py</code>, zawierający funkcję <code>random_ball_machine(return_balls, **balls)</code>. Funkcja zwraca bezparametrową funkcję <code>machine()</code>, która symuluje losowanie kul z urny. Opis parametrów:</p>
+<h3 id="Zadanie-VII.5">Zadanie VII.5<a class="anchor-link" href="#Zadanie-VII.5">¶</a></h3><p>Napisz moduł <code>fprobs.py</code>, zawierający funkcję <code>random_ball_machine(return_balls, **balls)</code>. Funkcja zwraca bezparametrową funkcję <code>machine()</code>, która symuluje losowanie kul z urny. Opis parametrów:</p>
 <ul>
 <li><code>return_balls</code> -- <code>True</code> lub <code>False</code>, domyślnie <code>True</code>. Decyduje o tym, czy losowania są prowadzone ze zwracaniem (domyślnie tak).</li>
 <li><code>balls</code> -- przyjmuje argumenty postaci <code>color=quantity</code>, gdzie<ul>
@@ -13127,13 +13241,14 @@ div#notebook {
 </li>
 </ul>
 <p>Każde wywołanie funkcji <code>machine()</code> zwraca kulę wylosowaną z urny. Jeśli <code>return_balls</code> jest ustawione na <code>True</code>, to kulę losuje się ze zwracaniem, w przeciwnym razie bez zwracania. Jeśli urna jest pusta, <code>machine()</code> powinien rzucać wyjątek <code>LookupError</code> z komunikatem <code>'urna jest pusta.'</code>.</p>
+<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_fprob.py"><code>test_fprob.py</code></a></p>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-VII.3">Zadanie VII.3<a class="anchor-link" href="#Zadanie-VII.3">¶</a></h3><p>Celem tego zadania jest napisanie nowej wersji programu szyfrującego z zadania II.4</p>
+<h3 id="Zadanie-VII.6">Zadanie VII.6<a class="anchor-link" href="#Zadanie-VII.6">¶</a></h3><p>Celem tego zadania jest napisanie nowej wersji programu szyfrującego z zadania II.4</p>
 <p>Przypomnijmy zasadę szyfrowania.
 <em>Używając klucza <code>ma-li-no-we-bu-ty</code> można zaszyfrować wiadomość wymieniając znaki leżące wewnątrz tych samych sylab klucza: <code>m --&gt; a</code>, <code>a --&gt; m</code>, <code>l --&gt; i</code>, <code>i --&gt; l</code>, itd. Znaki, których nie ma w kluczu, pozostawia się bez zmian. Przykładowo tekst <code>ziemia jest płaska</code> wymaga wymienienia 9 znaków i po zaszyfrowaniu ma postać <code>zlwalm jwsy płmskm</code>. Powtórne zaszyfrowanie przywraca pierwotną postać tekstu.</em></p>
 <p>Napisz moduł <code>malinowebuty.py</code> zawierający funkcje:</p>
@@ -13148,13 +13263,15 @@ Prawidłowy klucz, to taki niepusty łańcuch znaków, który jest różnowarto�
 <ol start="2">
 <li><code>create_encryptor(s)</code> - parametr <code>s</code> jest łańcuchem domyślnie ustawionym na <code>'malinowebuty'</code>. Funkcja zwraca <strong>funkcję</strong> <code>encryptor(text)</code>. Parametr <code>text</code> jest łańcuchem znaków. Funkcja <code>encryptor()</code> zwraca zaszyfrowany tekst zgodnie z kluczem <code>s</code>. Do szyfrowania funkcja <code>encryptor()</code> powinna korzystać z klucza <code>s</code> w postaci słownika wymiany znaków zwróconego przez <code>create_key()</code>. Słownik ten powinien być obliczany <strong>przed</strong> definicją funkcji <code>encryptor()</code>, a zatem ma znajdować się w jej <strong>domknięciu</strong>.</li>
 </ol>
+<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_malinowebuty.py"><code>test_malinowebuty.py</code></a></p>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-VII.4">Zadanie VII.4<a class="anchor-link" href="#Zadanie-VII.4">¶</a></h3><p>Napisz moduł <code>freeze_args.py</code>, zawierający funkcję <code>freeze_args(f, *args, **kwargs)</code>. Parametr <code>f()</code> jest dowolnym obiektem wywoływalnym. Funkcja zwraca funkcję zachowującą się jak <code>f()</code>, do której wstawiono argumenty pozycyjne <code>args</code> i podawane przez nazwę <code>kwargs</code>. Są to argumenty <em>zamrożone</em>. Do wywołania zwróconej funkcji mogą zostać przekazane argumenty pozycyjne - wtedy w wywołaniu <code>f()</code> następują one po argumentach <code>args</code>. Argumenty podawane przez nazwę również mogą zostać wstawione do wywołania - wtedy dodawane są do <code>kwargs</code>.</p>
+<h3 id="Zadanie-VII.7">Zadanie VII.7<a class="anchor-link" href="#Zadanie-VII.7">¶</a></h3><p>Napisz moduł <code>freeze_args.py</code>, zawierający funkcję <code>freeze_args(f, *args, **kwargs)</code>. Parametr <code>f()</code> jest dowolnym obiektem wywoływalnym. Funkcja zwraca funkcję zachowującą się jak <code>f()</code>, do której wstawiono argumenty pozycyjne <code>args</code> i podawane przez nazwę <code>kwargs</code>. Są to argumenty <em>zamrożone</em>. Do wywołania zwróconej funkcji mogą zostać przekazane argumenty pozycyjne - wtedy w wywołaniu <code>f()</code> następują one po argumentach <code>args</code>. Argumenty podawane przez nazwę również mogą zostać wstawione do wywołania - wtedy dodawane są do <code>kwargs</code>.</p>
+<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_freeze_args.py"><code>test_freeze.py</code></a></p>
 </div>
 </div>
 </div>

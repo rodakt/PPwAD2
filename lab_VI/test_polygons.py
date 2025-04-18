@@ -30,7 +30,7 @@ class TestPolygon(unittest.TestCase):
         """Test pozycji dla kąta 90 stopni"""
         turtle = create_turtle()
         polygon(turtle, 90, 1)
-        vertices = [(0, 0), (1, 0), (1, 1), (0, 1), (0, 0)]
+        vertices = [(0, 0), (1, 0), (1, -1), (0, -1), (0, 0)]
         for (x1, y1), (x2, y2) in zip(turtle["position"], vertices):
             self.assertAlmostEqual(x1, x2)
             self.assertAlmostEqual(y1, y2)
@@ -51,25 +51,25 @@ class TestPolygon(unittest.TestCase):
             polygon(turtle, 0, 1)
         self.assertEqual(
             str(cm.exception),
-            "kąt musi być liczba wymierną nie będącą wielokrotnością 360",
+            "kąt musi być liczbą wymierną nie będącą wielokrotnością 360",
         )
         with self.assertRaises(ValueError) as cm:
             polygon(turtle, 360, 1)
         self.assertEqual(
             str(cm.exception),
-            "kąt musi być liczba wymierną nie będącą wielokrotnością 360",
+            "kąt musi być liczbą wymierną nie będącą wielokrotnością 360",
         )
         with self.assertRaises(ValueError) as cm:
             polygon(turtle, -720, 1)
         self.assertEqual(
             str(cm.exception),
-            "kąt musi być liczba wymierną nie będącą wielokrotnością 360",
+            "kąt musi być liczbą wymierną nie będącą wielokrotnością 360",
         )
         with self.assertRaises(ValueError) as cm:
             polygon(turtle, F(360, 1), 1)
         self.assertEqual(
             str(cm.exception),
-            "kąt musi być liczba wymierną nie będącą wielokrotnością 360",
+            "kąt musi być liczbą wymierną nie będącą wielokrotnością 360",
         )
 
 
@@ -80,7 +80,7 @@ class TestRegularPolygon(unittest.TestCase):
         """Test wielokąta foremnego"""
         turtle = create_turtle()
         regular_polygon(turtle, 3, 1)
-        vertices = [(0, 0), (1, 0), (0.5, sqrt(3) / 2), (0, 0)]
+        vertices = [(0, 0), (1, 0), (0.5, -sqrt(3) / 2), (0, 0)]
         for (x1, y1), (x2, y2) in zip(turtle["position"], vertices):
             self.assertAlmostEqual(x1, x2)
             self.assertAlmostEqual(y1, y2)

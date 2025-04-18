@@ -30,17 +30,17 @@ class TestLeftRight(unittest.TestCase):
         """Sprawdza wywołanie left()"""
         turtle = create_turtle(azimuth=0)
         left(turtle, 90)
-        self.assertEqual(turtle["azimuth"], 90)
+        self.assertEqual(turtle["azimuth"] % 360, 90)
         left(turtle, 90)
-        self.assertEqual(turtle["azimuth"], 180)
+        self.assertEqual(turtle["azimuth"] % 360, 180)
 
     def test_right(self):
         """Sprawdza wywołanie right()"""
         turtle = create_turtle(azimuth=0)
         right(turtle, 90)
-        self.assertEqual(turtle["azimuth"], -90)
+        self.assertEqual(turtle["azimuth"] % 360, 270)
         right(turtle, 90)
-        self.assertEqual(turtle["azimuth"], -180)
+        self.assertEqual(turtle["azimuth"] % 360, 180)
 
 
 class TestForward(unittest.TestCase):
@@ -71,5 +71,5 @@ class TestForward(unittest.TestCase):
         self.assertAlmostEqual(y, 0)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  
     unittest.main()

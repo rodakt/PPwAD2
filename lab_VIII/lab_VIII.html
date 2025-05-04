@@ -13094,11 +13094,11 @@ div#notebook {
 <ol>
 <li><code>@register</code> - bezparametrowy dekorator rejestrujący funkcję w słowniku <code>REGISTRY</code>. Kluczem w słowniku jest nazwa funkcji, a wartością funkcja. Rejestracja polega na dodaniu funkcji do słownika <code>REGISTRY</code> pod kluczem równym nazwie funkcji. <code>REGISTRY</code> jest słownikiem znajdującym się w zakresie globalnym.</li>
 <li><code>@register_in(dictionary)</code> - parametrowy dekorator rejestrujący funkcję w słowniku <code>dictionary</code>. Kluczem w słowniku jest nazwa funkcji, a wartością funkcja. Rejestracja polega na dodaniu funkcji do słownika <code>dictionary</code> pod kluczem równym nazwie funkcji. <code>dictionary</code> jest słownikiem przekazanym jako argument dekoratora.</li>
-<li><code>@pre_test(pred)</code> - parametrowy dekorator sprawdzający warunek <code>pred()</code> na argumentach funkcji przed jej wywołaniem. Zakładamy, że funkcja <code>pred()</code> jest asercją: w przypadku niezachowania warunku zgłasza wyjątek <code>AssertionError</code>, w przeciwnym przypadku nic nie robi. Sprawdź szczegóły działania dekoratora w module <code>test_dekorator_examples.py</code>.</li>
-<li><code>@post_test(pred)</code> - parametrowy dekorator sprawdzający warunek <code>pred()</code> na wartości zwracanej przez funkcję. Zakładamy, że funkcja <code>pred()</code> jest asercją: w przypadku niezachowania warunku zgłasza wyjątek <code>AssertionError</code>, w przeciwnym przypadku nic nie robi. Sprawdź szczegóły działania dekoratora w module <code>test_dekorator_examples.py</code>.</li>
+<li><code>@pre_test(pred)</code> - parametrowy dekorator sprawdzający warunek <code>pred()</code> na argumentach funkcji przed jej wywołaniem. Zakładamy, że funkcja <code>pred()</code> jest asercją: w przypadku niezachowania warunku zgłasza wyjątek <code>AssertionError</code>, w przeciwnym przypadku nic nie robi. Sprawdź szczegóły działania dekoratora w module <code>test_decorator_examples.py</code>.</li>
+<li><code>@post_test(pred)</code> - parametrowy dekorator sprawdzający warunek <code>pred()</code> na wartości zwracanej przez funkcję. Zakładamy, że funkcja <code>pred()</code> jest asercją: w przypadku niezachowania warunku zgłasza wyjątek <code>AssertionError</code>, w przeciwnym przypadku nic nie robi. Sprawdź szczegóły działania dekoratora w module <code>test_decorator_examples.py</code>.</li>
 </ol>
 <!-- Testy: [`test_seq_info.py`](https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_seq_info.py) -->
-<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_dekorator_examples.py"><code>test_dekorator_examples.py</code></a></p>
+<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VIII/test_decorator_examples.py"><code>test_decorator_examples.py</code></a></p>
 </div>
 </div>
 </div>
@@ -13142,7 +13142,7 @@ div#notebook {
 <li><code>@key_minmax(key)</code> - dekorator jednoparametrowy z parametrem <code>key</code> domyślnie równym <code>None</code>. Dekoruje jednoargumentowe funkcje zwracające minimum lub maksimum z sekwencji. Jeżeli <code>key</code> ma wartość <code>None</code>, to dekorowanie nie ma żadnego wpływu na dekorowaną funkcję. Jeśli <code>key</code> jest funkcją, to wyszukiwanie minimum/maksimum odbywa się względem wywołań <code>key</code> na wartościach sekwencji.</li>
 <li><code>@key_sort(key)</code> - dekorator jednoparametrowy z parametrem <code>key</code> domyślnie równym <code>None</code>. Dekoruje jednoargumentowe funkcje, które jako argument przyjmują iterowalne kolekcje a następnie zwracają posortowaną listę wartości z tej kolekcji. Jeżeli <code>key</code> ma wartość <code>None</code>, to dekorowanie nie ma żadnego wpływu na dekorowaną funkcję. Jeśli <code>key</code> jest funkcją, to sortowanie odbywa się względem wartości wywołań <code>key</code> na wartościach kolekcji.</li>
 </ol>
-<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_dsu.py"><code>test_dsu.py</code></a></p>
+<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VIII/test_dsu.py"><code>test_dsu.py</code></a></p>
 </div>
 </div>
 </div>

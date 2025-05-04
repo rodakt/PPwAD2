@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>lab_VII</title><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script><script type="module">
+<title>lab_VIII</title><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script><script type="module">
   import mermaid from 'https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.esm.min.mjs';
   mermaid.initialize({ startOnLoad: true });
 </script>
@@ -13089,187 +13089,73 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Podstawy-programowania-(AD)-2">Podstawy programowania (AD) 2<a class="anchor-link" href="#Podstawy-programowania-(AD)-2">¶</a></h1><h3 id="Tomasz-Rodak">Tomasz Rodak<a class="anchor-link" href="#Tomasz-Rodak">¶</a></h3><h2 id="Lab-VII">Lab VII<a class="anchor-link" href="#Lab-VII">¶</a></h2><hr/>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-VII.1">Zadanie VII.1<a class="anchor-link" href="#Zadanie-VII.1">¶</a></h3><p>Dokończ implementację funkcji <code>make_counter(start=0, step=1)</code>:</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_counter</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Zwraca funkcję, która jest licznikem. Funkcja ta, po każdym wywołaniu,</span>
-<span class="sd">    zwraca kolejną liczbę, zaczynając od `start` z odstępem `step`.</span>
-
-<span class="sd">    Parametry:</span>
-<span class="sd">    start -- liczba, od której zaczynamy zliczać</span>
-<span class="sd">    step -- liczba, o którą zmieniamy licznik po każdym wywołaniu</span>
-<span class="sd">    </span>
-<span class="sd">    Zwraca:</span>
-<span class="sd">    funkcję, która zlicza od start do nieskończoności</span>
-<span class="sd">    </span>
-<span class="sd">    Przykłady:</span>
-<span class="sd">    &gt;&gt;&gt; counter = make_counter()</span>
-<span class="sd">    &gt;&gt;&gt; counter()</span>
-<span class="sd">    0</span>
-<span class="sd">    &gt;&gt;&gt; counter()</span>
-<span class="sd">    1</span>
-<span class="sd">    &gt;&gt;&gt; counter()</span>
-<span class="sd">    2</span>
-<span class="sd">    &gt;&gt;&gt; new_counter = make_counter(10)</span>
-<span class="sd">    &gt;&gt;&gt; new_counter()</span>
-<span class="sd">    10</span>
-<span class="sd">    &gt;&gt;&gt; new_counter()</span>
-<span class="sd">    11</span>
-<span class="sd">    &gt;&gt;&gt; yet_another_counter = make_counter(10, 2)</span>
-<span class="sd">    &gt;&gt;&gt; yet_another_counter()</span>
-<span class="sd">    10</span>
-<span class="sd">    &gt;&gt;&gt; yet_another_counter()</span>
-<span class="sd">    12</span>
-<span class="sd">    &gt;&gt;&gt; yet_another_counter()</span>
-<span class="sd">    14</span>
-<span class="sd">    &gt;&gt;&gt; counter()</span>
-<span class="sd">    3</span>
-<span class="sd">    &gt;&gt;&gt; new_counter()</span>
-<span class="sd">    12</span>
-<span class="sd">    &gt;&gt;&gt; float_counter = make_counter(0.5, -0.5)</span>
-<span class="sd">    &gt;&gt;&gt; float_counter()</span>
-<span class="sd">    0.5</span>
-<span class="sd">    &gt;&gt;&gt; float_counter()</span>
-<span class="sd">    0.0</span>
-<span class="sd">    &gt;&gt;&gt; float_counter()</span>
-<span class="sd">    -0.5</span>
-<span class="sd">    """</span>
-    <span class="k">pass</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-VII.2">Zadanie VII.2<a class="anchor-link" href="#Zadanie-VII.2">¶</a></h3><p>Dokończ implementację funkcji <code>compose(f, g)</code>:</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compose</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Zwraca funkcję, która jest złożeniem funkcji `f` i `g`. Funkcja `f` jest</span>
-<span class="sd">    wywoływana na wyniku funkcji `g`.</span>
-
-<span class="sd">    Parametry:</span>
-<span class="sd">    f -- funkcja, która ma być wywołana na wyniku funkcji g</span>
-<span class="sd">    g -- funkcja, która ma być wywołana jako pierwsza</span>
-<span class="sd">    </span>
-<span class="sd">    Zwraca:</span>
-<span class="sd">    funkcję, która jest złożeniem f i g</span>
-<span class="sd">    </span>
-<span class="sd">    Przykłady:</span>
-<span class="sd">    &gt;&gt;&gt; def add_one(x):</span>
-<span class="sd">    ...     return x + 1</span>
-<span class="sd">    &gt;&gt;&gt; def square(x):</span>
-<span class="sd">    ...     return x * x</span>
-<span class="sd">    &gt;&gt;&gt; add_one_square = compose(add_one, square)</span>
-<span class="sd">    &gt;&gt;&gt; add_one_square(2)</span>
-<span class="sd">    5</span>
-<span class="sd">    &gt;&gt;&gt; square_add_one = compose(square, add_one)</span>
-<span class="sd">    &gt;&gt;&gt; square_add_one(2)</span>
-<span class="sd">    9</span>
-<span class="sd">    """</span>
-    <span class="k">pass</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-VII.3">Zadanie VII.3<a class="anchor-link" href="#Zadanie-VII.3">¶</a></h3><p>Dana jest funkcja:</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calculator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">operation</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s1">'+'</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
-    <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s1">'-'</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span>
-    <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s1">'*'</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
-    <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s1">'/'</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Dzielenie przez zero"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="n">y</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Nieznana operacja"</span><span class="p">)</span>
-</pre></div>
-<p>Napisz funkcję <code>make_calculator()</code> stanowiącą równoważny wariant funkcji <code>calculator()</code> w postaci złożenia trzech jednoparametrowych funkcji:</p>
-<div class="highlight"><pre><span></span><span class="n">calculator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">operation</span><span class="p">)</span> <span class="o">==</span> <span class="n">make_calculator</span><span class="p">(</span><span class="n">operation</span><span class="p">)(</span><span class="n">x</span><span class="p">)(</span><span class="n">y</span><span class="p">)</span>
-</pre></div>
-<p>Technikę polegającą na zapisywaniu funkcji wieloparametrowych jako złożenia funkcji jednoparametrowych nazywamy <a href="https://en.wikipedia.org/wiki/Currying"><em>curryingiem</em></a> (rozwijaniem funkcji).</p>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-VII.4">Zadanie VII.4<a class="anchor-link" href="#Zadanie-VII.4">¶</a></h3><p>Napisz moduł <code>seq_info.py</code>, zawierający funkcje:</p>
+<h1 id="Podstawy-programowania-(AD)-2">Podstawy programowania (AD) 2<a class="anchor-link" href="#Podstawy-programowania-(AD)-2">¶</a></h1><h3 id="Tomasz-Rodak">Tomasz Rodak<a class="anchor-link" href="#Tomasz-Rodak">¶</a></h3><h2 id="Lab-VIII">Lab VIII<a class="anchor-link" href="#Lab-VIII">¶</a></h2><hr/>
+<h3 id="Zadanie-VIII.1">Zadanie VIII.1<a class="anchor-link" href="#Zadanie-VIII.1">¶</a></h3><p>Napisz moduł <code>dekorator_examples.py</code> zawierający dekoratory:</p>
 <ol>
-<li><code>check_adjacent(seq, pred)</code> - zwraca <code>True</code>, jeśli dla każdej pary <strong>sąsiednich</strong> elementów <code>x</code>, <code>y</code> sekwencji <code>seq</code> zachodzi <code>pred(x, y)</code> (gdzie <code>pred</code> jest funkcją dwuargumentową), w przeciwnym razie zwraca <code>False</code>.</li>
-<li><code>is_ascending(seq)</code> - zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest niemalejąca.</li>
-<li><code>is_strictly_ascending(seq)</code> - zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest ściśle rosnąca.</li>
-<li><code>is_descending(seq)</code> - zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest nierosnąca.</li>
-<li><code>is_strictly_descending(seq)</code> - zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest ściśle malejąca.</li>
-<li><code>is_monotonic(seq)</code> - zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest monotoniczna.</li>
-<li><code>is_strictly_monotonic(seq)</code> - zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest ściśle monotoniczna.</li>
-<li><code>is_constant(seq)</code> - zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest stała.</li>
-<li><code>is_alternating(seq)</code> - zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest naprzemienna. Zakładamy, że <code>seq</code> jest sekwencją wartości liczbowych. Ciąg liczbowy nazwiemy naprzemiennym, jeśli dla każdej pary sąsiednich elementów $a$, $b$ zachodzi $a \cdot b &lt; 0$.</li>
-<li><code>is_arithmetic(seq, r=None)</code> - <code>seq</code> jest sekwencją liczb całkowitych. Jeśli <code>r</code> jest <code>None</code>, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem arytmetycznym, w przeciwnym razie zwraca <code>False</code>. Jeśli <code>r</code> jest podane, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem arytmetycznym o różnicy <code>r</code>, w przeciwnym razie zwraca <code>False</code>.</li>
-<li><code>is_geometric(seq, q=None)</code> - <code>seq</code> jest sekwencją liczb całkowitych. Jeśli <code>q</code> jest <code>None</code>, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem geometrycznym o całkowitym ilorazie, w przeciwnym razie zwraca <code>False</code>. Jeśli <code>q</code> jest podane, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem geometrycznym o ilorazie <code>q</code>, w przeciwnym razie zwraca <code>False</code>.</li>
+<li><code>@register</code> - bezparametrowy dekorator rejestrujący funkcję w słowniku <code>REGISTRY</code>. Kluczem w słowniku jest nazwa funkcji, a wartością funkcja. Rejestracja polega na dodaniu funkcji do słownika <code>REGISTRY</code> pod kluczem równym nazwie funkcji. <code>REGISTRY</code> jest słownikiem znajdującym się w zakresie globalnym.</li>
+<li><code>@register_in(dictionary)</code> - parametrowy dekorator rejestrujący funkcję w słowniku <code>dictionary</code>. Kluczem w słowniku jest nazwa funkcji, a wartością funkcja. Rejestracja polega na dodaniu funkcji do słownika <code>dictionary</code> pod kluczem równym nazwie funkcji. <code>dictionary</code> jest słownikiem przekazanym jako argument dekoratora.</li>
+<li><code>@pre_test(pred)</code> - parametrowy dekorator sprawdzający warunek <code>pred()</code> na argumentach funkcji przed jej wywołaniem. Zakładamy, że funkcja <code>pred()</code> jest asercją: w przypadku niezachowania warunku zgłasza wyjątek <code>AssertionError</code>, w przeciwnym przypadku nic nie robi. Sprawdź szczegóły działania dekoratora w module <code>test_dekorator_examples.py</code>.</li>
+<li><code>@post_test(pred)</code> - parametrowy dekorator sprawdzający warunek <code>pred()</code> na wartości zwracanej przez funkcję. Zakładamy, że funkcja <code>pred()</code> jest asercją: w przypadku niezachowania warunku zgłasza wyjątek <code>AssertionError</code>, w przeciwnym przypadku nic nie robi. Sprawdź szczegóły działania dekoratora w module <code>test_dekorator_examples.py</code>.</li>
 </ol>
-<p><strong>Wszystkie funkcje powinny korzystać z funkcji <code>check_adjacent()</code> dla odpowiednich predykatów.</strong></p>
-<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_seq_info.py"><code>test_seq_info.py</code></a></p>
+<!-- Testy: [`test_seq_info.py`](https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_seq_info.py) -->
+<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_dekorator_examples.py"><code>test_dekorator_examples.py</code></a></p>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-VII.5">Zadanie VII.5<a class="anchor-link" href="#Zadanie-VII.5">¶</a></h3><p>Napisz moduł <code>fprobs.py</code>, zawierający funkcję <code>random_ball_machine(return_balls, **balls)</code>. Funkcja zwraca bezparametrową funkcję <code>machine()</code>, która symuluje losowanie kul z urny. Opis parametrów:</p>
-<ul>
-<li><code>return_balls</code> -- <code>True</code> lub <code>False</code>, domyślnie <code>True</code>. Decyduje o tym, czy losowania są prowadzone ze zwracaniem (domyślnie tak).</li>
-<li><code>balls</code> -- przyjmuje argumenty postaci <code>color=quantity</code>, gdzie<ul>
-<li><code>color</code> -- łańcuch znaków oznaczający kolor kuli,</li>
-<li><code>quantity</code> -- liczba całkowita nieujemna określająca liczbę kul danego koloru w urnie.</li>
-</ul>
-</li>
-</ul>
-<p>Każde wywołanie funkcji <code>machine()</code> zwraca kulę wylosowaną z urny. Jeśli <code>return_balls</code> jest ustawione na <code>True</code>, to kulę losuje się ze zwracaniem, w przeciwnym razie bez zwracania. Jeśli urna jest pusta, <code>machine()</code> powinien rzucać wyjątek <code>LookupError</code> z komunikatem <code>'urna jest pusta.'</code>.</p>
-<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_fprob.py"><code>test_fprob.py</code></a></p>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-VII.6">Zadanie VII.6<a class="anchor-link" href="#Zadanie-VII.6">¶</a></h3><p>Celem tego zadania jest napisanie nowej wersji programu szyfrującego z zadania II.4</p>
-<p>Przypomnijmy zasadę szyfrowania.
-<em>Używając klucza <code>ma-li-no-we-bu-ty</code> można zaszyfrować wiadomość wymieniając znaki leżące wewnątrz tych samych sylab klucza: <code>m --&gt; a</code>, <code>a --&gt; m</code>, <code>l --&gt; i</code>, <code>i --&gt; l</code>, itd. Znaki, których nie ma w kluczu, pozostawia się bez zmian. Przykładowo tekst <code>ziemia jest płaska</code> wymaga wymienienia 9 znaków i po zaszyfrowaniu ma postać <code>zlwalm jwsy płmskm</code>. Powtórne zaszyfrowanie przywraca pierwotną postać tekstu.</em></p>
-<p>Napisz moduł <code>malinowebuty.py</code> zawierający funkcje:</p>
+<h3 id="Zadanie-VIII.2">Zadanie VIII.2<a class="anchor-link" href="#Zadanie-VIII.2">¶</a></h3><p>Funkcja</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">maksimum</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">seq</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'argument seq musi być niepusty.'</span><span class="p">)</span>
+    
+    <span class="n">mx</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">mx</span><span class="p">:</span>
+            <span class="n">mx</span> <span class="o">=</span> <span class="n">a</span>
+    
+    <span class="k">return</span> <span class="n">mx</span>
+</pre></div>
+<p>wyszukuje maksimum w sekwencji <code>seq</code>. Elementy <code>seq</code> porównywane są bezpośrednio, pierwsza od lewej największa wartość jest zwracana. Załóżmy teraz, że mamy listę krotek</p>
+<div class="highlight"><pre><span></span><span class="n">owoce</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">'jabłko'</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">'arbuz'</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="s1">'banan'</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="s1">'gruszka'</span><span class="p">,</span> <span class="mi">6</span><span class="p">)]</span>
+</pre></div>
+<p>Każda krotka reprezentuje owoc i jego cenę. Jak, korzystając z funkcji <code>maksimum()</code>, wyznaczyć krotkę z najdroższym owocem?</p>
+<p>Możemy postępować tak:</p>
 <ol>
-<li><code>create_key(s)</code> - parametr <code>s</code> jest łańcuchem znaków. Funkcja zwraca słownik par <code>k: v</code>, gdzie</li>
+<li>Tworzymy nową listę, w której każda krotka <code>(&lt;owoc&gt;, &lt;cena&gt;)</code> zostaje zastąpiona przez krotkę <code>(&lt;cena&gt;, &lt;indeks&gt;, (&lt;owoc&gt;, &lt;cena&gt;))</code>. Otrzymujemy w ten sposób listę</li>
 </ol>
-<ul>
-<li><code>k</code> -- znak łańcucha <code>s</code>,</li>
-<li><code>v</code> -- znak, na który <code>k</code> jest wymieniany.
-Prawidłowy klucz, to taki niepusty łańcuch znaków, który jest różnowartościowy i ma parzystą długość. W przypadku wykrycia nieprawidłowego klucza funkcja ma wywoływać wyjątek <code>ValueError</code> z komunikatem: <code>nieprawidłowy klucz.</code>.</li>
-</ul>
+<div class="highlight"><pre><span></span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="s1">'jabłko'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+ <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="s1">'arbuz'</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span>
+ <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="s1">'banan'</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span>
+ <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">(</span><span class="s1">'gruszka'</span><span class="p">,</span> <span class="mi">6</span><span class="p">))]</span>
+</pre></div>
 <ol start="2">
-<li><code>create_encryptor(s)</code> - parametr <code>s</code> jest łańcuchem domyślnie ustawionym na <code>'malinowebuty'</code>. Funkcja zwraca <strong>funkcję</strong> <code>encryptor(text)</code>. Parametr <code>text</code> jest łańcuchem znaków. Funkcja <code>encryptor()</code> zwraca zaszyfrowany tekst zgodnie z kluczem <code>s</code>. Do szyfrowania funkcja <code>encryptor()</code> powinna korzystać z klucza <code>s</code> w postaci słownika wymiany znaków zwróconego przez <code>create_key()</code>. Słownik ten powinien być obliczany <strong>przed</strong> definicją funkcji <code>encryptor()</code>, a zatem ma znajdować się w jej <strong>domknięciu</strong>.</li>
+<li>Stosujemy funkcję <code>maskimum()</code> do nowo utworzonej listy, funkcja zwróci krotkę <code>(10, 1, ('arbuz', 10))</code>.</li>
+<li>Z krotki <code>(10, 1, ('arbuz', 10))</code> pobieramy ostatnią pozycję uzyskując odpowiedź <code>('arbuz', 10)</code>.</li>
 </ol>
-<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_malinowebuty.py"><code>test_malinowebuty.py</code></a></p>
+<p>Metoda ta nazywa się DSU (<em>Decorate-Sort-Undecorate</em>) i może być stosowana do szukania minimum/maksimum oraz do sortowania (stąd nazwa drugiego etapu - <em>Sort</em>) według wybranego przez użytkownika kryterium. Dzięki metodzie DSU wzorzec szukania minimum/maksimum czy sortowania jest implementowany niezależnie od kryterium według którego porównywane są elementy.</p>
+<p>Więcej informacji na ten temat znajdziesz w <a href="https://docs.python.org/3/howto/sorting.html">Sorting HOW TO</a>.</p>
+<p>Napisz moduł <code>dsu.py</code> zawierający dekoratory:</p>
+<ol>
+<li><code>@key_minmax(key)</code> - dekorator jednoparametrowy z parametrem <code>key</code> domyślnie równym <code>None</code>. Dekoruje jednoargumentowe funkcje zwracające minimum lub maksimum z sekwencji. Jeżeli <code>key</code> ma wartość <code>None</code>, to dekorowanie nie ma żadnego wpływu na dekorowaną funkcję. Jeśli <code>key</code> jest funkcją, to wyszukiwanie minimum/maksimum odbywa się względem wywołań <code>key</code> na wartościach sekwencji.</li>
+<li><code>@key_sort(key)</code> - dekorator jednoparametrowy z parametrem <code>key</code> domyślnie równym <code>None</code>. Dekoruje jednoargumentowe funkcje, które jako argument przyjmują iterowalne kolekcje a następnie zwracają posortowaną listę wartości z tej kolekcji. Jeżeli <code>key</code> ma wartość <code>None</code>, to dekorowanie nie ma żadnego wpływu na dekorowaną funkcję. Jeśli <code>key</code> jest funkcją, to sortowanie odbywa się względem wartości wywołań <code>key</code> na wartościach kolekcji.</li>
+</ol>
+<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_dsu.py"><code>test_dsu.py</code></a></p>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Zadanie-VII.7">Zadanie VII.7<a class="anchor-link" href="#Zadanie-VII.7">¶</a></h3><p>Napisz moduł <code>freeze_args.py</code>, zawierający funkcję <code>freeze_args(f, *args, **kwargs)</code>. Parametr <code>f()</code> jest dowolnym obiektem wywoływalnym. Funkcja zwraca funkcję zachowującą się jak <code>f()</code>, do której wstawiono argumenty pozycyjne <code>args</code> i podawane przez nazwę <code>kwargs</code>. Są to argumenty <em>zamrożone</em>. Do wywołania zwróconej funkcji mogą zostać przekazane argumenty pozycyjne - wtedy w wywołaniu <code>f()</code> następują one po argumentach <code>args</code>. Argumenty podawane przez nazwę również mogą zostać wstawione do wywołania - wtedy dodawane są do <code>kwargs</code>.</p>
-<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_freeze_args.py"><code>test_freeze.py</code></a></p>
+<h3 id="Zadanie-VIII.3">Zadanie VIII.3<a class="anchor-link" href="#Zadanie-VIII.3">¶</a></h3><p>Napisz program, w którym przetestujesz działanie dekoratorów z zadania VIII.2 na własnych implementacjach:</p>
+<ol>
+<li>funkcji zwracającej minimum z sekwencji,</li>
+<li>funkcji zwracającej maksimum z sekwencji,</li>
+<li>funkcji sortującej sekwencję.</li>
+</ol>
+<p>Funkcji sortujących możesz napisać wiele korzystając z różnych algorytmów sortujących, np. sortowanie bąbelkowe, sortowanie przez wstawianie, sortowanie przez wybieranie, itp.</p>
 </div>
 </div>
 </div>

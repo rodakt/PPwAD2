@@ -13090,7 +13090,45 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Podstawy-programowania-(AD)-2">Podstawy programowania (AD) 2<a class="anchor-link" href="#Podstawy-programowania-(AD)-2">¶</a></h1><h3 id="Tomasz-Rodak">Tomasz Rodak<a class="anchor-link" href="#Tomasz-Rodak">¶</a></h3><h2 id="Lab-X">Lab X<a class="anchor-link" href="#Lab-X">¶</a></h2><hr/>
-<h2 id="Zadanie-X.1">Zadanie X.1<a class="anchor-link" href="#Zadanie-X.1">¶</a></h2><p>Napisz moduł <code>moving_average.py</code>  z klasami <code>AverageSpeed</code> i <code>MovingAverage</code>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Zadanie-X.1">Zadanie X.1<a class="anchor-link" href="#Zadanie-X.1">¶</a></h2><p>Napisz moduł <code>bank_account.py</code> z klasą <code>BankAccount</code>, reprezentującą proste konto bankowe.</p>
+<p>Klasa powinna umożliwiać:</p>
+<ul>
+<li>Tworzenie konta z podanym imieniem właściciela i opcjonalnym saldem początkowym (domyślnie 0).</li>
+<li>Wpłatę środków na konto metodą <code>deposit(amount)</code>.</li>
+<li>Wypłatę środków z konta metodą <code>withdraw(amount)</code>. Jeśli na koncie nie ma wystarczających środków, metoda powinna zgłosić wyjątek <code>ValueError</code>.</li>
+<li>Sprawdzenie aktualnego salda metodą <code>get_balance()</code>.</li>
+<li>Czytelną reprezentację tekstową konta za pomocą metod <code>__str__</code> i <code>__repr__</code>.</li>
+</ul>
+<p>Przykład użycia:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">acc</span> <span class="o">=</span> <span class="n">BankAccount</span><span class="p">(</span><span class="s2">"Jan Kowalski"</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
+<span class="n">Konto</span> <span class="n">bankowe</span> <span class="n">właściciela</span><span class="p">:</span> <span class="n">Jan</span> <span class="n">Kowalski</span><span class="p">,</span> <span class="n">saldo</span><span class="p">:</span> <span class="mi">100</span> <span class="n">zł</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">acc</span><span class="o">.</span><span class="n">deposit</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">acc</span><span class="o">.</span><span class="n">withdraw</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">acc</span><span class="o">.</span><span class="n">get_balance</span><span class="p">()</span>
+<span class="mi">120</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">repr</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
+<span class="s2">"BankAccount('Jan Kowalski', 120)"</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">acc</span><span class="o">.</span><span class="n">withdraw</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="o">...</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">Niedostateczne</span> <span class="n">środki</span> <span class="n">na</span> <span class="n">koncie</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">acc</span><span class="o">.</span><span class="n">get_balance</span><span class="p">()</span>
+<span class="mi">120</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Zadanie-X.2">Zadanie X.2<a class="anchor-link" href="#Zadanie-X.2">¶</a></h2><p>Napisz moduł <code>moving_average.py</code>  z klasami <code>AverageSpeed</code> i <code>MovingAverage</code>.</p>
 <p>Instancje klasy <code>MovingAverage</code> mają przechowywać i aktualizować średnią ruchomą na podstawie dodawanych wartości. Do interfejsu klasy należą atrybuty:</p>
 <ul>
 <li><code>total</code> -- wartość liczbowa określająca sumę dodanych wartości;</li>
@@ -13119,7 +13157,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Zadanie-X.2">Zadanie X.2<a class="anchor-link" href="#Zadanie-X.2">¶</a></h2><p>Napisz moduł <code>infinite_sequences.py</code> z klasami <code>Squares</code> i <code>Fib</code>.</p>
+<h2 id="Zadanie-X.3">Zadanie X.3<a class="anchor-link" href="#Zadanie-X.3">¶</a></h2><p>Napisz moduł <code>infinite_sequences.py</code> z klasami <code>Squares</code> i <code>Fib</code>.</p>
 <p>Obiekty klasy <code>Squares</code> reprezentują nieskończony ciąg kwadratów kolejnych nieujemnych liczb całkowitych 0, 1, 4, 9, 16, ...</p>
 <p>Klasa powinna implementować metodę <code>nxt(self)</code>, która zwraca kolejną wartość ciągu.
 Klasa może zawierać dodatkowe metody i atrybuty, jeśli są one potrzebne.</p>
@@ -13131,7 +13169,7 @@ Klasa może zawierać dodatkowe metody i atrybuty, jeśli są one potrzebne.</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Zadanie-X.3">Zadanie X.3<a class="anchor-link" href="#Zadanie-X.3">¶</a></h2><p>Napisz moduł <code>temperature.py</code> z klasą <code>Temperature</code>. Instancje tej klasy to temperatura w jednej ze skal Kelwina, Celsjusza lub Fahrenheita. Klasa powinna implementować metody:</p>
+<h2 id="Zadanie-X.4">Zadanie X.4<a class="anchor-link" href="#Zadanie-X.4">¶</a></h2><p>Napisz moduł <code>temperature.py</code> z klasą <code>Temperature</code>. Instancje tej klasy to temperatura w jednej ze skal Kelwina, Celsjusza lub Fahrenheita. Klasa powinna implementować metody:</p>
 <ul>
 <li><code>__init__(self, value=0, unit="K")</code> -- inicjalizacja parametrów <code>value</code> (domyślnie zero) i <code>unit</code> (domyślnie Kelwin, czyli <code>'K'</code>).</li>
 <li><code>__repr__(self)</code> -- zwraca reprezentację obiektu w postaci łańcucha znaków, która pozwala na odtworzenie obiektu za pomocą funkcji <code>eval</code>.</li>
@@ -13154,7 +13192,7 @@ Klasa może zawierać dodatkowe metody i atrybuty, jeśli są one potrzebne.</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Zadanie-X.4">Zadanie X.4<a class="anchor-link" href="#Zadanie-X.4">¶</a></h2><p>Celem tego ćwiczenia jest napisanie klasy dającej narzędzia do badania <a href="https://pl.wikipedia.org/wiki/Problem_czterech_hetman%C3%B3w">problemu czterech hetmanów.</a> Podana komórka zawiera nagłówek klasy i nagłówki metod. Łańcuch pod nagłówkiem klasy to oczywiście <em>docstring</em> klasy. Przeczytaj go dokładnie a następnie na jego podstawie postaraj się dokończyć kod.</p>
+<h2 id="Zadanie-X.5">Zadanie X.5<a class="anchor-link" href="#Zadanie-X.5">¶</a></h2><p>Celem tego ćwiczenia jest napisanie klasy dającej narzędzia do badania <a href="https://pl.wikipedia.org/wiki/Problem_czterech_hetman%C3%B3w">problemu czterech hetmanów.</a> Podana komórka zawiera nagłówek klasy i nagłówki metod. Łańcuch pod nagłówkiem klasy to oczywiście <em>docstring</em> klasy. Przeczytaj go dokładnie a następnie na jego podstawie postaraj się dokończyć kod.</p>
 <div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CzteryHetmany</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">'''Klasa do badania problemu czterech hetmanów:</span>
 <span class="sd">    </span>

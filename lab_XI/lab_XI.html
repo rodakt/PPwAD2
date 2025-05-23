@@ -13262,7 +13262,7 @@ Reszta $-a$ zawsze istnieje, reszta $1/a$ może nie istnieć.</p>
 <li>$a^0=1$ dla $a\neq 0$,</li>
 <li>$a^k=a\odot a\odot\cdots\odot a$ -- iloczyn $k$ składników, gdy $k&gt;0$,</li>
 </ul>
-<p>Naiwna implementacja potęgowania wymaga iteracyjnego mnożenia reszt przez siebie. W przypadku dużych wykładników jest to bardzo czasochłonne. Można jednak zastosować <a href="https://pl.wikipedia.org/wiki/Algorytm_szybkiego_pot%C4%99gowania">algorytm szybkiego potęgowania</a>, który pozwala na obliczenie $a^k$ w czasie $O(\log k)$. Oto przykład:</p>
+<p>Naiwna implementacja potęgowania wymaga iteracyjnego mnożenia reszt przez siebie. W przypadku dużych wykładników jest to bardzo czasochłonne. Można jednak zastosować <a href="https://en.wikipedia.org/wiki/Exponentiation_by_squaring">algorytm szybkiego potęgowania</a>, który pozwala na obliczenie $a^k$ w czasie $O(\log k)$. Oto przykład ręcznego obliczania $3^{101}$ w arytmetyce reszt modulo 7:</p>
 <p>$$
 3^{101}\equiv 3^{2\cdot 50 + 1}\equiv (3^2)^{50}\cdot 3\equiv 9^{50}\cdot 3\equiv 2^{50}\cdot 3\\
 \equiv 4^{25}\cdot 3\equiv 4^{2\cdot 12 + 1}\cdot 3\equiv 16^{12}\cdot 4\cdot 3\equiv 2^{12}\cdot 12\\

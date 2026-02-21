@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tomasz Rodak">
+
+<title>Błędy i wyjątki – Podstawy programowania (AD) 2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-e5e826206e162e12979c7c5407341cf6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./wyklad_I.html">Wykłady</a></li><li class="breadcrumb-item"><a href="./wyklad_I.html">Błędy i wyjątki</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Podstawy programowania (AD) 2</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Strona główna</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Wykłady</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_I.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Błędy i wyjątki</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Laboratoria</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab I: Zadania na rozgrzewkę</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Spis treści</h2>
+   
+  <ul>
+  <li><a href="#błędy-i-wyjątki" id="toc-błędy-i-wyjątki" class="nav-link active" data-scroll-target="#błędy-i-wyjątki"><span class="header-section-number">1</span> Błędy i wyjątki</a>
+  <ul class="collapse">
+  <li><a href="#czym-są-wyjątki-exceptions" id="toc-czym-są-wyjątki-exceptions" class="nav-link" data-scroll-target="#czym-są-wyjątki-exceptions"><span class="header-section-number">1.1</span> Czym są wyjątki (Exceptions)?</a></li>
+  <li><a href="#przykłady-wyjątków" id="toc-przykłady-wyjątków" class="nav-link" data-scroll-target="#przykłady-wyjątków"><span class="header-section-number">1.2</span> Przykłady wyjątków</a>
+  <ul class="collapse">
+  <li><a href="#ćwiczenie-i.1" id="toc-ćwiczenie-i.1" class="nav-link" data-scroll-target="#ćwiczenie-i.1"><span class="header-section-number">1.2.1</span> Ćwiczenie I.1</a></li>
+  <li><a href="#ćwiczenie-i.2" id="toc-ćwiczenie-i.2" class="nav-link" data-scroll-target="#ćwiczenie-i.2"><span class="header-section-number">1.2.2</span> Ćwiczenie I.2</a></li>
+  </ul></li>
+  <li><a href="#hierarchia-wyjątków" id="toc-hierarchia-wyjątków" class="nav-link" data-scroll-target="#hierarchia-wyjątków"><span class="header-section-number">1.3</span> Hierarchia wyjątków</a></li>
+  <li><a href="#obsługa-wyjątków-instrukcja-try" id="toc-obsługa-wyjątków-instrukcja-try" class="nav-link" data-scroll-target="#obsługa-wyjątków-instrukcja-try"><span class="header-section-number">1.4</span> Obsługa wyjątków, instrukcja <code>try</code></a>
+  <ul class="collapse">
+  <li><a href="#przykład-i.1" id="toc-przykład-i.1" class="nav-link" data-scroll-target="#przykład-i.1"><span class="header-section-number">1.4.1</span> Przykład I.1</a></li>
+  </ul></li>
+  <li><a href="#rola-dziedziczenia-w-obsłudze-wyjątków" id="toc-rola-dziedziczenia-w-obsłudze-wyjątków" class="nav-link" data-scroll-target="#rola-dziedziczenia-w-obsłudze-wyjątków"><span class="header-section-number">1.5</span> Rola dziedziczenia w obsłudze wyjątków</a>
+  <ul class="collapse">
+  <li><a href="#przykład-i.2" id="toc-przykład-i.2" class="nav-link" data-scroll-target="#przykład-i.2"><span class="header-section-number">1.5.1</span> Przykład I.2</a></li>
+  </ul></li>
+  <li><a href="#jak-obsługiwać-wyjątki" id="toc-jak-obsługiwać-wyjątki" class="nav-link" data-scroll-target="#jak-obsługiwać-wyjątki"><span class="header-section-number">1.6</span> Jak obsługiwać wyjątki</a>
+  <ul class="collapse">
+  <li><a href="#przykład-i.3" id="toc-przykład-i.3" class="nav-link" data-scroll-target="#przykład-i.3"><span class="header-section-number">1.6.1</span> Przykład I.3</a></li>
+  </ul></li>
+  <li><a href="#finally" id="toc-finally" class="nav-link" data-scroll-target="#finally"><span class="header-section-number">1.7</span> <code>finally</code></a>
+  <ul class="collapse">
+  <li><a href="#ćwiczenie-i.3" id="toc-ćwiczenie-i.3" class="nav-link" data-scroll-target="#ćwiczenie-i.3"><span class="header-section-number">1.7.1</span> Ćwiczenie I.3</a></li>
+  <li><a href="#przykład-i.4" id="toc-przykład-i.4" class="nav-link" data-scroll-target="#przykład-i.4"><span class="header-section-number">1.7.2</span> Przykład I.4</a></li>
+  </ul></li>
+  <li><a href="#menedżer-kontekstu" id="toc-menedżer-kontekstu" class="nav-link" data-scroll-target="#menedżer-kontekstu"><span class="header-section-number">1.8</span> Menedżer kontekstu</a>
+  <ul class="collapse">
+  <li><a href="#przykład-i.5" id="toc-przykład-i.5" class="nav-link" data-scroll-target="#przykład-i.5"><span class="header-section-number">1.8.1</span> Przykład I.5</a></li>
+  </ul></li>
+  <li><a href="#instrukcja-raise" id="toc-instrukcja-raise" class="nav-link" data-scroll-target="#instrukcja-raise"><span class="header-section-number">1.9</span> Instrukcja <code>raise</code></a>
+  <ul class="collapse">
+  <li><a href="#przykład-i.6" id="toc-przykład-i.6" class="nav-link" data-scroll-target="#przykład-i.6"><span class="header-section-number">1.9.1</span> Przykład I.6</a></li>
+  </ul></li>
+  <li><a href="#traceback" id="toc-traceback" class="nav-link" data-scroll-target="#traceback"><span class="header-section-number">1.10</span> Traceback</a>
+  <ul class="collapse">
+  <li><a href="#przykład-i.7" id="toc-przykład-i.7" class="nav-link" data-scroll-target="#przykład-i.7"><span class="header-section-number">1.10.1</span> Przykład I.7</a></li>
+  <li><a href="#ćwiczenie-i.4" id="toc-ćwiczenie-i.4" class="nav-link" data-scroll-target="#ćwiczenie-i.4"><span class="header-section-number">1.10.2</span> Ćwiczenie I.4</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#do-poczytania" id="toc-do-poczytania" class="nav-link" data-scroll-target="#do-poczytania"><span class="header-section-number">2</span> Do poczytania</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./wyklad_I.html">Wykłady</a></li><li class="breadcrumb-item"><a href="./wyklad_I.html">Błędy i wyjątki</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Błędy i wyjątki</h1>
+<p class="subtitle lead">Podstawy programowania (AD) 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tomasz Rodak </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="błędy-i-wyjątki" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Błędy i wyjątki</h1>
+<section id="czym-są-wyjątki-exceptions" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="czym-są-wyjątki-exceptions"><span class="header-section-number">1.1</span> Czym są wyjątki (<a href="https://docs.python.org/3/library/exceptions.html">Exceptions</a>)?</h2>
+<ul>
+<li>Wyjątki to błędy, które powstają podczas działania programu.</li>
+<li>W Pythona wbudowane jest wiele różnych wyjątków. Wyjątki te tworzą <strong>hierarchię</strong> opartą o dziedziczenie.</li>
+<li>Rodzaj powstałego wyjątku sugeruje rodzaj błędu.</li>
+<li>Po zgłoszeniu wyjątku mogą zdarzyć się różne rzeczy, w zależności od miejsca, w którym wyjątek został zgłoszony, zasadniczo jednak scenariusze są dwa:
+<ul>
+<li>wyjątek zostaje obsłużony w bloku <code>try</code> (o tym powiemy za chwilę);</li>
+<li>wyjątek jest przekazywany na coraz wyższe poziomy programu, aż do momentu, w którym zostanie obsłużony albo program zostanie całkowicie przerwany.</li>
+</ul></li>
+</ul>
+</section>
+<section id="przykłady-wyjątków" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="przykłady-wyjątków"><span class="header-section-number">1.2</span> Przykłady wyjątków</h2>
+<ul>
+<li><code>ValueError</code> – prawidłowy typ argumentu ale nieprawidłowa wartość.</li>
+<li><code>IndexError</code> – liczba całkowita nie jest indeksem sekwencji.</li>
+<li><code>KeyError</code> – obiekt nie jest kluczem słownika.</li>
+<li><code>NameError</code> – niezdefiniowana nazwa.</li>
+<li><code>ZeroDivisionError</code> – dzielenie przez zero.</li>
+<li><code>FileNotFoundError</code> – plik nie został odnaleziony.</li>
+<li><code>RecursionError</code> – przekroczony limit wywołań rekurencyjnych.</li>
+<li>…</li>
+</ul>
+<section id="ćwiczenie-i.1" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="ćwiczenie-i.1"><span class="header-section-number">1.2.1</span> Ćwiczenie I.1</h3>
+<p>Znajdź w dokumentacji Pythona opisy podanych wyżej wyjątków.</p>
+</section>
+<section id="ćwiczenie-i.2" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="ćwiczenie-i.2"><span class="header-section-number">1.2.2</span> Ćwiczenie I.2</h3>
+<p>Dla każdego z podanych wyżej wyjątków napisz program, który go zgłosi.</p>
+</section>
+</section>
+<section id="hierarchia-wyjątków" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="hierarchia-wyjątków"><span class="header-section-number">1.3</span> Hierarchia wyjątków</h2>
+<p>Wyjątki w Pythonie tworzą hierarchię opartą o dziedziczenie, przy czym klasa bazowa dla wszystkich wyjątków to <code>BaseException</code> (czyli z tej klasy wszystkie wyjątki dziedziczą). Poniżej podaję szczytowy fragment tej hierarchii (pełną listę znajdziesz <a href="https://docs.python.org/3/library/exceptions.html">tutaj</a>):</p>
+<ul>
+<li><code>BaseException</code> – klasa bazowa dla wszystkich wyjątków.
+<ul>
+<li><code>SystemExit</code> – wyjątek zgłaszany przez funkcję <code>sys.exit()</code>.</li>
+<li><code>KeyboardInterrupt</code> – wyjątek zgłaszany przez przerwanie wysłane z klawiatury (<code>Ctrl+C</code>).</li>
+<li><code>GeneratorExit</code> – wyjątek zgłaszany przez generator lub współprogram, gdy jest zamykany.</li>
+<li><code>Exception</code> – klasa bazowa dla wszystkich wyjątków z wyjątkiem <code>SystemExit</code>, <code>KeyboardInterrupt</code>, <code>BaseExceptionGroup</code> i <code>GeneratorExit</code>. Innymi słowy, wyjątki zgłaszane w trakcie normalnego działania programu dziedziczą z <code>Exception</code>.</li>
+</ul></li>
+</ul>
+<p>Znaczna większość wyjątków dziedziczy z klasy <code>Exception</code>. Niektóre wyjątki w tej grupie rozgałęziają się na dalsze, bardziej specjalistyczne. Przykładowo:</p>
+<ul>
+<li><code>BaseException</code>
+<ul>
+<li><code>Exception</code>
+<ul>
+<li><code>ArithmeticError</code>
+<ul>
+<li><code>ZeroDivisionError</code></li>
+<li><code>OverflowError</code></li>
+<li><code>FloatingPointError</code></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+<p>albo</p>
+<ul>
+<li><code>BaseException</code>
+<ul>
+<li><code>Exception</code>
+<ul>
+<li><code>LookupError</code>
+<ul>
+<li><code>IndexError</code></li>
+<li><code>KeyError</code></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="obsługa-wyjątków-instrukcja-try" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="obsługa-wyjątków-instrukcja-try"><span class="header-section-number">1.4</span> Obsługa wyjątków, instrukcja <code>try</code></h2>
+<p><code>try</code> jest instrukcją złożoną służącą do obsługi wyjątków. Formalny opis składni instrukcji <code>try</code> znajdziesz <a href="https://docs.python.org/3/reference/compound_stmts.html#the-try-statement">tutaj</a>.</p>
+<p>Fakt, że <code>try</code> jest instrukcją złożoną oznacza, że musi zawierać blok kodu z sekwencją instrukcji:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="cf">try</span>:</span>
+<span id="cb1-2"><a href="#cb1-2"></a>    <span class="co"># blok kodu</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Po bloku <code>try</code> następują bloki <code>except</code>, <code>else</code> i <code>finally</code> w różnych możliwych kombinacjach, przy czym <strong>musi</strong> wystąpić co najmniej jeden z bloków <code>except</code> lub <code>finally</code>.</p>
+<p>Rola poszczególnych bloków jest następująca:</p>
+<ul>
+<li><code>try</code> – blok, w którym może powstać wyjątek.</li>
+<li><code>except</code> – blok, który obsługuje wyjątek.</li>
+<li><code>else</code> – blok, który jest wykonywany, jeśli wyjątek nie powstał.</li>
+<li><code>finally</code> – blok, który jest wykonywany zawsze, niezależnie od tego czy wyjątek powstał czy nie.</li>
+</ul>
+<p>Blok <code>except</code> jest opcjonalny i może występować wielokrotnie. Jeśli <code>except</code> jest wielokrotny, to wyjątek zostanie obsłużony przez pierwszy pasujący <code>except</code>. Bloki <code>else</code> i <code>finally</code> są również opcjonalne. Jeśli bloku <code>except</code> nie ma, to po bloku <code>try</code> musi wystąpić blok <code>finally</code>.</p>
+<p>Nagłówek bloku <code>except</code> (tj. pierwszy wiersz bloku) zawiera nazwę wyjątku, który ma być obsłużony w bloku. Może to być nazwa klasy wyjątku lub krotka nazw klas wyjątków. Jeśli w bloku <code>except</code> nie ma nazwy wyjątku, to blok obsługuje wszystkie wyjątki (co jest zwykle złym pomysłem).</p>
+<p>Aby uzyskać dostęp do obiektu wyjątku (np. w celu wyświetlenia komunikatu o błędzie), stosujemy składnię <code>except &lt;wyjątek&gt; as &lt;zmienna&gt;</code>. Zmienna ta jest dostępna w bloku <code>except</code> i zawiera instancję zgłoszonego wyjątku. Przykładowo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> e:</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    <span class="bu">print</span>(<span class="ss">f"Wystąpił błąd: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zmienna <code>e</code> przechowuje tu obiekt wyjątku, którego tekstowa reprezentacja zwykle opisuje przyczynę błędu.</p>
+<section id="przykład-i.1" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="przykład-i.1"><span class="header-section-number">1.4.1</span> Przykład I.1</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># src/try_except_ZDE.py</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="cf">try</span>:</span>
+<span id="cb3-3"><a href="#cb3-3"></a>    x <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>(<span class="st">"Podaj liczbę: "</span>))</span>
+<span id="cb3-4"><a href="#cb3-4"></a>    y <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> x</span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="cf">except</span> <span class="pp">ValueError</span>:</span>
+<span id="cb3-6"><a href="#cb3-6"></a>    <span class="bu">print</span>(<span class="st">"To nie jest liczba całkowita."</span>)</span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="cf">except</span> <span class="pp">ZeroDivisionError</span>:</span>
+<span id="cb3-8"><a href="#cb3-8"></a>    <span class="bu">print</span>(<span class="st">"Nie dziel przez zero."</span>)</span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="cf">else</span>:</span>
+<span id="cb3-10"><a href="#cb3-10"></a>    <span class="bu">print</span>(<span class="st">"Wynik dzielenia to"</span>, y)</span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="cf">finally</span>:</span>
+<span id="cb3-12"><a href="#cb3-12"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Koniec."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="rola-dziedziczenia-w-obsłudze-wyjątków" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="rola-dziedziczenia-w-obsłudze-wyjątków"><span class="header-section-number">1.5</span> Rola dziedziczenia w obsłudze wyjątków</h2>
+<p>Dziedziczenie w Pythonie odgrywa istotną rolę w obsłudze wyjątków. Blok <code>except</code> obsługuje wyjątki, które są instancjami klas wyjątków wymienionych w nagłówku bloku. Jeśli wyjątek jest instancją klasy, która dziedziczy po klasie wymienionej w nagłówku bloku, to wyjątek również zostanie obsłużony.</p>
+<section id="przykład-i.2" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="przykład-i.2"><span class="header-section-number">1.5.1</span> Przykład I.2</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># src/try_except_AE.py</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="cf">try</span>:</span>
+<span id="cb4-3"><a href="#cb4-3"></a>    x <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>(<span class="st">"Podaj liczbę: "</span>))</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    y <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> x</span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="cf">except</span> (</span>
+<span id="cb4-6"><a href="#cb4-6"></a>    <span class="pp">ArithmeticError</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>):  <span class="co"># Obsłuży ZeroDivisionError, gdyż jest to podklasa ArithmeticError</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>    <span class="bu">print</span>(<span class="st">"Błąd obliczeniowy."</span>)</span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="cf">except</span> <span class="pp">ValueError</span>:</span>
+<span id="cb4-10"><a href="#cb4-10"></a>    <span class="bu">print</span>(<span class="st">"To nie jest liczba całkowita."</span>)</span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="cf">else</span>:</span>
+<span id="cb4-12"><a href="#cb4-12"></a>    <span class="bu">print</span>(<span class="st">"Wynik dzielenia to"</span>, y)</span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="cf">finally</span>:</span>
+<span id="cb4-14"><a href="#cb4-14"></a>    <span class="bu">print</span>(<span class="st">"Koniec."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="jak-obsługiwać-wyjątki" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="jak-obsługiwać-wyjątki"><span class="header-section-number">1.6</span> Jak obsługiwać wyjątki</h2>
+<p>Staramy się przechwytywać te wyjątki, dla których jesteśmy w stanie podjąć jakieś działania naprawcze. Wyjątek, którego nie jesteśmy w stanie w żaden sensowny sposób obsłużyć, powinien być naturalnie przekazywany na wyższy poziom programu.</p>
+<section id="przykład-i.3" class="level3" data-number="1.6.1">
+<h3 data-number="1.6.1" class="anchored" data-anchor-id="przykład-i.3"><span class="header-section-number">1.6.1</span> Przykład I.3</h3>
+<p>Program wczytuje od użytkownika liczbę całkowitą i wypisuje informację o jej parzystości.</p>
+<p>Wartość zwracana przez <code>input()</code> jest zawsze łańcuchem znaków, wartość tę konwertujemy na liczbę całkowitą za pomocą funkcji <code>int()</code>. Jednak użytkownik może podać coś innego niż liczba całkowita, coś czego <code>int()</code> nie jest w stanie skonwertować. Jeśli tak się stanie, to <code>int()</code> zgłosi wyjątek <code>ValueError</code>. Program nie jest w stanie podać liczby za użytkownika, może jednak wyświetlić komunikat o błędzie i ponowić próbę wczytania liczby. A zatem w tym przypadku wyjątek może być sensownie obsłużony.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># src/try_except_even_odd.py</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co">"""</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co">Program testuje, czy podana liczba całkowita jest parzysta czy nieparzysta.</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">Wymusza na użytkowniku podanie liczby całkowitej.</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co">"""</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb5-9"><a href="#cb5-9"></a>    <span class="cf">try</span>:  <span class="co"># blok, w którym może powstać wyjątek; staramy się, aby był jak najkrótszy</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>        x <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>(<span class="st">"Podaj liczbę: "</span>))</span>
+<span id="cb5-11"><a href="#cb5-11"></a>        <span class="cf">break</span>  <span class="co"># Jeśli udało się wczytać liczbę, to przerywamy pętlę.</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>    <span class="cf">except</span> <span class="pp">ValueError</span>:</span>
+<span id="cb5-13"><a href="#cb5-13"></a>        <span class="bu">print</span>(<span class="st">"To nie jest liczba całkowita."</span>)</span>
+<span id="cb5-14"><a href="#cb5-14"></a>        <span class="bu">print</span>(<span class="st">"Spróbuj jeszcze raz."</span>)</span>
+<span id="cb5-15"><a href="#cb5-15"></a></span>
+<span id="cb5-16"><a href="#cb5-16"></a><span class="cf">if</span> x <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb5-17"><a href="#cb5-17"></a>    <span class="bu">print</span>(<span class="ss">f"Liczba </span><span class="sc">{</span>x<span class="sc">}</span><span class="ss"> jest parzysta."</span>)</span>
+<span id="cb5-18"><a href="#cb5-18"></a><span class="cf">else</span>:</span>
+<span id="cb5-19"><a href="#cb5-19"></a>    <span class="bu">print</span>(<span class="ss">f"Liczba </span><span class="sc">{</span>x<span class="sc">}</span><span class="ss"> jest nieparzysta."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Warto wiedzieć, że <code>input()</code> może również zgłosić <code>EOFError</code>, jeśli użytkownik wyśle sygnał końca strumienia (Ctrl+D w systemach Unix, Ctrl+Z w Windows). W powyższym przykładzie pomijamy ten przypadek dla przejrzystości.</p>
+<hr>
+<p>W powyższym programie łatwo zgadnąć, jaki wyjątek zostanie zgłoszony, jeśli użytkownik poda coś innego niż liczba całkowita: <code>ValueError</code> bo typ argumentu jest prawidłowy, ale nie jest prawidłowa wartość. Czasem jednak trudno jest przewidzieć, jaki wyjątek zostanie zgłoszony. W takim przypadku:</p>
+<ul>
+<li>wykonaj eksperymenty testując różne scenariusze;</li>
+<li>zajrzyj do dokumentacji.</li>
+</ul>
+</section>
+</section>
+<section id="finally" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="finally"><span class="header-section-number">1.7</span> <code>finally</code></h2>
+<p>Blok <code>finally</code> jest wykonywany zawsze, niezależnie od tego czy wyjątek został zgłoszony czy nie, czy został obsłużony czy nie. Blok <code>finally</code> jest wykonywany nawet wtedy, gdy w bloku <code>try</code> wystąpił <code>return</code> lub <code>break</code>. Cel bloku <code>finally</code> to akcje czyszczące, które muszą być wykonane niezależnie od tego, co się stało w <code>try</code>, <code>except</code> i <code>else</code>. Typowym zastosowaniem <code>finally</code> jest zamykanie plików, zamykanie połączeń sieciowych, zwalnianie zasobów, itp.</p>
+<section id="ćwiczenie-i.3" class="level3" data-number="1.7.1">
+<h3 data-number="1.7.1" class="anchored" data-anchor-id="ćwiczenie-i.3"><span class="header-section-number">1.7.1</span> Ćwiczenie I.3</h3>
+<p>Napisz programy testujące działanie <code>finally</code> w różnych scenariuszach. Sprawdź, czy blok <code>finally</code> jest rzeczywiście zawsze wykonywany.</p>
+</section>
+<section id="przykład-i.4" class="level3" data-number="1.7.2">
+<h3 data-number="1.7.2" class="anchored" data-anchor-id="przykład-i.4"><span class="header-section-number">1.7.2</span> Przykład I.4</h3>
+<p>Nieco bardziej realistyczny przykład. Skrypt <code>file_size_v1.py</code> oblicza rozmiar pliku w bajtach. Działa z wiersza poleceń. Przyjmuje dokładnie jeden argument, który jest nazwą pliku. Wyświetla rozmiar pliku w bajtach lub komunikat o błędzie. Program obsługuje dwa wyjątki: <code>FileNotFoundError</code> i <code>OSError</code>. W bloku <code>finally</code> zostaje podjęta próba zamknięcia pliku w kolejnym bloku <code>try</code>. Postępujemy w ten sposób, ponieważ otwarcie pliku może się nie powieść i wtedy zmienna <code>f</code> nie będzie istnieć.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Path: src/file_size_v1.py</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="co">"""</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co">Program oblicza rozmiar pliku w bajtach.</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co">Sposób użycia:</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="co">python file_size_v1.py &lt;nazwa_pliku&gt;</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co">"""</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="im">import</span> sys</span>
+<span id="cb6-9"><a href="#cb6-9"></a></span>
+<span id="cb6-10"><a href="#cb6-10"></a></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="kw">def</span> file_size(file_name):</span>
+<span id="cb6-12"><a href="#cb6-12"></a>    <span class="co">"""Funkcja zwraca rozmiar pliku w bajtach.</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a></span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="co">    Zwróci None, jeśli plik nie istnieje lub wystąpił inny błąd.</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="co">    """</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a>    f <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a>    <span class="cf">try</span>:</span>
+<span id="cb6-18"><a href="#cb6-18"></a>        f <span class="op">=</span> <span class="bu">open</span>(file_name, <span class="st">"rb"</span>)</span>
+<span id="cb6-19"><a href="#cb6-19"></a>        size <span class="op">=</span> <span class="bu">len</span>(f.read())</span>
+<span id="cb6-20"><a href="#cb6-20"></a>    <span class="cf">except</span> <span class="pp">FileNotFoundError</span>:  <span class="co"># Plik nie istnieje.</span></span>
+<span id="cb6-21"><a href="#cb6-21"></a>        <span class="bu">print</span>(<span class="ss">f"Plik </span><span class="sc">{</span>file_name<span class="sc">}</span><span class="ss"> nie istnieje."</span>)</span>
+<span id="cb6-22"><a href="#cb6-22"></a>    <span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> e:  <span class="co"># Inny błąd systemowy.</span></span>
+<span id="cb6-23"><a href="#cb6-23"></a>        <span class="bu">print</span>(<span class="ss">f"Wystąpił błąd systemowy: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb6-24"><a href="#cb6-24"></a>    <span class="cf">else</span>:</span>
+<span id="cb6-25"><a href="#cb6-25"></a>        <span class="cf">return</span> size</span>
+<span id="cb6-26"><a href="#cb6-26"></a>    <span class="cf">finally</span>:</span>
+<span id="cb6-27"><a href="#cb6-27"></a>        <span class="cf">if</span> f <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:  <span class="co"># Plik został otwarty — zamykamy go.</span></span>
+<span id="cb6-28"><a href="#cb6-28"></a>            f.close()</span>
+<span id="cb6-29"><a href="#cb6-29"></a></span>
+<span id="cb6-30"><a href="#cb6-30"></a></span>
+<span id="cb6-31"><a href="#cb6-31"></a><span class="kw">def</span> main():</span>
+<span id="cb6-32"><a href="#cb6-32"></a>    <span class="cf">if</span> <span class="bu">len</span>(sys.argv) <span class="op">!=</span> <span class="dv">2</span>:  <span class="co"># Skrypt przyjmuje dokładnie jeden argument.</span></span>
+<span id="cb6-33"><a href="#cb6-33"></a>        <span class="bu">print</span>(<span class="st">"Sposób użycia: python file_size.py &lt;nazwa_pliku&gt;"</span>)</span>
+<span id="cb6-34"><a href="#cb6-34"></a>    <span class="cf">else</span>:</span>
+<span id="cb6-35"><a href="#cb6-35"></a>        file_name <span class="op">=</span> sys.argv[<span class="dv">1</span>]</span>
+<span id="cb6-36"><a href="#cb6-36"></a>        size <span class="op">=</span> file_size(file_name)</span>
+<span id="cb6-37"><a href="#cb6-37"></a>        <span class="cf">if</span> size <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:  <span class="co"># Jeśli brak pliku lub błąd systemowy, to size == None.</span></span>
+<span id="cb6-38"><a href="#cb6-38"></a>            <span class="bu">print</span>(<span class="ss">f"Rozmiar pliku </span><span class="sc">{</span>file_name<span class="sc">}</span><span class="ss"> to </span><span class="sc">{</span>size<span class="sc">}</span><span class="ss"> bajtów."</span>)</span>
+<span id="cb6-39"><a href="#cb6-39"></a>        <span class="cf">else</span>:</span>
+<span id="cb6-40"><a href="#cb6-40"></a>            <span class="bu">print</span>(<span class="st">"Nie udało się obliczyć rozmiaru pliku."</span>)</span>
+<span id="cb6-41"><a href="#cb6-41"></a></span>
+<span id="cb6-42"><a href="#cb6-42"></a></span>
+<span id="cb6-43"><a href="#cb6-43"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">"__main__"</span>:</span>
+<span id="cb6-44"><a href="#cb6-44"></a>    main()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zwróć uwagę, że <code>return</code> w bloku <code>else</code> nie zapobiega wykonaniu bloku <code>finally</code> — Python wykonuje <code>finally</code> przed faktycznym zwróceniem wartości z funkcji.</p>
+</section>
+</section>
+<section id="menedżer-kontekstu" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="menedżer-kontekstu"><span class="header-section-number">1.8</span> Menedżer kontekstu</h2>
+<p>Menedżer kontekstu to mechanizm, który umożliwia efektywne zarządzanie zasobami, takimi jak pliki, połączenia sieciowe, itp. Podstawowym przykładem zastosowania menedżera kontekstu jest otwieranie pliku. Wykorzystuje się do tego instrukcję <code>with</code> i funkcję <code>open()</code>. Użycie menedżera kontekstu jest zalecane w tej sytuacji, gdyż zapewnia ono, że plik zostanie zawsze zamknięty, nawet jeśli w trakcie pracy z plikiem zostanie zgłoszony wyjątek. Dzięki temu nie trzeba pisać bloku <code>finally</code> do zamykania pliku.</p>
+<section id="przykład-i.5" class="level3" data-number="1.8.1">
+<h3 data-number="1.8.1" class="anchored" data-anchor-id="przykład-i.5"><span class="header-section-number">1.8.1</span> Przykład I.5</h3>
+<p>Program <code>file_size_v2.py</code> jest modyfikacją programu <code>file_size_v1.py</code>. W tej wersji plik jest otwierany tą samą funkcją <code>open()</code>, ale w managerze kontekstu. Manager kontekstu dla funkcji <code>open()</code> zapewnia zamknięcie pliku w każdym przypadku, nawet jeśli w trakcie pracy z plikiem zostanie zgłoszony wyjątek.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># src/file_size_v2.py</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="co">"""</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co">Program oblicza rozmiar pliku w bajtach.</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="co">Sposób użycia:</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="co">python file_size_v2.py &lt;nazwa_pliku&gt;</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="co">"""</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="im">import</span> sys</span>
+<span id="cb7-9"><a href="#cb7-9"></a></span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="kw">def</span> file_size(file_name):</span>
+<span id="cb7-12"><a href="#cb7-12"></a>    <span class="co">"""Funkcja zwraca rozmiar pliku w bajtach.</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a></span>
+<span id="cb7-14"><a href="#cb7-14"></a><span class="co">    Zwróci None, jeśli plik nie istnieje lub wystąpił inny błąd.</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a><span class="co">    """</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a>    <span class="cf">try</span>:</span>
+<span id="cb7-17"><a href="#cb7-17"></a>        <span class="cf">with</span> <span class="bu">open</span>(file_name, <span class="st">"rb"</span>) <span class="im">as</span> f:</span>
+<span id="cb7-18"><a href="#cb7-18"></a>            size <span class="op">=</span> <span class="bu">len</span>(f.read())</span>
+<span id="cb7-19"><a href="#cb7-19"></a>    <span class="cf">except</span> <span class="pp">FileNotFoundError</span>:  <span class="co"># Plik nie istnieje.</span></span>
+<span id="cb7-20"><a href="#cb7-20"></a>        <span class="bu">print</span>(<span class="ss">f"Plik </span><span class="sc">{</span>file_name<span class="sc">}</span><span class="ss"> nie istnieje."</span>)</span>
+<span id="cb7-21"><a href="#cb7-21"></a>    <span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> e:  <span class="co"># Inny błąd systemowy.</span></span>
+<span id="cb7-22"><a href="#cb7-22"></a>        <span class="bu">print</span>(<span class="ss">f"Wystąpił błąd systemowy: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-23"><a href="#cb7-23"></a>    <span class="cf">else</span>:</span>
+<span id="cb7-24"><a href="#cb7-24"></a>        <span class="cf">return</span> size</span>
+<span id="cb7-25"><a href="#cb7-25"></a></span>
+<span id="cb7-26"><a href="#cb7-26"></a></span>
+<span id="cb7-27"><a href="#cb7-27"></a><span class="kw">def</span> main():</span>
+<span id="cb7-28"><a href="#cb7-28"></a>    <span class="cf">if</span> <span class="bu">len</span>(sys.argv) <span class="op">!=</span> <span class="dv">2</span>:  <span class="co"># Skrypt przyjmuje dokładnie jeden argument.</span></span>
+<span id="cb7-29"><a href="#cb7-29"></a>        <span class="bu">print</span>(<span class="st">"Sposób użycia: python file_size.py &lt;nazwa_pliku&gt;"</span>)</span>
+<span id="cb7-30"><a href="#cb7-30"></a>    <span class="cf">else</span>:</span>
+<span id="cb7-31"><a href="#cb7-31"></a>        file_name <span class="op">=</span> sys.argv[<span class="dv">1</span>]</span>
+<span id="cb7-32"><a href="#cb7-32"></a>        size <span class="op">=</span> file_size(file_name)</span>
+<span id="cb7-33"><a href="#cb7-33"></a>        <span class="cf">if</span> size <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:  <span class="co"># Jeśli brak pliku lub błąd systemowy, to size == None.</span></span>
+<span id="cb7-34"><a href="#cb7-34"></a>            <span class="bu">print</span>(<span class="ss">f"Rozmiar pliku </span><span class="sc">{</span>file_name<span class="sc">}</span><span class="ss"> to </span><span class="sc">{</span>size<span class="sc">}</span><span class="ss"> bajtów."</span>)</span>
+<span id="cb7-35"><a href="#cb7-35"></a>        <span class="cf">else</span>:</span>
+<span id="cb7-36"><a href="#cb7-36"></a>            <span class="bu">print</span>(<span class="st">"Nie udało się obliczyć rozmiaru pliku."</span>)</span>
+<span id="cb7-37"><a href="#cb7-37"></a></span>
+<span id="cb7-38"><a href="#cb7-38"></a></span>
+<span id="cb7-39"><a href="#cb7-39"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">"__main__"</span>:</span>
+<span id="cb7-40"><a href="#cb7-40"></a>    main()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="instrukcja-raise" class="level2" data-number="1.9">
+<h2 data-number="1.9" class="anchored" data-anchor-id="instrukcja-raise"><span class="header-section-number">1.9</span> Instrukcja <code>raise</code></h2>
+<p>Instrukcja <code>raise</code> służy do zgłaszania (rzucania) wyjątków. Może być użyta w dwóch postaciach:</p>
+<ul>
+<li><code>raise</code> – ponownie zgłasza wyjątek aktualnie obsługiwany w bloku <code>except</code>. Użycie <code>raise</code> bez argumentu poza blokiem <code>except</code> spowoduje zgłoszenie <code>RuntimeError</code>.</li>
+<li><code>raise &lt;wyjątek&gt;</code> – rzuca wyjątek, którego nazwa jest podana po słowie kluczowym <code>raise</code>.</li>
+</ul>
+<p>Gdy rzucany jest konkretny wyjątek, to można dodatkowo podać go z argumentem tekstowym stanowiącym opis sytuacji, w której wyjątek został zgłoszony.</p>
+<p>Pierwsza sytuacja:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="cf">try</span>:</span>
+<span id="cb8-2"><a href="#cb8-2"></a>    <span class="co"># blok kodu</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="cf">except</span> <span class="op">&lt;</span>wyjątek<span class="op">&gt;</span>:</span>
+<span id="cb8-4"><a href="#cb8-4"></a>    <span class="co"># blok obsługi wyjątku</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>    <span class="cf">raise</span>  <span class="co"># Ponownie zgłoś obsługiwany wyjątek.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Druga sytuacja:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a>x <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="cf">if</span> x <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb9-4"><a href="#cb9-4"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"x nie może być ujemne"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="przykład-i.6" class="level3" data-number="1.9.1">
+<h3 data-number="1.9.1" class="anchored" data-anchor-id="przykład-i.6"><span class="header-section-number">1.9.1</span> Przykład I.6</h3>
+<p>Funkcja obliczająca średnią arytmetyczną z sekwencji liczb. Funkcja zgłasza wyjątek <code>ValueError</code>, jeśli sekwencja jest pusta.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># src/average.py</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">def</span> average(seq):</span>
+<span id="cb10-3"><a href="#cb10-3"></a>    <span class="co">"""Funkcja zwraca średnią arytmetyczną elementów sekwencji."""</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>    <span class="cf">if</span> <span class="bu">len</span>(seq) <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb10-5"><a href="#cb10-5"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Sekwencja nie może być pusta."</span>)</span>
+<span id="cb10-6"><a href="#cb10-6"></a>    <span class="cf">return</span> <span class="bu">sum</span>(seq) <span class="op">/</span> <span class="bu">len</span>(seq)</span>
+<span id="cb10-7"><a href="#cb10-7"></a></span>
+<span id="cb10-8"><a href="#cb10-8"></a></span>
+<span id="cb10-9"><a href="#cb10-9"></a>seq <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>]</span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="cf">try</span>:</span>
+<span id="cb10-11"><a href="#cb10-11"></a>    <span class="bu">print</span>(<span class="ss">f"Średnia arytmetyczna: </span><span class="sc">{</span>average(seq)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="cf">except</span> <span class="pp">ValueError</span> <span class="im">as</span> e:</span>
+<span id="cb10-13"><a href="#cb10-13"></a>    <span class="bu">print</span>(<span class="st">"Błąd:"</span>, e)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="traceback" class="level2" data-number="1.10">
+<h2 data-number="1.10" class="anchored" data-anchor-id="traceback"><span class="header-section-number">1.10</span> Traceback</h2>
+<p>Traceback, czyli ślad stosu, to lista wywołań funkcji, które doprowadziły do zgłoszenia wyjątku. Traceback jest wyświetlany w momencie zgłoszenia wyjątku.</p>
+<section id="przykład-i.7" class="level3" data-number="1.10.1">
+<h3 data-number="1.10.1" class="anchored" data-anchor-id="przykład-i.7"><span class="header-section-number">1.10.1</span> Przykład I.7</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># src/traceback_example.py</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="kw">def</span> f():</span>
+<span id="cb11-3"><a href="#cb11-3"></a>    g()</span>
+<span id="cb11-4"><a href="#cb11-4"></a></span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="kw">def</span> g():</span>
+<span id="cb11-6"><a href="#cb11-6"></a>    h()</span>
+<span id="cb11-7"><a href="#cb11-7"></a></span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="kw">def</span> h():</span>
+<span id="cb11-9"><a href="#cb11-9"></a>    <span class="cf">raise</span> <span class="pp">Exception</span>(<span class="st">"Błąd"</span>)</span>
+<span id="cb11-10"><a href="#cb11-10"></a></span>
+<span id="cb11-11"><a href="#cb11-11"></a>f()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wynik działania programu:</p>
+<pre><code>Traceback (most recent call last):
+  File "/home/tomek/Dokumenty/PPwAD2/repo/src/traceback_example.py", line 11, in &lt;module&gt;
+    f()
+  File "/home/tomek/Dokumenty/PPwAD2/repo/src/traceback_example.py", line 3, in f
+    g()
+  File "/home/tomek/Dokumenty/PPwAD2/repo/src/traceback_example.py", line 6, in g
+    h()
+  File "/home/tomek/Dokumenty/PPwAD2/repo/src/traceback_example.py", line 9, in h
+    raise Exception("Błąd")
+Exception: Błąd</code></pre>
+<p>Widzimy listę wywołań funkcji, które doprowadziły do zgłoszenia wyjątku. Każde wywołanie jest opisane w formacie:</p>
+<pre><code>  File "&lt;nazwa_pliku&gt;", line &lt;numer_linii&gt;, in &lt;nazwa_funkcji lub modułu&gt;
+    &lt;kod&gt;</code></pre>
+<p>Kolejność elementów listy jest odwrotna do kolejności wywołań. Ostatni element listy to miejsce, w którym wyjątek został zgłoszony. W tym przypadku jest to funkcja <code>h()</code> w linii 11 pliku <code>traceback_example.py</code>.</p>
+<p>Traceback jest bardzo pomocny w diagnozowaniu błędów. Dzięki niemu można zlokalizować miejsce, w którym błąd został zgłoszony, a także zrozumieć, jaki był kontekst, w którym to się stało.</p>
+<p>Odkładanie się kolejnych wywołań funkcji na stosie bardzo ładnie wizualizuje serwis <a href="http://pythontutor.com/visualize.html#mode=edit">pythontutor.com</a>.</p>
+</section>
+<section id="ćwiczenie-i.4" class="level3" data-number="1.10.2">
+<h3 data-number="1.10.2" class="anchored" data-anchor-id="ćwiczenie-i.4"><span class="header-section-number">1.10.2</span> Ćwiczenie I.4</h3>
+<p>Wykonaj program <code>traceback_example.py</code> na <a href="http://pythontutor.com/visualize.html#mode=edit">pythontutor.com</a>. Zobacz, jak wygląda stos wywołań funkcji w momencie zgłoszenia wyjątku.</p>
+</section>
+</section>
+</section>
+<section id="do-poczytania" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Do poczytania</h1>
+<p><a href="https://docs.python.org/3/glossary.html#term-eafp">EAFP</a> vs <a href="https://docs.python.org/3/glossary.html#term-lbyl">LBYL</a></p>
+<ul>
+<li>EAFP – Easier to ask for forgiveness than permission.</li>
+<li>LBYL – Look before you leap.</li>
+</ul>
+<p>Oba terminy opisują dwa style programowania defensywnego. Porównajmy je na przykładzie dostępu do klucza w słowniku:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># LBYL — najpierw sprawdzamy, potem działamy</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="cf">if</span> <span class="st">"klucz"</span> <span class="kw">in</span> d:</span>
+<span id="cb14-3"><a href="#cb14-3"></a>    wartosc <span class="op">=</span> d[<span class="st">"klucz"</span>]</span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="cf">else</span>:</span>
+<span id="cb14-5"><a href="#cb14-5"></a>    wartosc <span class="op">=</span> <span class="st">"domyślna"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a><span class="co"># EAFP — próbujemy działać, a wyjątek obsługujemy gdy się pojawi</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="cf">try</span>:</span>
+<span id="cb15-3"><a href="#cb15-3"></a>    wartosc <span class="op">=</span> d[<span class="st">"klucz"</span>]</span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="cf">except</span> <span class="pp">KeyError</span>:</span>
+<span id="cb15-5"><a href="#cb15-5"></a>    wartosc <span class="op">=</span> <span class="st">"domyślna"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>W Pythonie idiomatyczne jest podejście EAFP, ponieważ obsługa wyjątków jest wbudowana w język i tania, a sprawdzanie warunków z góry bywa zawodne (np. plik może zniknąć między sprawdzeniem a otwarciem).</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<hr><center><small>Ostatnia aktualizacja: last-modified</small></center>
+
+
+
+
+</body></html>

@@ -4,7 +4,7 @@
     "href": "lab_I/lab_I.html",
     "title": "Lab I: Zadania na rozgrzewkę",
     "section": "",
-    "text": "Napisz program, który wczytuje od użytkownika liczbę sekund (dodatnią liczbę całkowitą) i przelicza ją na dni, godziny, minuty i sekundy.\nPrzykłady:\nPodaj liczbę sekund: 123456\n1 d, 10 h, 17 min, 36 s\nPodaj liczbę sekund: 3661\n0 d, 1 h, 1 min, 1 s\nPodaj liczbę sekund: 86400\n1 d, 0 h, 0 min, 0 s",
+    "text": "Te ćwiczenia poprzedzają pierwszy wykład. Ich celem jest odświeżenie niektórych elementów programowania w Pythonie znanych z pierwszego semestru.",
     "crumbs": [
       "Laboratoria",
       "Lab I: Zadania na rozgrzewkę"
@@ -14,8 +14,8 @@
     "objectID": "lab_I/lab_I.html#przeliczanie-sekund",
     "href": "lab_I/lab_I.html#przeliczanie-sekund",
     "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "",
-    "text": "Napisz program, który wczytuje od użytkownika liczbę sekund (dodatnią liczbę całkowitą) i przelicza ją na dni, godziny, minuty i sekundy.\nPrzykłady:\nPodaj liczbę sekund: 123456\n1 d, 10 h, 17 min, 36 s\nPodaj liczbę sekund: 3661\n0 d, 1 h, 1 min, 1 s\nPodaj liczbę sekund: 86400\n1 d, 0 h, 0 min, 0 s",
+    "section": "1 Przeliczanie sekund",
+    "text": "1 Przeliczanie sekund\nNapisz program, który wczytuje od użytkownika liczbę sekund (dodatnią liczbę całkowitą) i przelicza ją na dni, godziny, minuty i sekundy.\nPrzykłady:\nPodaj liczbę sekund: 123456\n1 d, 10 h, 17 min, 36 s\nPodaj liczbę sekund: 3661\n0 d, 1 h, 1 min, 1 s\nPodaj liczbę sekund: 86400\n1 d, 0 h, 0 min, 0 s",
     "crumbs": [
       "Laboratoria",
       "Lab I: Zadania na rozgrzewkę"

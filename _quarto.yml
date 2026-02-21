@@ -1,0 +1,49 @@
+project:
+  type: website
+  render:
+    - "index.qmd"
+    - "wyklad_*.qmd"
+    - "lab_*/*.qmd"
+  # Pliki, które mają zostać skopiowane bez renderowania
+  resources:
+    - "**/*.py"
+    - "!**/__pycache__/**"
+
+website:
+  title: "Podstawy programowania (AD) 2"
+  
+  # Pasek boczny - tutaj rzymskie cyfry wymagają ręcznego ułożenia
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - text: "Strona główna"
+        file: index.qmd
+      
+      - section: "Wykłady"
+        contents:
+          - file: wyklad_I.qmd
+          
+
+      - section: "Laboratoria"
+        collapse-level: 1
+        contents:
+          - file: lab_I/lab_I.qmd
+
+format:
+  html:
+    theme: united
+    toc: true
+    toc-title: "Spis treści"
+    number-sections: true
+    code-copy: true
+    code-line-numbers: true # Pomocne przy omawianiu kodu
+    syntax-highlight: pygments
+    # Stopka z datą modyfikacji
+    include-after-body: 
+      text: "<hr><center><small>Ostatnia aktualizacja: last-modified</small></center>"
+
+# Ignorujemy resztki po Jupyterze i pliki pomocnicze
+metadata-files: 
+  - "!**/*.ipynb"
+  - "!**/__pycache__/**"

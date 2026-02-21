@@ -1,0 +1,60 @@
+---
+title: "Podstawy programowania (AD) 2"
+---
+
+## Opis przedmiotu
+
+Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym. Zakres materiału:
+
+* obsługa błędów i wyjątków, testowanie kodu,
+* parametry i argumenty funkcji, instrukcja przypisania,
+* rekurencja,
+* funkcje wyższego rzędu i dekoratory,
+* programowanie obiektowe: klasy i obiekty,
+* protokół iteracji oraz iteratory.
+
+
+## Wykłady
+
+- [Wykład I: Błędy i wyjątki](wyklad_I.qmd)
+
+## Laboratoria
+
+- [Laboratorium 0: Zadania na rozgrzewkę](lab_I/lab_I.qmd)
+
+## Zaliczenie
+
+- Kolokwium na ostatnich zajęciach "przy komputerze". Ocena z kolokwium staje się oceną z ćwiczeń.
+- Egzamin pisemny w sesji. Ocena z egzaminu jest oceną z wykładu.
+- Do egzaminu należy przystąpić niezależnie od tego czy ćwiczenia zostały zaliczone.
+- Ocena w protokole ogólnym jest średnią z ocen z wykładu i ćwiczeń.
+
+## Polecane źródła
+
+### W internecie:
+
+- Oficjalna dokumentacja [https://docs.python.org/3/](https://docs.python.org/3/). W tym:
+  - Opis biblioteki standardowej: [https://docs.python.org/3/library/index.html](https://docs.python.org/3/library/index.html)
+  - Opis języka: [https://docs.python.org/3/reference/index.html](https://docs.python.org/3/reference/index.html)
+  - Tutorial: [https://docs.python.org/3/tutorial/index.html](https://docs.python.org/3/tutorial/index.html)
+  - HOWTOs: [https://docs.python.org/3/howto/index.html](https://docs.python.org/3/howto/index.html)
+- Rozbudowana ściąga z j. Python: [https://www.pythoncheatsheet.org/](https://www.pythoncheatsheet.org/)
+- Biblioteka standardowa w przykładach: [https://pymotw.com/3/](https://pymotw.com/3/)
+- YouTube jest pełen kursów z Pythona. Wysoką jakość i przekrój przez różne poziomy zaawansowania mają kursy na kanale [FreeCodeCamp](https://www.youtube.com/c/Freecodecamp/videos).
+
+### Książki
+
+- (!) Eric Matthes, [_Python. Instrukcje dla programisty_](https://www.worldcat.org/title/python-instrukcje-dla-programisty/oclc/971388806&referer=brief_results)
+- Mark Lutz, [_Python. Wprowadzenie_](https://www.worldcat.org/title/python-wprowadzenie/oclc/802156389&referer=brief_results)
+- (!!) Luciano Ramahlo, [_Zaawansowany Python_](https://helion.pl/ksiazki/zaawansowany-python-luciano-ramalho,e_07wh.htm#format/e)
+- (!) David Beazley, Brian K. Jones, [_Python. Receptury_](https://www.worldcat.org/title/python-receptury-wydanie-iii/oclc/968120217&referer=brief_results)
+- (!) Mark Pilgrim, [_Dive into Python_](https://diveintopython3.net/)
+
+### Do potrenowania
+
+Przykładowe serwisy do samodzielnej nauki:
+
+- [Exercism](https://exercism.io/)
+- [https://www.codewars.com/](https://www.codewars.com/)
+- [https://www.codingame.com/start](https://www.codingame.com/start)
+- [spoj.com](https://www.spoj.com/)

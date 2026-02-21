@@ -1,0 +1,156 @@
+---
+title: "Lab I: Zadania na rozgrzewkę"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+---
+
+
+
+
+## Przeliczanie sekund 
+
+Napisz program, który wczytuje od użytkownika liczbę sekund (dodatnią liczbę całkowitą) i przelicza ją na dni, godziny, minuty i sekundy.
+
+Przykłady:
+
+```
+Podaj liczbę sekund: 123456
+1 d, 10 h, 17 min, 36 s
+```
+
+```
+Podaj liczbę sekund: 3661
+0 d, 1 h, 1 min, 1 s
+```
+
+```
+Podaj liczbę sekund: 86400
+1 d, 0 h, 0 min, 0 s
+```
+
+***
+
+## Tabliczka mnożenia
+
+Napisz program wyświetlający tabliczkę mnożenia dla zadanej wartości $1\leqslant n\leqslant 15$. Liczbę $n$ wprowadza użytkownik.
+
+Przykład dla $n=9$:
+
+```
+1   2   3   4   5   6   7   8   9   
+2   4   6   8   10  12  14  16  18  
+3   6   9   12  15  18  21  24  27  
+4   8   12  16  20  24  28  32  36  
+5   10  15  20  25  30  35  40  45  
+6   12  18  24  30  36  42  48  54  
+7   14  21  28  35  42  49  56  63  
+8   16  24  32  40  48  56  64  72  
+9   18  27  36  45  54  63  72  81
+```
+
+W programie wykorzystaj formatowanie łańcuchów (metoda [`str.format()`](https://docs.python.org/3/library/stdtypes.html#str.format) lub [f-strings](https://docs.python.org/3/tutorial/inputoutput.html#tut-f-strings)).
+
+***
+
+## FizzBuzz
+
+Napisz program, który pobiera od użytkownika dodatnią liczbę całkowitą `n`. Następnie dla liczb od `1` do `n` program wyświetla:
+
+ * `FizzBuzz`, jeśli liczba jest podzielna przez `3` i `5`;
+ * `Fizz`, jeśli liczba jest podzielna przez `3`;
+ * `Buzz`, jeśli liczba jest podzielna przez `5`;
+ * liczbę, jeśli liczba nie jest podzielna przez `3` ani przez `5`.
+
+***
+
+## Proste statystyki
+
+Napisz funkcję `statystyki(dane)`, która przyjmuje niepustą listę liczb i zwraca krotkę `(minimum, maksimum, średnia)`. W ciele funkcji nie korzystaj z wbudowanych `min()`, `max()`, `sum()`.
+
+Napisz program, który wczytuje od użytkownika ciąg liczb (po jednej w wierszu; wczytywanie kończy się po podaniu pustego wiersza), zapisuje je na liście, a następnie wyświetla wynik działania funkcji `statystyki`.
+
+Przykład:
+
+```
+Podaj liczbę (Enter aby zakończyć): 4
+Podaj liczbę (Enter aby zakończyć): -2
+Podaj liczbę (Enter aby zakończyć): 7
+Podaj liczbę (Enter aby zakończyć): 1
+Podaj liczbę (Enter aby zakończyć): 
+Minimum: -2, Maksimum: 7, Średnia: 2.5
+```
+
+***
+
+## Szereg harmoniczny
+
+Napisz program, który wyświetli najmniejszą liczbę $n$, dla której
+
+$$
+1+\frac{1}{2}+\frac{1}{3}+\cdots+\frac{1}{n}\geqslant 10
+$$
+
+Taka liczba w ogóle istnieje? Zobacz [szereg harmoniczny](https://pl.wikipedia.org/wiki/Szereg_harmoniczny).
+
+***
+
+## Częstości liter
+
+Napisz funkcję `f_count(text)`, która przyjmuje napis i zwraca słownik, w którym kluczami są litery (małe), a wartościami — liczby ich wystąpień w tekście. Znaki niebędące literami pomiń.
+
+Napisz program, który wczytuje od użytkownika wiersz tekstu, a następnie wyświetla rozkład częstości liter posortowany alfabetycznie.
+
+Przykład:
+
+```
+Podaj tekst: Ala ma kota
+a: 4
+k: 1
+l: 1
+m: 1
+o: 1
+t: 1
+```
+
+***
+
+## Równanie sześcienne
+
+Niech $p$, $q$ będą dodatnimi liczbami całkowitymi. Napisz program, który wyznaczy liczbę całkowitą $x$ spełniającą równość
+
+$$
+x^3+px=q
+$$
+
+lub stwierdzi, że takiej liczby nie ma.
+
+Przykłady:
+
+* $p=1$, $q=10$ ==> $x=2$;
+* $p=123456789$, $q=963418328815428240221153430$ ==> $x=987654321$;
+* $p=2$ lub $p=3$, $q=10$ ==> brak rozwiązania;
+* $p=123$, $q=56798$ ==> brak rozwiązania.
+
+***
+
+## Symulacja dryfu genetycznego
+
+[Dryf genetyczny](https://en.wikipedia.org/wiki/Genetic_drift) to zjawisko polegające na losowej zmianie częstości allelu w populacji. Jest to ważny przykład procesu prowadzącego do ewolucji nieadaptatywnej. 
+
+Celem tego ćwiczenia jest stworzenie symulacji ilustrującej działanie dryfu genetycznego.
+
+Niech *A*, *a* będą dwoma allelami (wariantami) jednego genu. Zakładamy, że:
+* Dana jest populacja osobników, w której każdy osobnik ma dwie kopie genu w dowolnych wariantach (czyli są to osobniki diploidalne). 
+* Zmiana jednego allelu na drugi nie ma żadnego znaczenia adaptacyjnego. 
+* W populacji pokolenia nie zachodzą na siebie, kojarzenie jest płciowe i całkowicie losowe a każda para organizmów rodzicielskich ma dwa organizmy potomne. 
+* W organizmie potomnym warianty genu dobierane są losowo, z równym prawdopodobieństwem, po jednym od każdego z organizmów rodzicielskich. Przykład: dla organizmów rodzicielskich o genotypach *aA*, *AA*, mamy cztery możliwe genotypy potomne *aA*, *aA*, *AA*, *AA* odpowiadające wylosowaniu pozycji (1, 1), (1, 2), (2, 1), (2, 2).
+
+Napisz program, który losowo utworzy populację o ustalonej z góry liczbie osobników (najlepiej parzystej) a następnie wykona dla tej populacji symulację pewnej liczby cykli życiowych. 
+
+Zaobserwuj:
+
+1. Jak zmienia się częstość alleli w populacji?
+2. Jak zmiana ta zależy od początkowej liczby osobników? Jak od liczby pokoleń?
+
+Zobacz link [Time to fixation or loss](https://en.wikipedia.org/wiki/Genetic_drift#Time_to_fixation_or_loss). Sprawdź jak zawarte tam przewidywania mają się do rezultatów Twojej symulacji.
+

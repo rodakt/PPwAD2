@@ -1,4 +1,4 @@
-# src/file_size_v1.py
+# Path: src/file_size_v1.py
 """
 Program oblicza rozmiar pliku w bajtach.
 
@@ -13,6 +13,7 @@ def file_size(file_name):
 
     Zwróci None, jeśli plik nie istnieje lub wystąpił inny błąd.
     """
+    f = None
     try:
         f = open(file_name, "rb")
         size = len(f.read())
@@ -23,12 +24,8 @@ def file_size(file_name):
     else:
         return size
     finally:
-        try:  # Próba zamknięcia pliku, na pewno zostanie podjęta.
+        if f is not None:  # Plik został otwarty — zamykamy go.
             f.close()
-        except (
-            UnboundLocalError
-        ):  # Zmienna f nie istnieje, bo nie udało się otworzyć pliku.
-            pass
 
 
 def main():

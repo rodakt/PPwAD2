@@ -13213,7 +13213,7 @@ div#notebook {
 <li><code>SystemExit</code> -- wyjątek zgłaszany przez funkcję <code>sys.exit()</code>.</li>
 <li><code>KeyboardInterrupt</code> -- wyjątek zgłaszany przez przerwanie wysłane z klawiatury (<code>Ctrl+C</code>).</li>
 <li><code>GeneratorExit</code> -- wyjątek zgłaszany przez generator lub współprogram, gdy jest zamykany.</li>
-<li><code>Exception</code> -- klasa bazowa dla wszystkich wyjątków, które nie są błędami systemowymi.</li>
+<li><code>Exception</code> -- klasa bazowa dla wszystkich wyjątków z wyjątkiem <code>SystemExit</code>, <code>KeyboardInterrupt</code>, <code>BaseExceptionGroup</code> i <code>GeneratorExit</code>. Innymi słowy, wyjątki zgłaszane w trakcie normalnego działania programu dziedziczą z <code>Exception</code>.</li>
 </ul>
 </li>
 </ul>
@@ -13267,6 +13267,11 @@ div#notebook {
 </ul>
 <p>Blok <code>except</code> jest opcjonalny i może występować wielokrotnie. Jeśli <code>except</code> jest wielokrotny, to wyjątek zostanie obsłużony przez pierwszy pasujący <code>except</code>. Bloki <code>else</code> i <code>finally</code> są również opcjonalne. Jeśli bloku <code>except</code> nie ma, to po bloku <code>try</code> musi wystąpić blok <code>finally</code>.</p>
 <p>Nagłówek bloku <code>except</code> (tj. pierwszy wiersz bloku) zawiera nazwę wyjątku, który ma być obsłużony w bloku. Może to być nazwa klasy wyjątku lub krotka nazw klas wyjątków. Jeśli w bloku <code>except</code> nie ma nazwy wyjątku, to blok obsługuje wszystkie wyjątki (co jest zwykle złym pomysłem).</p>
+<p>Aby uzyskać dostęp do obiektu wyjątku (np. w celu wyświetlenia komunikatu o błędzie), stosujemy składnię <code>except &lt;wyjątek&gt; as &lt;zmienna&gt;</code>. Zmienna ta jest dostępna w bloku <code>except</code> i zawiera instancję zgłoszonego wyjątku. Przykładowo:</p>
+<div class="highlight"><pre><span></span><span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Wystąpił błąd: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+<p>Zmienna <code>e</code> przechowuje tu obiekt wyjątku, którego tekstowa reprezentacja zwykle opisuje przyczynę błędu.</p>
 </div>
 </div>
 </div>
@@ -13342,6 +13347,7 @@ Jeśli tak się stanie, to <code>int()</code> zgłosi wyjątek <code>ValueError<
 <span class="k">else</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Liczba </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> jest nieparzysta."</span><span class="p">)</span>
 </pre></div>
+<p>Warto wiedzieć, że <code>input()</code> może również zgłosić <code>EOFError</code>, jeśli użytkownik wyśle sygnał końca strumienia (Ctrl+D w systemach Unix, Ctrl+Z w Windows). W powyższym przykładzie pomijamy ten przypadek dla przejrzystości.</p>
 <hr/>
 <p>W powyższym programie łatwo zgadnąć, jaki wyjątek zostanie zgłoszony, jeśli użytkownik poda coś innego niż liczba całkowita: <code>ValueError</code> bo typ argumentu jest prawidłowy, ale nie jest prawidłowa wartość. Czasem jednak trudno jest przewidzieć, jaki wyjątek zostanie zgłoszony. W takim przypadku:</p>
 <ul>
@@ -13384,6 +13390,7 @@ Jeśli tak się stanie, to <code>int()</code> zgłosi wyjątek <code>ValueError<
 
 <span class="sd">    Zwróci None, jeśli plik nie istnieje lub wystąpił inny błąd.</span>
 <span class="sd">    """</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span>
         <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
@@ -13394,12 +13401,8 @@ Jeśli tak się stanie, to <code>int()</code> zgłosi wyjątek <code>ValueError<
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">size</span>
     <span class="k">finally</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>  <span class="c1"># Próba zamknięcia pliku, na pewno zostanie podjęta.</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Plik został otwarty — zamykamy go.</span>
             <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">except</span> <span class="p">(</span>
-            <span class="ne">UnboundLocalError</span>
-        <span class="p">):</span>  <span class="c1"># Zmienna f nie istnieje, bo nie udało się otworzyć pliku.</span>
-            <span class="k">pass</span>
 
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
@@ -13423,7 +13426,14 @@ Jeśli tak się stanie, to <code>int()</code> zgłosi wyjątek <code>ValueError<
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Manager-kontekstu">Manager kontekstu<a class="anchor-link" href="#Manager-kontekstu">¶</a></h2><p>Manager kontekstu to mechanizm, który umożliwia efektywne zarządzanie zasobami, takimi jak pliki, połączenia sieciowe, itp. Podstawowym przykładem zastosowania managera kontekstu jest otwieranie pliku. Wykorzystuje się do tego instrukcję <code>with</code> i funkcję <code>open()</code>. Użycie managera kontekstu jest zalecane w tej sytuacji, gdyż zapewnia ono, że plik zostanie zawsze zamknięty, nawet jeśli w trakcie pracy z plikiem zostanie zgłoszony wyjątek. Dzięki temu nie trzeba pisać bloku <code>finally</code> do zamykania pliku.</p>
+<p>Zwróć uwagę, że <code>return</code> w bloku <code>else</code> nie zapobiega wykonaniu bloku <code>finally</code> — Python wykonuje <code>finally</code> przed faktycznym zwróceniem wartości z funkcji.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Mened%C5%BCer-kontekstu">Menedżer kontekstu<a class="anchor-link" href="#Mened%C5%BCer-kontekstu">¶</a></h2><p>Menedżer kontekstu to mechanizm, który umożliwia efektywne zarządzanie zasobami, takimi jak pliki, połączenia sieciowe, itp. Podstawowym przykładem zastosowania menedżera kontekstu jest otwieranie pliku. Wykorzystuje się do tego instrukcję <code>with</code> i funkcję <code>open()</code>. Użycie menedżera kontekstu jest zalecane w tej sytuacji, gdyż zapewnia ono, że plik zostanie zawsze zamknięty, nawet jeśli w trakcie pracy z plikiem zostanie zgłoszony wyjątek. Dzięki temu nie trzeba pisać bloku <code>finally</code> do zamykania pliku.</p>
 </div>
 </div>
 </div>
@@ -13480,7 +13490,7 @@ Jeśli tak się stanie, to <code>int()</code> zgłosi wyjątek <code>ValueError<
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Instrukcja-raise">Instrukcja <code>raise</code><a class="anchor-link" href="#Instrukcja-raise">¶</a></h2><p>Instrukcja <code>raise</code> służy do zgłaszania (rzucania) wyjątków. Może być użyta w dwóch postaciach:</p>
 <ul>
-<li><code>raise</code> -- rzuca ostatni wyjątek, który został zgłoszony w trakcie działania programu.</li>
+<li><code>raise</code> -- ponownie zgłasza wyjątek aktualnie obsługiwany w bloku <code>except</code>. Użycie <code>raise</code> bez argumentu poza blokiem <code>except</code> spowoduje zgłoszenie <code>RuntimeError</code>.</li>
 <li><code>raise &lt;wyjątek&gt;</code> -- rzuca wyjątek, którego nazwa jest podana po słowie kluczowym <code>raise</code>.</li>
 </ul>
 <p>Gdy rzucany jest konkretny wyjątek, to można dodatkowo podać go z argumentem tekstowym stanowiącym opis sytuacji, w której wyjątek został zgłoszony.</p>
@@ -13489,7 +13499,7 @@ Jeśli tak się stanie, to <code>int()</code> zgłosi wyjątek <code>ValueError<
     <span class="c1"># blok kodu</span>
 <span class="k">except</span> <span class="o">&lt;</span><span class="n">wyjątek</span><span class="o">&gt;</span><span class="p">:</span>
     <span class="c1"># blok obsługi wyjątku</span>
-    <span class="k">raise</span> <span class="c1"># Rzuć ostatni wyjątek.</span>
+    <span class="k">raise</span>  <span class="c1"># Ponownie zgłoś obsługiwany wyjątek.</span>
 </pre></div>
 <p>Druga sytuacja:</p>
 <div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -13568,6 +13578,20 @@ Exception: Błąd
 <li>EAFP -- Easier to ask for forgiveness than permission.</li>
 <li>LBYL -- Look before you leap.</li>
 </ul>
+<p>Oba terminy opisują dwa style programowania defensywnego. Porównajmy je na przykładzie dostępu do klucza w słowniku:</p>
+<div class="highlight"><pre><span></span><span class="c1"># LBYL — najpierw sprawdzamy, potem działamy</span>
+<span class="k">if</span> <span class="s2">"klucz"</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+    <span class="n">wartosc</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"klucz"</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">wartosc</span> <span class="o">=</span> <span class="s2">"domyślna"</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="c1"># EAFP — próbujemy działać, a wyjątek obsługujemy gdy się pojawi</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">wartosc</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"klucz"</span><span class="p">]</span>
+<span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+    <span class="n">wartosc</span> <span class="o">=</span> <span class="s2">"domyślna"</span>
+</pre></div>
+<p>W Pythonie idiomatyczne jest podejście EAFP, ponieważ obsługa wyjątków jest wbudowana w język i tania, a sprawdzanie warunków z góry bywa zawodne (np. plik może zniknąć między sprawdzeniem a otwarciem).</p>
 </div>
 </div>
 </div>

@@ -84,3 +84,6 @@ Thumbs.db
 
 # files containing `solved` in the name
 *solved*
+
+# folder markdown
+markdown/

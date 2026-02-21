@@ -2,13 +2,10 @@
 def f():
     g()
 
-
 def g():
     h()
 
-
 def h():
     raise Exception("Błąd")
-
 
 f()

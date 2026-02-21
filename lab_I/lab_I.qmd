@@ -4,8 +4,7 @@ subtitle: Podstawy programowania (AD) 2
 author: Tomasz Rodak
 ---
 
-
-
+Te ćwiczenia poprzedzają pierwszy wykład. Ich celem jest odświeżenie niektórych elementów programowania w Pythonie znanych z pierwszego semestru. 
 
 ## Przeliczanie sekund 
 

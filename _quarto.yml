@@ -29,6 +29,7 @@ website:
         collapse-level: 1
         contents:
           - file: lab_I/lab_I.qmd
+          - file: lab_II/lab_II.qmd
 
 format:
   html:

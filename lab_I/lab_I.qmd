@@ -33,9 +33,11 @@ Podaj liczbę sekund: 86400
 
 Napisz program wyświetlający tabliczkę mnożenia dla zadanej wartości $1\leqslant n\leqslant 15$. Liczbę $n$ wprowadza użytkownik.
 
-Przykład dla $n=9$:
+Przykład:
 
 ```
+Podaj n: 9
+
 1   2   3   4   5   6   7   8   9   
 2   4   6   8   10  12  14  16  18  
 3   6   9   12  15  18  21  24  27  

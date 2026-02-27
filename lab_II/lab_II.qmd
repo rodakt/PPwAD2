@@ -1,0 +1,206 @@
+---
+title: "Lab II: Błędy i wyjątki"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+---
+
+***
+
+## Iloraz liczb całkowitych
+
+Napisz program, który pobiera od użytkownika dwie liczby całkowite i oblicza ich iloraz. Program powinien obsługiwać dwa rodzaje wyjątków:
+
+* `ValueError` — jeśli użytkownik wprowadzi tekst zamiast liczby całkowitej,
+* `ZeroDivisionError` — jeśli użytkownik wprowadzi jako dzielnik liczbę 0.
+
+Program powinien wyświetlać komunikat o błędzie odpowiedni do typu wyjątku.
+
+Przykłady:
+
+```
+a: 10
+b: 0
+Błąd: dzielenie przez zero.
+```
+
+```
+a: 10
+b: abc
+Błąd: nieprawidłowa wartość.
+```
+
+```
+a: 10
+b: 4
+10 / 4 = 2.5
+```
+
+***
+
+## Hierarchia wyjątków arytmetycznych
+
+Zapoznaj się z fragmentem hierarchii wyjątków arytmetycznych w Pythonie:
+
+```
+BaseException
+  └── Exception
+        └── ArithmeticError
+              ├── ZeroDivisionError
+              ├── OverflowError
+              └── FloatingPointError
+```
+
+Napisz program, który oblicza wyrażenie `2.0 ** x / (x - 3)` dla liczby `x` podanej przez użytkownika. Obsłuż wyjątek `ArithmeticError` jednym blokiem `except`. Przetestuj program dla:
+
+* `x = 3` (dzielenie przez zero — `ZeroDivisionError`),
+* `x = 1024` (przepełnienie — `OverflowError`, bo `2.0 ** 1024` przekracza maksymalną wartość `float`),
+* `x = 5` (poprawne dane).
+
+
+Przykłady:
+
+```
+Podaj x: 3
+Błąd arytmetyczny: float division by zero
+```
+
+```
+Podaj x: 1024
+Błąd arytmetyczny: (34, 'Numerical result out of range')
+```
+
+```
+Podaj x: 5
+2.0 ** 5 / (5 - 3) = 16.0
+```
+
+***
+
+## Suma i średnia z powtórzeniem
+
+Napisz program, który pobiera od użytkownika ciąg liczb całkowitych rozdzielonych spacjami i wyświetla ich sumę oraz średnią arytmetyczną. Program powinien:
+
+* wymuszać wprowadzenie danych w poprawnym formacie — po podaniu niepoprawnych danych ponownie żąda ich wprowadzenia,
+* dawać użytkownikowi trzy szanse na podanie prawidłowych danych; po wyczerpaniu szans program kończy działanie stosownym komunikatem,
+* korzystać z bloku `else`, który wykonuje się wyłącznie wtedy, gdy nie wystąpił wyjątek.
+
+Zastanów się: ile wynosi średnia arytmetyczna ciągu pustego?
+
+Przykład:
+
+```
+Liczby (próba 1/3): 4 3 abc
+Błąd: nieprawidłowe dane.
+Liczby (próba 2/3): 4 3 2 1 5
+Suma: 15, Średnia: 3.0
+```
+
+***
+
+## Symulacja połączenia sieciowego
+
+Blok `finally` jest wykonywany zawsze — niezależnie od tego, czy wyjątek wystąpił, czy nie, a nawet gdy wyjątek nie jest obsługiwany w tej samej funkcji, lecz propaguje się do wywołującego.
+
+Napisz funkcję `polacz(adres)`, która symuluje nawiązywanie połączenia sieciowego:
+
+* wypisuje `Łączenie z <adres>...`,
+* wywołuje `time.sleep(t)`, gdzie `t` to losowa liczba rzeczywista z przedziału $[0, 1)$,
+* jeśli `t` przekracza próg `0.6`, zgłasza `RuntimeError("Przekroczono limit czasu")`,
+* w przeciwnym razie wypisuje `Połączono z <adres>.`,
+* w bloku `finally` wypisuje `Zamknięto połączenie z <adres>.`
+
+Napisz program, który w pętli wywołuje `polacz()` dla dziesięciu adresów `192.168.0.0`, ..., `192.168.0.9`, obsługując `RuntimeError` stosownym komunikatem.
+
+Przykład (fragment):
+
+```
+Łączenie z 192.168.0.0...
+Połączono z 192.168.0.0.
+Zamknięto połączenie z 192.168.0.0.
+Łączenie z 192.168.0.1...
+Zamknięto połączenie z 192.168.0.1.
+Błąd: przekroczono limit czasu.
+```
+
+W jakiej kolejności pojawiają się komunikaty gdy połączenie się nie powiedzie?
+
+***
+
+## Silnia z walidacją argumentu
+
+Napisz funkcję `silnia(n)`, która oblicza $n!$ dla nieujemnych liczb całkowitych. Funkcja powinna zgłaszać:
+
+* `TypeError` — jeśli `n` nie jest liczbą całkowitą,
+* `ValueError` — jeśli `n` jest ujemna.
+
+Do sprawdzenia typu użyj wbudowanej funkcji `isinstance(n, int)`, która zwraca `True`, jeśli `n` jest instancją klasy `int`.
+
+Napisz program, który wczytuje `n` od użytkownika i wywołuje `silnia(n)`, obsługując oba wyjątki stosownymi komunikatami. Zwróć uwagę, że `input()` zawsze zwraca łańcuch znaków — musisz samodzielnie zdecydować, jak i kiedy dokonać konwersji na liczbę, by móc przetestować oba wyjątki.
+
+Przykłady:
+
+```
+Podaj n: -3
+Błąd: argument musi być nieujemny.
+```
+
+```
+Podaj n: 3.5
+Błąd: argument musi być liczbą całkowitą.
+```
+
+```
+Podaj n: 5
+5! = 120
+```
+
+***
+
+## Statystyki pliku tekstowego
+
+Napisz program, który wczytuje ścieżkę do pliku tekstowego podaną przez użytkownika i wyświetla:
+
+* liczbę wierszy,
+* liczbę słów,
+* liczbę znaków (bez znaku nowej linii).
+
+Użyj menedżera kontekstu (`with`) i jawnie określ kodowanie `encoding='utf-8'`. Program powinien obsługiwać wyjątek `FileNotFoundError`, wyświetlając komunikat `Brak pliku: <nazwa_pliku>`.
+
+Przykład:
+
+```
+Podaj ścieżkę do pliku: wiersz.txt
+Wiersze: 4
+Słowa:   26
+Znaki:   142
+```
+
+***
+
+## Inspekcja pliku binarnego
+
+Napisz program, który wczytuje ścieżkę do pliku binarnego i wyświetla:
+
+* rozmiar pliku w bajtach,
+* pierwszych 16 bajtów w reprezentacji szesnastkowej (hex),
+* czy plik jest plikiem PNG — plik PNG zaczyna się od sygnatury `b'\x89PNG\r\n\x1a\n'` (8 bajtów).
+
+Użyj trybu `'rb'` w funkcji `open()` i menedżera kontekstu. Obsłuż `FileNotFoundError`.
+
+Przykład dla pliku PNG:
+
+```
+Podaj ścieżkę do pliku: obrazek.png
+Rozmiar: 24831 bajtów
+Pierwsze 16 bajtów: 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52
+Sygnatura PNG: TAK
+```
+
+Przykład dla innego pliku:
+
+```
+Podaj ścieżkę do pliku: dane.bin
+Rozmiar: 512 bajtów
+Pierwsze 16 bajtów: 4d 5a 90 00 03 00 00 00 04 00 00 00 ff ff 00 00
+Sygnatura PNG: NIE
+```

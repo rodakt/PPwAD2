@@ -8,7 +8,7 @@
 
 <meta name="author" content="Tomasz Rodak">
 
-<title>Lab I: Zadania na rozgrzewkę – Podstawy programowania (AD) 2</title>
+<title>Lab II: Błędy i wyjątki – Podstawy programowania (AD) 2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -111,7 +111,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Lab I: Zadania na rozgrzewkę</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_II/lab_II.html">Lab II: Błędy i wyjątki</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -170,13 +170,13 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../lab_I/lab_I.html" class="sidebar-item-text sidebar-link active">
+  <a href="../lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Lab I: Zadania na rozgrzewkę</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../lab_II/lab_II.html" class="sidebar-item-text sidebar-link">
+  <a href="../lab_II/lab_II.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Lab II: Błędy i wyjątki</span></a>
   </div>
 </li>
@@ -192,23 +192,22 @@ window.Quarto = {
     <h2 id="toc-title">Spis treści</h2>
    
   <ul>
-  <li><a href="#przeliczanie-sekund" id="toc-przeliczanie-sekund" class="nav-link active" data-scroll-target="#przeliczanie-sekund"><span class="header-section-number">1</span> Przeliczanie sekund</a></li>
-  <li><a href="#tabliczka-mnożenia" id="toc-tabliczka-mnożenia" class="nav-link" data-scroll-target="#tabliczka-mnożenia"><span class="header-section-number">2</span> Tabliczka mnożenia</a></li>
-  <li><a href="#fizzbuzz" id="toc-fizzbuzz" class="nav-link" data-scroll-target="#fizzbuzz"><span class="header-section-number">3</span> FizzBuzz</a></li>
-  <li><a href="#proste-statystyki" id="toc-proste-statystyki" class="nav-link" data-scroll-target="#proste-statystyki"><span class="header-section-number">4</span> Proste statystyki</a></li>
-  <li><a href="#szereg-harmoniczny" id="toc-szereg-harmoniczny" class="nav-link" data-scroll-target="#szereg-harmoniczny"><span class="header-section-number">5</span> Szereg harmoniczny</a></li>
-  <li><a href="#częstości-liter" id="toc-częstości-liter" class="nav-link" data-scroll-target="#częstości-liter"><span class="header-section-number">6</span> Częstości liter</a></li>
-  <li><a href="#równanie-sześcienne" id="toc-równanie-sześcienne" class="nav-link" data-scroll-target="#równanie-sześcienne"><span class="header-section-number">7</span> Równanie sześcienne</a></li>
-  <li><a href="#symulacja-dryfu-genetycznego" id="toc-symulacja-dryfu-genetycznego" class="nav-link" data-scroll-target="#symulacja-dryfu-genetycznego"><span class="header-section-number">8</span> Symulacja dryfu genetycznego</a></li>
+  <li><a href="#iloraz-liczb-całkowitych" id="toc-iloraz-liczb-całkowitych" class="nav-link active" data-scroll-target="#iloraz-liczb-całkowitych"><span class="header-section-number">1</span> Iloraz liczb całkowitych</a></li>
+  <li><a href="#hierarchia-wyjątków-arytmetycznych" id="toc-hierarchia-wyjątków-arytmetycznych" class="nav-link" data-scroll-target="#hierarchia-wyjątków-arytmetycznych"><span class="header-section-number">2</span> Hierarchia wyjątków arytmetycznych</a></li>
+  <li><a href="#suma-i-średnia-z-powtórzeniem" id="toc-suma-i-średnia-z-powtórzeniem" class="nav-link" data-scroll-target="#suma-i-średnia-z-powtórzeniem"><span class="header-section-number">3</span> Suma i średnia z powtórzeniem</a></li>
+  <li><a href="#symulacja-połączenia-sieciowego" id="toc-symulacja-połączenia-sieciowego" class="nav-link" data-scroll-target="#symulacja-połączenia-sieciowego"><span class="header-section-number">4</span> Symulacja połączenia sieciowego</a></li>
+  <li><a href="#silnia-z-walidacją-argumentu" id="toc-silnia-z-walidacją-argumentu" class="nav-link" data-scroll-target="#silnia-z-walidacją-argumentu"><span class="header-section-number">5</span> Silnia z walidacją argumentu</a></li>
+  <li><a href="#statystyki-pliku-tekstowego" id="toc-statystyki-pliku-tekstowego" class="nav-link" data-scroll-target="#statystyki-pliku-tekstowego"><span class="header-section-number">6</span> Statystyki pliku tekstowego</a></li>
+  <li><a href="#inspekcja-pliku-binarnego" id="toc-inspekcja-pliku-binarnego" class="nav-link" data-scroll-target="#inspekcja-pliku-binarnego"><span class="header-section-number">7</span> Inspekcja pliku binarnego</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Lab I: Zadania na rozgrzewkę</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_II/lab_II.html">Lab II: Błędy i wyjątki</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Lab I: Zadania na rozgrzewkę</h1>
+<h1 class="title">Lab II: Błędy i wyjątki</h1>
 <p class="subtitle lead">Podstawy programowania (AD) 2</p>
 </div>
 
@@ -232,112 +231,142 @@ window.Quarto = {
 </header>
 
 
-<p>Te ćwiczenia poprzedzają pierwszy wykład. Ich celem jest odświeżenie niektórych elementów programowania w Pythonie znanych z pierwszego semestru.</p>
-<section id="przeliczanie-sekund" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="przeliczanie-sekund"><span class="header-section-number">1</span> Przeliczanie sekund</h2>
-<p>Napisz program, który wczytuje od użytkownika liczbę sekund (dodatnią liczbę całkowitą) i przelicza ją na dni, godziny, minuty i sekundy.</p>
-<p>Przykłady:</p>
-<pre><code>Podaj liczbę sekund: 123456
-1 d, 10 h, 17 min, 36 s</code></pre>
-<pre><code>Podaj liczbę sekund: 3661
-0 d, 1 h, 1 min, 1 s</code></pre>
-<pre><code>Podaj liczbę sekund: 86400
-1 d, 0 h, 0 min, 0 s</code></pre>
 <hr>
-</section>
-<section id="tabliczka-mnożenia" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="tabliczka-mnożenia"><span class="header-section-number">2</span> Tabliczka mnożenia</h2>
-<p>Napisz program wyświetlający tabliczkę mnożenia dla zadanej wartości <span class="math inline">\(1\leqslant n\leqslant 15\)</span>. Liczbę <span class="math inline">\(n\)</span> wprowadza użytkownik.</p>
-<p>Przykład:</p>
-<pre><code>Podaj n: 9
-
-1   2   3   4   5   6   7   8   9   
-2   4   6   8   10  12  14  16  18  
-3   6   9   12  15  18  21  24  27  
-4   8   12  16  20  24  28  32  36  
-5   10  15  20  25  30  35  40  45  
-6   12  18  24  30  36  42  48  54  
-7   14  21  28  35  42  49  56  63  
-8   16  24  32  40  48  56  64  72  
-9   18  27  36  45  54  63  72  81</code></pre>
-<p>W programie wykorzystaj formatowanie łańcuchów (metoda <a href="https://docs.python.org/3/library/stdtypes.html#str.format"><code>str.format()</code></a> lub <a href="https://docs.python.org/3/tutorial/inputoutput.html#tut-f-strings">f-strings</a>).</p>
-<hr>
-</section>
-<section id="fizzbuzz" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="fizzbuzz"><span class="header-section-number">3</span> FizzBuzz</h2>
-<p>Napisz program, który pobiera od użytkownika dodatnią liczbę całkowitą <code>n</code>. Następnie dla liczb od <code>1</code> do <code>n</code> program wyświetla:</p>
+<section id="iloraz-liczb-całkowitych" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="iloraz-liczb-całkowitych"><span class="header-section-number">1</span> Iloraz liczb całkowitych</h2>
+<p>Napisz program, który pobiera od użytkownika dwie liczby całkowite i oblicza ich iloraz. Program powinien obsługiwać dwa rodzaje wyjątków:</p>
 <ul>
-<li><code>FizzBuzz</code>, jeśli liczba jest podzielna przez <code>3</code> i <code>5</code>;</li>
-<li><code>Fizz</code>, jeśli liczba jest podzielna przez <code>3</code>;</li>
-<li><code>Buzz</code>, jeśli liczba jest podzielna przez <code>5</code>;</li>
-<li>liczbę, jeśli liczba nie jest podzielna przez <code>3</code> ani przez <code>5</code>.</li>
+<li><code>ValueError</code> — jeśli użytkownik wprowadzi tekst zamiast liczby całkowitej,</li>
+<li><code>ZeroDivisionError</code> — jeśli użytkownik wprowadzi jako dzielnik liczbę 0.</li>
 </ul>
-<hr>
-</section>
-<section id="proste-statystyki" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="proste-statystyki"><span class="header-section-number">4</span> Proste statystyki</h2>
-<p>Napisz funkcję <code>statystyki(dane)</code>, która przyjmuje niepustą listę liczb i zwraca krotkę <code>(minimum, maksimum, średnia)</code>. W ciele funkcji nie korzystaj z wbudowanych <code>min()</code>, <code>max()</code>, <code>sum()</code>.</p>
-<p>Napisz program, który wczytuje od użytkownika ciąg liczb (po jednej w wierszu; wczytywanie kończy się po podaniu pustego wiersza), zapisuje je na liście, a następnie wyświetla wynik działania funkcji <code>statystyki</code>.</p>
-<p>Przykład:</p>
-<pre><code>Podaj liczbę (Enter aby zakończyć): 4
-Podaj liczbę (Enter aby zakończyć): -2
-Podaj liczbę (Enter aby zakończyć): 7
-Podaj liczbę (Enter aby zakończyć): 1
-Podaj liczbę (Enter aby zakończyć): 
-Minimum: -2, Maksimum: 7, Średnia: 2.5</code></pre>
-<hr>
-</section>
-<section id="szereg-harmoniczny" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="szereg-harmoniczny"><span class="header-section-number">5</span> Szereg harmoniczny</h2>
-<p>Napisz program, który wyświetli najmniejszą liczbę <span class="math inline">\(n\)</span>, dla której</p>
-<p><span class="math display">\[
-1+\frac{1}{2}+\frac{1}{3}+\cdots+\frac{1}{n}\geqslant 10
-\]</span></p>
-<p>Taka liczba w ogóle istnieje? Zobacz <a href="https://pl.wikipedia.org/wiki/Szereg_harmoniczny">szereg harmoniczny</a>.</p>
-<hr>
-</section>
-<section id="częstości-liter" class="level2" data-number="6">
-<h2 data-number="6" class="anchored" data-anchor-id="częstości-liter"><span class="header-section-number">6</span> Częstości liter</h2>
-<p>Napisz funkcję <code>f_count(text)</code>, która przyjmuje napis i zwraca słownik, w którym kluczami są litery (małe), a wartościami — liczby ich wystąpień w tekście. Znaki niebędące literami pomiń.</p>
-<p>Napisz program, który wczytuje od użytkownika wiersz tekstu, a następnie wyświetla rozkład częstości liter posortowany alfabetycznie.</p>
-<p>Przykład:</p>
-<pre><code>Podaj tekst: Ala ma kota
-a: 4
-k: 1
-l: 1
-m: 1
-o: 1
-t: 1</code></pre>
-<hr>
-</section>
-<section id="równanie-sześcienne" class="level2" data-number="7">
-<h2 data-number="7" class="anchored" data-anchor-id="równanie-sześcienne"><span class="header-section-number">7</span> Równanie sześcienne</h2>
-<p>Niech <span class="math inline">\(p\)</span>, <span class="math inline">\(q\)</span> będą dodatnimi liczbami całkowitymi. Napisz program, który wyznaczy liczbę całkowitą <span class="math inline">\(x\)</span> spełniającą równość</p>
-<p><span class="math display">\[
-x^3+px=q
-\]</span></p>
-<p>lub stwierdzi, że takiej liczby nie ma.</p>
+<p>Program powinien wyświetlać komunikat o błędzie odpowiedni do typu wyjątku.</p>
 <p>Przykłady:</p>
-<ul>
-<li><span class="math inline">\(p=1\)</span>, <span class="math inline">\(q=10\)</span> ==&gt; <span class="math inline">\(x=2\)</span>;</li>
-<li><span class="math inline">\(p=123456789\)</span>, <span class="math inline">\(q=963418328815428240221153430\)</span> ==&gt; <span class="math inline">\(x=987654321\)</span>;</li>
-<li><span class="math inline">\(p=2\)</span> lub <span class="math inline">\(p=3\)</span>, <span class="math inline">\(q=10\)</span> ==&gt; brak rozwiązania;</li>
-<li><span class="math inline">\(p=123\)</span>, <span class="math inline">\(q=56798\)</span> ==&gt; brak rozwiązania.</li>
-</ul>
+<pre><code>a: 10
+b: 0
+Błąd: dzielenie przez zero.</code></pre>
+<pre><code>a: 10
+b: abc
+Błąd: nieprawidłowa wartość.</code></pre>
+<pre><code>a: 10
+b: 4
+10 / 4 = 2.5</code></pre>
 <hr>
 </section>
-<section id="symulacja-dryfu-genetycznego" class="level2" data-number="8">
-<h2 data-number="8" class="anchored" data-anchor-id="symulacja-dryfu-genetycznego"><span class="header-section-number">8</span> Symulacja dryfu genetycznego</h2>
-<p><a href="https://en.wikipedia.org/wiki/Genetic_drift">Dryf genetyczny</a> to zjawisko polegające na losowej zmianie częstości allelu w populacji. Jest to ważny przykład procesu prowadzącego do ewolucji nieadaptatywnej.</p>
-<p>Celem tego ćwiczenia jest stworzenie symulacji ilustrującej działanie dryfu genetycznego.</p>
-<p>Niech <em>A</em>, <em>a</em> będą dwoma allelami (wariantami) jednego genu. Zakładamy, że: * Dana jest populacja osobników, w której każdy osobnik ma dwie kopie genu w dowolnych wariantach (czyli są to osobniki diploidalne). * Zmiana jednego allelu na drugi nie ma żadnego znaczenia adaptacyjnego. * W populacji pokolenia nie zachodzą na siebie, kojarzenie jest płciowe i całkowicie losowe a każda para organizmów rodzicielskich ma dwa organizmy potomne. * W organizmie potomnym warianty genu dobierane są losowo, z równym prawdopodobieństwem, po jednym od każdego z organizmów rodzicielskich. Przykład: dla organizmów rodzicielskich o genotypach <em>aA</em>, <em>AA</em>, mamy cztery możliwe genotypy potomne <em>aA</em>, <em>aA</em>, <em>AA</em>, <em>AA</em> odpowiadające wylosowaniu pozycji (1, 1), (1, 2), (2, 1), (2, 2).</p>
-<p>Napisz program, który losowo utworzy populację o ustalonej z góry liczbie osobników (najlepiej parzystej) a następnie wykona dla tej populacji symulację pewnej liczby cykli życiowych.</p>
-<p>Zaobserwuj:</p>
-<ol type="1">
-<li>Jak zmienia się częstość alleli w populacji?</li>
-<li>Jak zmiana ta zależy od początkowej liczby osobników? Jak od liczby pokoleń?</li>
-</ol>
-<p>Zobacz link <a href="https://en.wikipedia.org/wiki/Genetic_drift#Time_to_fixation_or_loss">Time to fixation or loss</a>. Sprawdź jak zawarte tam przewidywania mają się do rezultatów Twojej symulacji.</p>
+<section id="hierarchia-wyjątków-arytmetycznych" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="hierarchia-wyjątków-arytmetycznych"><span class="header-section-number">2</span> Hierarchia wyjątków arytmetycznych</h2>
+<p>Zapoznaj się z fragmentem hierarchii wyjątków arytmetycznych w Pythonie:</p>
+<pre><code>BaseException
+  └── Exception
+        └── ArithmeticError
+              ├── ZeroDivisionError
+              ├── OverflowError
+              └── FloatingPointError</code></pre>
+<p>Napisz program, który oblicza wyrażenie <code>2.0 ** x / (x - 3)</code> dla liczby <code>x</code> podanej przez użytkownika. Obsłuż wyjątek <code>ArithmeticError</code> jednym blokiem <code>except</code>. Przetestuj program dla:</p>
+<ul>
+<li><code>x = 3</code> (dzielenie przez zero — <code>ZeroDivisionError</code>),</li>
+<li><code>x = 1024</code> (przepełnienie — <code>OverflowError</code>, bo <code>2.0 ** 1024</code> przekracza maksymalną wartość <code>float</code>),</li>
+<li><code>x = 5</code> (poprawne dane).</li>
+</ul>
+<p>Przykłady:</p>
+<pre><code>Podaj x: 3
+Błąd arytmetyczny: float division by zero</code></pre>
+<pre><code>Podaj x: 1024
+Błąd arytmetyczny: (34, 'Numerical result out of range')</code></pre>
+<pre><code>Podaj x: 5
+2.0 ** 5 / (5 - 3) = 16.0</code></pre>
+<hr>
+</section>
+<section id="suma-i-średnia-z-powtórzeniem" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="suma-i-średnia-z-powtórzeniem"><span class="header-section-number">3</span> Suma i średnia z powtórzeniem</h2>
+<p>Napisz program, który pobiera od użytkownika ciąg liczb całkowitych rozdzielonych spacjami i wyświetla ich sumę oraz średnią arytmetyczną. Program powinien:</p>
+<ul>
+<li>wymuszać wprowadzenie danych w poprawnym formacie — po podaniu niepoprawnych danych ponownie żąda ich wprowadzenia,</li>
+<li>dawać użytkownikowi trzy szanse na podanie prawidłowych danych; po wyczerpaniu szans program kończy działanie stosownym komunikatem,</li>
+<li>korzystać z bloku <code>else</code>, który wykonuje się wyłącznie wtedy, gdy nie wystąpił wyjątek.</li>
+</ul>
+<p>Zastanów się: ile wynosi średnia arytmetyczna ciągu pustego?</p>
+<p>Przykład:</p>
+<pre><code>Liczby (próba 1/3): 4 3 abc
+Błąd: nieprawidłowe dane.
+Liczby (próba 2/3): 4 3 2 1 5
+Suma: 15, Średnia: 3.0</code></pre>
+<hr>
+</section>
+<section id="symulacja-połączenia-sieciowego" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="symulacja-połączenia-sieciowego"><span class="header-section-number">4</span> Symulacja połączenia sieciowego</h2>
+<p>Blok <code>finally</code> jest wykonywany zawsze — niezależnie od tego, czy wyjątek wystąpił, czy nie, a nawet gdy wyjątek nie jest obsługiwany w tej samej funkcji, lecz propaguje się do wywołującego.</p>
+<p>Napisz funkcję <code>polacz(adres)</code>, która symuluje nawiązywanie połączenia sieciowego:</p>
+<ul>
+<li>wypisuje <code>Łączenie z &lt;adres&gt;...</code>,</li>
+<li>wywołuje <code>time.sleep(t)</code>, gdzie <code>t</code> to losowa liczba rzeczywista z przedziału <span class="math inline">\([0, 1)\)</span>,</li>
+<li>jeśli <code>t</code> przekracza próg <code>0.6</code>, zgłasza <code>RuntimeError("Przekroczono limit czasu")</code>,</li>
+<li>w przeciwnym razie wypisuje <code>Połączono z &lt;adres&gt;.</code>,</li>
+<li>w bloku <code>finally</code> wypisuje <code>Zamknięto połączenie z &lt;adres&gt;.</code></li>
+</ul>
+<p>Napisz program, który w pętli wywołuje <code>polacz()</code> dla dziesięciu adresów <code>192.168.0.0</code>, …, <code>192.168.0.9</code>, obsługując <code>RuntimeError</code> stosownym komunikatem.</p>
+<p>Przykład (fragment):</p>
+<pre><code>Łączenie z 192.168.0.0...
+Połączono z 192.168.0.0.
+Zamknięto połączenie z 192.168.0.0.
+Łączenie z 192.168.0.1...
+Zamknięto połączenie z 192.168.0.1.
+Błąd: przekroczono limit czasu.</code></pre>
+<p>W jakiej kolejności pojawiają się komunikaty gdy połączenie się nie powiedzie?</p>
+<hr>
+</section>
+<section id="silnia-z-walidacją-argumentu" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="silnia-z-walidacją-argumentu"><span class="header-section-number">5</span> Silnia z walidacją argumentu</h2>
+<p>Napisz funkcję <code>silnia(n)</code>, która oblicza <span class="math inline">\(n!\)</span> dla nieujemnych liczb całkowitych. Funkcja powinna zgłaszać:</p>
+<ul>
+<li><code>TypeError</code> — jeśli <code>n</code> nie jest liczbą całkowitą,</li>
+<li><code>ValueError</code> — jeśli <code>n</code> jest ujemna.</li>
+</ul>
+<p>Do sprawdzenia typu użyj wbudowanej funkcji <code>isinstance(n, int)</code>, która zwraca <code>True</code>, jeśli <code>n</code> jest instancją klasy <code>int</code>.</p>
+<p>Napisz program, który wczytuje <code>n</code> od użytkownika i wywołuje <code>silnia(n)</code>, obsługując oba wyjątki stosownymi komunikatami. Zwróć uwagę, że <code>input()</code> zawsze zwraca łańcuch znaków — musisz samodzielnie zdecydować, jak i kiedy dokonać konwersji na liczbę, by móc przetestować oba wyjątki.</p>
+<p>Przykłady:</p>
+<pre><code>Podaj n: -3
+Błąd: argument musi być nieujemny.</code></pre>
+<pre><code>Podaj n: 3.5
+Błąd: argument musi być liczbą całkowitą.</code></pre>
+<pre><code>Podaj n: 5
+5! = 120</code></pre>
+<hr>
+</section>
+<section id="statystyki-pliku-tekstowego" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="statystyki-pliku-tekstowego"><span class="header-section-number">6</span> Statystyki pliku tekstowego</h2>
+<p>Napisz program, który wczytuje ścieżkę do pliku tekstowego podaną przez użytkownika i wyświetla:</p>
+<ul>
+<li>liczbę wierszy,</li>
+<li>liczbę słów,</li>
+<li>liczbę znaków (bez znaku nowej linii).</li>
+</ul>
+<p>Użyj menedżera kontekstu (<code>with</code>) i jawnie określ kodowanie <code>encoding='utf-8'</code>. Program powinien obsługiwać wyjątek <code>FileNotFoundError</code>, wyświetlając komunikat <code>Brak pliku: &lt;nazwa_pliku&gt;</code>.</p>
+<p>Przykład:</p>
+<pre><code>Podaj ścieżkę do pliku: wiersz.txt
+Wiersze: 4
+Słowa:   26
+Znaki:   142</code></pre>
+<hr>
+</section>
+<section id="inspekcja-pliku-binarnego" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="inspekcja-pliku-binarnego"><span class="header-section-number">7</span> Inspekcja pliku binarnego</h2>
+<p>Napisz program, który wczytuje ścieżkę do pliku binarnego i wyświetla:</p>
+<ul>
+<li>rozmiar pliku w bajtach,</li>
+<li>pierwszych 16 bajtów w reprezentacji szesnastkowej (hex),</li>
+<li>czy plik jest plikiem PNG — plik PNG zaczyna się od sygnatury <code>b'\x89PNG\r\n\x1a\n'</code> (8 bajtów).</li>
+</ul>
+<p>Użyj trybu <code>'rb'</code> w funkcji <code>open()</code> i menedżera kontekstu. Obsłuż <code>FileNotFoundError</code>.</p>
+<p>Przykład dla pliku PNG:</p>
+<pre><code>Podaj ścieżkę do pliku: obrazek.png
+Rozmiar: 24831 bajtów
+Pierwsze 16 bajtów: 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52
+Sygnatura PNG: TAK</code></pre>
+<p>Przykład dla innego pliku:</p>
+<pre><code>Podaj ścieżkę do pliku: dane.bin
+Rozmiar: 512 bajtów
+Pierwsze 16 bajtów: 4d 5a 90 00 03 00 00 00 04 00 00 00 ff ff 00 00
+Sygnatura PNG: NIE</code></pre>
 
 
 </section>

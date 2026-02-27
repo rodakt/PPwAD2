@@ -1,161 +1,79 @@
 [
   {
-    "objectID": "lab_I/lab_I.html",
-    "href": "lab_I/lab_I.html",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "",
-    "text": "Te ćwiczenia poprzedzają pierwszy wykład. Ich celem jest odświeżenie niektórych elementów programowania w Pythonie znanych z pierwszego semestru.",
+    "objectID": "lab_II/lab_II.html#iloraz-liczb-całkowitych",
+    "href": "lab_II/lab_II.html#iloraz-liczb-całkowitych",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "1 Iloraz liczb całkowitych",
+    "text": "1 Iloraz liczb całkowitych\nNapisz program, który pobiera od użytkownika dwie liczby całkowite i oblicza ich iloraz. Program powinien obsługiwać dwa rodzaje wyjątków:\n\nValueError — jeśli użytkownik wprowadzi tekst zamiast liczby całkowitej,\nZeroDivisionError — jeśli użytkownik wprowadzi jako dzielnik liczbę 0.\n\nProgram powinien wyświetlać komunikat o błędzie odpowiedni do typu wyjątku.\nPrzykłady:\na: 10\nb: 0\nBłąd: dzielenie przez zero.\na: 10\nb: abc\nBłąd: nieprawidłowa wartość.\na: 10\nb: 4\n10 / 4 = 2.5",
     "crumbs": [
       "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Lab II: Błędy i wyjątki"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#przeliczanie-sekund",
-    "href": "lab_I/lab_I.html#przeliczanie-sekund",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "1 Przeliczanie sekund",
-    "text": "1 Przeliczanie sekund\nNapisz program, który wczytuje od użytkownika liczbę sekund (dodatnią liczbę całkowitą) i przelicza ją na dni, godziny, minuty i sekundy.\nPrzykłady:\nPodaj liczbę sekund: 123456\n1 d, 10 h, 17 min, 36 s\nPodaj liczbę sekund: 3661\n0 d, 1 h, 1 min, 1 s\nPodaj liczbę sekund: 86400\n1 d, 0 h, 0 min, 0 s",
+    "objectID": "lab_II/lab_II.html#hierarchia-wyjątków-arytmetycznych",
+    "href": "lab_II/lab_II.html#hierarchia-wyjątków-arytmetycznych",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "2 Hierarchia wyjątków arytmetycznych",
+    "text": "2 Hierarchia wyjątków arytmetycznych\nZapoznaj się z fragmentem hierarchii wyjątków arytmetycznych w Pythonie:\nBaseException\n  └── Exception\n        └── ArithmeticError\n              ├── ZeroDivisionError\n              ├── OverflowError\n              └── FloatingPointError\nNapisz program, który oblicza wyrażenie 2.0 ** x / (x - 3) dla liczby x podanej przez użytkownika. Obsłuż wyjątek ArithmeticError jednym blokiem except. Przetestuj program dla:\n\nx = 3 (dzielenie przez zero — ZeroDivisionError),\nx = 1024 (przepełnienie — OverflowError, bo 2.0 ** 1024 przekracza maksymalną wartość float),\nx = 5 (poprawne dane).\n\nPrzykłady:\nPodaj x: 3\nBłąd arytmetyczny: float division by zero\nPodaj x: 1024\nBłąd arytmetyczny: (34, 'Numerical result out of range')\nPodaj x: 5\n2.0 ** 5 / (5 - 3) = 16.0",
     "crumbs": [
       "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Lab II: Błędy i wyjątki"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#tabliczka-mnożenia",
-    "href": "lab_I/lab_I.html#tabliczka-mnożenia",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "2 Tabliczka mnożenia",
-    "text": "2 Tabliczka mnożenia\nNapisz program wyświetlający tabliczkę mnożenia dla zadanej wartości \\(1\\leqslant n\\leqslant 15\\). Liczbę \\(n\\) wprowadza użytkownik.\nPrzykład dla \\(n=9\\):\n1   2   3   4   5   6   7   8   9   \n2   4   6   8   10  12  14  16  18  \n3   6   9   12  15  18  21  24  27  \n4   8   12  16  20  24  28  32  36  \n5   10  15  20  25  30  35  40  45  \n6   12  18  24  30  36  42  48  54  \n7   14  21  28  35  42  49  56  63  \n8   16  24  32  40  48  56  64  72  \n9   18  27  36  45  54  63  72  81\nW programie wykorzystaj formatowanie łańcuchów (metoda str.format() lub f-strings).",
+    "objectID": "lab_II/lab_II.html#suma-i-średnia-z-powtórzeniem",
+    "href": "lab_II/lab_II.html#suma-i-średnia-z-powtórzeniem",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "3 Suma i średnia z powtórzeniem",
+    "text": "3 Suma i średnia z powtórzeniem\nNapisz program, który pobiera od użytkownika ciąg liczb całkowitych rozdzielonych spacjami i wyświetla ich sumę oraz średnią arytmetyczną. Program powinien:\n\nwymuszać wprowadzenie danych w poprawnym formacie — po podaniu niepoprawnych danych ponownie żąda ich wprowadzenia,\ndawać użytkownikowi trzy szanse na podanie prawidłowych danych; po wyczerpaniu szans program kończy działanie stosownym komunikatem,\nkorzystać z bloku else, który wykonuje się wyłącznie wtedy, gdy nie wystąpił wyjątek.\n\nZastanów się: ile wynosi średnia arytmetyczna ciągu pustego?\nPrzykład:\nLiczby (próba 1/3): 4 3 abc\nBłąd: nieprawidłowe dane.\nLiczby (próba 2/3): 4 3 2 1 5\nSuma: 15, Średnia: 3.0",
     "crumbs": [
       "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Lab II: Błędy i wyjątki"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#fizzbuzz",
-    "href": "lab_I/lab_I.html#fizzbuzz",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "3 FizzBuzz",
-    "text": "3 FizzBuzz\nNapisz program, który pobiera od użytkownika dodatnią liczbę całkowitą n. Następnie dla liczb od 1 do n program wyświetla:\n\nFizzBuzz, jeśli liczba jest podzielna przez 3 i 5;\nFizz, jeśli liczba jest podzielna przez 3;\nBuzz, jeśli liczba jest podzielna przez 5;\nliczbę, jeśli liczba nie jest podzielna przez 3 ani przez 5.",
+    "objectID": "lab_II/lab_II.html#symulacja-połączenia-sieciowego",
+    "href": "lab_II/lab_II.html#symulacja-połączenia-sieciowego",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "4 Symulacja połączenia sieciowego",
+    "text": "4 Symulacja połączenia sieciowego\nBlok finally jest wykonywany zawsze — niezależnie od tego, czy wyjątek wystąpił, czy nie, a nawet gdy wyjątek nie jest obsługiwany w tej samej funkcji, lecz propaguje się do wywołującego.\nNapisz funkcję polacz(adres), która symuluje nawiązywanie połączenia sieciowego:\n\nwypisuje Łączenie z &lt;adres&gt;...,\nwywołuje time.sleep(t), gdzie t to losowa liczba rzeczywista z przedziału \\([0, 1)\\),\njeśli t przekracza próg 0.6, zgłasza RuntimeError(\"Przekroczono limit czasu\"),\nw przeciwnym razie wypisuje Połączono z &lt;adres&gt;.,\nw bloku finally wypisuje Zamknięto połączenie z &lt;adres&gt;.\n\nNapisz program, który w pętli wywołuje polacz() dla dziesięciu adresów 192.168.0.0, …, 192.168.0.9, obsługując RuntimeError stosownym komunikatem.\nPrzykład (fragment):\nŁączenie z 192.168.0.0...\nPołączono z 192.168.0.0.\nZamknięto połączenie z 192.168.0.0.\nŁączenie z 192.168.0.1...\nZamknięto połączenie z 192.168.0.1.\nBłąd: przekroczono limit czasu.\nW jakiej kolejności pojawiają się komunikaty gdy połączenie się nie powiedzie?",
     "crumbs": [
       "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Lab II: Błędy i wyjątki"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#proste-statystyki",
-    "href": "lab_I/lab_I.html#proste-statystyki",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "4 Proste statystyki",
-    "text": "4 Proste statystyki\nNapisz funkcję statystyki(dane), która przyjmuje niepustą listę liczb i zwraca krotkę (minimum, maksimum, średnia). W ciele funkcji nie korzystaj z wbudowanych min(), max(), sum().\nNapisz program, który wczytuje od użytkownika ciąg liczb (po jednej w wierszu; wczytywanie kończy się po podaniu pustego wiersza), zapisuje je na liście, a następnie wyświetla wynik działania funkcji statystyki.\nPrzykład:\nPodaj liczbę (Enter aby zakończyć): 4\nPodaj liczbę (Enter aby zakończyć): -2\nPodaj liczbę (Enter aby zakończyć): 7\nPodaj liczbę (Enter aby zakończyć): 1\nPodaj liczbę (Enter aby zakończyć): \nMinimum: -2, Maksimum: 7, Średnia: 2.5",
+    "objectID": "lab_II/lab_II.html#silnia-z-walidacją-argumentu",
+    "href": "lab_II/lab_II.html#silnia-z-walidacją-argumentu",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "5 Silnia z walidacją argumentu",
+    "text": "5 Silnia z walidacją argumentu\nNapisz funkcję silnia(n), która oblicza \\(n!\\) dla nieujemnych liczb całkowitych. Funkcja powinna zgłaszać:\n\nTypeError — jeśli n nie jest liczbą całkowitą,\nValueError — jeśli n jest ujemna.\n\nDo sprawdzenia typu użyj wbudowanej funkcji isinstance(n, int), która zwraca True, jeśli n jest instancją klasy int.\nNapisz program, który wczytuje n od użytkownika i wywołuje silnia(n), obsługując oba wyjątki stosownymi komunikatami. Zwróć uwagę, że input() zawsze zwraca łańcuch znaków — musisz samodzielnie zdecydować, jak i kiedy dokonać konwersji na liczbę, by móc przetestować oba wyjątki.\nPrzykłady:\nPodaj n: -3\nBłąd: argument musi być nieujemny.\nPodaj n: 3.5\nBłąd: argument musi być liczbą całkowitą.\nPodaj n: 5\n5! = 120",
     "crumbs": [
       "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Lab II: Błędy i wyjątki"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#szereg-harmoniczny",
-    "href": "lab_I/lab_I.html#szereg-harmoniczny",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "5 Szereg harmoniczny",
-    "text": "5 Szereg harmoniczny\nNapisz program, który wyświetli najmniejszą liczbę \\(n\\), dla której\n\\[\n1+\\frac{1}{2}+\\frac{1}{3}+\\cdots+\\frac{1}{n}\\geqslant 10\n\\]\nTaka liczba w ogóle istnieje? Zobacz szereg harmoniczny.",
+    "objectID": "lab_II/lab_II.html#statystyki-pliku-tekstowego",
+    "href": "lab_II/lab_II.html#statystyki-pliku-tekstowego",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "6 Statystyki pliku tekstowego",
+    "text": "6 Statystyki pliku tekstowego\nNapisz program, który wczytuje ścieżkę do pliku tekstowego podaną przez użytkownika i wyświetla:\n\nliczbę wierszy,\nliczbę słów,\nliczbę znaków (bez znaku nowej linii).\n\nUżyj menedżera kontekstu (with) i jawnie określ kodowanie encoding='utf-8'. Program powinien obsługiwać wyjątek FileNotFoundError, wyświetlając komunikat Brak pliku: &lt;nazwa_pliku&gt;.\nPrzykład:\nPodaj ścieżkę do pliku: wiersz.txt\nWiersze: 4\nSłowa:   26\nZnaki:   142",
     "crumbs": [
       "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Lab II: Błędy i wyjątki"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#częstości-liter",
-    "href": "lab_I/lab_I.html#częstości-liter",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "6 Częstości liter",
-    "text": "6 Częstości liter\nNapisz funkcję f_count(text), która przyjmuje napis i zwraca słownik, w którym kluczami są litery (małe), a wartościami — liczby ich wystąpień w tekście. Znaki niebędące literami pomiń.\nNapisz program, który wczytuje od użytkownika wiersz tekstu, a następnie wyświetla rozkład częstości liter posortowany alfabetycznie.\nPrzykład:\nPodaj tekst: Ala ma kota\na: 4\nk: 1\nl: 1\nm: 1\no: 1\nt: 1",
+    "objectID": "lab_II/lab_II.html#inspekcja-pliku-binarnego",
+    "href": "lab_II/lab_II.html#inspekcja-pliku-binarnego",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "7 Inspekcja pliku binarnego",
+    "text": "7 Inspekcja pliku binarnego\nNapisz program, który wczytuje ścieżkę do pliku binarnego i wyświetla:\n\nrozmiar pliku w bajtach,\npierwszych 16 bajtów w reprezentacji szesnastkowej (hex),\nczy plik jest plikiem PNG — plik PNG zaczyna się od sygnatury b'\\x89PNG\\r\\n\\x1a\\n' (8 bajtów).\n\nUżyj trybu 'rb' w funkcji open() i menedżera kontekstu. Obsłuż FileNotFoundError.\nPrzykład dla pliku PNG:\nPodaj ścieżkę do pliku: obrazek.png\nRozmiar: 24831 bajtów\nPierwsze 16 bajtów: 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52\nSygnatura PNG: TAK\nPrzykład dla innego pliku:\nPodaj ścieżkę do pliku: dane.bin\nRozmiar: 512 bajtów\nPierwsze 16 bajtów: 4d 5a 90 00 03 00 00 00 04 00 00 00 ff ff 00 00\nSygnatura PNG: NIE",
     "crumbs": [
       "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
-    ]
-  },
-  {
-    "objectID": "lab_I/lab_I.html#równanie-sześcienne",
-    "href": "lab_I/lab_I.html#równanie-sześcienne",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "7 Równanie sześcienne",
-    "text": "7 Równanie sześcienne\nNiech \\(p\\), \\(q\\) będą dodatnimi liczbami całkowitymi. Napisz program, który wyznaczy liczbę całkowitą \\(x\\) spełniającą równość\n\\[\nx^3+px=q\n\\]\nlub stwierdzi, że takiej liczby nie ma.\nPrzykłady:\n\n\\(p=1\\), \\(q=10\\) ==&gt; \\(x=2\\);\n\\(p=123456789\\), \\(q=963418328815428240221153430\\) ==&gt; \\(x=987654321\\);\n\\(p=2\\) lub \\(p=3\\), \\(q=10\\) ==&gt; brak rozwiązania;\n\\(p=123\\), \\(q=56798\\) ==&gt; brak rozwiązania.",
-    "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
-    ]
-  },
-  {
-    "objectID": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
-    "href": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "8 Symulacja dryfu genetycznego",
-    "text": "8 Symulacja dryfu genetycznego\nDryf genetyczny to zjawisko polegające na losowej zmianie częstości allelu w populacji. Jest to ważny przykład procesu prowadzącego do ewolucji nieadaptatywnej.\nCelem tego ćwiczenia jest stworzenie symulacji ilustrującej działanie dryfu genetycznego.\nNiech A, a będą dwoma allelami (wariantami) jednego genu. Zakładamy, że: * Dana jest populacja osobników, w której każdy osobnik ma dwie kopie genu w dowolnych wariantach (czyli są to osobniki diploidalne). * Zmiana jednego allelu na drugi nie ma żadnego znaczenia adaptacyjnego. * W populacji pokolenia nie zachodzą na siebie, kojarzenie jest płciowe i całkowicie losowe a każda para organizmów rodzicielskich ma dwa organizmy potomne. * W organizmie potomnym warianty genu dobierane są losowo, z równym prawdopodobieństwem, po jednym od każdego z organizmów rodzicielskich. Przykład: dla organizmów rodzicielskich o genotypach aA, AA, mamy cztery możliwe genotypy potomne aA, aA, AA, AA odpowiadające wylosowaniu pozycji (1, 1), (1, 2), (2, 1), (2, 2).\nNapisz program, który losowo utworzy populację o ustalonej z góry liczbie osobników (najlepiej parzystej) a następnie wykona dla tej populacji symulację pewnej liczby cykli życiowych.\nZaobserwuj:\n\nJak zmienia się częstość alleli w populacji?\nJak zmiana ta zależy od początkowej liczby osobników? Jak od liczby pokoleń?\n\nZobacz link Time to fixation or loss. Sprawdź jak zawarte tam przewidywania mają się do rezultatów Twojej symulacji.",
-    "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "",
-    "text": "Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym. Zakres materiału:\n\nobsługa błędów i wyjątków, testowanie kodu,\nparametry i argumenty funkcji, instrukcja przypisania,\nrekurencja,\nfunkcje wyższego rzędu i dekoratory,\nprogramowanie obiektowe: klasy i obiekty,\nprotokół iteracji oraz iteratory.",
-    "crumbs": [
-      "Strona główna"
-    ]
-  },
-  {
-    "objectID": "index.html#opis-przedmiotu",
-    "href": "index.html#opis-przedmiotu",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "",
-    "text": "Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym. Zakres materiału:\n\nobsługa błędów i wyjątków, testowanie kodu,\nparametry i argumenty funkcji, instrukcja przypisania,\nrekurencja,\nfunkcje wyższego rzędu i dekoratory,\nprogramowanie obiektowe: klasy i obiekty,\nprotokół iteracji oraz iteratory.",
-    "crumbs": [
-      "Strona główna"
-    ]
-  },
-  {
-    "objectID": "index.html#wykłady",
-    "href": "index.html#wykłady",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "2 Wykłady",
-    "text": "2 Wykłady\n\nWykład I: Błędy i wyjątki",
-    "crumbs": [
-      "Strona główna"
-    ]
-  },
-  {
-    "objectID": "index.html#laboratoria",
-    "href": "index.html#laboratoria",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "3 Laboratoria",
-    "text": "3 Laboratoria\n\nLaboratorium 1: Zadania na rozgrzewkę",
-    "crumbs": [
-      "Strona główna"
-    ]
-  },
-  {
-    "objectID": "index.html#zaliczenie",
-    "href": "index.html#zaliczenie",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "4 Zaliczenie",
-    "text": "4 Zaliczenie\n\nKolokwium na ostatnich zajęciach “przy komputerze”. Ocena z kolokwium staje się oceną z ćwiczeń.\nEgzamin pisemny w sesji. Ocena z egzaminu jest oceną z wykładu.\nDo egzaminu należy przystąpić niezależnie od tego czy ćwiczenia zostały zaliczone.\nOcena w protokole ogólnym jest średnią z ocen z wykładu i ćwiczeń.",
-    "crumbs": [
-      "Strona główna"
-    ]
-  },
-  {
-    "objectID": "index.html#polecane-źródła",
-    "href": "index.html#polecane-źródła",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "5 Polecane źródła",
-    "text": "5 Polecane źródła\n\n5.1 W internecie:\n\nOficjalna dokumentacja https://docs.python.org/3/. W tym:\n\nOpis biblioteki standardowej: https://docs.python.org/3/library/index.html\nOpis języka: https://docs.python.org/3/reference/index.html\nTutorial: https://docs.python.org/3/tutorial/index.html\nHOWTOs: https://docs.python.org/3/howto/index.html\n\nRozbudowana ściąga z j. Python: https://www.pythoncheatsheet.org/\nBiblioteka standardowa w przykładach: https://pymotw.com/3/\nYouTube jest pełen kursów z Pythona. Wysoką jakość i przekrój przez różne poziomy zaawansowania mają kursy na kanale FreeCodeCamp.\n\n\n\n5.2 Książki\n\n(!) Eric Matthes, Python. Instrukcje dla programisty\nMark Lutz, Python. Wprowadzenie\n(!!) Luciano Ramahlo, Zaawansowany Python\n(!) David Beazley, Brian K. Jones, Python. Receptury\n(!) Mark Pilgrim, Dive into Python\n\n\n\n5.3 Do potrenowania\nPrzykładowe serwisy do samodzielnej nauki:\n\nExercism\nhttps://www.codewars.com/\nhttps://www.codingame.com/start\nspoj.com",
-    "crumbs": [
-      "Strona główna"
+      "Lab II: Błędy i wyjątki"
     ]
   },
   {
@@ -277,6 +195,165 @@
     "crumbs": [
       "Wykłady",
       "Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Podstawy programowania (AD) 2",
+    "section": "",
+    "text": "Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym. Zakres materiału:\n\nobsługa błędów i wyjątków, testowanie kodu,\nparametry i argumenty funkcji, instrukcja przypisania,\nrekurencja,\nfunkcje wyższego rzędu i dekoratory,\nprogramowanie obiektowe: klasy i obiekty,\nprotokół iteracji oraz iteratory.",
+    "crumbs": [
+      "Strona główna"
+    ]
+  },
+  {
+    "objectID": "index.html#opis-przedmiotu",
+    "href": "index.html#opis-przedmiotu",
+    "title": "Podstawy programowania (AD) 2",
+    "section": "",
+    "text": "Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym. Zakres materiału:\n\nobsługa błędów i wyjątków, testowanie kodu,\nparametry i argumenty funkcji, instrukcja przypisania,\nrekurencja,\nfunkcje wyższego rzędu i dekoratory,\nprogramowanie obiektowe: klasy i obiekty,\nprotokół iteracji oraz iteratory.",
+    "crumbs": [
+      "Strona główna"
+    ]
+  },
+  {
+    "objectID": "index.html#wykłady",
+    "href": "index.html#wykłady",
+    "title": "Podstawy programowania (AD) 2",
+    "section": "2 Wykłady",
+    "text": "2 Wykłady\n\nWykład I: Błędy i wyjątki",
+    "crumbs": [
+      "Strona główna"
+    ]
+  },
+  {
+    "objectID": "index.html#laboratoria",
+    "href": "index.html#laboratoria",
+    "title": "Podstawy programowania (AD) 2",
+    "section": "3 Laboratoria",
+    "text": "3 Laboratoria\n\nLaboratorium 1: Zadania na rozgrzewkę\nLaboratorium 2: Błędy i wyjątki",
+    "crumbs": [
+      "Strona główna"
+    ]
+  },
+  {
+    "objectID": "index.html#zaliczenie",
+    "href": "index.html#zaliczenie",
+    "title": "Podstawy programowania (AD) 2",
+    "section": "4 Zaliczenie",
+    "text": "4 Zaliczenie\n\nKolokwium na ostatnich zajęciach “przy komputerze”. Ocena z kolokwium staje się oceną z ćwiczeń.\nEgzamin pisemny w sesji. Ocena z egzaminu jest oceną z wykładu.\nDo egzaminu należy przystąpić niezależnie od tego czy ćwiczenia zostały zaliczone.\nOcena w protokole ogólnym jest średnią z ocen z wykładu i ćwiczeń.",
+    "crumbs": [
+      "Strona główna"
+    ]
+  },
+  {
+    "objectID": "index.html#polecane-źródła",
+    "href": "index.html#polecane-źródła",
+    "title": "Podstawy programowania (AD) 2",
+    "section": "5 Polecane źródła",
+    "text": "5 Polecane źródła\n\n5.1 W internecie:\n\nOficjalna dokumentacja https://docs.python.org/3/. W tym:\n\nOpis biblioteki standardowej: https://docs.python.org/3/library/index.html\nOpis języka: https://docs.python.org/3/reference/index.html\nTutorial: https://docs.python.org/3/tutorial/index.html\nHOWTOs: https://docs.python.org/3/howto/index.html\n\nRozbudowana ściąga z j. Python: https://www.pythoncheatsheet.org/\nBiblioteka standardowa w przykładach: https://pymotw.com/3/\nYouTube jest pełen kursów z Pythona. Wysoką jakość i przekrój przez różne poziomy zaawansowania mają kursy na kanale FreeCodeCamp.\n\n\n\n5.2 Książki\n\n(!) Eric Matthes, Python. Instrukcje dla programisty\nMark Lutz, Python. Wprowadzenie\n(!!) Luciano Ramahlo, Zaawansowany Python\n(!) David Beazley, Brian K. Jones, Python. Receptury\n(!) Mark Pilgrim, Dive into Python\n\n\n\n5.3 Do potrenowania\nPrzykładowe serwisy do samodzielnej nauki:\n\nExercism\nhttps://www.codewars.com/\nhttps://www.codingame.com/start\nspoj.com",
+    "crumbs": [
+      "Strona główna"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html",
+    "href": "lab_I/lab_I.html",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "",
+    "text": "Te ćwiczenia poprzedzają pierwszy wykład. Ich celem jest odświeżenie niektórych elementów programowania w Pythonie znanych z pierwszego semestru.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#przeliczanie-sekund",
+    "href": "lab_I/lab_I.html#przeliczanie-sekund",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "1 Przeliczanie sekund",
+    "text": "1 Przeliczanie sekund\nNapisz program, który wczytuje od użytkownika liczbę sekund (dodatnią liczbę całkowitą) i przelicza ją na dni, godziny, minuty i sekundy.\nPrzykłady:\nPodaj liczbę sekund: 123456\n1 d, 10 h, 17 min, 36 s\nPodaj liczbę sekund: 3661\n0 d, 1 h, 1 min, 1 s\nPodaj liczbę sekund: 86400\n1 d, 0 h, 0 min, 0 s",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#tabliczka-mnożenia",
+    "href": "lab_I/lab_I.html#tabliczka-mnożenia",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "2 Tabliczka mnożenia",
+    "text": "2 Tabliczka mnożenia\nNapisz program wyświetlający tabliczkę mnożenia dla zadanej wartości \\(1\\leqslant n\\leqslant 15\\). Liczbę \\(n\\) wprowadza użytkownik.\nPrzykład:\nPodaj n: 9\n\n1   2   3   4   5   6   7   8   9   \n2   4   6   8   10  12  14  16  18  \n3   6   9   12  15  18  21  24  27  \n4   8   12  16  20  24  28  32  36  \n5   10  15  20  25  30  35  40  45  \n6   12  18  24  30  36  42  48  54  \n7   14  21  28  35  42  49  56  63  \n8   16  24  32  40  48  56  64  72  \n9   18  27  36  45  54  63  72  81\nW programie wykorzystaj formatowanie łańcuchów (metoda str.format() lub f-strings).",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#fizzbuzz",
+    "href": "lab_I/lab_I.html#fizzbuzz",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "3 FizzBuzz",
+    "text": "3 FizzBuzz\nNapisz program, który pobiera od użytkownika dodatnią liczbę całkowitą n. Następnie dla liczb od 1 do n program wyświetla:\n\nFizzBuzz, jeśli liczba jest podzielna przez 3 i 5;\nFizz, jeśli liczba jest podzielna przez 3;\nBuzz, jeśli liczba jest podzielna przez 5;\nliczbę, jeśli liczba nie jest podzielna przez 3 ani przez 5.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#proste-statystyki",
+    "href": "lab_I/lab_I.html#proste-statystyki",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "4 Proste statystyki",
+    "text": "4 Proste statystyki\nNapisz funkcję statystyki(dane), która przyjmuje niepustą listę liczb i zwraca krotkę (minimum, maksimum, średnia). W ciele funkcji nie korzystaj z wbudowanych min(), max(), sum().\nNapisz program, który wczytuje od użytkownika ciąg liczb (po jednej w wierszu; wczytywanie kończy się po podaniu pustego wiersza), zapisuje je na liście, a następnie wyświetla wynik działania funkcji statystyki.\nPrzykład:\nPodaj liczbę (Enter aby zakończyć): 4\nPodaj liczbę (Enter aby zakończyć): -2\nPodaj liczbę (Enter aby zakończyć): 7\nPodaj liczbę (Enter aby zakończyć): 1\nPodaj liczbę (Enter aby zakończyć): \nMinimum: -2, Maksimum: 7, Średnia: 2.5",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#szereg-harmoniczny",
+    "href": "lab_I/lab_I.html#szereg-harmoniczny",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "5 Szereg harmoniczny",
+    "text": "5 Szereg harmoniczny\nNapisz program, który wyświetli najmniejszą liczbę \\(n\\), dla której\n\\[\n1+\\frac{1}{2}+\\frac{1}{3}+\\cdots+\\frac{1}{n}\\geqslant 10\n\\]\nTaka liczba w ogóle istnieje? Zobacz szereg harmoniczny.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#częstości-liter",
+    "href": "lab_I/lab_I.html#częstości-liter",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "6 Częstości liter",
+    "text": "6 Częstości liter\nNapisz funkcję f_count(text), która przyjmuje napis i zwraca słownik, w którym kluczami są litery (małe), a wartościami — liczby ich wystąpień w tekście. Znaki niebędące literami pomiń.\nNapisz program, który wczytuje od użytkownika wiersz tekstu, a następnie wyświetla rozkład częstości liter posortowany alfabetycznie.\nPrzykład:\nPodaj tekst: Ala ma kota\na: 4\nk: 1\nl: 1\nm: 1\no: 1\nt: 1",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#równanie-sześcienne",
+    "href": "lab_I/lab_I.html#równanie-sześcienne",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "7 Równanie sześcienne",
+    "text": "7 Równanie sześcienne\nNiech \\(p\\), \\(q\\) będą dodatnimi liczbami całkowitymi. Napisz program, który wyznaczy liczbę całkowitą \\(x\\) spełniającą równość\n\\[\nx^3+px=q\n\\]\nlub stwierdzi, że takiej liczby nie ma.\nPrzykłady:\n\n\\(p=1\\), \\(q=10\\) ==&gt; \\(x=2\\);\n\\(p=123456789\\), \\(q=963418328815428240221153430\\) ==&gt; \\(x=987654321\\);\n\\(p=2\\) lub \\(p=3\\), \\(q=10\\) ==&gt; brak rozwiązania;\n\\(p=123\\), \\(q=56798\\) ==&gt; brak rozwiązania.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
+    "href": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "8 Symulacja dryfu genetycznego",
+    "text": "8 Symulacja dryfu genetycznego\nDryf genetyczny to zjawisko polegające na losowej zmianie częstości allelu w populacji. Jest to ważny przykład procesu prowadzącego do ewolucji nieadaptatywnej.\nCelem tego ćwiczenia jest stworzenie symulacji ilustrującej działanie dryfu genetycznego.\nNiech A, a będą dwoma allelami (wariantami) jednego genu. Zakładamy, że: * Dana jest populacja osobników, w której każdy osobnik ma dwie kopie genu w dowolnych wariantach (czyli są to osobniki diploidalne). * Zmiana jednego allelu na drugi nie ma żadnego znaczenia adaptacyjnego. * W populacji pokolenia nie zachodzą na siebie, kojarzenie jest płciowe i całkowicie losowe a każda para organizmów rodzicielskich ma dwa organizmy potomne. * W organizmie potomnym warianty genu dobierane są losowo, z równym prawdopodobieństwem, po jednym od każdego z organizmów rodzicielskich. Przykład: dla organizmów rodzicielskich o genotypach aA, AA, mamy cztery możliwe genotypy potomne aA, aA, AA, AA odpowiadające wylosowaniu pozycji (1, 1), (1, 2), (2, 1), (2, 2).\nNapisz program, który losowo utworzy populację o ustalonej z góry liczbie osobników (najlepiej parzystej) a następnie wykona dla tej populacji symulację pewnej liczby cykli życiowych.\nZaobserwuj:\n\nJak zmienia się częstość alleli w populacji?\nJak zmiana ta zależy od początkowej liczby osobników? Jak od liczby pokoleń?\n\nZobacz link Time to fixation or loss. Sprawdź jak zawarte tam przewidywania mają się do rezultatów Twojej symulacji.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
     ]
   }
 ]

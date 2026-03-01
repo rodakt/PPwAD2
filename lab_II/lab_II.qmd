@@ -101,25 +101,59 @@ Suma: 15, Średnia: 3.0
 
 Blok `finally` jest wykonywany zawsze — niezależnie od tego, czy wyjątek wystąpił, czy nie, a nawet gdy wyjątek nie jest obsługiwany w tej samej funkcji, lecz propaguje się do wywołującego.
 
-Napisz funkcję `polacz(adres)`, która symuluje nawiązywanie połączenia sieciowego:
+Napisz funkcję `connect(addr)`, która symuluje nawiązywanie połączenia sieciowego:
 
-* wypisuje `Łączenie z <adres>...`,
+* wypisuje `Łączenie z <addr>...`,
 * wywołuje `time.sleep(t)`, gdzie `t` to losowa liczba rzeczywista z przedziału $[0, 1)$,
 * jeśli `t` przekracza próg `0.6`, zgłasza `RuntimeError("Przekroczono limit czasu")`,
-* w przeciwnym razie wypisuje `Połączono z <adres>.`,
-* w bloku `finally` wypisuje `Zamknięto połączenie z <adres>.`
+* w przeciwnym razie wypisuje `Połączono z <addr>.`,
+* w bloku `finally` wypisuje `Zamknięto połączenie z <addr>.`
 
-Napisz program, który w pętli wywołuje `polacz()` dla dziesięciu adresów `192.168.0.0`, ..., `192.168.0.9`, obsługując `RuntimeError` stosownym komunikatem.
+Napisz program, który w pętli wywołuje `connect()` dla dziesięciu adresów `192.168.0.0`, ..., `192.168.0.9`, obsługując `RuntimeError` stosownym komunikatem.
 
-Przykład (fragment):
+Przykład:
 
 ```
 Łączenie z 192.168.0.0...
-Połączono z 192.168.0.0.
-Zamknięto połączenie z 192.168.0.0.
+Zamknięto połączenie z 192.168.0.0
+Błąd: Przekroczono limit czasu
+------------------------------
 Łączenie z 192.168.0.1...
-Zamknięto połączenie z 192.168.0.1.
-Błąd: przekroczono limit czasu.
+Połączono z 192.168.0.1
+Zamknięto połączenie z 192.168.0.1
+------------------------------
+Łączenie z 192.168.0.2...
+Zamknięto połączenie z 192.168.0.2
+Błąd: Przekroczono limit czasu
+------------------------------
+Łączenie z 192.168.0.3...
+Połączono z 192.168.0.3
+Zamknięto połączenie z 192.168.0.3
+------------------------------
+Łączenie z 192.168.0.4...
+Połączono z 192.168.0.4
+Zamknięto połączenie z 192.168.0.4
+------------------------------
+Łączenie z 192.168.0.5...
+Połączono z 192.168.0.5
+Zamknięto połączenie z 192.168.0.5
+------------------------------
+Łączenie z 192.168.0.6...
+Połączono z 192.168.0.6
+Zamknięto połączenie z 192.168.0.6
+------------------------------
+Łączenie z 192.168.0.7...
+Połączono z 192.168.0.7
+Zamknięto połączenie z 192.168.0.7
+------------------------------
+Łączenie z 192.168.0.8...
+Połączono z 192.168.0.8
+Zamknięto połączenie z 192.168.0.8
+------------------------------
+Łączenie z 192.168.0.9...
+Połączono z 192.168.0.9
+Zamknięto połączenie z 192.168.0.9
+------------------------------
 ```
 
 W jakiej kolejności pojawiają się komunikaty gdy połączenie się nie powiedzie?

@@ -157,6 +157,12 @@ window.Quarto = {
  <span class="menu-text">Błędy i wyjątki</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testy jednostkowe</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -196,7 +202,11 @@ window.Quarto = {
   <li><a href="#hierarchia-wyjątków-arytmetycznych" id="toc-hierarchia-wyjątków-arytmetycznych" class="nav-link" data-scroll-target="#hierarchia-wyjątków-arytmetycznych"><span class="header-section-number">2</span> Hierarchia wyjątków arytmetycznych</a></li>
   <li><a href="#suma-i-średnia-z-powtórzeniem" id="toc-suma-i-średnia-z-powtórzeniem" class="nav-link" data-scroll-target="#suma-i-średnia-z-powtórzeniem"><span class="header-section-number">3</span> Suma i średnia z powtórzeniem</a></li>
   <li><a href="#symulacja-połączenia-sieciowego" id="toc-symulacja-połączenia-sieciowego" class="nav-link" data-scroll-target="#symulacja-połączenia-sieciowego"><span class="header-section-number">4</span> Symulacja połączenia sieciowego</a></li>
-  <li><a href="#silnia-z-walidacją-argumentu" id="toc-silnia-z-walidacją-argumentu" class="nav-link" data-scroll-target="#silnia-z-walidacją-argumentu"><span class="header-section-number">5</span> Silnia z walidacją argumentu</a></li>
+  <li><a href="#moduł-funkcji-numerycznych" id="toc-moduł-funkcji-numerycznych" class="nav-link" data-scroll-target="#moduł-funkcji-numerycznych"><span class="header-section-number">5</span> Moduł funkcji numerycznych</a>
+  <ul class="collapse">
+  <li><a href="#moduł-numerics.py" id="toc-moduł-numerics.py" class="nav-link" data-scroll-target="#moduł-numerics.py"><span class="header-section-number">5.1</span> Moduł <code>numerics.py</code></a></li>
+  <li><a href="#program-sprawdzający" id="toc-program-sprawdzający" class="nav-link" data-scroll-target="#program-sprawdzający"><span class="header-section-number">5.2</span> Program sprawdzający</a></li>
+  </ul></li>
   <li><a href="#statystyki-pliku-tekstowego" id="toc-statystyki-pliku-tekstowego" class="nav-link" data-scroll-target="#statystyki-pliku-tekstowego"><span class="header-section-number">6</span> Statystyki pliku tekstowego</a></li>
   <li><a href="#inspekcja-pliku-binarnego" id="toc-inspekcja-pliku-binarnego" class="nav-link" data-scroll-target="#inspekcja-pliku-binarnego"><span class="header-section-number">7</span> Inspekcja pliku binarnego</a></li>
   </ul>
@@ -295,52 +305,168 @@ Suma: 15, Średnia: 3.0</code></pre>
 <section id="symulacja-połączenia-sieciowego" class="level2" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="symulacja-połączenia-sieciowego"><span class="header-section-number">4</span> Symulacja połączenia sieciowego</h2>
 <p>Blok <code>finally</code> jest wykonywany zawsze — niezależnie od tego, czy wyjątek wystąpił, czy nie, a nawet gdy wyjątek nie jest obsługiwany w tej samej funkcji, lecz propaguje się do wywołującego.</p>
-<p>Napisz funkcję <code>polacz(adres)</code>, która symuluje nawiązywanie połączenia sieciowego:</p>
+<p>Napisz funkcję <code>connect(addr)</code>, która symuluje nawiązywanie połączenia sieciowego:</p>
 <ul>
-<li>wypisuje <code>Łączenie z &lt;adres&gt;...</code>,</li>
+<li>wypisuje <code>Łączenie z &lt;addr&gt;...</code>,</li>
 <li>wywołuje <code>time.sleep(t)</code>, gdzie <code>t</code> to losowa liczba rzeczywista z przedziału <span class="math inline">\([0, 1)\)</span>,</li>
 <li>jeśli <code>t</code> przekracza próg <code>0.6</code>, zgłasza <code>RuntimeError("Przekroczono limit czasu")</code>,</li>
-<li>w przeciwnym razie wypisuje <code>Połączono z &lt;adres&gt;.</code>,</li>
-<li>w bloku <code>finally</code> wypisuje <code>Zamknięto połączenie z &lt;adres&gt;.</code></li>
+<li>w przeciwnym razie wypisuje <code>Połączono z &lt;addr&gt;.</code>,</li>
+<li>w bloku <code>finally</code> wypisuje <code>Zamknięto połączenie z &lt;addr&gt;.</code></li>
 </ul>
-<p>Napisz program, który w pętli wywołuje <code>polacz()</code> dla dziesięciu adresów <code>192.168.0.0</code>, …, <code>192.168.0.9</code>, obsługując <code>RuntimeError</code> stosownym komunikatem.</p>
-<p>Przykład (fragment):</p>
+<p>Napisz program, który w pętli wywołuje <code>connect()</code> dla dziesięciu adresów <code>192.168.0.0</code>, …, <code>192.168.0.9</code>, obsługując <code>RuntimeError</code> stosownym komunikatem.</p>
+<p>Przykład:</p>
 <pre><code>Łączenie z 192.168.0.0...
-Połączono z 192.168.0.0.
-Zamknięto połączenie z 192.168.0.0.
+Zamknięto połączenie z 192.168.0.0
+Błąd: Przekroczono limit czasu
+------------------------------
 Łączenie z 192.168.0.1...
-Zamknięto połączenie z 192.168.0.1.
-Błąd: przekroczono limit czasu.</code></pre>
+Połączono z 192.168.0.1
+Zamknięto połączenie z 192.168.0.1
+------------------------------
+Łączenie z 192.168.0.2...
+Zamknięto połączenie z 192.168.0.2
+Błąd: Przekroczono limit czasu
+------------------------------
+Łączenie z 192.168.0.3...
+Połączono z 192.168.0.3
+Zamknięto połączenie z 192.168.0.3
+------------------------------
+Łączenie z 192.168.0.4...
+Połączono z 192.168.0.4
+Zamknięto połączenie z 192.168.0.4
+------------------------------
+Łączenie z 192.168.0.5...
+Połączono z 192.168.0.5
+Zamknięto połączenie z 192.168.0.5
+------------------------------
+Łączenie z 192.168.0.6...
+Połączono z 192.168.0.6
+Zamknięto połączenie z 192.168.0.6
+------------------------------
+Łączenie z 192.168.0.7...
+Połączono z 192.168.0.7
+Zamknięto połączenie z 192.168.0.7
+------------------------------
+Łączenie z 192.168.0.8...
+Połączono z 192.168.0.8
+Zamknięto połączenie z 192.168.0.8
+------------------------------
+Łączenie z 192.168.0.9...
+Połączono z 192.168.0.9
+Zamknięto połączenie z 192.168.0.9
+------------------------------</code></pre>
 <p>W jakiej kolejności pojawiają się komunikaty gdy połączenie się nie powiedzie?</p>
 <hr>
 </section>
-<section id="silnia-z-walidacją-argumentu" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="silnia-z-walidacją-argumentu"><span class="header-section-number">5</span> Silnia z walidacją argumentu</h2>
-<p>Napisz funkcję <code>silnia(n)</code>, która oblicza <span class="math inline">\(n!\)</span> dla nieujemnych liczb całkowitych. Funkcja powinna zgłaszać:</p>
+<section id="moduł-funkcji-numerycznych" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="moduł-funkcji-numerycznych"><span class="header-section-number">5</span> Moduł funkcji numerycznych</h2>
+<p>Celem tego zadania jest napisanie prostego modułu z funkcjami numerycznymi oraz programu, który z tego modułu korzysta. Zadanie ilustruje obsługę błędów na różnych poziomach programu.</p>
+<section id="moduł-numerics.py" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="moduł-numerics.py"><span class="header-section-number">5.1</span> Moduł <code>numerics.py</code></h3>
+<p>Napisz moduł <code>numerics.py</code> zawierający trzy funkcje:</p>
+<p><strong><code>parse_number(text)</code></strong> — przyjmuje łańcuch znaków i zwraca liczbę w najwęższym pasującym typie:</p>
 <ul>
-<li><code>TypeError</code> — jeśli <code>n</code> nie jest liczbą całkowitą,</li>
+<li>jeśli <code>text</code> reprezentuje liczbę całkowitą (np. <code>"5"</code>, <code>"-3"</code>), zwraca <code>int</code>;</li>
+<li>jeśli <code>text</code> reprezentuje liczbę zmiennoprzecinkową o wartości całkowitej (np. <code>"3.0"</code>, <code>"-7.0"</code>), zwraca <code>int</code>;</li>
+<li>jeśli <code>text</code> reprezentuje liczbę zmiennoprzecinkową (np. <code>"3.5"</code>), zwraca <code>float</code>;</li>
+<li>w przeciwnym razie zgłasza <code>ValueError</code>.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Wskazówka
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Metoda <code>float.is_integer()</code> zwraca <code>True</code>, gdy wartość zmiennoprzecinkowa jest liczbą całkowitą, np. <code>(3.0).is_integer()</code> daje <code>True</code>.</p>
+</div>
+</div>
+<p><strong><code>silnia(n)</code></strong> — oblicza <span class="math inline">\(n!\)</span> dla nieujemnych liczb całkowitych. Zgłasza:</p>
+<ul>
+<li><code>TypeError</code> — jeśli <code>n</code> nie jest liczbą całkowitą (<code>isinstance(n, int)</code>),</li>
 <li><code>ValueError</code> — jeśli <code>n</code> jest ujemna.</li>
 </ul>
-<p>Do sprawdzenia typu użyj wbudowanej funkcji <code>isinstance(n, int)</code>, która zwraca <code>True</code>, jeśli <code>n</code> jest instancją klasy <code>int</code>.</p>
-<p>Napisz program, który wczytuje <code>n</code> od użytkownika i wywołuje <code>silnia(n)</code>, obsługując oba wyjątki stosownymi komunikatami. Zwróć uwagę, że <code>input()</code> zawsze zwraca łańcuch znaków — musisz samodzielnie zdecydować, jak i kiedy dokonać konwersji na liczbę, by móc przetestować oba wyjątki.</p>
-<p>Przykłady:</p>
-<pre><code>Podaj n: -3
-Błąd: argument musi być nieujemny.</code></pre>
-<pre><code>Podaj n: 3.5
+<p><strong><code>symbol_newtona(n, k)</code></strong> — oblicza <span class="math display">\[\binom{n}{k} = \frac{n!}{k!(n-k)!}\]</span> korzystając z funkcji <code>silnia</code>. Zgłasza:</p>
+<ul>
+<li><code>TypeError</code> — jeśli <code>n</code> lub <code>k</code> nie jest liczbą całkowitą,</li>
+<li><code>ValueError</code> — jeśli <span class="math inline">\(n &lt; 0\)</span>, <span class="math inline">\(k &lt; 0\)</span> lub <span class="math inline">\(k &gt; n\)</span>.</li>
+</ul>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Uwaga
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Obliczanie symbolu Newtona przez trzy wywołania silni nie jest efektywne obliczeniowo. Tu nie chodzi nam jednak o efektywność — funkcje te są jedynie ilustracją obsługi błędów.</p>
+</div>
+</div>
+<p>Każda funkcja w module powinna samodzielnie walidować swoje argumenty, nawet jeśli w danym programie walidacja ta wydaje się zbędna — funkcja nie wie, kto i jak ją wywoła w przyszłości.</p>
+</section>
+<section id="program-sprawdzający" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="program-sprawdzający"><span class="header-section-number">5.2</span> Program sprawdzający</h3>
+<p>W tym samym pliku <code>numerics.py</code>, w bloku <code>if __name__ == "__main__":</code>, napisz program, który:</p>
+<ol type="1">
+<li>pobiera od użytkownika wartości <code>n</code> i <code>k</code> (jako tekst),</li>
+<li>przetwarza je za pomocą <code>parse_number</code>,</li>
+<li>wywołuje <code>symbol_newtona(n, k)</code>,</li>
+<li>wyświetla wynik lub stosowny komunikat o błędzie.</li>
+</ol>
+<p>Zwróć uwagę, że <code>ValueError</code> może pochodzić z dwóch różnych miejsc: z <code>parse_number</code> (wejście nie jest liczbą) lub z <code>symbol_newtona</code> (argumenty poza dziedziną).</p>
+<p><strong>Przykłady:</strong></p>
+<pre><code>n: 5
+k: 2
+C(5, 2) = 10</code></pre>
+<pre><code>n: 5
+k: 2.5
 Błąd: argument musi być liczbą całkowitą.</code></pre>
-<pre><code>Podaj n: 5
-5! = 120</code></pre>
+<pre><code>n: abc
+k: 2
+Błąd: 'abc' nie jest liczbą.</code></pre>
+<pre><code>n: 3
+k: 5
+Błąd: wymagane 0 &lt;= k &lt;= n, otrzymano n=3, k=5.</code></pre>
+<pre><code>n: -4
+k: 2
+Błąd: wymagane n &gt;= 0, otrzymano n=-4.</code></pre>
+<pre><code>n: 5.0
+k: 3
+C(5, 3) = 10</code></pre>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Do przemyślenia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Które wyjątki zgłaszane przez <code>silnia()</code> są w tym programie faktycznie osiągalne? Prześledź możliwe ścieżki wykonania: jeśli <code>parse_number</code> zwróci <code>float</code>, to który wyjątek zostanie zgłoszony pierwszy — z <code>silnia()</code> czy z <code>symbol_newtona()</code>? Czy to oznacza, że walidacja w <code>silnia()</code> jest niepotrzebna?</p>
+</div>
+</div>
 <hr>
+</section>
 </section>
 <section id="statystyki-pliku-tekstowego" class="level2" data-number="6">
 <h2 data-number="6" class="anchored" data-anchor-id="statystyki-pliku-tekstowego"><span class="header-section-number">6</span> Statystyki pliku tekstowego</h2>
 <p>Napisz program, który wczytuje ścieżkę do pliku tekstowego podaną przez użytkownika i wyświetla:</p>
 <ul>
 <li>liczbę wierszy,</li>
-<li>liczbę słów,</li>
-<li>liczbę znaków (bez znaku nowej linii).</li>
+<li>liczbę słów (<em>słowo</em> to dowolna sekwencja znaków oddzielona białymi znakami, np. <code>"Hello, world!"</code> zawiera dwa słowa: <code>"Hello,"</code> i <code>"world!"</code>),</li>
+<li>liczbę znaków.</li>
 </ul>
-<p>Użyj menedżera kontekstu (<code>with</code>) i jawnie określ kodowanie <code>encoding='utf-8'</code>. Program powinien obsługiwać wyjątek <code>FileNotFoundError</code>, wyświetlając komunikat <code>Brak pliku: &lt;nazwa_pliku&gt;</code>.</p>
+<p>Użyj menedżera kontekstu (<code>with</code>) i jawnie określ kodowanie <code>encoding='utf-8'</code>. Program powinien obsługiwać:</p>
+<ul>
+<li><code>FileNotFoundError</code> — komunikatem <code>Brak pliku: &lt;nazwa_pliku&gt;</code>,</li>
+<li><code>OSError</code> — komunikatem <code>Błąd odczytu pliku: &lt;treść błędu&gt;</code>.</li>
+</ul>
 <p>Przykład:</p>
 <pre><code>Podaj ścieżkę do pliku: wiersz.txt
 Wiersze: 4
@@ -356,7 +482,11 @@ Znaki:   142</code></pre>
 <li>pierwszych 16 bajtów w reprezentacji szesnastkowej (hex),</li>
 <li>czy plik jest plikiem PNG — plik PNG zaczyna się od sygnatury <code>b'\x89PNG\r\n\x1a\n'</code> (8 bajtów).</li>
 </ul>
-<p>Użyj trybu <code>'rb'</code> w funkcji <code>open()</code> i menedżera kontekstu. Obsłuż <code>FileNotFoundError</code>.</p>
+<p>Użyj trybu <code>'rb'</code> w funkcji <code>open()</code> i menedżera kontekstu. Program powinien obsługiwać:</p>
+<ul>
+<li><code>FileNotFoundError</code> — komunikatem <code>Brak pliku: &lt;nazwa_pliku&gt;</code>,</li>
+<li><code>OSError</code> — komunikatem <code>Błąd odczytu pliku: &lt;treść błędu&gt;</code>.</li>
+</ul>
 <p>Przykład dla pliku PNG:</p>
 <pre><code>Podaj ścieżkę do pliku: obrazek.png
 Rozmiar: 24831 bajtów

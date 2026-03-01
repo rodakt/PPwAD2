@@ -1,0 +1,349 @@
+---
+title: Testy jednostkowe
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+## Instrukcja `assert`
+
+Instrukcja `assert` jest wykorzystywana do weryfikacji założeń i do testowania kodu. Składnia instrukcji `assert` jest następująca:
+
+```python
+assert <warunek>, <opcjonalny komunikat>
+```
+
+`<warunek>` jest wyrażeniem logicznym. Jeśli `<warunek>` jest fałszywy, to instrukcja `assert` zgłasza wyjątek `AssertionError`. `<komunikat>` jest łańcuchem znaków, który jest wyświetlany w momencie zgłoszenia wyjątku. 
+
+### Przykład
+
+Piszemy funkcję realizującą klasyczny algorytm szukania maksimum w ciągu liczb. Wykorzystamy instrukcję `assert` do testowania **[niezmiennika pętli](https://en.wikipedia.org/wiki/Loop_invariant)**.
+
+```python
+{{< include src/maksimum_loop.py >}}
+```
+
+Niezmiennik pętli to takie wyrażenie logiczne, które jest prawdziwe:
+
+* przed rozpoczęciem pętli,
+* w każdej iteracji,
+* po zakończeniu pętli.
+
+Przykładem niezmiennika dla pętli w funkcji `maksimum` jest wyrażenie: *zmienna `maks` jest równa maksimum z dotychczas przetworzonych elementów ciągu*. Niezmiennik ten powinien być cały czas prawdziwy. Fakt ten sprawdzimy za pomocą instrukcji `assert`.
+
+```python
+{{< include src/maksimum_loop_inv.py >}}
+```
+
+::: {.callout-tip}
+## Ćwiczenie
+
+W pętli:
+    
+```python
+n = 10
+i, j = 0, n
+
+while i < n:
+    j -= 1
+    i += 1
+```
+
+zidentyfikuj niezmiennik pętli i zaimplementuj go za pomocą instrukcji `assert`.
+:::
+
+## Testy jednostkowe
+
+Testy jednostkowe to testy, które sprawdzają poprawność działania pojedynczych elementów programu, takich jak funkcje, klasy, itp. Wywołuje się je zazwyczaj automatycznie. Jedno z podejść do tworzenia oprogramowania, tzw. [programowanie sterowane testami](https://en.wikipedia.org/wiki/Test-driven_development) (TDD), zakłada, że testy, w tym testy jednostkowe, są pisane przed napisaniem kodu, który mają testować.
+
+### Przykład 
+
+Piszemy program do obliczania pola powierzchni trójkąta, gdy dane są długości jego boków. Korzystamy z [twierdzenia Herona](https://pl.wikipedia.org/wiki/Twierdzenie_Herona). Mamy tu dwa zagadnienia:
+
+* napisanie funkcji sprawdzającej, czy dane liczby mogą być długościami boków trójkąta,
+* napisanie funkcji obliczającej pole powierzchni trójkąta.
+
+Zadanie zaczynamy od napisania testów jednostkowych dla obu funkcji. Oto propozycja testów.
+
+
+```python
+{{< include src/triangle_area_tests_example/assert_test_triangle_area.py >}}
+```
+
+Program `triangle_area.py` zawiera implementację funkcji `is_triangle()` i `triangle_area()`. Funkcja `is_triangle()` sprawdza, czy dane liczby mogą być długościami boków trójkąta i zwraca wartość logiczną. Funkcja `triangle_area()` oblicza pole powierzchni trójkąta o bokach o długościach podanych jako argumenty lub zgłasza wyjątek `ValueError`, jeśli takiego trójkąta zbudować się nie da.
+
+```python
+{{< include src/triangle_area_tests_example/triangle_area.py >}}
+```
+
+Programy `triangle_area.py` i `assert_test_triangle_area.py` powinny znajdować się w tym samym katalogu. Test można uruchomić z poziomu edytora, jak każdy inny program, lub z wiersza poleceń za pomocą:
+
+```bash
+python assert_test_triangle_area.py
+```
+
+Wynik:
+
+```
+=== All tests passed. ===
+```
+
+::: {.callout-tip}
+## Ćwiczenie
+Przeprowadź powyższe postępowanie. Zobacz co się stanie, gdy dokonasz zmian w implementacji funkcji `is_triangle()` lub `triangle_area()` tak, aby testy nie przechodziły.
+:::
+
+### Moduł [`unittest`](https://docs.python.org/3/library/unittest.html)
+
+Pisanie i uruchamianie testów tak jak w powyższym przykładzie szybko staje się dość uciążliwe, dlatego powstały narzędzia ułatwiające pisanie i automatyczne uruchamianie testów. Jednym z nich jest moduł `unittest` znajdujący się w bibliotece standardowej Pythona. Poniżej podaję przykład użycia modułu `unittest` do testowania funkcji `is_triangle()` i `triangle_area()`. 
+
+::: {.callout-note}
+## Testy jednostkowe w module `unittest` wymagają znajomości programowania obiektowego
+
+Nie przejmuj się, jeśli poniższy kod jest dla Ciebie nie do końca zrozumiały. W tej chwili chodzi o to, abyś potrafił uruchomić testy jednostkowe za pomocą modułu `unittest` i wiedział co testuje dany test, czyli potrafił testy czytać. Na dalszych zajęciach omówimy programowanie obiektowe (pisanie klas) i wtedy kody źródłowe testów jednostkowych staną się całkowicie zrozumiałe.
+:::
+
+
+```python
+{{< include src/triangle_area_tests_example/test_triangle_area.py >}}
+```
+
+Test uruchamiamy tak samo jak poprzednio, w edytorze lub z wiersza poleceń:
+
+```bash
+python test_triangle_area.py
+```
+
+Wynik:
+
+```
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK
+```
+
+Bardziej wyczerpujące komunikaty o błędach i wynikach testów uzyskamy, jeśli uruchomimy testy z wiersza poleceń z opcją `-v`:
+
+```bash
+python -m unittest -v test_triangle_area.py
+```
+
+lub
+```bash
+python test_triangle_area.py -v
+```
+
+Wynik:
+
+```
+test_is_not_triangle (__main__.TestTriangleArea)
+Testy negatywne dla funkcji is_triangle(). ... ok
+test_is_triangle (__main__.TestTriangleArea)
+Testy pozytywne dla funkcji is_triangle(). ... ok
+test_triangle_area (__main__.TestTriangleArea)
+Testy funkcji triangle_area(). ... ok
+test_triangle_area_exceptions (__main__.TestTriangleArea)
+Testy wyjątków dla funkcji triangle_area(). ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+OK
+```
+
+### Czytanie wyników `unittest`
+
+Gdy uruchamiasz testy bez opcji `-v`, wynik wygląda np. tak:
+
+```
+$ python -m unittest test_triangle_area.py 
+F.EF
+======================================================================
+ERROR: test_triangle_area (test_triangle_area.TestTriangleArea.test_triangle_area)
+Testy funkcji triangle_area().
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/src/triangle_area_tests_example/test_triangle_area.py", line 32, in test_triangle_area
+    self.assertAlmostEqual(triangle_area(3, 4, 5), 6, msg="Pole trójkąta 3, 4, 5")
+                           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/src/triangle_area_tests_example/triangle_area.py", line 16, in triangle_area
+    return sqrt(p * (p - a) * (p - b) * (p - c)*-1)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: math domain error
+
+======================================================================
+FAIL: test_is_not_triangle (test_triangle_area.TestTriangleArea.test_is_not_triangle)
+Testy negatywne dla funkcji is_triangle().
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/src/triangle_area_tests_example/test_triangle_area.py", line 26, in test_is_not_triangle
+    self.assertFalse(is_triangle(1, 1, 3), msg="1, 1, 3 nie jest trójkątem")
+AssertionError: True is not false : 1, 1, 3 nie jest trójkątem
+
+======================================================================
+FAIL: test_triangle_area_exceptions (test_triangle_area.TestTriangleArea.test_triangle_area_exceptions)
+Testy wyjątków dla funkcji triangle_area().
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/src/triangle_area_tests_example/test_triangle_area.py", line 45, in test_triangle_area_exceptions
+    with self.assertRaises(ValueError) as e:
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+FAILED (failures=2, errors=1)
+```
+
+Pierwszy wiersz (`F.EF`) to szybkie podsumowanie — po jednym znaku na
+każdy test:
+
+* `.` — test przeszedł (pass),
+* `F` — test nie przeszedł, bo asercja zawiodła (failure),
+* `E` — test nie przeszedł, bo w trakcie jego wykonywania powstał
+  nieobsłużony wyjątek (error).
+
+Poniżej wypisane są szczegóły dla każdego testu oznaczonego `F` lub `E`.
+Każdy taki blok zawiera:
+
+* nagłówek z nazwą metody testowej i krótkim opisem (docstring),
+* traceback wskazujący dokładnie, w którym miejscu kodu test zawiódł,
+* komunikat błędu.
+
+Wiersz `Ran 4 tests` podaje łączną liczbę uruchomionych testów, a
+ostatni wiersz podsumowuje wynik: `OK` albo `FAILED` z liczbą
+failures i errors.
+
+::: {.callout-tip}
+## Wskazówka praktyczna
+Gdy testów jest dużo i wiele z nich nie
+przechodzi, warto zacząć od pierwszego błędu i naprawić go, zanim
+przejdziemy do następnego. Opcja `-f` (`--failfast`) zatrzymuje
+uruchamianie testów po pierwszym niepowodzeniu:
+
+``` bash
+python -m unittest -f test_triangle_area.py
+```
+
+Opcję `-f` można łączyć z `-v`:
+
+``` bash
+python -m unittest -vf test_triangle_area.py
+```
+
+Kolejna przydatna opcja to `-k`, która pozwala uruchomić tylko testy
+pasujące do wzorca. Przykładowo, aby uruchomić tylko testy, których
+nazwa zawiera `area`:
+
+``` bash
+python -m unittest -v -k area test_triangle_area.py
+```
+
+Podsumowanie najważniejszych opcji:
+
+| Opcja | Działanie |
+|-------|-----------|
+| `-v` | tryb gadatliwy — wypisuje nazwę i wynik każdego testu |
+| `-f` | zatrzymuje się po pierwszym niepowodzeniu |
+| `-k <wzorzec>` | uruchamia tylko testy pasujące do wzorca |
+:::
+
+## Testy w docstringach. Moduł `doctest`
+
+Moduł `doctest` umożliwia umieszczanie testów jednostkowych w docstringach funkcji, klas i metod. Testy te są fragmentami sesji interaktywnych, które są wykonywane, a wyniki są porównywane z wynikami oczekiwanymi. 
+
+Kod
+
+```python
+import doctest
+
+doctest.testmod()
+```
+
+testuje wszystkie docstringi w środowisku globalnym.
+
+Domyślnie wykonywane są wszystkie testy, dłuższa informacja wypisywana jest dla tych testów, które się nie powiodły.
+
+### Przykład
+
+Testy w docstringu dla funkcji zwracającej dodatnie dzielniki.
+
+```python
+def dzielniki(n):
+    '''Zwraca listę dodatnich dzielników n.
+
+    >>> dzielniki(1)
+    [1]
+    >>> dzielniki(5)
+    [1, 5]
+    >>> dzielniki(-8)
+    [1, 2, 4, 8]
+    '''
+
+    pass
+```
+
+Mamy gotowy nagłówek funkcji wraz z docstringiem, w którym umieściliśmy testy. Testy te możemy wykonać z wiersza poleceń za pomocą:
+
+```bash
+python -m doctest dzielniki_doctest.py
+```
+
+Wynik:
+
+```
+**********************************************************************
+File "/home/tomek/Dokumenty/PPwAD2/src/dzielniki_doctest.py", line 7, in dzielniki_doctest.dzielniki
+Failed example:
+    dzielniki(1)
+Expected:
+    [1]
+Got nothing
+**********************************************************************
+File "/home/tomek/Dokumenty/PPwAD2/src/dzielniki_doctest.py", line 9, in dzielniki_doctest.dzielniki
+Failed example:
+    dzielniki(5)
+Expected:
+    [1, 5]
+Got nothing
+**********************************************************************
+File "/home/tomek/Dokumenty/PPwAD2/src/dzielniki_doctest.py", line 11, in dzielniki_doctest.dzielniki
+Failed example:
+    dzielniki(-8)
+Expected:
+    [1, 2, 4, 8]
+Got nothing
+**********************************************************************
+1 items had failures:
+   3 of   3 in dzielniki_doctest.dzielniki
+***Test Failed*** 3 failures.
+```
+
+Testy nie przeszły, gdyż jeszcze nie napisaliśmy funkcji. Zauważmy w tym miejscu, że przed napisaniem funkcji **żaden** test nie powinien przechodzić. W przeciwnym razie oznaczałoby to, że testy są napisane źle.
+
+Alternatywnie, testy można uruchomić z poziomu edytora, jeśli tylko dopiszemy na końcu pliku:
+
+```python
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+```
+
+Plik `dzielniki_doctest.py` po zmianach:
+
+```python
+{{< include src/dzielniki_doctest.py >}}
+```
+
+Wywołanie `doctest.testmod(verbose=True)` przeprowadza testy w trybie "gadatliwym". Dzięki temu w przypadku sukcesu mamy wizualne potwierdzenie, że testy zostały wykonane. Z wiersza poleceń wywołanie `python -m doctest -v dzielniki_doctest.py` daje podobny efekt.
+
+Na koniec, wywołanie
+
+```python
+doctest.run_docstring_examples(f, globals(), verbose=True)
+```
+
+wykonuje testy tylko dla obiektu `f`, a nie dla wszystkich docstringów w środowisku globalnym.

@@ -17,6 +17,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 ## Wykłady
 
 - [Wykład I: Błędy i wyjątki](wyklad_I.qmd)
+- [Wykład II: Testy jednostkowe](wyklad_II.qmd)
 
 ## Laboratoria
 

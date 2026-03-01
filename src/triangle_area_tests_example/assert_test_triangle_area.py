@@ -16,11 +16,12 @@ def test_is_triangle():
 
 
 def test_triangle_area():
-    assert isclose(triangle_area(3, 4, 5), 6), "Pole trójkąta 3, 4, 5"
-    assert isclose(triangle_area(1, 1, 1), sqrt(3) / 4), "Pole trójkąta 1, 1, 1"
-    assert isclose(triangle_area(5, 2, 3), 0), "Pole trójkąta 5, 2, 3"
+    abs_tol = 1e-15
+    assert isclose(triangle_area(3, 4, 5), 6, abs_tol=abs_tol), "Pole trójkąta 3, 4, 5"
+    assert isclose(triangle_area(1, 1, 1), sqrt(3) / 4, abs_tol=abs_tol), "Pole trójkąta 1, 1, 1"
+    assert isclose(triangle_area(5, 2, 3), 0, abs_tol=abs_tol), "Pole trójkąta 5, 2, 3"
     assert isclose(
-        triangle_area(100, 100, sqrt(2) * 100), 5000
+        triangle_area(100, 100, sqrt(2) * 100), 5000, abs_tol=abs_tol
     ), "Pole trójkąta 100, 100, 100√2"
 
 

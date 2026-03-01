@@ -160,33 +160,114 @@ W jakiej kolejności pojawiają się komunikaty gdy połączenie się nie powied
 
 ***
 
-## Silnia z walidacją argumentu
+## Moduł funkcji numerycznych
 
-Napisz funkcję `silnia(n)`, która oblicza $n!$ dla nieujemnych liczb całkowitych. Funkcja powinna zgłaszać:
+Celem tego zadania jest napisanie prostego modułu z funkcjami numerycznymi
+oraz programu, który z tego modułu korzysta. Zadanie ilustruje obsługę błędów
+na różnych poziomach programu.
 
-* `TypeError` — jeśli `n` nie jest liczbą całkowitą,
+### Moduł `numerics.py`
+
+Napisz moduł `numerics.py` zawierający trzy funkcje:
+
+**`parse_number(text)`** — przyjmuje łańcuch znaków i zwraca liczbę
+w najwęższym pasującym typie:
+
+* jeśli `text` reprezentuje liczbę całkowitą (np. `"5"`, `"-3"`), zwraca `int`;
+* jeśli `text` reprezentuje liczbę zmiennoprzecinkową o wartości
+  całkowitej (np. `"3.0"`, `"-7.0"`), zwraca `int`;
+* jeśli `text` reprezentuje liczbę zmiennoprzecinkową (np. `"3.5"`),
+  zwraca `float`;
+* w przeciwnym razie zgłasza `ValueError`.
+
+::: {.callout-tip}
+## Wskazówka
+Metoda `float.is_integer()` zwraca `True`, gdy wartość
+zmiennoprzecinkowa jest liczbą całkowitą, np. `(3.0).is_integer()` daje `True`.
+:::
+
+**`silnia(n)`** — oblicza $n!$ dla nieujemnych liczb całkowitych. Zgłasza:
+
+* `TypeError` — jeśli `n` nie jest liczbą całkowitą (`isinstance(n, int)`),
 * `ValueError` — jeśli `n` jest ujemna.
 
-Do sprawdzenia typu użyj wbudowanej funkcji `isinstance(n, int)`, która zwraca `True`, jeśli `n` jest instancją klasy `int`.
+**`symbol_newtona(n, k)`** — oblicza $$\binom{n}{k} = \frac{n!}{k!(n-k)!}$$
+korzystając z funkcji `silnia`. Zgłasza:
 
-Napisz program, który wczytuje `n` od użytkownika i wywołuje `silnia(n)`, obsługując oba wyjątki stosownymi komunikatami. Zwróć uwagę, że `input()` zawsze zwraca łańcuch znaków — musisz samodzielnie zdecydować, jak i kiedy dokonać konwersji na liczbę, by móc przetestować oba wyjątki.
+* `TypeError` — jeśli `n` lub `k` nie jest liczbą całkowitą,
+* `ValueError` — jeśli $n < 0$, $k < 0$ lub $k > n$.
 
-Przykłady:
+::: {.callout-important}
+## Uwaga
+Obliczanie symbolu Newtona przez trzy wywołania silni nie jest
+efektywne obliczeniowo. Tu nie chodzi nam jednak o efektywność — funkcje te są jedynie ilustracją obsługi błędów.
+:::
+
+
+Każda funkcja w module powinna samodzielnie walidować swoje argumenty,
+nawet jeśli w danym programie walidacja ta wydaje się zbędna — funkcja nie
+wie, kto i jak ją wywoła w przyszłości.
+
+### Program sprawdzający
+
+W tym samym pliku `numerics.py`, w bloku `if __name__ == "__main__":`, napisz program, który:
+
+1. pobiera od użytkownika wartości `n` i `k` (jako tekst),
+2. przetwarza je za pomocą `parse_number`,
+3. wywołuje `symbol_newtona(n, k)`,
+4. wyświetla wynik lub stosowny komunikat o błędzie.
+
+Zwróć uwagę, że `ValueError` może pochodzić z dwóch różnych miejsc: 
+z `parse_number` (wejście nie jest liczbą) lub z `symbol_newtona` 
+(argumenty poza dziedziną).
+
+__Przykłady:__
 
 ```
-Podaj n: -3
-Błąd: argument musi być nieujemny.
+n: 5
+k: 2
+C(5, 2) = 10
 ```
 
 ```
-Podaj n: 3.5
+n: 5
+k: 2.5
 Błąd: argument musi być liczbą całkowitą.
 ```
 
 ```
-Podaj n: 5
-5! = 120
+n: abc
+k: 2
+Błąd: 'abc' nie jest liczbą.
 ```
+
+```
+n: 3
+k: 5
+Błąd: wymagane 0 <= k <= n, otrzymano n=3, k=5.
+```
+
+```
+n: -4
+k: 2
+Błąd: wymagane n >= 0, otrzymano n=-4.
+```
+
+```
+n: 5.0
+k: 3
+C(5, 3) = 10
+```
+
+::: {.callout-tip}
+## Do przemyślenia
+
+Które wyjątki zgłaszane przez `silnia()` są w tym programie faktycznie
+osiągalne? Prześledź możliwe ścieżki wykonania: jeśli `parse_number` zwróci
+`float`, to który wyjątek zostanie zgłoszony pierwszy — z `silnia()` czy
+z `symbol_newtona()`? Czy to oznacza, że walidacja w `silnia()` jest
+niepotrzebna?
+:::
 
 ***
 
@@ -195,10 +276,13 @@ Podaj n: 5
 Napisz program, który wczytuje ścieżkę do pliku tekstowego podaną przez użytkownika i wyświetla:
 
 * liczbę wierszy,
-* liczbę słów,
-* liczbę znaków (bez znaku nowej linii).
+* liczbę słów (_słowo_ to dowolna sekwencja znaków oddzielona białymi znakami, np. `"Hello, world!"` zawiera dwa słowa: `"Hello,"` i `"world!"`),
+* liczbę znaków.
 
-Użyj menedżera kontekstu (`with`) i jawnie określ kodowanie `encoding='utf-8'`. Program powinien obsługiwać wyjątek `FileNotFoundError`, wyświetlając komunikat `Brak pliku: <nazwa_pliku>`.
+Użyj menedżera kontekstu (`with`) i jawnie określ kodowanie `encoding='utf-8'`. Program powinien obsługiwać:
+
+* `FileNotFoundError` — komunikatem `Brak pliku: <nazwa_pliku>`,
+* `OSError` — komunikatem `Błąd odczytu pliku: <treść błędu>`.
 
 Przykład:
 
@@ -219,7 +303,10 @@ Napisz program, który wczytuje ścieżkę do pliku binarnego i wyświetla:
 * pierwszych 16 bajtów w reprezentacji szesnastkowej (hex),
 * czy plik jest plikiem PNG — plik PNG zaczyna się od sygnatury `b'\x89PNG\r\n\x1a\n'` (8 bajtów).
 
-Użyj trybu `'rb'` w funkcji `open()` i menedżera kontekstu. Obsłuż `FileNotFoundError`.
+Użyj trybu `'rb'` w funkcji `open()` i menedżera kontekstu. Program powinien obsługiwać:
+
+* `FileNotFoundError` — komunikatem `Brak pliku: <nazwa_pliku>`,
+* `OSError` — komunikatem `Błąd odczytu pliku: <treść błędu>`.
 
 Przykład dla pliku PNG:
 

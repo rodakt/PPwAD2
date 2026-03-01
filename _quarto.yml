@@ -23,6 +23,7 @@ website:
       - section: "Wykłady"
         contents:
           - file: wyklad_I.qmd
+          - file: wyklad_II.qmd
           
 
       - section: "Laboratoria"

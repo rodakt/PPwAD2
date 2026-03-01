@@ -200,7 +200,7 @@ korzystając z funkcji `silnia`. Zgłasza:
 ::: {.callout-important}
 ## Uwaga
 Obliczanie symbolu Newtona przez trzy wywołania silni nie jest
-efektywne obliczeniowo. Tu nie chodzi nam jednak o efektywność — funkcje te są jedynie ilustracją obsługi błędów.
+efektywne. Nie chodzi nam tu jednak o efektywność — funkcje te są jedynie ilustracją mechanizmu obsługi błędów.
 :::
 
 
@@ -307,6 +307,11 @@ Użyj trybu `'rb'` w funkcji `open()` i menedżera kontekstu. Program powinien o
 
 * `FileNotFoundError` — komunikatem `Brak pliku: <nazwa_pliku>`,
 * `OSError` — komunikatem `Błąd odczytu pliku: <treść błędu>`.
+
+::: {.callout-tip}
+## Wskazówka
+Aby wyświetlić bajty w formacie szesnastkowym, możesz użyć metody `hex()` obiektu `bytes` lub funkcji `binascii.hexlify()`.
+:::
 
 Przykład dla pliku PNG:
 

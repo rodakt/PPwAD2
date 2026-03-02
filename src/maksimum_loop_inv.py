@@ -6,8 +6,8 @@ def maksimum_inv(seq):
     
     maks = seq[0]
     
-    # Przed rozpoczęciem pętli maks jest równe pierwszemu elementowi sekwencji.
-    assert maks == seq[0], "Niezmiennik pętli fałszywy przed rozpoczęciem pętli."
+    # Przed rozpoczęciem pętli maks jest równe maksimum z pierwszego elementu sekwencji.
+    assert maks == max(seq[:1]), "Niezmiennik pętli fałszywy przed rozpoczęciem pętli."
     
     for i, x in enumerate(seq[1:], 1):
         if x > maks:

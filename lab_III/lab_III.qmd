@@ -74,7 +74,7 @@ Sprawdź poprawność implementacji na przykładach podanych w docstringu. Wykor
 
 Napisz moduł `is_prime.py` zawierający funkcję `is_prime(n)`, która zwraca `True`, jeśli `n` jest liczbą pierwszą, w przeciwnym razie `False`. Dla `n` ujemnego funkcja zgłasza wyjątek `ValueError` z komunikatem `argument musi być nieujemny`.
 
-Testy modułu `is_prime.py` znajdują się w pliku `test_is_prime.py`. Uruchom testy i upewnij się, że wszystkie przechodzą.
+Testy modułu `is_prime.py` znajdują się w pliku [test_is_prime.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_III/test_is_prime.py). Uruchom testy i upewnij się, że wszystkie przechodzą.
 
 ***
 
@@ -86,7 +86,7 @@ Napisz moduł `rotate_seq.py` zawierający funkcje:
 * `rotate_left(seq, n)` — zwraca sekwencję `seq` przesuniętą cyklicznie o `n` miejsc w lewo; jeśli `n` jest ujemne, to zgłasza wyjątek `ValueError` z komunikatem `n musi być liczbą nieujemną`,
 * `rotate_right(seq, n)` — zwraca sekwencję `seq` przesuniętą cyklicznie o `n` miejsc w prawo; jeśli `n` jest ujemne, to zgłasza wyjątek `ValueError` z komunikatem `n musi być liczbą nieujemną`.
 
-Przeczytaj testy w pliku `test_rotate_seq.py` uważnie — zawierają wymagania, które nie są wprost opisane w treści zadania.
+Przeczytaj testy w pliku [test_rotate_seq.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_III/test_rotate_seq.py) uważnie — zawierają wymagania, które nie są wprost opisane w treści zadania. 
 
 ::: {.callout-tip}
 ## Wskazówka
@@ -120,7 +120,7 @@ Jeśli `use_ascii_only` jest `True` i łańcuch `s` zawiera znaki spoza zakresu 
 
 **[ROT47](https://pl.wikipedia.org/wiki/ROT47)** to szyfr, w którym każdy znak ASCII z zakresu od 33 do 126 (włącznie) jest zamieniany na znak z tego samego zakresu, przesunięty o 47 miejsc w prawo. Jeśli przesunięcie powoduje wyjście poza zakres, to liczymy od początku. Znaki spoza zakresu pozostają bez zmian.
 
-Testy modułu `rot13.py` znajdują się w pliku `test_rot13.py`.
+Testy modułu `rot13.py` znajdują się w pliku [test_rot13.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_III/test_rot13.py).
 
 ***
 
@@ -133,7 +133,7 @@ Napisz moduł `simple_integer_roots.py` zawierający funkcje:
 * `is_perfect_square(n)` — zwraca `True`, jeśli `n` jest kwadratem liczby całkowitej, w przeciwnym razie `False`,
 * `is_perfect_cube(n)` — zwraca `True`, jeśli `n` jest sześcianem liczby całkowitej, w przeciwnym razie `False`. Zwróć uwagę, że liczby ujemne również mogą być sześcianami liczb całkowitych.
 
-Testy modułu `simple_integer_roots.py` znajdują się w pliku `test_simple_integer_roots.py`. 
+Testy modułu `simple_integer_roots.py` znajdują się w pliku [test_simple_integer_roots.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_III/test_simple_integer_roots.py). 
 
 ::: {.callout-warning}
 ## Uwaga

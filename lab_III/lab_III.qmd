@@ -1,0 +1,141 @@
+---
+title: "Lab III: Testy jednostkowe"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+---
+
+Na tym laboratorium zaczynamy pracę z testami automatycznymi. Począwszy od tego laba wiele zadań będzie polegać na napisaniu modułu, który spełnia wymagania zawarte w gotowym pliku z testami. Schemat pracy jest następujący:
+
+1. Przeczytaj treść zadania i przejrzyj plik z testami — testy opisują, jakie funkcje musisz napisać, jakie argumenty przyjmują, co zwracają i jakie wyjątki zgłaszają.
+2. Utwórz moduł z wymaganymi funkcjami (na początku mogą zwracać `None` lub `pass`).
+3. Uruchom testy: `python -m unittest test_modul.py`. Większość testów nie przejdzie, część może przejść przez przypadek.
+4. Stopniowo implementuj funkcje i uruchamiaj testy, aż wszystkie przejdą.
+
+Testy uruchamiaj z wiersza poleceń. Opcja `-v` wyświetla szczegółowe wyniki:
+
+```bash
+python -m unittest -v test_modul.py
+```
+
+Pamiętaj o pozostałych opcjach modułu `unittest` opisanych na wykładzie.
+
+***
+
+## Niezmiennik pętli
+
+W pętli:
+
+```python
+n = 10
+i, j = 0, n
+
+while i < n:
+    i += 1
+    j -= 1
+```
+
+zidentyfikuj niezmiennik pętli i zaimplementuj go za pomocą instrukcji `assert`.
+
+***
+
+## Ciąg arytmetyczny
+
+Dokończ definicję funkcji:
+
+```python
+def is_arithmetic(seq):
+    """Zwraca True, jeśli seq jest ciągiem arytmetycznym; w przeciwnym razie zwraca False.
+
+    Parametry:
+    seq -- ciąg liczb
+    
+    Przykłady:
+    >>> is_arithmetic([])
+    True
+    >>> is_arithmetic([2])
+    True
+    >>> is_arithmetic([5, -1])
+    True
+    >>> is_arithmetic([1, 2, 3])
+    True
+    >>> is_arithmetic(range(100, -1000, -7))
+    True
+    >>> is_arithmetic((2, 5, 8, 10, 13))
+    False
+    """
+    pass
+```
+
+Sprawdź poprawność implementacji na przykładach podanych w docstringu. Wykorzystaj funkcję `doctest.testmod()`.
+
+***
+
+## Test pierwszości
+
+Napisz moduł `is_prime.py` zawierający funkcję `is_prime(n)`, która zwraca `True`, jeśli `n` jest liczbą pierwszą, w przeciwnym razie `False`. Dla `n` ujemnego funkcja zgłasza wyjątek `ValueError` z komunikatem `argument musi być nieujemny`.
+
+Testy modułu `is_prime.py` znajdują się w pliku `test_is_prime.py`. Uruchom testy i upewnij się, że wszystkie przechodzą.
+
+***
+
+## Przesunięcie cykliczne
+
+Napisz moduł `rotate_seq.py` zawierający funkcje:
+
+* `rotate(seq, n)` — zwraca sekwencję `seq` przesuniętą cyklicznie o `n` miejsc; jeśli `n` jest ujemne, to przesunięcie jest w lewo, w przeciwnym razie w prawo,
+* `rotate_left(seq, n)` — zwraca sekwencję `seq` przesuniętą cyklicznie o `n` miejsc w lewo; jeśli `n` jest ujemne, to zgłasza wyjątek `ValueError` z komunikatem `n musi być liczbą nieujemną`,
+* `rotate_right(seq, n)` — zwraca sekwencję `seq` przesuniętą cyklicznie o `n` miejsc w prawo; jeśli `n` jest ujemne, to zgłasza wyjątek `ValueError` z komunikatem `n musi być liczbą nieujemną`.
+
+Przeczytaj testy w pliku `test_rotate_seq.py` uważnie — zawierają wymagania, które nie są wprost opisane w treści zadania.
+
+::: {.callout-tip}
+## Wskazówka
+Wykorzystaj konkatenację (operację `+`) wycinków sekwencji. Dzięki temu nie musisz się martwić o typ sekwencji i nie musisz wykonywać jawnych iteracji.
+
+Przykład:
+
+```python
+>>> s = 'abcde'
+>>> s[2:] + s[:2]
+'cdeab'
+>>> lst = [1, 2, 3, 4, 5]
+>>> lst[2:] + lst[:2]
+[3, 4, 5, 1, 2]
+```
+:::  
+
+***
+
+## Szyfr ROT13
+
+Napisz moduł `rot13.py` zawierający funkcje:
+
+* `is_ascii(s)` — zwraca `True`, jeśli łańcuch `s` składa się wyłącznie ze znaków ASCII, w przeciwnym razie `False`,
+* `rot13(s, use_ascii_only=False)` — zwraca łańcuch zaszyfrowany szyfrem ROT13,
+* `rot47(s, use_ascii_only=False)` — zwraca łańcuch zaszyfrowany szyfrem ROT47.
+
+Jeśli `use_ascii_only` jest `True` i łańcuch `s` zawiera znaki spoza zakresu ASCII, to funkcje `rot13()` i `rot47()` zgłaszają wyjątek `ValueError` z komunikatem `znaleziono znak spoza zakresu ASCII`.
+
+**[ROT13](https://pl.wikipedia.org/wiki/ROT13)** to szyfr, w którym każdy znak alfabetu łacińskiego jest zamieniany na znak przesunięty o 13 miejsc w prawo. Jeśli przesunięcie powoduje wyjście poza alfabet, to liczymy od początku. Znaki niebędące literami alfabetu łacińskiego pozostają bez zmian.
+
+**[ROT47](https://pl.wikipedia.org/wiki/ROT47)** to szyfr, w którym każdy znak ASCII z zakresu od 33 do 126 (włącznie) jest zamieniany na znak z tego samego zakresu, przesunięty o 47 miejsc w prawo. Jeśli przesunięcie powoduje wyjście poza zakres, to liczymy od początku. Znaki spoza zakresu pozostają bez zmian.
+
+Testy modułu `rot13.py` znajdują się w pliku `test_rot13.py`.
+
+***
+
+## Pierwiastki całkowite
+
+Napisz moduł `simple_integer_roots.py` zawierający funkcje:
+
+* `integer_square_root(n)` — zwraca największą liczbę całkowitą `m` taką, że `m**2 <= n`; jeśli `n` jest ujemne, to zgłasza wyjątek `ValueError` z komunikatem `argument musi być nieujemny`,
+* `integer_cubic_root(n)` — zwraca największą liczbę całkowitą `m` taką, że `m**3 <= n`; jeśli `n` jest ujemne, to zgłasza wyjątek `ValueError` z komunikatem `argument musi być nieujemny`,
+* `is_perfect_square(n)` — zwraca `True`, jeśli `n` jest kwadratem liczby całkowitej, w przeciwnym razie `False`,
+* `is_perfect_cube(n)` — zwraca `True`, jeśli `n` jest sześcianem liczby całkowitej, w przeciwnym razie `False`. Zwróć uwagę, że liczby ujemne również mogą być sześcianami liczb całkowitych.
+
+Testy modułu `simple_integer_roots.py` znajdują się w pliku `test_simple_integer_roots.py`. 
+
+::: {.callout-warning}
+## Uwaga
+Testy sprawdzają poprawność dla bardzo dużych liczb, które nie mieszczą się w zakresie typu `float`. Nie wystarczy więc skorzystać z `math.sqrt()` i potęgowania zmiennoprzecinkowego — potrzebne jest wyszukiwanie binarne na liczbach całkowitych.
+:::

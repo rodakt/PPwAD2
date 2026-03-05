@@ -24,6 +24,7 @@ website:
         contents:
           - file: wyklad_I.qmd
           - file: wyklad_II.qmd
+
           
 
       - section: "Laboratoria"
@@ -31,6 +32,7 @@ website:
         contents:
           - file: lab_I/lab_I.qmd
           - file: lab_II/lab_II.qmd
+          - file: lab_III/lab_III.qmd
 
 format:
   html:

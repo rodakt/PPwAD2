@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Tomasz Rodak">
 
-<title>Podstawy programowania (AD) 2</title>
+<title>Lab III: Testy jednostkowe – Podstawy programowania (AD) 2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,27 +21,62 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-a302628f10137ca94cf795410198b6ee.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a302628f10137ca94cf795410198b6ee.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -81,7 +117,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Strona główna</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_III/lab_III.html">Lab III: Testy jednostkowe</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -96,7 +132,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Podstawy programowania (AD) 2</a> 
+      <a href="../">Podstawy programowania (AD) 2</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -108,7 +144,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Strona główna</span></a>
   </div>
 </li>
@@ -123,13 +159,13 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./wyklad_I.html" class="sidebar-item-text sidebar-link">
+  <a href="../wyklad_I.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Błędy i wyjątki</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./wyklad_II.html" class="sidebar-item-text sidebar-link">
+  <a href="../wyklad_II.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Testy jednostkowe</span></a>
   </div>
 </li>
@@ -146,19 +182,19 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
+  <a href="../lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Lab I: Zadania na rozgrzewkę</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lab_II/lab_II.html" class="sidebar-item-text sidebar-link">
+  <a href="../lab_II/lab_II.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Lab II: Błędy i wyjątki</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lab_III/lab_III.html" class="sidebar-item-text sidebar-link">
+  <a href="../lab_III/lab_III.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Lab III: Testy jednostkowe</span></a>
   </div>
 </li>
@@ -174,31 +210,34 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Spis treści</h2>
    
   <ul>
-  <li><a href="#opis-przedmiotu" id="toc-opis-przedmiotu" class="nav-link active" data-scroll-target="#opis-przedmiotu"><span class="header-section-number">1</span> Opis przedmiotu</a></li>
-  <li><a href="#wykłady" id="toc-wykłady" class="nav-link" data-scroll-target="#wykłady"><span class="header-section-number">2</span> Wykłady</a></li>
-  <li><a href="#laboratoria" id="toc-laboratoria" class="nav-link" data-scroll-target="#laboratoria"><span class="header-section-number">3</span> Laboratoria</a></li>
-  <li><a href="#zaliczenie" id="toc-zaliczenie" class="nav-link" data-scroll-target="#zaliczenie"><span class="header-section-number">4</span> Zaliczenie</a></li>
-  <li><a href="#polecane-źródła" id="toc-polecane-źródła" class="nav-link" data-scroll-target="#polecane-źródła"><span class="header-section-number">5</span> Polecane źródła</a>
-  <ul class="collapse">
-  <li><a href="#w-internecie" id="toc-w-internecie" class="nav-link" data-scroll-target="#w-internecie"><span class="header-section-number">5.1</span> W internecie:</a></li>
-  <li><a href="#książki" id="toc-książki" class="nav-link" data-scroll-target="#książki"><span class="header-section-number">5.2</span> Książki</a></li>
-  <li><a href="#do-potrenowania" id="toc-do-potrenowania" class="nav-link" data-scroll-target="#do-potrenowania"><span class="header-section-number">5.3</span> Do potrenowania</a></li>
-  </ul></li>
+  <li><a href="#niezmiennik-pętli" id="toc-niezmiennik-pętli" class="nav-link active" data-scroll-target="#niezmiennik-pętli"><span class="header-section-number">1</span> Niezmiennik pętli</a></li>
+  <li><a href="#ciąg-arytmetyczny" id="toc-ciąg-arytmetyczny" class="nav-link" data-scroll-target="#ciąg-arytmetyczny"><span class="header-section-number">2</span> Ciąg arytmetyczny</a></li>
+  <li><a href="#test-pierwszości" id="toc-test-pierwszości" class="nav-link" data-scroll-target="#test-pierwszości"><span class="header-section-number">3</span> Test pierwszości</a></li>
+  <li><a href="#przesunięcie-cykliczne" id="toc-przesunięcie-cykliczne" class="nav-link" data-scroll-target="#przesunięcie-cykliczne"><span class="header-section-number">4</span> Przesunięcie cykliczne</a></li>
+  <li><a href="#szyfr-rot13" id="toc-szyfr-rot13" class="nav-link" data-scroll-target="#szyfr-rot13"><span class="header-section-number">5</span> Szyfr ROT13</a></li>
+  <li><a href="#pierwiastki-całkowite" id="toc-pierwiastki-całkowite" class="nav-link" data-scroll-target="#pierwiastki-całkowite"><span class="header-section-number">6</span> Pierwiastki całkowite</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_III/lab_III.html">Lab III: Testy jednostkowe</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Podstawy programowania (AD) 2</h1>
+<h1 class="title">Lab III: Testy jednostkowe</h1>
+<p class="subtitle lead">Podstawy programowania (AD) 2</p>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tomasz Rodak </p>
+          </div>
+  </div>
     
   
     
@@ -209,81 +248,132 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="opis-przedmiotu" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="opis-przedmiotu"><span class="header-section-number">1</span> Opis przedmiotu</h2>
-<p>Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym. Zakres materiału:</p>
-<ul>
-<li>obsługa błędów i wyjątków, testowanie kodu,</li>
-<li>parametry i argumenty funkcji, instrukcja przypisania,</li>
-<li>rekurencja,</li>
-<li>funkcje wyższego rzędu i dekoratory,</li>
-<li>programowanie obiektowe: klasy i obiekty,</li>
-<li>protokół iteracji oraz iteratory.</li>
-</ul>
+<p>Na tym laboratorium zaczynamy pracę z testami automatycznymi. Począwszy od tego laba wiele zadań będzie polegać na napisaniu modułu, który spełnia wymagania zawarte w gotowym pliku z testami. Schemat pracy jest następujący:</p>
+<ol type="1">
+<li>Przeczytaj treść zadania i przejrzyj plik z testami — testy opisują, jakie funkcje musisz napisać, jakie argumenty przyjmują, co zwracają i jakie wyjątki zgłaszają.</li>
+<li>Utwórz moduł z wymaganymi funkcjami (na początku mogą zwracać <code>None</code> lub <code>pass</code>).</li>
+<li>Uruchom testy: <code>python -m unittest test_modul.py</code>. Większość testów nie przejdzie, część może przejść przez przypadek.</li>
+<li>Stopniowo implementuj funkcje i uruchamiaj testy, aż wszystkie przejdą.</li>
+</ol>
+<p>Testy uruchamiaj z wiersza poleceń. Opcja <code>-v</code> wyświetla szczegółowe wyniki:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="ex">python</span> <span class="at">-m</span> unittest <span class="at">-v</span> test_modul.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Pamiętaj o pozostałych opcjach modułu <code>unittest</code> opisanych na wykładzie.</p>
+<hr>
+<section id="niezmiennik-pętli" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="niezmiennik-pętli"><span class="header-section-number">1</span> Niezmiennik pętli</h2>
+<p>W pętli:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a>n <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>i, j <span class="op">=</span> <span class="dv">0</span>, n</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="cf">while</span> i <span class="op">&lt;</span> n:</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    i <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>    j <span class="op">-=</span> <span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>zidentyfikuj niezmiennik pętli i zaimplementuj go za pomocą instrukcji <code>assert</code>.</p>
+<hr>
 </section>
-<section id="wykłady" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="wykłady"><span class="header-section-number">2</span> Wykłady</h2>
-<ul>
-<li><a href="./wyklad_I.html">Wykład I: Błędy i wyjątki</a></li>
-<li><a href="./wyklad_II.html">Wykład II: Testy jednostkowe</a></li>
-</ul>
+<section id="ciąg-arytmetyczny" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="ciąg-arytmetyczny"><span class="header-section-number">2</span> Ciąg arytmetyczny</h2>
+<p>Dokończ definicję funkcji:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">def</span> is_arithmetic(seq):</span>
+<span id="cb3-2"><a href="#cb3-2"></a>    <span class="co">"""Zwraca True, jeśli seq jest ciągiem arytmetycznym; w przeciwnym razie zwraca False.</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">    Parametry:</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">    seq -- ciąg liczb</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">    </span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">    Przykłady:</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="co">    &gt;&gt;&gt; is_arithmetic([])</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co">    True</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="co">    &gt;&gt;&gt; is_arithmetic([2])</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="co">    True</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="co">    &gt;&gt;&gt; is_arithmetic([5, -1])</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="co">    True</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="co">    &gt;&gt;&gt; is_arithmetic([1, 2, 3])</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="co">    True</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="co">    &gt;&gt;&gt; is_arithmetic(range(100, -1000, -7))</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a><span class="co">    True</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="co">    &gt;&gt;&gt; is_arithmetic((2, 5, 8, 10, 13))</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a><span class="co">    False</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a><span class="co">    """</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Sprawdź poprawność implementacji na przykładach podanych w docstringu. Wykorzystaj funkcję <code>doctest.testmod()</code>.</p>
+<hr>
 </section>
-<section id="laboratoria" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="laboratoria"><span class="header-section-number">3</span> Laboratoria</h2>
-<ul>
-<li><a href="./lab_I/lab_I.html">Laboratorium 1: Zadania na rozgrzewkę</a></li>
-<li><a href="./lab_II/lab_II.html">Laboratorium 2: Błędy i wyjątki</a></li>
-<li><a href="./lab_III/lab_III.html">Laboratorium 3: Testy jednostkowe</a></li>
-</ul>
+<section id="test-pierwszości" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="test-pierwszości"><span class="header-section-number">3</span> Test pierwszości</h2>
+<p>Napisz moduł <code>is_prime.py</code> zawierający funkcję <code>is_prime(n)</code>, która zwraca <code>True</code>, jeśli <code>n</code> jest liczbą pierwszą, w przeciwnym razie <code>False</code>. Dla <code>n</code> ujemnego funkcja zgłasza wyjątek <code>ValueError</code> z komunikatem <code>argument musi być nieujemny</code>.</p>
+<p>Testy modułu <code>is_prime.py</code> znajdują się w pliku <code>test_is_prime.py</code>. Uruchom testy i upewnij się, że wszystkie przechodzą.</p>
+<hr>
 </section>
-<section id="zaliczenie" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="zaliczenie"><span class="header-section-number">4</span> Zaliczenie</h2>
+<section id="przesunięcie-cykliczne" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="przesunięcie-cykliczne"><span class="header-section-number">4</span> Przesunięcie cykliczne</h2>
+<p>Napisz moduł <code>rotate_seq.py</code> zawierający funkcje:</p>
 <ul>
-<li>Kolokwium na ostatnich zajęciach “przy komputerze”. Ocena z kolokwium staje się oceną z ćwiczeń.</li>
-<li>Egzamin pisemny w sesji. Ocena z egzaminu jest oceną z wykładu.</li>
-<li>Do egzaminu należy przystąpić niezależnie od tego czy ćwiczenia zostały zaliczone.</li>
-<li>Ocena w protokole ogólnym jest średnią z ocen z wykładu i ćwiczeń.</li>
+<li><code>rotate(seq, n)</code> — zwraca sekwencję <code>seq</code> przesuniętą cyklicznie o <code>n</code> miejsc; jeśli <code>n</code> jest ujemne, to przesunięcie jest w lewo, w przeciwnym razie w prawo,</li>
+<li><code>rotate_left(seq, n)</code> — zwraca sekwencję <code>seq</code> przesuniętą cyklicznie o <code>n</code> miejsc w lewo; jeśli <code>n</code> jest ujemne, to zgłasza wyjątek <code>ValueError</code> z komunikatem <code>n musi być liczbą nieujemną</code>,</li>
+<li><code>rotate_right(seq, n)</code> — zwraca sekwencję <code>seq</code> przesuniętą cyklicznie o <code>n</code> miejsc w prawo; jeśli <code>n</code> jest ujemne, to zgłasza wyjątek <code>ValueError</code> z komunikatem <code>n musi być liczbą nieujemną</code>.</li>
 </ul>
+<p>Przeczytaj testy w pliku <code>test_rotate_seq.py</code> uważnie — zawierają wymagania, które nie są wprost opisane w treści zadania.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Wskazówka
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Wykorzystaj konkatenację (operację <code>+</code>) wycinków sekwencji. Dzięki temu nie musisz się martwić o typ sekwencji i nie musisz wykonywać jawnych iteracji.</p>
+<p>Przykład:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">&gt;&gt;&gt;</span> s <span class="op">=</span> <span class="st">'abcde'</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="op">&gt;&gt;&gt;</span> s[<span class="dv">2</span>:] <span class="op">+</span> s[:<span class="dv">2</span>]</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co">'cdeab'</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="op">&gt;&gt;&gt;</span> lst <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>]</span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="op">&gt;&gt;&gt;</span> lst[<span class="dv">2</span>:] <span class="op">+</span> lst[:<span class="dv">2</span>]</span>
+<span id="cb4-6"><a href="#cb4-6"></a>[<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<hr>
 </section>
-<section id="polecane-źródła" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="polecane-źródła"><span class="header-section-number">5</span> Polecane źródła</h2>
-<section id="w-internecie" class="level3" data-number="5.1">
-<h3 data-number="5.1" class="anchored" data-anchor-id="w-internecie"><span class="header-section-number">5.1</span> W internecie:</h3>
+<section id="szyfr-rot13" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="szyfr-rot13"><span class="header-section-number">5</span> Szyfr ROT13</h2>
+<p>Napisz moduł <code>rot13.py</code> zawierający funkcje:</p>
 <ul>
-<li>Oficjalna dokumentacja <a href="https://docs.python.org/3/">https://docs.python.org/3/</a>. W tym:
-<ul>
-<li>Opis biblioteki standardowej: <a href="https://docs.python.org/3/library/index.html">https://docs.python.org/3/library/index.html</a></li>
-<li>Opis języka: <a href="https://docs.python.org/3/reference/index.html">https://docs.python.org/3/reference/index.html</a></li>
-<li>Tutorial: <a href="https://docs.python.org/3/tutorial/index.html">https://docs.python.org/3/tutorial/index.html</a></li>
-<li>HOWTOs: <a href="https://docs.python.org/3/howto/index.html">https://docs.python.org/3/howto/index.html</a></li>
-</ul></li>
-<li>Rozbudowana ściąga z j. Python: <a href="https://www.pythoncheatsheet.org/">https://www.pythoncheatsheet.org/</a></li>
-<li>Biblioteka standardowa w przykładach: <a href="https://pymotw.com/3/">https://pymotw.com/3/</a></li>
-<li>YouTube jest pełen kursów z Pythona. Wysoką jakość i przekrój przez różne poziomy zaawansowania mają kursy na kanale <a href="https://www.youtube.com/c/Freecodecamp/videos">FreeCodeCamp</a>.</li>
+<li><code>is_ascii(s)</code> — zwraca <code>True</code>, jeśli łańcuch <code>s</code> składa się wyłącznie ze znaków ASCII, w przeciwnym razie <code>False</code>,</li>
+<li><code>rot13(s, use_ascii_only=False)</code> — zwraca łańcuch zaszyfrowany szyfrem ROT13,</li>
+<li><code>rot47(s, use_ascii_only=False)</code> — zwraca łańcuch zaszyfrowany szyfrem ROT47.</li>
 </ul>
+<p>Jeśli <code>use_ascii_only</code> jest <code>True</code> i łańcuch <code>s</code> zawiera znaki spoza zakresu ASCII, to funkcje <code>rot13()</code> i <code>rot47()</code> zgłaszają wyjątek <code>ValueError</code> z komunikatem <code>znaleziono znak spoza zakresu ASCII</code>.</p>
+<p><strong><a href="https://pl.wikipedia.org/wiki/ROT13">ROT13</a></strong> to szyfr, w którym każdy znak alfabetu łacińskiego jest zamieniany na znak przesunięty o 13 miejsc w prawo. Jeśli przesunięcie powoduje wyjście poza alfabet, to liczymy od początku. Znaki niebędące literami alfabetu łacińskiego pozostają bez zmian.</p>
+<p><strong><a href="https://pl.wikipedia.org/wiki/ROT47">ROT47</a></strong> to szyfr, w którym każdy znak ASCII z zakresu od 33 do 126 (włącznie) jest zamieniany na znak z tego samego zakresu, przesunięty o 47 miejsc w prawo. Jeśli przesunięcie powoduje wyjście poza zakres, to liczymy od początku. Znaki spoza zakresu pozostają bez zmian.</p>
+<p>Testy modułu <code>rot13.py</code> znajdują się w pliku <code>test_rot13.py</code>.</p>
+<hr>
 </section>
-<section id="książki" class="level3" data-number="5.2">
-<h3 data-number="5.2" class="anchored" data-anchor-id="książki"><span class="header-section-number">5.2</span> Książki</h3>
+<section id="pierwiastki-całkowite" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="pierwiastki-całkowite"><span class="header-section-number">6</span> Pierwiastki całkowite</h2>
+<p>Napisz moduł <code>simple_integer_roots.py</code> zawierający funkcje:</p>
 <ul>
-<li>(!) Eric Matthes, <a href="https://www.worldcat.org/title/python-instrukcje-dla-programisty/oclc/971388806&amp;referer=brief_results"><em>Python. Instrukcje dla programisty</em></a></li>
-<li>Mark Lutz, <a href="https://www.worldcat.org/title/python-wprowadzenie/oclc/802156389&amp;referer=brief_results"><em>Python. Wprowadzenie</em></a></li>
-<li>(!!) Luciano Ramahlo, <a href="https://helion.pl/ksiazki/zaawansowany-python-luciano-ramalho,e_07wh.htm#format/e"><em>Zaawansowany Python</em></a></li>
-<li>(!) David Beazley, Brian K. Jones, <a href="https://www.worldcat.org/title/python-receptury-wydanie-iii/oclc/968120217&amp;referer=brief_results"><em>Python. Receptury</em></a></li>
-<li>(!) Mark Pilgrim, <a href="https://diveintopython3.net/"><em>Dive into Python</em></a></li>
+<li><code>integer_square_root(n)</code> — zwraca największą liczbę całkowitą <code>m</code> taką, że <code>m**2 &lt;= n</code>; jeśli <code>n</code> jest ujemne, to zgłasza wyjątek <code>ValueError</code> z komunikatem <code>argument musi być nieujemny</code>,</li>
+<li><code>integer_cubic_root(n)</code> — zwraca największą liczbę całkowitą <code>m</code> taką, że <code>m**3 &lt;= n</code>; jeśli <code>n</code> jest ujemne, to zgłasza wyjątek <code>ValueError</code> z komunikatem <code>argument musi być nieujemny</code>,</li>
+<li><code>is_perfect_square(n)</code> — zwraca <code>True</code>, jeśli <code>n</code> jest kwadratem liczby całkowitej, w przeciwnym razie <code>False</code>,</li>
+<li><code>is_perfect_cube(n)</code> — zwraca <code>True</code>, jeśli <code>n</code> jest sześcianem liczby całkowitej, w przeciwnym razie <code>False</code>. Zwróć uwagę, że liczby ujemne również mogą być sześcianami liczb całkowitych.</li>
 </ul>
-</section>
-<section id="do-potrenowania" class="level3" data-number="5.3">
-<h3 data-number="5.3" class="anchored" data-anchor-id="do-potrenowania"><span class="header-section-number">5.3</span> Do potrenowania</h3>
-<p>Przykładowe serwisy do samodzielnej nauki:</p>
-<ul>
-<li><a href="https://exercism.io/">Exercism</a></li>
-<li><a href="https://www.codewars.com/">https://www.codewars.com/</a></li>
-<li><a href="https://www.codingame.com/start">https://www.codingame.com/start</a></li>
-<li><a href="https://www.spoj.com/">spoj.com</a></li>
-</ul>
+<p>Testy modułu <code>simple_integer_roots.py</code> znajdują się w pliku <code>test_simple_integer_roots.py</code>.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Uwaga
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Testy sprawdzają poprawność dla bardzo dużych liczb, które nie mieszczą się w zakresie typu <code>float</code>. Nie wystarczy więc skorzystać z <code>math.sqrt()</code> i potęgowania zmiennoprzecinkowego — potrzebne jest wyszukiwanie binarne na liczbach całkowitych.</p>
+</div>
+</div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

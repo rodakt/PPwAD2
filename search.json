@@ -1,183 +1,178 @@
 [
   {
-    "objectID": "lab_II/lab_II.html#iloraz-liczb-całkowitych",
-    "href": "lab_II/lab_II.html#iloraz-liczb-całkowitych",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "1 Iloraz liczb całkowitych",
-    "text": "1 Iloraz liczb całkowitych\nNapisz program, który pobiera od użytkownika dwie liczby całkowite i oblicza ich iloraz. Program powinien obsługiwać dwa rodzaje wyjątków:\n\nValueError — jeśli użytkownik wprowadzi tekst zamiast liczby całkowitej,\nZeroDivisionError — jeśli użytkownik wprowadzi jako dzielnik liczbę 0.\n\nProgram powinien wyświetlać komunikat o błędzie odpowiedni do typu wyjątku.\nPrzykłady:\na: 10\nb: 0\nBłąd: dzielenie przez zero.\na: 10\nb: abc\nBłąd: nieprawidłowa wartość.\na: 10\nb: 4\n10 / 4 = 2.5",
-    "crumbs": [
-      "Laboratoria",
-      "Lab II: Błędy i wyjątki"
-    ]
-  },
-  {
-    "objectID": "lab_II/lab_II.html#hierarchia-wyjątków-arytmetycznych",
-    "href": "lab_II/lab_II.html#hierarchia-wyjątków-arytmetycznych",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "2 Hierarchia wyjątków arytmetycznych",
-    "text": "2 Hierarchia wyjątków arytmetycznych\nZapoznaj się z fragmentem hierarchii wyjątków arytmetycznych w Pythonie:\nBaseException\n  └── Exception\n        └── ArithmeticError\n              ├── ZeroDivisionError\n              ├── OverflowError\n              └── FloatingPointError\nNapisz program, który oblicza wyrażenie 2.0 ** x / (x - 3) dla liczby x podanej przez użytkownika. Obsłuż wyjątek ArithmeticError jednym blokiem except. Przetestuj program dla:\n\nx = 3 (dzielenie przez zero — ZeroDivisionError),\nx = 1024 (przepełnienie — OverflowError, bo 2.0 ** 1024 przekracza maksymalną wartość float),\nx = 5 (poprawne dane).\n\nPrzykłady:\nPodaj x: 3\nBłąd arytmetyczny: float division by zero\nPodaj x: 1024\nBłąd arytmetyczny: (34, 'Numerical result out of range')\nPodaj x: 5\n2.0 ** 5 / (5 - 3) = 16.0",
-    "crumbs": [
-      "Laboratoria",
-      "Lab II: Błędy i wyjątki"
-    ]
-  },
-  {
-    "objectID": "lab_II/lab_II.html#suma-i-średnia-z-powtórzeniem",
-    "href": "lab_II/lab_II.html#suma-i-średnia-z-powtórzeniem",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "3 Suma i średnia z powtórzeniem",
-    "text": "3 Suma i średnia z powtórzeniem\nNapisz program, który pobiera od użytkownika ciąg liczb całkowitych rozdzielonych spacjami i wyświetla ich sumę oraz średnią arytmetyczną. Program powinien:\n\nwymuszać wprowadzenie danych w poprawnym formacie — po podaniu niepoprawnych danych ponownie żąda ich wprowadzenia,\ndawać użytkownikowi trzy szanse na podanie prawidłowych danych; po wyczerpaniu szans program kończy działanie stosownym komunikatem,\nkorzystać z bloku else, który wykonuje się wyłącznie wtedy, gdy nie wystąpił wyjątek.\n\nZastanów się: ile wynosi średnia arytmetyczna ciągu pustego?\nPrzykład:\nLiczby (próba 1/3): 4 3 abc\nBłąd: nieprawidłowe dane.\nLiczby (próba 2/3): 4 3 2 1 5\nSuma: 15, Średnia: 3.0",
-    "crumbs": [
-      "Laboratoria",
-      "Lab II: Błędy i wyjątki"
-    ]
-  },
-  {
-    "objectID": "lab_II/lab_II.html#symulacja-połączenia-sieciowego",
-    "href": "lab_II/lab_II.html#symulacja-połączenia-sieciowego",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "4 Symulacja połączenia sieciowego",
-    "text": "4 Symulacja połączenia sieciowego\nBlok finally jest wykonywany zawsze — niezależnie od tego, czy wyjątek wystąpił, czy nie, a nawet gdy wyjątek nie jest obsługiwany w tej samej funkcji, lecz propaguje się do wywołującego.\nNapisz funkcję connect(addr), która symuluje nawiązywanie połączenia sieciowego:\n\nwypisuje Łączenie z &lt;addr&gt;...,\nwywołuje time.sleep(t), gdzie t to losowa liczba rzeczywista z przedziału \\([0, 1)\\),\njeśli t przekracza próg 0.6, zgłasza RuntimeError(\"Przekroczono limit czasu\"),\nw przeciwnym razie wypisuje Połączono z &lt;addr&gt;.,\nw bloku finally wypisuje Zamknięto połączenie z &lt;addr&gt;.\n\nNapisz program, który w pętli wywołuje connect() dla dziesięciu adresów 192.168.0.0, …, 192.168.0.9, obsługując RuntimeError stosownym komunikatem.\nPrzykład:\nŁączenie z 192.168.0.0...\nZamknięto połączenie z 192.168.0.0\nBłąd: Przekroczono limit czasu\n------------------------------\nŁączenie z 192.168.0.1...\nPołączono z 192.168.0.1\nZamknięto połączenie z 192.168.0.1\n------------------------------\nŁączenie z 192.168.0.2...\nZamknięto połączenie z 192.168.0.2\nBłąd: Przekroczono limit czasu\n------------------------------\nŁączenie z 192.168.0.3...\nPołączono z 192.168.0.3\nZamknięto połączenie z 192.168.0.3\n------------------------------\nŁączenie z 192.168.0.4...\nPołączono z 192.168.0.4\nZamknięto połączenie z 192.168.0.4\n------------------------------\nŁączenie z 192.168.0.5...\nPołączono z 192.168.0.5\nZamknięto połączenie z 192.168.0.5\n------------------------------\nŁączenie z 192.168.0.6...\nPołączono z 192.168.0.6\nZamknięto połączenie z 192.168.0.6\n------------------------------\nŁączenie z 192.168.0.7...\nPołączono z 192.168.0.7\nZamknięto połączenie z 192.168.0.7\n------------------------------\nŁączenie z 192.168.0.8...\nPołączono z 192.168.0.8\nZamknięto połączenie z 192.168.0.8\n------------------------------\nŁączenie z 192.168.0.9...\nPołączono z 192.168.0.9\nZamknięto połączenie z 192.168.0.9\n------------------------------\nW jakiej kolejności pojawiają się komunikaty gdy połączenie się nie powiedzie?",
-    "crumbs": [
-      "Laboratoria",
-      "Lab II: Błędy i wyjątki"
-    ]
-  },
-  {
-    "objectID": "lab_II/lab_II.html#moduł-funkcji-numerycznych",
-    "href": "lab_II/lab_II.html#moduł-funkcji-numerycznych",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "5 Moduł funkcji numerycznych",
-    "text": "5 Moduł funkcji numerycznych\nCelem tego zadania jest napisanie prostego modułu z funkcjami numerycznymi oraz programu, który z tego modułu korzysta. Zadanie ilustruje obsługę błędów na różnych poziomach programu.\n\n5.1 Moduł numerics.py\nNapisz moduł numerics.py zawierający trzy funkcje:\nparse_number(text) — przyjmuje łańcuch znaków i zwraca liczbę w najwęższym pasującym typie:\n\njeśli text reprezentuje liczbę całkowitą (np. \"5\", \"-3\"), zwraca int;\njeśli text reprezentuje liczbę zmiennoprzecinkową o wartości całkowitej (np. \"3.0\", \"-7.0\"), zwraca int;\njeśli text reprezentuje liczbę zmiennoprzecinkową (np. \"3.5\"), zwraca float;\nw przeciwnym razie zgłasza ValueError.\n\n\n\n\n\n\n\nTipWskazówka\n\n\n\nMetoda float.is_integer() zwraca True, gdy wartość zmiennoprzecinkowa jest liczbą całkowitą, np. (3.0).is_integer() daje True.\n\n\nsilnia(n) — oblicza \\(n!\\) dla nieujemnych liczb całkowitych. Zgłasza:\n\nTypeError — jeśli n nie jest liczbą całkowitą (isinstance(n, int)),\nValueError — jeśli n jest ujemna.\n\nsymbol_newtona(n, k) — oblicza \\[\\binom{n}{k} = \\frac{n!}{k!(n-k)!}\\] korzystając z funkcji silnia. Zgłasza:\n\nTypeError — jeśli n lub k nie jest liczbą całkowitą,\nValueError — jeśli \\(n &lt; 0\\), \\(k &lt; 0\\) lub \\(k &gt; n\\).\n\n\n\n\n\n\n\nImportantUwaga\n\n\n\nObliczanie symbolu Newtona przez trzy wywołania silni nie jest efektywne. Nie chodzi nam tu jednak o efektywność — funkcje te są jedynie ilustracją mechanizmu obsługi błędów.\n\n\nKażda funkcja w module powinna samodzielnie walidować swoje argumenty, nawet jeśli w danym programie walidacja ta wydaje się zbędna — funkcja nie wie, kto i jak ją wywoła w przyszłości.\n\n\n5.2 Program sprawdzający\nW tym samym pliku numerics.py, w bloku if __name__ == \"__main__\":, napisz program, który:\n\npobiera od użytkownika wartości n i k (jako tekst),\nprzetwarza je za pomocą parse_number,\nwywołuje symbol_newtona(n, k),\nwyświetla wynik lub stosowny komunikat o błędzie.\n\nZwróć uwagę, że ValueError może pochodzić z dwóch różnych miejsc: z parse_number (wejście nie jest liczbą) lub z symbol_newtona (argumenty poza dziedziną).\nPrzykłady:\nn: 5\nk: 2\nC(5, 2) = 10\nn: 5\nk: 2.5\nBłąd: argument musi być liczbą całkowitą.\nn: abc\nk: 2\nBłąd: 'abc' nie jest liczbą.\nn: 3\nk: 5\nBłąd: wymagane 0 &lt;= k &lt;= n, otrzymano n=3, k=5.\nn: -4\nk: 2\nBłąd: wymagane n &gt;= 0, otrzymano n=-4.\nn: 5.0\nk: 3\nC(5, 3) = 10\n\n\n\n\n\n\nTipDo przemyślenia\n\n\n\nKtóre wyjątki zgłaszane przez silnia() są w tym programie faktycznie osiągalne? Prześledź możliwe ścieżki wykonania: jeśli parse_number zwróci float, to który wyjątek zostanie zgłoszony pierwszy — z silnia() czy z symbol_newtona()? Czy to oznacza, że walidacja w silnia() jest niepotrzebna?",
-    "crumbs": [
-      "Laboratoria",
-      "Lab II: Błędy i wyjątki"
-    ]
-  },
-  {
-    "objectID": "lab_II/lab_II.html#statystyki-pliku-tekstowego",
-    "href": "lab_II/lab_II.html#statystyki-pliku-tekstowego",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "6 Statystyki pliku tekstowego",
-    "text": "6 Statystyki pliku tekstowego\nNapisz program, który wczytuje ścieżkę do pliku tekstowego podaną przez użytkownika i wyświetla:\n\nliczbę wierszy,\nliczbę słów (słowo to dowolna sekwencja znaków oddzielona białymi znakami, np. \"Hello, world!\" zawiera dwa słowa: \"Hello,\" i \"world!\"),\nliczbę znaków.\n\nUżyj menedżera kontekstu (with) i jawnie określ kodowanie encoding='utf-8'. Program powinien obsługiwać:\n\nFileNotFoundError — komunikatem Brak pliku: &lt;nazwa_pliku&gt;,\nOSError — komunikatem Błąd odczytu pliku: &lt;treść błędu&gt;.\n\nPrzykład:\nPodaj ścieżkę do pliku: wiersz.txt\nWiersze: 4\nSłowa:   26\nZnaki:   142",
-    "crumbs": [
-      "Laboratoria",
-      "Lab II: Błędy i wyjątki"
-    ]
-  },
-  {
-    "objectID": "lab_II/lab_II.html#inspekcja-pliku-binarnego",
-    "href": "lab_II/lab_II.html#inspekcja-pliku-binarnego",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "7 Inspekcja pliku binarnego",
-    "text": "7 Inspekcja pliku binarnego\nNapisz program, który wczytuje ścieżkę do pliku binarnego i wyświetla:\n\nrozmiar pliku w bajtach,\npierwszych 16 bajtów w reprezentacji szesnastkowej (hex),\nczy plik jest plikiem PNG — plik PNG zaczyna się od sygnatury b'\\x89PNG\\r\\n\\x1a\\n' (8 bajtów).\n\nUżyj trybu 'rb' w funkcji open() i menedżera kontekstu. Program powinien obsługiwać:\n\nFileNotFoundError — komunikatem Brak pliku: &lt;nazwa_pliku&gt;,\nOSError — komunikatem Błąd odczytu pliku: &lt;treść błędu&gt;.\n\n\n\n\n\n\n\nTipWskazówka\n\n\n\nAby wyświetlić bajty w formacie szesnastkowym, możesz użyć metody hex() obiektu bytes lub funkcji binascii.hexlify().\n\n\nPrzykład dla pliku PNG:\nPodaj ścieżkę do pliku: obrazek.png\nRozmiar: 24831 bajtów\nPierwsze 16 bajtów: 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52\nSygnatura PNG: TAK\nPrzykład dla innego pliku:\nPodaj ścieżkę do pliku: dane.bin\nRozmiar: 512 bajtów\nPierwsze 16 bajtów: 4d 5a 90 00 03 00 00 00 04 00 00 00 ff ff 00 00\nSygnatura PNG: NIE",
-    "crumbs": [
-      "Laboratoria",
-      "Lab II: Błędy i wyjątki"
-    ]
-  },
-  {
-    "objectID": "wyklad_II.html",
-    "href": "wyklad_II.html",
-    "title": "Testy jednostkowe",
+    "objectID": "lab_III/lab_III.html",
+    "href": "lab_III/lab_III.html",
+    "title": "Lab III: Testy jednostkowe",
     "section": "",
-    "text": "Instrukcja assert jest wykorzystywana do weryfikacji założeń i do testowania kodu. Składnia instrukcji assert jest następująca:\nassert &lt;warunek&gt;, &lt;opcjonalny komunikat&gt;\n&lt;warunek&gt; jest wyrażeniem logicznym. Jeśli &lt;warunek&gt; jest fałszywy, to instrukcja assert zgłasza wyjątek AssertionError. &lt;komunikat&gt; jest łańcuchem znaków, który jest wyświetlany w momencie zgłoszenia wyjątku.\n\n\nPiszemy funkcję realizującą klasyczny algorytm szukania maksimum w ciągu liczb. Wykorzystamy instrukcję assert do testowania niezmiennika pętli.\n# src/maksimum_loop.py\ndef maksimum(seq):\n    \"\"\"Funkcja zwraca maksimum z sekwencji.\"\"\"\n    if len(seq) == 0:\n        raise ValueError(\"Sekwencja nie może być pusta.\")\n    \n    maks = seq[0]\n    \n    for x in seq[1:]:\n        if x &gt; maks:\n            maks = x\n    \n    return maks\nNiezmiennik pętli to takie wyrażenie logiczne, które jest prawdziwe:\n\nprzed rozpoczęciem pętli,\nw każdej iteracji,\npo zakończeniu pętli.\n\nPrzykładem niezmiennika dla pętli w funkcji maksimum jest wyrażenie: zmienna maks jest równa maksimum z dotychczas przetworzonych elementów ciągu. Niezmiennik ten powinien być cały czas prawdziwy. Fakt ten sprawdzimy za pomocą instrukcji assert.\n# src/maksimum_loop_inv.py\ndef maksimum_inv(seq):\n    \"\"\"Funkcja zwraca maksimum z sekwencji.\"\"\"\n    if len(seq) == 0:\n        raise ValueError(\"Sekwencja nie może być pusta.\")\n    \n    maks = seq[0]\n    \n    # Przed rozpoczęciem pętli maks jest równe maksimum z pierwszego elementu sekwencji.\n    assert maks == max(seq[:1]), \"Niezmiennik pętli fałszywy przed rozpoczęciem pętli.\"\n    \n    for i, x in enumerate(seq[1:], 1):\n        if x &gt; maks:\n            maks = x\n        # W i-tej iteracji pętli maks jest równe maksimum z seq[:i+1].\n        assert maks == max(seq[:i+1]), f\"Niezmiennik pętli fałszywy w {i}-tej iteracji pętli.\"\n    \n    # Po zakończeniu pętli maks jest równe maksimum z całej sekwencji.\n    assert maks == max(seq), \"Niezmiennik pętli fałszywy po zakończeniu pętli.\"\n    \n    return maks\n\n\n\n\n\n\nTipĆwiczenie\n\n\n\nW pętli:\nn = 10\ni, j = 0, n\n\nwhile i &lt; n:\n    j -= 1\n    i += 1\nzidentyfikuj niezmiennik pętli i zaimplementuj go za pomocą instrukcji assert.",
+    "text": "Na tym laboratorium zaczynamy pracę z testami automatycznymi. Począwszy od tego laba wiele zadań będzie polegać na napisaniu modułu, który spełnia wymagania zawarte w gotowym pliku z testami. Schemat pracy jest następujący:\nTesty uruchamiaj z wiersza poleceń. Opcja -v wyświetla szczegółowe wyniki:\nPamiętaj o pozostałych opcjach modułu unittest opisanych na wykładzie.",
     "crumbs": [
-      "Wykłady",
-      "Testy jednostkowe"
+      "Laboratoria",
+      "Lab III: Testy jednostkowe"
     ]
   },
   {
-    "objectID": "wyklad_II.html#instrukcja-assert",
-    "href": "wyklad_II.html#instrukcja-assert",
-    "title": "Testy jednostkowe",
+    "objectID": "lab_III/lab_III.html#niezmiennik-pętli",
+    "href": "lab_III/lab_III.html#niezmiennik-pętli",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "1 Niezmiennik pętli",
+    "text": "1 Niezmiennik pętli\nW pętli:\nn = 10\ni, j = 0, n\n\nwhile i &lt; n:\n    i += 1\n    j -= 1\nzidentyfikuj niezmiennik pętli i zaimplementuj go za pomocą instrukcji assert.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab III: Testy jednostkowe"
+    ]
+  },
+  {
+    "objectID": "lab_III/lab_III.html#ciąg-arytmetyczny",
+    "href": "lab_III/lab_III.html#ciąg-arytmetyczny",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "2 Ciąg arytmetyczny",
+    "text": "2 Ciąg arytmetyczny\nDokończ definicję funkcji:\ndef is_arithmetic(seq):\n    \"\"\"Zwraca True, jeśli seq jest ciągiem arytmetycznym; w przeciwnym razie zwraca False.\n\n    Parametry:\n    seq -- ciąg liczb\n    \n    Przykłady:\n    &gt;&gt;&gt; is_arithmetic([])\n    True\n    &gt;&gt;&gt; is_arithmetic([2])\n    True\n    &gt;&gt;&gt; is_arithmetic([5, -1])\n    True\n    &gt;&gt;&gt; is_arithmetic([1, 2, 3])\n    True\n    &gt;&gt;&gt; is_arithmetic(range(100, -1000, -7))\n    True\n    &gt;&gt;&gt; is_arithmetic((2, 5, 8, 10, 13))\n    False\n    \"\"\"\n    pass\nSprawdź poprawność implementacji na przykładach podanych w docstringu. Wykorzystaj funkcję doctest.testmod().",
+    "crumbs": [
+      "Laboratoria",
+      "Lab III: Testy jednostkowe"
+    ]
+  },
+  {
+    "objectID": "lab_III/lab_III.html#test-pierwszości",
+    "href": "lab_III/lab_III.html#test-pierwszości",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "3 Test pierwszości",
+    "text": "3 Test pierwszości\nNapisz moduł is_prime.py zawierający funkcję is_prime(n), która zwraca True, jeśli n jest liczbą pierwszą, w przeciwnym razie False. Dla n ujemnego funkcja zgłasza wyjątek ValueError z komunikatem argument musi być nieujemny.\nTesty modułu is_prime.py znajdują się w pliku test_is_prime.py. Uruchom testy i upewnij się, że wszystkie przechodzą.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab III: Testy jednostkowe"
+    ]
+  },
+  {
+    "objectID": "lab_III/lab_III.html#przesunięcie-cykliczne",
+    "href": "lab_III/lab_III.html#przesunięcie-cykliczne",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "4 Przesunięcie cykliczne",
+    "text": "4 Przesunięcie cykliczne\nNapisz moduł rotate_seq.py zawierający funkcje:\n\nrotate(seq, n) — zwraca sekwencję seq przesuniętą cyklicznie o n miejsc; jeśli n jest ujemne, to przesunięcie jest w lewo, w przeciwnym razie w prawo,\nrotate_left(seq, n) — zwraca sekwencję seq przesuniętą cyklicznie o n miejsc w lewo; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem n musi być liczbą nieujemną,\nrotate_right(seq, n) — zwraca sekwencję seq przesuniętą cyklicznie o n miejsc w prawo; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem n musi być liczbą nieujemną.\n\nPrzeczytaj testy w pliku test_rotate_seq.py uważnie — zawierają wymagania, które nie są wprost opisane w treści zadania.\n\n\n\n\n\n\nTipWskazówka\n\n\n\nWykorzystaj konkatenację (operację +) wycinków sekwencji. Dzięki temu nie musisz się martwić o typ sekwencji i nie musisz wykonywać jawnych iteracji.\nPrzykład:\n&gt;&gt;&gt; s = 'abcde'\n&gt;&gt;&gt; s[2:] + s[:2]\n'cdeab'\n&gt;&gt;&gt; lst = [1, 2, 3, 4, 5]\n&gt;&gt;&gt; lst[2:] + lst[:2]\n[3, 4, 5, 1, 2]",
+    "crumbs": [
+      "Laboratoria",
+      "Lab III: Testy jednostkowe"
+    ]
+  },
+  {
+    "objectID": "lab_III/lab_III.html#szyfr-rot13",
+    "href": "lab_III/lab_III.html#szyfr-rot13",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "5 Szyfr ROT13",
+    "text": "5 Szyfr ROT13\nNapisz moduł rot13.py zawierający funkcje:\n\nis_ascii(s) — zwraca True, jeśli łańcuch s składa się wyłącznie ze znaków ASCII, w przeciwnym razie False,\nrot13(s, use_ascii_only=False) — zwraca łańcuch zaszyfrowany szyfrem ROT13,\nrot47(s, use_ascii_only=False) — zwraca łańcuch zaszyfrowany szyfrem ROT47.\n\nJeśli use_ascii_only jest True i łańcuch s zawiera znaki spoza zakresu ASCII, to funkcje rot13() i rot47() zgłaszają wyjątek ValueError z komunikatem znaleziono znak spoza zakresu ASCII.\nROT13 to szyfr, w którym każdy znak alfabetu łacińskiego jest zamieniany na znak przesunięty o 13 miejsc w prawo. Jeśli przesunięcie powoduje wyjście poza alfabet, to liczymy od początku. Znaki niebędące literami alfabetu łacińskiego pozostają bez zmian.\nROT47 to szyfr, w którym każdy znak ASCII z zakresu od 33 do 126 (włącznie) jest zamieniany na znak z tego samego zakresu, przesunięty o 47 miejsc w prawo. Jeśli przesunięcie powoduje wyjście poza zakres, to liczymy od początku. Znaki spoza zakresu pozostają bez zmian.\nTesty modułu rot13.py znajdują się w pliku test_rot13.py.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab III: Testy jednostkowe"
+    ]
+  },
+  {
+    "objectID": "lab_III/lab_III.html#pierwiastki-całkowite",
+    "href": "lab_III/lab_III.html#pierwiastki-całkowite",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "6 Pierwiastki całkowite",
+    "text": "6 Pierwiastki całkowite\nNapisz moduł simple_integer_roots.py zawierający funkcje:\n\ninteger_square_root(n) — zwraca największą liczbę całkowitą m taką, że m**2 &lt;= n; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem argument musi być nieujemny,\ninteger_cubic_root(n) — zwraca największą liczbę całkowitą m taką, że m**3 &lt;= n; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem argument musi być nieujemny,\nis_perfect_square(n) — zwraca True, jeśli n jest kwadratem liczby całkowitej, w przeciwnym razie False,\nis_perfect_cube(n) — zwraca True, jeśli n jest sześcianem liczby całkowitej, w przeciwnym razie False. Zwróć uwagę, że liczby ujemne również mogą być sześcianami liczb całkowitych.\n\nTesty modułu simple_integer_roots.py znajdują się w pliku test_simple_integer_roots.py.\n\n\n\n\n\n\nWarningUwaga\n\n\n\nTesty sprawdzają poprawność dla bardzo dużych liczb, które nie mieszczą się w zakresie typu float. Nie wystarczy więc skorzystać z math.sqrt() i potęgowania zmiennoprzecinkowego — potrzebne jest wyszukiwanie binarne na liczbach całkowitych.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab III: Testy jednostkowe"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html",
+    "href": "lab_I/lab_I.html",
+    "title": "Lab I: Zadania na rozgrzewkę",
     "section": "",
-    "text": "Instrukcja assert jest wykorzystywana do weryfikacji założeń i do testowania kodu. Składnia instrukcji assert jest następująca:\nassert &lt;warunek&gt;, &lt;opcjonalny komunikat&gt;\n&lt;warunek&gt; jest wyrażeniem logicznym. Jeśli &lt;warunek&gt; jest fałszywy, to instrukcja assert zgłasza wyjątek AssertionError. &lt;komunikat&gt; jest łańcuchem znaków, który jest wyświetlany w momencie zgłoszenia wyjątku.\n\n\nPiszemy funkcję realizującą klasyczny algorytm szukania maksimum w ciągu liczb. Wykorzystamy instrukcję assert do testowania niezmiennika pętli.\n# src/maksimum_loop.py\ndef maksimum(seq):\n    \"\"\"Funkcja zwraca maksimum z sekwencji.\"\"\"\n    if len(seq) == 0:\n        raise ValueError(\"Sekwencja nie może być pusta.\")\n    \n    maks = seq[0]\n    \n    for x in seq[1:]:\n        if x &gt; maks:\n            maks = x\n    \n    return maks\nNiezmiennik pętli to takie wyrażenie logiczne, które jest prawdziwe:\n\nprzed rozpoczęciem pętli,\nw każdej iteracji,\npo zakończeniu pętli.\n\nPrzykładem niezmiennika dla pętli w funkcji maksimum jest wyrażenie: zmienna maks jest równa maksimum z dotychczas przetworzonych elementów ciągu. Niezmiennik ten powinien być cały czas prawdziwy. Fakt ten sprawdzimy za pomocą instrukcji assert.\n# src/maksimum_loop_inv.py\ndef maksimum_inv(seq):\n    \"\"\"Funkcja zwraca maksimum z sekwencji.\"\"\"\n    if len(seq) == 0:\n        raise ValueError(\"Sekwencja nie może być pusta.\")\n    \n    maks = seq[0]\n    \n    # Przed rozpoczęciem pętli maks jest równe maksimum z pierwszego elementu sekwencji.\n    assert maks == max(seq[:1]), \"Niezmiennik pętli fałszywy przed rozpoczęciem pętli.\"\n    \n    for i, x in enumerate(seq[1:], 1):\n        if x &gt; maks:\n            maks = x\n        # W i-tej iteracji pętli maks jest równe maksimum z seq[:i+1].\n        assert maks == max(seq[:i+1]), f\"Niezmiennik pętli fałszywy w {i}-tej iteracji pętli.\"\n    \n    # Po zakończeniu pętli maks jest równe maksimum z całej sekwencji.\n    assert maks == max(seq), \"Niezmiennik pętli fałszywy po zakończeniu pętli.\"\n    \n    return maks\n\n\n\n\n\n\nTipĆwiczenie\n\n\n\nW pętli:\nn = 10\ni, j = 0, n\n\nwhile i &lt; n:\n    j -= 1\n    i += 1\nzidentyfikuj niezmiennik pętli i zaimplementuj go za pomocą instrukcji assert.",
+    "text": "Te ćwiczenia poprzedzają pierwszy wykład. Ich celem jest odświeżenie niektórych elementów programowania w Pythonie znanych z pierwszego semestru.",
     "crumbs": [
-      "Wykłady",
-      "Testy jednostkowe"
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
     ]
   },
   {
-    "objectID": "wyklad_II.html#testy-jednostkowe",
-    "href": "wyklad_II.html#testy-jednostkowe",
-    "title": "Testy jednostkowe",
-    "section": "2 Testy jednostkowe",
-    "text": "2 Testy jednostkowe\nTesty jednostkowe to testy, które sprawdzają poprawność działania pojedynczych elementów programu, takich jak funkcje, klasy, itp. Wywołuje się je zazwyczaj automatycznie. Jedno z podejść do tworzenia oprogramowania, tzw. programowanie sterowane testami (TDD), zakłada, że testy, w tym testy jednostkowe, są pisane przed napisaniem kodu, który mają testować.\n\n2.1 Przykład\nPiszemy program do obliczania pola powierzchni trójkąta, gdy dane są długości jego boków. Korzystamy z twierdzenia Herona. Mamy tu dwa zagadnienia:\n\nnapisanie funkcji sprawdzającej, czy dane liczby mogą być długościami boków trójkąta,\nnapisanie funkcji obliczającej pole powierzchni trójkąta.\n\nZadanie zaczynamy od napisania testów jednostkowych dla obu funkcji. Oto propozycja testów.\n# src/triangle_area_tests_example/assert_test_triangle_area.py\nfrom triangle_area import is_triangle, triangle_area\nfrom math import sqrt, isclose\n\n\ndef test_is_triangle():\n    assert is_triangle(3, 4, 5), \"3, 4, 5 jest trójkątem prostokątnym\"\n    assert is_triangle(1, 1, 1), \"Trójkąt równoboczny\"\n    assert is_triangle(5, 2, 3), \"5, 2, 3 jest trójkątem zdegenerowanym\"\n    assert is_triangle(\n        100, 100, sqrt(2) * 100\n    ), \"100, 100, 100√2 jest trójkątem prostokątnym\"\n    assert not is_triangle(1, 1, 3), \"1, 1, 3 nie jest trójkątem\"\n    assert not is_triangle(-5, 2, 3), \"-5, 2, 3 nie jest trójkątem\"\n    assert not is_triangle(1, -1, -3), \"1, -1, -3 nie jest trójkątem\"\n\n\ndef test_triangle_area():\n    abs_tol = 1e-15\n    assert isclose(triangle_area(3, 4, 5), 6, abs_tol=abs_tol), \"Pole trójkąta 3, 4, 5\"\n    assert isclose(triangle_area(1, 1, 1), sqrt(3) / 4, abs_tol=abs_tol), \"Pole trójkąta 1, 1, 1\"\n    assert isclose(triangle_area(5, 2, 3), 0, abs_tol=abs_tol), \"Pole trójkąta 5, 2, 3\"\n    assert isclose(\n        triangle_area(100, 100, sqrt(2) * 100), 5000, abs_tol=abs_tol\n    ), \"Pole trójkąta 100, 100, 100√2\"\n\n\ndef test_triangle_area_exceptions():\n    try:\n        triangle_area(1, 1, 3)\n    except ValueError as e:\n        assert str(e) == \"Nie można zbudować trójkąta o bokach 1, 1, 3\"\n    else:\n        raise AssertionError(\"Nie zgłoszono wyjątku dla 1, 1, 3\")\n\n    try:\n        triangle_area(-5, 2, 3)\n    except ValueError as e:\n        assert str(e) == \"Nie można zbudować trójkąta o bokach -5, 2, 3\"\n    else:\n        raise AssertionError(\"Nie zgłoszono wyjątku dla -5, 2, 3\")\n\n\ndef test_all():\n    \"\"\"Uruchamia wszystkie testy\"\"\"\n    test_is_triangle()\n    test_triangle_area()\n    test_triangle_area_exceptions()\n    print(\"=== All tests passed. ===\")\n\n\nif __name__ == \"__main__\":\n    test_all()\nProgram triangle_area.py zawiera implementację funkcji is_triangle() i triangle_area(). Funkcja is_triangle() sprawdza, czy dane liczby mogą być długościami boków trójkąta i zwraca wartość logiczną. Funkcja triangle_area() oblicza pole powierzchni trójkąta o bokach o długościach podanych jako argumenty lub zgłasza wyjątek ValueError, jeśli takiego trójkąta zbudować się nie da.\n\"\"\"Moduł zawierający funkcje do obliczania pola trójkąta\"\"\"\n\nfrom math import sqrt\n\n\ndef is_triangle(a, b, c):\n    \"\"\"Sprawdza, czy z boków a, b, c można zbudować trójkąt.\"\"\"\n    return a + b &gt;= c and b + c &gt;= a and c + a &gt;= b\n\n\ndef triangle_area(a, b, c):\n    \"\"\"Oblicza pole trójkąta o bokach a, b, c za pomocą wzoru Herona.\"\"\"\n    if not is_triangle(a, b, c):\n        raise ValueError(f\"Nie można zbudować trójkąta o bokach {a}, {b}, {c}\")\n    p = (a + b + c) / 2\n    return sqrt(p * (p - a) * (p - b) * (p - c))\n\n\ndef main():\n    print(\"Witaj w programie do obliczania pola trójkąta.\")\n    a = float(input(\"Podaj długość pierwszego boku: \"))\n    b = float(input(\"Podaj długość drugiego boku: \"))\n    c = float(input(\"Podaj długość trzeciego boku: \"))\n    try:\n        area = triangle_area(a, b, c)\n    except ValueError as e:\n        print(e)\n    else:\n        print(f\"Pole trójkąta wynosi {area}\")\n\n\nif __name__ == \"__main__\":\n    main()\nProgramy triangle_area.py i assert_test_triangle_area.py powinny znajdować się w tym samym katalogu. Test można uruchomić z poziomu edytora, jak każdy inny program, lub z wiersza poleceń za pomocą:\npython assert_test_triangle_area.py\nWynik:\n=== All tests passed. ===\n\n\n\n\n\n\nTipĆwiczenie\n\n\n\nPrzeprowadź powyższe postępowanie. Zobacz co się stanie, gdy dokonasz zmian w implementacji funkcji is_triangle() lub triangle_area() tak, aby testy nie przechodziły.\n\n\n\n\n2.2 Moduł unittest\nPisanie i uruchamianie testów tak jak w powyższym przykładzie szybko staje się dość uciążliwe, dlatego powstały narzędzia ułatwiające pisanie i automatyczne uruchamianie testów. Jednym z nich jest moduł unittest znajdujący się w bibliotece standardowej Pythona. Poniżej podaję przykład użycia modułu unittest do testowania funkcji is_triangle() i triangle_area().\n\n\n\n\n\n\nNoteTesty jednostkowe w module unittest wymagają znajomości programowania obiektowego\n\n\n\nNie przejmuj się, jeśli poniższy kod jest dla Ciebie nie do końca zrozumiały. W tej chwili chodzi o to, abyś potrafił uruchomić testy jednostkowe za pomocą modułu unittest i wiedział co testuje dany test, czyli potrafił testy czytać. Na dalszych zajęciach omówimy programowanie obiektowe (pisanie klas) i wtedy kody źródłowe testów jednostkowych staną się całkowicie zrozumiałe.\n\n\n\"\"\"Testy jednostkowe dla modułu triangle_area\"\"\"\n\nimport unittest\nfrom math import sqrt\n\nfrom triangle_area import is_triangle, triangle_area\n\n\nclass TestTriangleArea(unittest.TestCase):\n    \"\"\"Testy jednostkowe dla funkcji is_triangle() i triangle_area().\"\"\"\n\n    def test_is_triangle(self):\n        \"\"\"Testy pozytywne dla funkcji is_triangle().\"\"\"\n        self.assertTrue(is_triangle(3, 4, 5), msg=\"3, 4, 5 jest trójkątem prostokątnym\")\n        self.assertTrue(is_triangle(1, 1, 1), msg=\"Trójkąt równoboczny\")\n        self.assertTrue(\n            is_triangle(5, 2, 3), msg=\"5, 2, 3 jest trójkątem zdegenerowanym\"\n        )\n        self.assertTrue(\n            is_triangle(100, 100, sqrt(2) * 100),\n            msg=\"100, 100, 100√2 jest trójkątem prostokątnym\",\n        )\n\n    def test_is_not_triangle(self):\n        \"\"\"Testy negatywne dla funkcji is_triangle().\"\"\"\n        self.assertFalse(is_triangle(1, 1, 3), msg=\"1, 1, 3 nie jest trójkątem\")\n        self.assertFalse(is_triangle(-5, 2, 3), msg=\"-5, 2, 3 nie jest trójkątem\")\n        self.assertFalse(is_triangle(1, -1, -3), msg=\"1, -1, -3 nie jest trójkątem\")\n\n    def test_triangle_area(self):\n        \"\"\"Testy funkcji triangle_area().\"\"\"\n        self.assertAlmostEqual(triangle_area(3, 4, 5), 6, msg=\"Pole trójkąta 3, 4, 5\")\n        self.assertAlmostEqual(\n            triangle_area(1, 1, 1), sqrt(3) / 4, msg=\"Pole trójkąta 1, 1, 1\"\n        )\n        self.assertAlmostEqual(triangle_area(5, 2, 3), 0, msg=\"Pole trójkąta 5, 2, 3\")\n        self.assertAlmostEqual(\n            triangle_area(100, 100, sqrt(2) * 100),\n            5000,\n            msg=\"Pole trójkąta 100, 100, 100√2\",\n        )\n\n    def test_triangle_area_exceptions(self):\n        \"\"\"Testy wyjątków dla funkcji triangle_area().\"\"\"\n        with self.assertRaises(ValueError) as e:\n            triangle_area(1, 1, 3)\n        self.assertEqual(\n            str(e.exception), \"Nie można zbudować trójkąta o bokach 1, 1, 3\"\n        )\n\n        with self.assertRaises(ValueError) as e:\n            triangle_area(-5, 2, 3)\n        self.assertEqual(\n            str(e.exception), \"Nie można zbudować trójkąta o bokach -5, 2, 3\"\n        )\n\n\nif __name__ == \"__main__\":\n    unittest.main()\nTest uruchamiamy tak samo jak poprzednio, w edytorze lub z wiersza poleceń:\npython test_triangle_area.py\nWynik:\n....\n----------------------------------------------------------------------\nRan 4 tests in 0.000s\n\nOK\nBardziej wyczerpujące komunikaty o błędach i wynikach testów uzyskamy, jeśli uruchomimy testy z wiersza poleceń z opcją -v:\npython -m unittest -v test_triangle_area.py\nlub\npython test_triangle_area.py -v\nWynik:\ntest_is_not_triangle (__main__.TestTriangleArea)\nTesty negatywne dla funkcji is_triangle(). ... ok\ntest_is_triangle (__main__.TestTriangleArea)\nTesty pozytywne dla funkcji is_triangle(). ... ok\ntest_triangle_area (__main__.TestTriangleArea)\nTesty funkcji triangle_area(). ... ok\ntest_triangle_area_exceptions (__main__.TestTriangleArea)\nTesty wyjątków dla funkcji triangle_area(). ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nOK\n\n\n2.3 Czytanie wyników unittest\nGdy uruchamiasz testy bez opcji -v, wynik wygląda np. tak:\n$ python -m unittest test_triangle_area.py \nF.EF\n======================================================================\nERROR: test_triangle_area (test_triangle_area.TestTriangleArea.test_triangle_area)\nTesty funkcji triangle_area().\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/src/triangle_area_tests_example/test_triangle_area.py\", line 32, in test_triangle_area\n    self.assertAlmostEqual(triangle_area(3, 4, 5), 6, msg=\"Pole trójkąta 3, 4, 5\")\n                           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/src/triangle_area_tests_example/triangle_area.py\", line 16, in triangle_area\n    return sqrt(p * (p - a) * (p - b) * (p - c)*-1)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: math domain error\n\n======================================================================\nFAIL: test_is_not_triangle (test_triangle_area.TestTriangleArea.test_is_not_triangle)\nTesty negatywne dla funkcji is_triangle().\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/src/triangle_area_tests_example/test_triangle_area.py\", line 26, in test_is_not_triangle\n    self.assertFalse(is_triangle(1, 1, 3), msg=\"1, 1, 3 nie jest trójkątem\")\nAssertionError: True is not false : 1, 1, 3 nie jest trójkątem\n\n======================================================================\nFAIL: test_triangle_area_exceptions (test_triangle_area.TestTriangleArea.test_triangle_area_exceptions)\nTesty wyjątków dla funkcji triangle_area().\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/src/triangle_area_tests_example/test_triangle_area.py\", line 45, in test_triangle_area_exceptions\n    with self.assertRaises(ValueError) as e:\nAssertionError: ValueError not raised\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nFAILED (failures=2, errors=1)\nPierwszy wiersz (F.EF) to szybkie podsumowanie — po jednym znaku na każdy test:\n\n. — test przeszedł (pass),\nF — test nie przeszedł, bo asercja zawiodła (failure),\nE — test nie przeszedł, bo w trakcie jego wykonywania powstał nieobsłużony wyjątek (error).\n\nPoniżej wypisane są szczegóły dla każdego testu oznaczonego F lub E. Każdy taki blok zawiera:\n\nnagłówek z nazwą metody testowej i krótkim opisem (docstring),\ntraceback wskazujący dokładnie, w którym miejscu kodu test zawiódł,\nkomunikat błędu.\n\nWiersz Ran 4 tests podaje łączną liczbę uruchomionych testów, a ostatni wiersz podsumowuje wynik: OK albo FAILED z liczbą failures i errors.\n\n\n\n\n\n\nTipWskazówka praktyczna\n\n\n\nGdy testów jest dużo i wiele z nich nie przechodzi, warto zacząć od pierwszego błędu i naprawić go, zanim przejdziemy do następnego. Opcja -f (--failfast) zatrzymuje uruchamianie testów po pierwszym niepowodzeniu:\npython -m unittest -f test_triangle_area.py\nOpcję -f można łączyć z -v:\npython -m unittest -vf test_triangle_area.py\nKolejna przydatna opcja to -k, która pozwala uruchomić tylko testy pasujące do wzorca. Przykładowo, aby uruchomić tylko testy, których nazwa zawiera area:\npython -m unittest -v -k area test_triangle_area.py\nPodsumowanie najważniejszych opcji:\n\n\n\nOpcja\nDziałanie\n\n\n\n\n-v\ntryb gadatliwy — wypisuje nazwę i wynik każdego testu\n\n\n-f\nzatrzymuje się po pierwszym niepowodzeniu\n\n\n-k &lt;wzorzec&gt;\nuruchamia tylko testy pasujące do wzorca",
+    "objectID": "lab_I/lab_I.html#przeliczanie-sekund",
+    "href": "lab_I/lab_I.html#przeliczanie-sekund",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "1 Przeliczanie sekund",
+    "text": "1 Przeliczanie sekund\nNapisz program, który wczytuje od użytkownika liczbę sekund (dodatnią liczbę całkowitą) i przelicza ją na dni, godziny, minuty i sekundy.\nPrzykłady:\nPodaj liczbę sekund: 123456\n1 d, 10 h, 17 min, 36 s\nPodaj liczbę sekund: 3661\n0 d, 1 h, 1 min, 1 s\nPodaj liczbę sekund: 86400\n1 d, 0 h, 0 min, 0 s",
     "crumbs": [
-      "Wykłady",
-      "Testy jednostkowe"
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
     ]
   },
   {
-    "objectID": "wyklad_II.html#testy-w-docstringach.-moduł-doctest",
-    "href": "wyklad_II.html#testy-w-docstringach.-moduł-doctest",
-    "title": "Testy jednostkowe",
-    "section": "3 Testy w docstringach. Moduł doctest",
-    "text": "3 Testy w docstringach. Moduł doctest\nModuł doctest umożliwia umieszczanie testów jednostkowych w docstringach funkcji, klas i metod. Testy te są fragmentami sesji interaktywnych, które są wykonywane, a wyniki są porównywane z wynikami oczekiwanymi.\nKod\nimport doctest\n\ndoctest.testmod()\ntestuje wszystkie docstringi w środowisku globalnym.\nDomyślnie wykonywane są wszystkie testy, dłuższa informacja wypisywana jest dla tych testów, które się nie powiodły.\n\n3.1 Przykład\nTesty w docstringu dla funkcji zwracającej dodatnie dzielniki.\ndef dzielniki(n):\n    '''Zwraca listę dodatnich dzielników n.\n\n    &gt;&gt;&gt; dzielniki(1)\n    [1]\n    &gt;&gt;&gt; dzielniki(5)\n    [1, 5]\n    &gt;&gt;&gt; dzielniki(-8)\n    [1, 2, 4, 8]\n    '''\n\n    pass\nMamy gotowy nagłówek funkcji wraz z docstringiem, w którym umieściliśmy testy. Testy te możemy wykonać z wiersza poleceń za pomocą:\npython -m doctest dzielniki_doctest.py\nWynik:\n**********************************************************************\nFile \"/home/tomek/Dokumenty/PPwAD2/src/dzielniki_doctest.py\", line 7, in dzielniki_doctest.dzielniki\nFailed example:\n    dzielniki(1)\nExpected:\n    [1]\nGot nothing\n**********************************************************************\nFile \"/home/tomek/Dokumenty/PPwAD2/src/dzielniki_doctest.py\", line 9, in dzielniki_doctest.dzielniki\nFailed example:\n    dzielniki(5)\nExpected:\n    [1, 5]\nGot nothing\n**********************************************************************\nFile \"/home/tomek/Dokumenty/PPwAD2/src/dzielniki_doctest.py\", line 11, in dzielniki_doctest.dzielniki\nFailed example:\n    dzielniki(-8)\nExpected:\n    [1, 2, 4, 8]\nGot nothing\n**********************************************************************\n1 items had failures:\n   3 of   3 in dzielniki_doctest.dzielniki\n***Test Failed*** 3 failures.\nTesty nie przeszły, gdyż jeszcze nie napisaliśmy funkcji. Zauważmy w tym miejscu, że przed napisaniem funkcji żaden test nie powinien przechodzić. W przeciwnym razie oznaczałoby to, że testy są napisane źle.\nAlternatywnie, testy można uruchomić z poziomu edytora, jeśli tylko dopiszemy na końcu pliku:\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()\nPlik dzielniki_doctest.py po zmianach:\ndef dzielniki(n):\n    \"\"\"Zwraca listę dodatnich dzielników n.\n\n    Args:\n        n (int): liczba całkowita\n\n    &gt;&gt;&gt; dzielniki(1)\n    [1]\n    &gt;&gt;&gt; dzielniki(5)\n    [1, 5]\n    &gt;&gt;&gt; dzielniki(-8)\n    [1, 2, 4, 8]\n    \"\"\"\n\n    n = n if n &gt; 0 else -n\n    return [d for d in range(1, n + 1) if n % d == 0]\n\n\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()\nWywołanie doctest.testmod(verbose=True) przeprowadza testy w trybie “gadatliwym”. Dzięki temu w przypadku sukcesu mamy wizualne potwierdzenie, że testy zostały wykonane. Z wiersza poleceń wywołanie python -m doctest -v dzielniki_doctest.py daje podobny efekt.\nNa koniec, wywołanie\ndoctest.run_docstring_examples(f, globals(), verbose=True)\nwykonuje testy tylko dla obiektu f, a nie dla wszystkich docstringów w środowisku globalnym.",
+    "objectID": "lab_I/lab_I.html#tabliczka-mnożenia",
+    "href": "lab_I/lab_I.html#tabliczka-mnożenia",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "2 Tabliczka mnożenia",
+    "text": "2 Tabliczka mnożenia\nNapisz program wyświetlający tabliczkę mnożenia dla zadanej wartości \\(1\\leqslant n\\leqslant 15\\). Liczbę \\(n\\) wprowadza użytkownik.\nPrzykład:\nPodaj n: 9\n\n1   2   3   4   5   6   7   8   9   \n2   4   6   8   10  12  14  16  18  \n3   6   9   12  15  18  21  24  27  \n4   8   12  16  20  24  28  32  36  \n5   10  15  20  25  30  35  40  45  \n6   12  18  24  30  36  42  48  54  \n7   14  21  28  35  42  49  56  63  \n8   16  24  32  40  48  56  64  72  \n9   18  27  36  45  54  63  72  81\nW programie wykorzystaj formatowanie łańcuchów (metoda str.format() lub f-strings).",
     "crumbs": [
-      "Wykłady",
-      "Testy jednostkowe"
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "",
-    "text": "Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym. Zakres materiału:\n\nobsługa błędów i wyjątków, testowanie kodu,\nparametry i argumenty funkcji, instrukcja przypisania,\nrekurencja,\nfunkcje wyższego rzędu i dekoratory,\nprogramowanie obiektowe: klasy i obiekty,\nprotokół iteracji oraz iteratory.",
+    "objectID": "lab_I/lab_I.html#fizzbuzz",
+    "href": "lab_I/lab_I.html#fizzbuzz",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "3 FizzBuzz",
+    "text": "3 FizzBuzz\nNapisz program, który pobiera od użytkownika dodatnią liczbę całkowitą n. Następnie dla liczb od 1 do n program wyświetla:\n\nFizzBuzz, jeśli liczba jest podzielna przez 3 i 5;\nFizz, jeśli liczba jest podzielna przez 3;\nBuzz, jeśli liczba jest podzielna przez 5;\nliczbę, jeśli liczba nie jest podzielna przez 3 ani przez 5.",
     "crumbs": [
-      "Strona główna"
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
     ]
   },
   {
-    "objectID": "index.html#opis-przedmiotu",
-    "href": "index.html#opis-przedmiotu",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "",
-    "text": "Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym. Zakres materiału:\n\nobsługa błędów i wyjątków, testowanie kodu,\nparametry i argumenty funkcji, instrukcja przypisania,\nrekurencja,\nfunkcje wyższego rzędu i dekoratory,\nprogramowanie obiektowe: klasy i obiekty,\nprotokół iteracji oraz iteratory.",
+    "objectID": "lab_I/lab_I.html#proste-statystyki",
+    "href": "lab_I/lab_I.html#proste-statystyki",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "4 Proste statystyki",
+    "text": "4 Proste statystyki\nNapisz funkcję statystyki(dane), która przyjmuje niepustą listę liczb i zwraca krotkę (minimum, maksimum, średnia). W ciele funkcji nie korzystaj z wbudowanych min(), max(), sum().\nNapisz program, który wczytuje od użytkownika ciąg liczb (po jednej w wierszu; wczytywanie kończy się po podaniu pustego wiersza), zapisuje je na liście, a następnie wyświetla wynik działania funkcji statystyki.\nPrzykład:\nPodaj liczbę (Enter aby zakończyć): 4\nPodaj liczbę (Enter aby zakończyć): -2\nPodaj liczbę (Enter aby zakończyć): 7\nPodaj liczbę (Enter aby zakończyć): 1\nPodaj liczbę (Enter aby zakończyć): \nMinimum: -2, Maksimum: 7, Średnia: 2.5",
     "crumbs": [
-      "Strona główna"
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
     ]
   },
   {
-    "objectID": "index.html#wykłady",
-    "href": "index.html#wykłady",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "2 Wykłady",
-    "text": "2 Wykłady\n\nWykład I: Błędy i wyjątki\nWykład II: Testy jednostkowe",
+    "objectID": "lab_I/lab_I.html#szereg-harmoniczny",
+    "href": "lab_I/lab_I.html#szereg-harmoniczny",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "5 Szereg harmoniczny",
+    "text": "5 Szereg harmoniczny\nNapisz program, który wyświetli najmniejszą liczbę \\(n\\), dla której\n\\[\n1+\\frac{1}{2}+\\frac{1}{3}+\\cdots+\\frac{1}{n}\\geqslant 10\n\\]\nTaka liczba w ogóle istnieje? Zobacz szereg harmoniczny.",
     "crumbs": [
-      "Strona główna"
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
     ]
   },
   {
-    "objectID": "index.html#laboratoria",
-    "href": "index.html#laboratoria",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "3 Laboratoria",
-    "text": "3 Laboratoria\n\nLaboratorium 1: Zadania na rozgrzewkę\nLaboratorium 2: Błędy i wyjątki",
+    "objectID": "lab_I/lab_I.html#częstości-liter",
+    "href": "lab_I/lab_I.html#częstości-liter",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "6 Częstości liter",
+    "text": "6 Częstości liter\nNapisz funkcję f_count(text), która przyjmuje napis i zwraca słownik, w którym kluczami są litery (małe), a wartościami — liczby ich wystąpień w tekście. Znaki niebędące literami pomiń.\nNapisz program, który wczytuje od użytkownika wiersz tekstu, a następnie wyświetla rozkład częstości liter posortowany alfabetycznie.\nPrzykład:\nPodaj tekst: Ala ma kota\na: 4\nk: 1\nl: 1\nm: 1\no: 1\nt: 1",
     "crumbs": [
-      "Strona główna"
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
     ]
   },
   {
-    "objectID": "index.html#zaliczenie",
-    "href": "index.html#zaliczenie",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "4 Zaliczenie",
-    "text": "4 Zaliczenie\n\nKolokwium na ostatnich zajęciach “przy komputerze”. Ocena z kolokwium staje się oceną z ćwiczeń.\nEgzamin pisemny w sesji. Ocena z egzaminu jest oceną z wykładu.\nDo egzaminu należy przystąpić niezależnie od tego czy ćwiczenia zostały zaliczone.\nOcena w protokole ogólnym jest średnią z ocen z wykładu i ćwiczeń.",
+    "objectID": "lab_I/lab_I.html#równanie-sześcienne",
+    "href": "lab_I/lab_I.html#równanie-sześcienne",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "7 Równanie sześcienne",
+    "text": "7 Równanie sześcienne\nNiech \\(p\\), \\(q\\) będą dodatnimi liczbami całkowitymi. Napisz program, który wyznaczy liczbę całkowitą \\(x\\) spełniającą równość\n\\[\nx^3+px=q\n\\]\nlub stwierdzi, że takiej liczby nie ma.\nPrzykłady:\n\n\\(p=1\\), \\(q=10\\) ==&gt; \\(x=2\\);\n\\(p=123456789\\), \\(q=963418328815428240221153430\\) ==&gt; \\(x=987654321\\);\n\\(p=2\\) lub \\(p=3\\), \\(q=10\\) ==&gt; brak rozwiązania;\n\\(p=123\\), \\(q=56798\\) ==&gt; brak rozwiązania.",
     "crumbs": [
-      "Strona główna"
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
     ]
   },
   {
-    "objectID": "index.html#polecane-źródła",
-    "href": "index.html#polecane-źródła",
-    "title": "Podstawy programowania (AD) 2",
-    "section": "5 Polecane źródła",
-    "text": "5 Polecane źródła\n\n5.1 W internecie:\n\nOficjalna dokumentacja https://docs.python.org/3/. W tym:\n\nOpis biblioteki standardowej: https://docs.python.org/3/library/index.html\nOpis języka: https://docs.python.org/3/reference/index.html\nTutorial: https://docs.python.org/3/tutorial/index.html\nHOWTOs: https://docs.python.org/3/howto/index.html\n\nRozbudowana ściąga z j. Python: https://www.pythoncheatsheet.org/\nBiblioteka standardowa w przykładach: https://pymotw.com/3/\nYouTube jest pełen kursów z Pythona. Wysoką jakość i przekrój przez różne poziomy zaawansowania mają kursy na kanale FreeCodeCamp.\n\n\n\n5.2 Książki\n\n(!) Eric Matthes, Python. Instrukcje dla programisty\nMark Lutz, Python. Wprowadzenie\n(!!) Luciano Ramahlo, Zaawansowany Python\n(!) David Beazley, Brian K. Jones, Python. Receptury\n(!) Mark Pilgrim, Dive into Python\n\n\n\n5.3 Do potrenowania\nPrzykładowe serwisy do samodzielnej nauki:\n\nExercism\nhttps://www.codewars.com/\nhttps://www.codingame.com/start\nspoj.com",
+    "objectID": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
+    "href": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "8 Symulacja dryfu genetycznego",
+    "text": "8 Symulacja dryfu genetycznego\nDryf genetyczny to zjawisko polegające na losowej zmianie częstości allelu w populacji. Jest to ważny przykład procesu prowadzącego do ewolucji nieadaptatywnej.\nCelem tego ćwiczenia jest stworzenie symulacji ilustrującej działanie dryfu genetycznego.\nNiech A, a będą dwoma allelami (wariantami) jednego genu. Zakładamy, że: * Dana jest populacja osobników, w której każdy osobnik ma dwie kopie genu w dowolnych wariantach (czyli są to osobniki diploidalne). * Zmiana jednego allelu na drugi nie ma żadnego znaczenia adaptacyjnego. * W populacji pokolenia nie zachodzą na siebie, kojarzenie jest płciowe i całkowicie losowe a każda para organizmów rodzicielskich ma dwa organizmy potomne. * W organizmie potomnym warianty genu dobierane są losowo, z równym prawdopodobieństwem, po jednym od każdego z organizmów rodzicielskich. Przykład: dla organizmów rodzicielskich o genotypach aA, AA, mamy cztery możliwe genotypy potomne aA, aA, AA, AA odpowiadające wylosowaniu pozycji (1, 1), (1, 2), (2, 1), (2, 2).\nNapisz program, który losowo utworzy populację o ustalonej z góry liczbie osobników (najlepiej parzystej) a następnie wykona dla tej populacji symulację pewnej liczby cykli życiowych.\nZaobserwuj:\n\nJak zmienia się częstość alleli w populacji?\nJak zmiana ta zależy od początkowej liczby osobników? Jak od liczby pokoleń?\n\nZobacz link Time to fixation or loss. Sprawdź jak zawarte tam przewidywania mają się do rezultatów Twojej symulacji.",
     "crumbs": [
-      "Strona główna"
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
     ]
   },
   {
@@ -302,102 +297,184 @@
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html",
-    "href": "lab_I/lab_I.html",
-    "title": "Lab I: Zadania na rozgrzewkę",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Podstawy programowania (AD) 2",
     "section": "",
-    "text": "Te ćwiczenia poprzedzają pierwszy wykład. Ich celem jest odświeżenie niektórych elementów programowania w Pythonie znanych z pierwszego semestru.",
+    "text": "Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym. Zakres materiału:\n\nobsługa błędów i wyjątków, testowanie kodu,\nparametry i argumenty funkcji, instrukcja przypisania,\nrekurencja,\nfunkcje wyższego rzędu i dekoratory,\nprogramowanie obiektowe: klasy i obiekty,\nprotokół iteracji oraz iteratory.",
     "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Strona główna"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#przeliczanie-sekund",
-    "href": "lab_I/lab_I.html#przeliczanie-sekund",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "1 Przeliczanie sekund",
-    "text": "1 Przeliczanie sekund\nNapisz program, który wczytuje od użytkownika liczbę sekund (dodatnią liczbę całkowitą) i przelicza ją na dni, godziny, minuty i sekundy.\nPrzykłady:\nPodaj liczbę sekund: 123456\n1 d, 10 h, 17 min, 36 s\nPodaj liczbę sekund: 3661\n0 d, 1 h, 1 min, 1 s\nPodaj liczbę sekund: 86400\n1 d, 0 h, 0 min, 0 s",
+    "objectID": "index.html#opis-przedmiotu",
+    "href": "index.html#opis-przedmiotu",
+    "title": "Podstawy programowania (AD) 2",
+    "section": "",
+    "text": "Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym. Zakres materiału:\n\nobsługa błędów i wyjątków, testowanie kodu,\nparametry i argumenty funkcji, instrukcja przypisania,\nrekurencja,\nfunkcje wyższego rzędu i dekoratory,\nprogramowanie obiektowe: klasy i obiekty,\nprotokół iteracji oraz iteratory.",
     "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Strona główna"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#tabliczka-mnożenia",
-    "href": "lab_I/lab_I.html#tabliczka-mnożenia",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "2 Tabliczka mnożenia",
-    "text": "2 Tabliczka mnożenia\nNapisz program wyświetlający tabliczkę mnożenia dla zadanej wartości \\(1\\leqslant n\\leqslant 15\\). Liczbę \\(n\\) wprowadza użytkownik.\nPrzykład:\nPodaj n: 9\n\n1   2   3   4   5   6   7   8   9   \n2   4   6   8   10  12  14  16  18  \n3   6   9   12  15  18  21  24  27  \n4   8   12  16  20  24  28  32  36  \n5   10  15  20  25  30  35  40  45  \n6   12  18  24  30  36  42  48  54  \n7   14  21  28  35  42  49  56  63  \n8   16  24  32  40  48  56  64  72  \n9   18  27  36  45  54  63  72  81\nW programie wykorzystaj formatowanie łańcuchów (metoda str.format() lub f-strings).",
+    "objectID": "index.html#wykłady",
+    "href": "index.html#wykłady",
+    "title": "Podstawy programowania (AD) 2",
+    "section": "2 Wykłady",
+    "text": "2 Wykłady\n\nWykład I: Błędy i wyjątki\nWykład II: Testy jednostkowe",
     "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Strona główna"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#fizzbuzz",
-    "href": "lab_I/lab_I.html#fizzbuzz",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "3 FizzBuzz",
-    "text": "3 FizzBuzz\nNapisz program, który pobiera od użytkownika dodatnią liczbę całkowitą n. Następnie dla liczb od 1 do n program wyświetla:\n\nFizzBuzz, jeśli liczba jest podzielna przez 3 i 5;\nFizz, jeśli liczba jest podzielna przez 3;\nBuzz, jeśli liczba jest podzielna przez 5;\nliczbę, jeśli liczba nie jest podzielna przez 3 ani przez 5.",
+    "objectID": "index.html#laboratoria",
+    "href": "index.html#laboratoria",
+    "title": "Podstawy programowania (AD) 2",
+    "section": "3 Laboratoria",
+    "text": "3 Laboratoria\n\nLaboratorium 1: Zadania na rozgrzewkę\nLaboratorium 2: Błędy i wyjątki\nLaboratorium 3: Testy jednostkowe",
     "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Strona główna"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#proste-statystyki",
-    "href": "lab_I/lab_I.html#proste-statystyki",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "4 Proste statystyki",
-    "text": "4 Proste statystyki\nNapisz funkcję statystyki(dane), która przyjmuje niepustą listę liczb i zwraca krotkę (minimum, maksimum, średnia). W ciele funkcji nie korzystaj z wbudowanych min(), max(), sum().\nNapisz program, który wczytuje od użytkownika ciąg liczb (po jednej w wierszu; wczytywanie kończy się po podaniu pustego wiersza), zapisuje je na liście, a następnie wyświetla wynik działania funkcji statystyki.\nPrzykład:\nPodaj liczbę (Enter aby zakończyć): 4\nPodaj liczbę (Enter aby zakończyć): -2\nPodaj liczbę (Enter aby zakończyć): 7\nPodaj liczbę (Enter aby zakończyć): 1\nPodaj liczbę (Enter aby zakończyć): \nMinimum: -2, Maksimum: 7, Średnia: 2.5",
+    "objectID": "index.html#zaliczenie",
+    "href": "index.html#zaliczenie",
+    "title": "Podstawy programowania (AD) 2",
+    "section": "4 Zaliczenie",
+    "text": "4 Zaliczenie\n\nKolokwium na ostatnich zajęciach “przy komputerze”. Ocena z kolokwium staje się oceną z ćwiczeń.\nEgzamin pisemny w sesji. Ocena z egzaminu jest oceną z wykładu.\nDo egzaminu należy przystąpić niezależnie od tego czy ćwiczenia zostały zaliczone.\nOcena w protokole ogólnym jest średnią z ocen z wykładu i ćwiczeń.",
     "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Strona główna"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#szereg-harmoniczny",
-    "href": "lab_I/lab_I.html#szereg-harmoniczny",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "5 Szereg harmoniczny",
-    "text": "5 Szereg harmoniczny\nNapisz program, który wyświetli najmniejszą liczbę \\(n\\), dla której\n\\[\n1+\\frac{1}{2}+\\frac{1}{3}+\\cdots+\\frac{1}{n}\\geqslant 10\n\\]\nTaka liczba w ogóle istnieje? Zobacz szereg harmoniczny.",
+    "objectID": "index.html#polecane-źródła",
+    "href": "index.html#polecane-źródła",
+    "title": "Podstawy programowania (AD) 2",
+    "section": "5 Polecane źródła",
+    "text": "5 Polecane źródła\n\n5.1 W internecie:\n\nOficjalna dokumentacja https://docs.python.org/3/. W tym:\n\nOpis biblioteki standardowej: https://docs.python.org/3/library/index.html\nOpis języka: https://docs.python.org/3/reference/index.html\nTutorial: https://docs.python.org/3/tutorial/index.html\nHOWTOs: https://docs.python.org/3/howto/index.html\n\nRozbudowana ściąga z j. Python: https://www.pythoncheatsheet.org/\nBiblioteka standardowa w przykładach: https://pymotw.com/3/\nYouTube jest pełen kursów z Pythona. Wysoką jakość i przekrój przez różne poziomy zaawansowania mają kursy na kanale FreeCodeCamp.\n\n\n\n5.2 Książki\n\n(!) Eric Matthes, Python. Instrukcje dla programisty\nMark Lutz, Python. Wprowadzenie\n(!!) Luciano Ramahlo, Zaawansowany Python\n(!) David Beazley, Brian K. Jones, Python. Receptury\n(!) Mark Pilgrim, Dive into Python\n\n\n\n5.3 Do potrenowania\nPrzykładowe serwisy do samodzielnej nauki:\n\nExercism\nhttps://www.codewars.com/\nhttps://www.codingame.com/start\nspoj.com",
     "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Strona główna"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#częstości-liter",
-    "href": "lab_I/lab_I.html#częstości-liter",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "6 Częstości liter",
-    "text": "6 Częstości liter\nNapisz funkcję f_count(text), która przyjmuje napis i zwraca słownik, w którym kluczami są litery (małe), a wartościami — liczby ich wystąpień w tekście. Znaki niebędące literami pomiń.\nNapisz program, który wczytuje od użytkownika wiersz tekstu, a następnie wyświetla rozkład częstości liter posortowany alfabetycznie.\nPrzykład:\nPodaj tekst: Ala ma kota\na: 4\nk: 1\nl: 1\nm: 1\no: 1\nt: 1",
+    "objectID": "wyklad_II.html",
+    "href": "wyklad_II.html",
+    "title": "Testy jednostkowe",
+    "section": "",
+    "text": "Instrukcja assert jest wykorzystywana do weryfikacji założeń i do testowania kodu. Składnia instrukcji assert jest następująca:\nassert &lt;warunek&gt;, &lt;opcjonalny komunikat&gt;\n&lt;warunek&gt; jest wyrażeniem logicznym. Jeśli &lt;warunek&gt; jest fałszywy, to instrukcja assert zgłasza wyjątek AssertionError. &lt;komunikat&gt; jest łańcuchem znaków, który jest wyświetlany w momencie zgłoszenia wyjątku.\n\n\nPiszemy funkcję realizującą klasyczny algorytm szukania maksimum w ciągu liczb. Wykorzystamy instrukcję assert do testowania niezmiennika pętli.\n# src/maksimum_loop.py\ndef maksimum(seq):\n    \"\"\"Funkcja zwraca maksimum z sekwencji.\"\"\"\n    if len(seq) == 0:\n        raise ValueError(\"Sekwencja nie może być pusta.\")\n    \n    maks = seq[0]\n    \n    for x in seq[1:]:\n        if x &gt; maks:\n            maks = x\n    \n    return maks\nNiezmiennik pętli to takie wyrażenie logiczne, które jest prawdziwe:\n\nprzed rozpoczęciem pętli,\nw każdej iteracji,\npo zakończeniu pętli.\n\nPrzykładem niezmiennika dla pętli w funkcji maksimum jest wyrażenie: zmienna maks jest równa maksimum z dotychczas przetworzonych elementów ciągu. Niezmiennik ten powinien być cały czas prawdziwy. Fakt ten sprawdzimy za pomocą instrukcji assert.\n# src/maksimum_loop_inv.py\ndef maksimum_inv(seq):\n    \"\"\"Funkcja zwraca maksimum z sekwencji.\"\"\"\n    if len(seq) == 0:\n        raise ValueError(\"Sekwencja nie może być pusta.\")\n    \n    maks = seq[0]\n    \n    # Przed rozpoczęciem pętli maks jest równe maksimum z pierwszego elementu sekwencji.\n    assert maks == max(seq[:1]), \"Niezmiennik pętli fałszywy przed rozpoczęciem pętli.\"\n    \n    for i, x in enumerate(seq[1:], 1):\n        if x &gt; maks:\n            maks = x\n        # W i-tej iteracji pętli maks jest równe maksimum z seq[:i+1].\n        assert maks == max(seq[:i+1]), f\"Niezmiennik pętli fałszywy w {i}-tej iteracji pętli.\"\n    \n    # Po zakończeniu pętli maks jest równe maksimum z całej sekwencji.\n    assert maks == max(seq), \"Niezmiennik pętli fałszywy po zakończeniu pętli.\"\n    \n    return maks\n\n\n\n\n\n\nTipĆwiczenie\n\n\n\nW pętli:\nn = 10\ni, j = 0, n\n\nwhile i &lt; n:\n    j -= 1\n    i += 1\nzidentyfikuj niezmiennik pętli i zaimplementuj go za pomocą instrukcji assert.",
     "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Wykłady",
+      "Testy jednostkowe"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#równanie-sześcienne",
-    "href": "lab_I/lab_I.html#równanie-sześcienne",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "7 Równanie sześcienne",
-    "text": "7 Równanie sześcienne\nNiech \\(p\\), \\(q\\) będą dodatnimi liczbami całkowitymi. Napisz program, który wyznaczy liczbę całkowitą \\(x\\) spełniającą równość\n\\[\nx^3+px=q\n\\]\nlub stwierdzi, że takiej liczby nie ma.\nPrzykłady:\n\n\\(p=1\\), \\(q=10\\) ==&gt; \\(x=2\\);\n\\(p=123456789\\), \\(q=963418328815428240221153430\\) ==&gt; \\(x=987654321\\);\n\\(p=2\\) lub \\(p=3\\), \\(q=10\\) ==&gt; brak rozwiązania;\n\\(p=123\\), \\(q=56798\\) ==&gt; brak rozwiązania.",
+    "objectID": "wyklad_II.html#instrukcja-assert",
+    "href": "wyklad_II.html#instrukcja-assert",
+    "title": "Testy jednostkowe",
+    "section": "",
+    "text": "Instrukcja assert jest wykorzystywana do weryfikacji założeń i do testowania kodu. Składnia instrukcji assert jest następująca:\nassert &lt;warunek&gt;, &lt;opcjonalny komunikat&gt;\n&lt;warunek&gt; jest wyrażeniem logicznym. Jeśli &lt;warunek&gt; jest fałszywy, to instrukcja assert zgłasza wyjątek AssertionError. &lt;komunikat&gt; jest łańcuchem znaków, który jest wyświetlany w momencie zgłoszenia wyjątku.\n\n\nPiszemy funkcję realizującą klasyczny algorytm szukania maksimum w ciągu liczb. Wykorzystamy instrukcję assert do testowania niezmiennika pętli.\n# src/maksimum_loop.py\ndef maksimum(seq):\n    \"\"\"Funkcja zwraca maksimum z sekwencji.\"\"\"\n    if len(seq) == 0:\n        raise ValueError(\"Sekwencja nie może być pusta.\")\n    \n    maks = seq[0]\n    \n    for x in seq[1:]:\n        if x &gt; maks:\n            maks = x\n    \n    return maks\nNiezmiennik pętli to takie wyrażenie logiczne, które jest prawdziwe:\n\nprzed rozpoczęciem pętli,\nw każdej iteracji,\npo zakończeniu pętli.\n\nPrzykładem niezmiennika dla pętli w funkcji maksimum jest wyrażenie: zmienna maks jest równa maksimum z dotychczas przetworzonych elementów ciągu. Niezmiennik ten powinien być cały czas prawdziwy. Fakt ten sprawdzimy za pomocą instrukcji assert.\n# src/maksimum_loop_inv.py\ndef maksimum_inv(seq):\n    \"\"\"Funkcja zwraca maksimum z sekwencji.\"\"\"\n    if len(seq) == 0:\n        raise ValueError(\"Sekwencja nie może być pusta.\")\n    \n    maks = seq[0]\n    \n    # Przed rozpoczęciem pętli maks jest równe maksimum z pierwszego elementu sekwencji.\n    assert maks == max(seq[:1]), \"Niezmiennik pętli fałszywy przed rozpoczęciem pętli.\"\n    \n    for i, x in enumerate(seq[1:], 1):\n        if x &gt; maks:\n            maks = x\n        # W i-tej iteracji pętli maks jest równe maksimum z seq[:i+1].\n        assert maks == max(seq[:i+1]), f\"Niezmiennik pętli fałszywy w {i}-tej iteracji pętli.\"\n    \n    # Po zakończeniu pętli maks jest równe maksimum z całej sekwencji.\n    assert maks == max(seq), \"Niezmiennik pętli fałszywy po zakończeniu pętli.\"\n    \n    return maks\n\n\n\n\n\n\nTipĆwiczenie\n\n\n\nW pętli:\nn = 10\ni, j = 0, n\n\nwhile i &lt; n:\n    j -= 1\n    i += 1\nzidentyfikuj niezmiennik pętli i zaimplementuj go za pomocą instrukcji assert.",
     "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Wykłady",
+      "Testy jednostkowe"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
-    "href": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "8 Symulacja dryfu genetycznego",
-    "text": "8 Symulacja dryfu genetycznego\nDryf genetyczny to zjawisko polegające na losowej zmianie częstości allelu w populacji. Jest to ważny przykład procesu prowadzącego do ewolucji nieadaptatywnej.\nCelem tego ćwiczenia jest stworzenie symulacji ilustrującej działanie dryfu genetycznego.\nNiech A, a będą dwoma allelami (wariantami) jednego genu. Zakładamy, że: * Dana jest populacja osobników, w której każdy osobnik ma dwie kopie genu w dowolnych wariantach (czyli są to osobniki diploidalne). * Zmiana jednego allelu na drugi nie ma żadnego znaczenia adaptacyjnego. * W populacji pokolenia nie zachodzą na siebie, kojarzenie jest płciowe i całkowicie losowe a każda para organizmów rodzicielskich ma dwa organizmy potomne. * W organizmie potomnym warianty genu dobierane są losowo, z równym prawdopodobieństwem, po jednym od każdego z organizmów rodzicielskich. Przykład: dla organizmów rodzicielskich o genotypach aA, AA, mamy cztery możliwe genotypy potomne aA, aA, AA, AA odpowiadające wylosowaniu pozycji (1, 1), (1, 2), (2, 1), (2, 2).\nNapisz program, który losowo utworzy populację o ustalonej z góry liczbie osobników (najlepiej parzystej) a następnie wykona dla tej populacji symulację pewnej liczby cykli życiowych.\nZaobserwuj:\n\nJak zmienia się częstość alleli w populacji?\nJak zmiana ta zależy od początkowej liczby osobników? Jak od liczby pokoleń?\n\nZobacz link Time to fixation or loss. Sprawdź jak zawarte tam przewidywania mają się do rezultatów Twojej symulacji.",
+    "objectID": "wyklad_II.html#testy-jednostkowe",
+    "href": "wyklad_II.html#testy-jednostkowe",
+    "title": "Testy jednostkowe",
+    "section": "2 Testy jednostkowe",
+    "text": "2 Testy jednostkowe\nTesty jednostkowe to testy, które sprawdzają poprawność działania pojedynczych elementów programu, takich jak funkcje, klasy, itp. Wywołuje się je zazwyczaj automatycznie. Jedno z podejść do tworzenia oprogramowania, tzw. programowanie sterowane testami (TDD), zakłada, że testy, w tym testy jednostkowe, są pisane przed napisaniem kodu, który mają testować.\n\n2.1 Przykład\nPiszemy program do obliczania pola powierzchni trójkąta, gdy dane są długości jego boków. Korzystamy z twierdzenia Herona. Mamy tu dwa zagadnienia:\n\nnapisanie funkcji sprawdzającej, czy dane liczby mogą być długościami boków trójkąta,\nnapisanie funkcji obliczającej pole powierzchni trójkąta.\n\nZadanie zaczynamy od napisania testów jednostkowych dla obu funkcji. Oto propozycja testów.\n# src/triangle_area_tests_example/assert_test_triangle_area.py\nfrom triangle_area import is_triangle, triangle_area\nfrom math import sqrt, isclose\n\n\ndef test_is_triangle():\n    assert is_triangle(3, 4, 5), \"3, 4, 5 jest trójkątem prostokątnym\"\n    assert is_triangle(1, 1, 1), \"Trójkąt równoboczny\"\n    assert is_triangle(5, 2, 3), \"5, 2, 3 jest trójkątem zdegenerowanym\"\n    assert is_triangle(\n        100, 100, sqrt(2) * 100\n    ), \"100, 100, 100√2 jest trójkątem prostokątnym\"\n    assert not is_triangle(1, 1, 3), \"1, 1, 3 nie jest trójkątem\"\n    assert not is_triangle(-5, 2, 3), \"-5, 2, 3 nie jest trójkątem\"\n    assert not is_triangle(1, -1, -3), \"1, -1, -3 nie jest trójkątem\"\n\n\ndef test_triangle_area():\n    abs_tol = 1e-15\n    assert isclose(triangle_area(3, 4, 5), 6, abs_tol=abs_tol), \"Pole trójkąta 3, 4, 5\"\n    assert isclose(triangle_area(1, 1, 1), sqrt(3) / 4, abs_tol=abs_tol), \"Pole trójkąta 1, 1, 1\"\n    assert isclose(triangle_area(5, 2, 3), 0, abs_tol=abs_tol), \"Pole trójkąta 5, 2, 3\"\n    assert isclose(\n        triangle_area(100, 100, sqrt(2) * 100), 5000, abs_tol=abs_tol\n    ), \"Pole trójkąta 100, 100, 100√2\"\n\n\ndef test_triangle_area_exceptions():\n    try:\n        triangle_area(1, 1, 3)\n    except ValueError as e:\n        assert str(e) == \"Nie można zbudować trójkąta o bokach 1, 1, 3\"\n    else:\n        raise AssertionError(\"Nie zgłoszono wyjątku dla 1, 1, 3\")\n\n    try:\n        triangle_area(-5, 2, 3)\n    except ValueError as e:\n        assert str(e) == \"Nie można zbudować trójkąta o bokach -5, 2, 3\"\n    else:\n        raise AssertionError(\"Nie zgłoszono wyjątku dla -5, 2, 3\")\n\n\ndef test_all():\n    \"\"\"Uruchamia wszystkie testy\"\"\"\n    test_is_triangle()\n    test_triangle_area()\n    test_triangle_area_exceptions()\n    print(\"=== All tests passed. ===\")\n\n\nif __name__ == \"__main__\":\n    test_all()\nProgram triangle_area.py zawiera implementację funkcji is_triangle() i triangle_area(). Funkcja is_triangle() sprawdza, czy dane liczby mogą być długościami boków trójkąta i zwraca wartość logiczną. Funkcja triangle_area() oblicza pole powierzchni trójkąta o bokach o długościach podanych jako argumenty lub zgłasza wyjątek ValueError, jeśli takiego trójkąta zbudować się nie da.\n\"\"\"Moduł zawierający funkcje do obliczania pola trójkąta\"\"\"\n\nfrom math import sqrt\n\n\ndef is_triangle(a, b, c):\n    \"\"\"Sprawdza, czy z boków a, b, c można zbudować trójkąt.\"\"\"\n    return a + b &gt;= c and b + c &gt;= a and c + a &gt;= b\n\n\ndef triangle_area(a, b, c):\n    \"\"\"Oblicza pole trójkąta o bokach a, b, c za pomocą wzoru Herona.\"\"\"\n    if not is_triangle(a, b, c):\n        raise ValueError(f\"Nie można zbudować trójkąta o bokach {a}, {b}, {c}\")\n    p = (a + b + c) / 2\n    return sqrt(p * (p - a) * (p - b) * (p - c))\n\n\ndef main():\n    print(\"Witaj w programie do obliczania pola trójkąta.\")\n    a = float(input(\"Podaj długość pierwszego boku: \"))\n    b = float(input(\"Podaj długość drugiego boku: \"))\n    c = float(input(\"Podaj długość trzeciego boku: \"))\n    try:\n        area = triangle_area(a, b, c)\n    except ValueError as e:\n        print(e)\n    else:\n        print(f\"Pole trójkąta wynosi {area}\")\n\n\nif __name__ == \"__main__\":\n    main()\nProgramy triangle_area.py i assert_test_triangle_area.py powinny znajdować się w tym samym katalogu. Test można uruchomić z poziomu edytora, jak każdy inny program, lub z wiersza poleceń za pomocą:\npython assert_test_triangle_area.py\nWynik:\n=== All tests passed. ===\n\n\n\n\n\n\nTipĆwiczenie\n\n\n\nPrzeprowadź powyższe postępowanie. Zobacz co się stanie, gdy dokonasz zmian w implementacji funkcji is_triangle() lub triangle_area() tak, aby testy nie przechodziły.\n\n\n\n\n2.2 Moduł unittest\nPisanie i uruchamianie testów tak jak w powyższym przykładzie szybko staje się dość uciążliwe, dlatego powstały narzędzia ułatwiające pisanie i automatyczne uruchamianie testów. Jednym z nich jest moduł unittest znajdujący się w bibliotece standardowej Pythona. Poniżej podaję przykład użycia modułu unittest do testowania funkcji is_triangle() i triangle_area().\n\n\n\n\n\n\nNoteTesty jednostkowe w module unittest wymagają znajomości programowania obiektowego\n\n\n\nNie przejmuj się, jeśli poniższy kod jest dla Ciebie nie do końca zrozumiały. W tej chwili chodzi o to, abyś potrafił uruchomić testy jednostkowe za pomocą modułu unittest i wiedział co testuje dany test, czyli potrafił testy czytać. Na dalszych zajęciach omówimy programowanie obiektowe (pisanie klas) i wtedy kody źródłowe testów jednostkowych staną się całkowicie zrozumiałe.\n\n\n\"\"\"Testy jednostkowe dla modułu triangle_area\"\"\"\n\nimport unittest\nfrom math import sqrt\n\nfrom triangle_area import is_triangle, triangle_area\n\n\nclass TestTriangleArea(unittest.TestCase):\n    \"\"\"Testy jednostkowe dla funkcji is_triangle() i triangle_area().\"\"\"\n\n    def test_is_triangle(self):\n        \"\"\"Testy pozytywne dla funkcji is_triangle().\"\"\"\n        self.assertTrue(is_triangle(3, 4, 5), msg=\"3, 4, 5 jest trójkątem prostokątnym\")\n        self.assertTrue(is_triangle(1, 1, 1), msg=\"Trójkąt równoboczny\")\n        self.assertTrue(\n            is_triangle(5, 2, 3), msg=\"5, 2, 3 jest trójkątem zdegenerowanym\"\n        )\n        self.assertTrue(\n            is_triangle(100, 100, sqrt(2) * 100),\n            msg=\"100, 100, 100√2 jest trójkątem prostokątnym\",\n        )\n\n    def test_is_not_triangle(self):\n        \"\"\"Testy negatywne dla funkcji is_triangle().\"\"\"\n        self.assertFalse(is_triangle(1, 1, 3), msg=\"1, 1, 3 nie jest trójkątem\")\n        self.assertFalse(is_triangle(-5, 2, 3), msg=\"-5, 2, 3 nie jest trójkątem\")\n        self.assertFalse(is_triangle(1, -1, -3), msg=\"1, -1, -3 nie jest trójkątem\")\n\n    def test_triangle_area(self):\n        \"\"\"Testy funkcji triangle_area().\"\"\"\n        self.assertAlmostEqual(triangle_area(3, 4, 5), 6, msg=\"Pole trójkąta 3, 4, 5\")\n        self.assertAlmostEqual(\n            triangle_area(1, 1, 1), sqrt(3) / 4, msg=\"Pole trójkąta 1, 1, 1\"\n        )\n        self.assertAlmostEqual(triangle_area(5, 2, 3), 0, msg=\"Pole trójkąta 5, 2, 3\")\n        self.assertAlmostEqual(\n            triangle_area(100, 100, sqrt(2) * 100),\n            5000,\n            msg=\"Pole trójkąta 100, 100, 100√2\",\n        )\n\n    def test_triangle_area_exceptions(self):\n        \"\"\"Testy wyjątków dla funkcji triangle_area().\"\"\"\n        with self.assertRaises(ValueError) as e:\n            triangle_area(1, 1, 3)\n        self.assertEqual(\n            str(e.exception), \"Nie można zbudować trójkąta o bokach 1, 1, 3\"\n        )\n\n        with self.assertRaises(ValueError) as e:\n            triangle_area(-5, 2, 3)\n        self.assertEqual(\n            str(e.exception), \"Nie można zbudować trójkąta o bokach -5, 2, 3\"\n        )\n\n\nif __name__ == \"__main__\":\n    unittest.main()\nTest uruchamiamy tak samo jak poprzednio, w edytorze lub z wiersza poleceń:\npython test_triangle_area.py\nWynik:\n....\n----------------------------------------------------------------------\nRan 4 tests in 0.000s\n\nOK\nBardziej wyczerpujące komunikaty o błędach i wynikach testów uzyskamy, jeśli uruchomimy testy z wiersza poleceń z opcją -v:\npython -m unittest -v test_triangle_area.py\nlub\npython test_triangle_area.py -v\nWynik:\ntest_is_not_triangle (__main__.TestTriangleArea)\nTesty negatywne dla funkcji is_triangle(). ... ok\ntest_is_triangle (__main__.TestTriangleArea)\nTesty pozytywne dla funkcji is_triangle(). ... ok\ntest_triangle_area (__main__.TestTriangleArea)\nTesty funkcji triangle_area(). ... ok\ntest_triangle_area_exceptions (__main__.TestTriangleArea)\nTesty wyjątków dla funkcji triangle_area(). ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nOK\n\n\n2.3 Czytanie wyników unittest\nGdy uruchamiasz testy bez opcji -v, wynik wygląda np. tak:\n$ python -m unittest test_triangle_area.py \nF.EF\n======================================================================\nERROR: test_triangle_area (test_triangle_area.TestTriangleArea.test_triangle_area)\nTesty funkcji triangle_area().\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/src/triangle_area_tests_example/test_triangle_area.py\", line 32, in test_triangle_area\n    self.assertAlmostEqual(triangle_area(3, 4, 5), 6, msg=\"Pole trójkąta 3, 4, 5\")\n                           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/src/triangle_area_tests_example/triangle_area.py\", line 16, in triangle_area\n    return sqrt(p * (p - a) * (p - b) * (p - c)*-1)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: math domain error\n\n======================================================================\nFAIL: test_is_not_triangle (test_triangle_area.TestTriangleArea.test_is_not_triangle)\nTesty negatywne dla funkcji is_triangle().\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/src/triangle_area_tests_example/test_triangle_area.py\", line 26, in test_is_not_triangle\n    self.assertFalse(is_triangle(1, 1, 3), msg=\"1, 1, 3 nie jest trójkątem\")\nAssertionError: True is not false : 1, 1, 3 nie jest trójkątem\n\n======================================================================\nFAIL: test_triangle_area_exceptions (test_triangle_area.TestTriangleArea.test_triangle_area_exceptions)\nTesty wyjątków dla funkcji triangle_area().\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/src/triangle_area_tests_example/test_triangle_area.py\", line 45, in test_triangle_area_exceptions\n    with self.assertRaises(ValueError) as e:\nAssertionError: ValueError not raised\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nFAILED (failures=2, errors=1)\nPierwszy wiersz (F.EF) to szybkie podsumowanie — po jednym znaku na każdy test:\n\n. — test przeszedł (pass),\nF — test nie przeszedł, bo asercja zawiodła (failure),\nE — test nie przeszedł, bo w trakcie jego wykonywania powstał nieobsłużony wyjątek (error).\n\nPoniżej wypisane są szczegóły dla każdego testu oznaczonego F lub E. Każdy taki blok zawiera:\n\nnagłówek z nazwą metody testowej i krótkim opisem (docstring),\ntraceback wskazujący dokładnie, w którym miejscu kodu test zawiódł,\nkomunikat błędu.\n\nWiersz Ran 4 tests podaje łączną liczbę uruchomionych testów, a ostatni wiersz podsumowuje wynik: OK albo FAILED z liczbą failures i errors.\n\n\n\n\n\n\nTipWskazówka praktyczna\n\n\n\nGdy testów jest dużo i wiele z nich nie przechodzi, warto zacząć od pierwszego błędu i naprawić go, zanim przejdziemy do następnego. Opcja -f (--failfast) zatrzymuje uruchamianie testów po pierwszym niepowodzeniu:\npython -m unittest -f test_triangle_area.py\nOpcję -f można łączyć z -v:\npython -m unittest -vf test_triangle_area.py\nKolejna przydatna opcja to -k, która pozwala uruchomić tylko testy pasujące do wzorca. Przykładowo, aby uruchomić tylko testy, których nazwa zawiera area:\npython -m unittest -v -k area test_triangle_area.py\nPodsumowanie najważniejszych opcji:\n\n\n\nOpcja\nDziałanie\n\n\n\n\n-v\ntryb gadatliwy — wypisuje nazwę i wynik każdego testu\n\n\n-f\nzatrzymuje się po pierwszym niepowodzeniu\n\n\n-k &lt;wzorzec&gt;\nuruchamia tylko testy pasujące do wzorca",
+    "crumbs": [
+      "Wykłady",
+      "Testy jednostkowe"
+    ]
+  },
+  {
+    "objectID": "wyklad_II.html#testy-w-docstringach.-moduł-doctest",
+    "href": "wyklad_II.html#testy-w-docstringach.-moduł-doctest",
+    "title": "Testy jednostkowe",
+    "section": "3 Testy w docstringach. Moduł doctest",
+    "text": "3 Testy w docstringach. Moduł doctest\nModuł doctest umożliwia umieszczanie testów jednostkowych w docstringach funkcji, klas i metod. Testy te są fragmentami sesji interaktywnych, które są wykonywane, a wyniki są porównywane z wynikami oczekiwanymi.\nKod\nimport doctest\n\ndoctest.testmod()\ntestuje wszystkie docstringi w środowisku globalnym.\nDomyślnie wykonywane są wszystkie testy, dłuższa informacja wypisywana jest dla tych testów, które się nie powiodły.\n\n3.1 Przykład\nTesty w docstringu dla funkcji zwracającej dodatnie dzielniki.\ndef dzielniki(n):\n    '''Zwraca listę dodatnich dzielników n.\n\n    &gt;&gt;&gt; dzielniki(1)\n    [1]\n    &gt;&gt;&gt; dzielniki(5)\n    [1, 5]\n    &gt;&gt;&gt; dzielniki(-8)\n    [1, 2, 4, 8]\n    '''\n\n    pass\nMamy gotowy nagłówek funkcji wraz z docstringiem, w którym umieściliśmy testy. Testy te możemy wykonać z wiersza poleceń za pomocą:\npython -m doctest dzielniki_doctest.py\nWynik:\n**********************************************************************\nFile \"/home/tomek/Dokumenty/PPwAD2/src/dzielniki_doctest.py\", line 7, in dzielniki_doctest.dzielniki\nFailed example:\n    dzielniki(1)\nExpected:\n    [1]\nGot nothing\n**********************************************************************\nFile \"/home/tomek/Dokumenty/PPwAD2/src/dzielniki_doctest.py\", line 9, in dzielniki_doctest.dzielniki\nFailed example:\n    dzielniki(5)\nExpected:\n    [1, 5]\nGot nothing\n**********************************************************************\nFile \"/home/tomek/Dokumenty/PPwAD2/src/dzielniki_doctest.py\", line 11, in dzielniki_doctest.dzielniki\nFailed example:\n    dzielniki(-8)\nExpected:\n    [1, 2, 4, 8]\nGot nothing\n**********************************************************************\n1 items had failures:\n   3 of   3 in dzielniki_doctest.dzielniki\n***Test Failed*** 3 failures.\nTesty nie przeszły, gdyż jeszcze nie napisaliśmy funkcji. Zauważmy w tym miejscu, że przed napisaniem funkcji żaden test nie powinien przechodzić. W przeciwnym razie oznaczałoby to, że testy są napisane źle.\nAlternatywnie, testy można uruchomić z poziomu edytora, jeśli tylko dopiszemy na końcu pliku:\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()\nPlik dzielniki_doctest.py po zmianach:\ndef dzielniki(n):\n    \"\"\"Zwraca listę dodatnich dzielników n.\n\n    Args:\n        n (int): liczba całkowita\n\n    &gt;&gt;&gt; dzielniki(1)\n    [1]\n    &gt;&gt;&gt; dzielniki(5)\n    [1, 5]\n    &gt;&gt;&gt; dzielniki(-8)\n    [1, 2, 4, 8]\n    \"\"\"\n\n    n = n if n &gt; 0 else -n\n    return [d for d in range(1, n + 1) if n % d == 0]\n\n\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()\nWywołanie doctest.testmod(verbose=True) przeprowadza testy w trybie “gadatliwym”. Dzięki temu w przypadku sukcesu mamy wizualne potwierdzenie, że testy zostały wykonane. Z wiersza poleceń wywołanie python -m doctest -v dzielniki_doctest.py daje podobny efekt.\nNa koniec, wywołanie\ndoctest.run_docstring_examples(f, globals(), verbose=True)\nwykonuje testy tylko dla obiektu f, a nie dla wszystkich docstringów w środowisku globalnym.",
+    "crumbs": [
+      "Wykłady",
+      "Testy jednostkowe"
+    ]
+  },
+  {
+    "objectID": "lab_II/lab_II.html#iloraz-liczb-całkowitych",
+    "href": "lab_II/lab_II.html#iloraz-liczb-całkowitych",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "1 Iloraz liczb całkowitych",
+    "text": "1 Iloraz liczb całkowitych\nNapisz program, który pobiera od użytkownika dwie liczby całkowite i oblicza ich iloraz. Program powinien obsługiwać dwa rodzaje wyjątków:\n\nValueError — jeśli użytkownik wprowadzi tekst zamiast liczby całkowitej,\nZeroDivisionError — jeśli użytkownik wprowadzi jako dzielnik liczbę 0.\n\nProgram powinien wyświetlać komunikat o błędzie odpowiedni do typu wyjątku.\nPrzykłady:\na: 10\nb: 0\nBłąd: dzielenie przez zero.\na: 10\nb: abc\nBłąd: nieprawidłowa wartość.\na: 10\nb: 4\n10 / 4 = 2.5",
     "crumbs": [
       "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Lab II: Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "lab_II/lab_II.html#hierarchia-wyjątków-arytmetycznych",
+    "href": "lab_II/lab_II.html#hierarchia-wyjątków-arytmetycznych",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "2 Hierarchia wyjątków arytmetycznych",
+    "text": "2 Hierarchia wyjątków arytmetycznych\nZapoznaj się z fragmentem hierarchii wyjątków arytmetycznych w Pythonie:\nBaseException\n  └── Exception\n        └── ArithmeticError\n              ├── ZeroDivisionError\n              ├── OverflowError\n              └── FloatingPointError\nNapisz program, który oblicza wyrażenie 2.0 ** x / (x - 3) dla liczby x podanej przez użytkownika. Obsłuż wyjątek ArithmeticError jednym blokiem except. Przetestuj program dla:\n\nx = 3 (dzielenie przez zero — ZeroDivisionError),\nx = 1024 (przepełnienie — OverflowError, bo 2.0 ** 1024 przekracza maksymalną wartość float),\nx = 5 (poprawne dane).\n\nPrzykłady:\nPodaj x: 3\nBłąd arytmetyczny: float division by zero\nPodaj x: 1024\nBłąd arytmetyczny: (34, 'Numerical result out of range')\nPodaj x: 5\n2.0 ** 5 / (5 - 3) = 16.0",
+    "crumbs": [
+      "Laboratoria",
+      "Lab II: Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "lab_II/lab_II.html#suma-i-średnia-z-powtórzeniem",
+    "href": "lab_II/lab_II.html#suma-i-średnia-z-powtórzeniem",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "3 Suma i średnia z powtórzeniem",
+    "text": "3 Suma i średnia z powtórzeniem\nNapisz program, który pobiera od użytkownika ciąg liczb całkowitych rozdzielonych spacjami i wyświetla ich sumę oraz średnią arytmetyczną. Program powinien:\n\nwymuszać wprowadzenie danych w poprawnym formacie — po podaniu niepoprawnych danych ponownie żąda ich wprowadzenia,\ndawać użytkownikowi trzy szanse na podanie prawidłowych danych; po wyczerpaniu szans program kończy działanie stosownym komunikatem,\nkorzystać z bloku else, który wykonuje się wyłącznie wtedy, gdy nie wystąpił wyjątek.\n\nZastanów się: ile wynosi średnia arytmetyczna ciągu pustego?\nPrzykład:\nLiczby (próba 1/3): 4 3 abc\nBłąd: nieprawidłowe dane.\nLiczby (próba 2/3): 4 3 2 1 5\nSuma: 15, Średnia: 3.0",
+    "crumbs": [
+      "Laboratoria",
+      "Lab II: Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "lab_II/lab_II.html#symulacja-połączenia-sieciowego",
+    "href": "lab_II/lab_II.html#symulacja-połączenia-sieciowego",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "4 Symulacja połączenia sieciowego",
+    "text": "4 Symulacja połączenia sieciowego\nBlok finally jest wykonywany zawsze — niezależnie od tego, czy wyjątek wystąpił, czy nie, a nawet gdy wyjątek nie jest obsługiwany w tej samej funkcji, lecz propaguje się do wywołującego.\nNapisz funkcję connect(addr), która symuluje nawiązywanie połączenia sieciowego:\n\nwypisuje Łączenie z &lt;addr&gt;...,\nwywołuje time.sleep(t), gdzie t to losowa liczba rzeczywista z przedziału \\([0, 1)\\),\njeśli t przekracza próg 0.6, zgłasza RuntimeError(\"Przekroczono limit czasu\"),\nw przeciwnym razie wypisuje Połączono z &lt;addr&gt;.,\nw bloku finally wypisuje Zamknięto połączenie z &lt;addr&gt;.\n\nNapisz program, który w pętli wywołuje connect() dla dziesięciu adresów 192.168.0.0, …, 192.168.0.9, obsługując RuntimeError stosownym komunikatem.\nPrzykład:\nŁączenie z 192.168.0.0...\nZamknięto połączenie z 192.168.0.0\nBłąd: Przekroczono limit czasu\n------------------------------\nŁączenie z 192.168.0.1...\nPołączono z 192.168.0.1\nZamknięto połączenie z 192.168.0.1\n------------------------------\nŁączenie z 192.168.0.2...\nZamknięto połączenie z 192.168.0.2\nBłąd: Przekroczono limit czasu\n------------------------------\nŁączenie z 192.168.0.3...\nPołączono z 192.168.0.3\nZamknięto połączenie z 192.168.0.3\n------------------------------\nŁączenie z 192.168.0.4...\nPołączono z 192.168.0.4\nZamknięto połączenie z 192.168.0.4\n------------------------------\nŁączenie z 192.168.0.5...\nPołączono z 192.168.0.5\nZamknięto połączenie z 192.168.0.5\n------------------------------\nŁączenie z 192.168.0.6...\nPołączono z 192.168.0.6\nZamknięto połączenie z 192.168.0.6\n------------------------------\nŁączenie z 192.168.0.7...\nPołączono z 192.168.0.7\nZamknięto połączenie z 192.168.0.7\n------------------------------\nŁączenie z 192.168.0.8...\nPołączono z 192.168.0.8\nZamknięto połączenie z 192.168.0.8\n------------------------------\nŁączenie z 192.168.0.9...\nPołączono z 192.168.0.9\nZamknięto połączenie z 192.168.0.9\n------------------------------\nW jakiej kolejności pojawiają się komunikaty gdy połączenie się nie powiedzie?",
+    "crumbs": [
+      "Laboratoria",
+      "Lab II: Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "lab_II/lab_II.html#moduł-funkcji-numerycznych",
+    "href": "lab_II/lab_II.html#moduł-funkcji-numerycznych",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "5 Moduł funkcji numerycznych",
+    "text": "5 Moduł funkcji numerycznych\nCelem tego zadania jest napisanie prostego modułu z funkcjami numerycznymi oraz programu, który z tego modułu korzysta. Zadanie ilustruje obsługę błędów na różnych poziomach programu.\n\n5.1 Moduł numerics.py\nNapisz moduł numerics.py zawierający trzy funkcje:\nparse_number(text) — przyjmuje łańcuch znaków i zwraca liczbę w najwęższym pasującym typie:\n\njeśli text reprezentuje liczbę całkowitą (np. \"5\", \"-3\"), zwraca int;\njeśli text reprezentuje liczbę zmiennoprzecinkową o wartości całkowitej (np. \"3.0\", \"-7.0\"), zwraca int;\njeśli text reprezentuje liczbę zmiennoprzecinkową (np. \"3.5\"), zwraca float;\nw przeciwnym razie zgłasza ValueError.\n\n\n\n\n\n\n\nTipWskazówka\n\n\n\nMetoda float.is_integer() zwraca True, gdy wartość zmiennoprzecinkowa jest liczbą całkowitą, np. (3.0).is_integer() daje True.\n\n\nsilnia(n) — oblicza \\(n!\\) dla nieujemnych liczb całkowitych. Zgłasza:\n\nTypeError — jeśli n nie jest liczbą całkowitą (isinstance(n, int)),\nValueError — jeśli n jest ujemna.\n\nsymbol_newtona(n, k) — oblicza \\[\\binom{n}{k} = \\frac{n!}{k!(n-k)!}\\] korzystając z funkcji silnia. Zgłasza:\n\nTypeError — jeśli n lub k nie jest liczbą całkowitą,\nValueError — jeśli \\(n &lt; 0\\), \\(k &lt; 0\\) lub \\(k &gt; n\\).\n\n\n\n\n\n\n\nImportantUwaga\n\n\n\nObliczanie symbolu Newtona przez trzy wywołania silni nie jest efektywne. Nie chodzi nam tu jednak o efektywność — funkcje te są jedynie ilustracją mechanizmu obsługi błędów.\n\n\nKażda funkcja w module powinna samodzielnie walidować swoje argumenty, nawet jeśli w danym programie walidacja ta wydaje się zbędna — funkcja nie wie, kto i jak ją wywoła w przyszłości.\n\n\n5.2 Program sprawdzający\nW tym samym pliku numerics.py, w bloku if __name__ == \"__main__\":, napisz program, który:\n\npobiera od użytkownika wartości n i k (jako tekst),\nprzetwarza je za pomocą parse_number,\nwywołuje symbol_newtona(n, k),\nwyświetla wynik lub stosowny komunikat o błędzie.\n\nZwróć uwagę, że ValueError może pochodzić z dwóch różnych miejsc: z parse_number (wejście nie jest liczbą) lub z symbol_newtona (argumenty poza dziedziną).\nPrzykłady:\nn: 5\nk: 2\nC(5, 2) = 10\nn: 5\nk: 2.5\nBłąd: argument musi być liczbą całkowitą.\nn: abc\nk: 2\nBłąd: 'abc' nie jest liczbą.\nn: 3\nk: 5\nBłąd: wymagane 0 &lt;= k &lt;= n, otrzymano n=3, k=5.\nn: -4\nk: 2\nBłąd: wymagane n &gt;= 0, otrzymano n=-4.\nn: 5.0\nk: 3\nC(5, 3) = 10\n\n\n\n\n\n\nTipDo przemyślenia\n\n\n\nKtóre wyjątki zgłaszane przez silnia() są w tym programie faktycznie osiągalne? Prześledź możliwe ścieżki wykonania: jeśli parse_number zwróci float, to który wyjątek zostanie zgłoszony pierwszy — z silnia() czy z symbol_newtona()? Czy to oznacza, że walidacja w silnia() jest niepotrzebna?",
+    "crumbs": [
+      "Laboratoria",
+      "Lab II: Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "lab_II/lab_II.html#statystyki-pliku-tekstowego",
+    "href": "lab_II/lab_II.html#statystyki-pliku-tekstowego",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "6 Statystyki pliku tekstowego",
+    "text": "6 Statystyki pliku tekstowego\nNapisz program, który wczytuje ścieżkę do pliku tekstowego podaną przez użytkownika i wyświetla:\n\nliczbę wierszy,\nliczbę słów (słowo to dowolna sekwencja znaków oddzielona białymi znakami, np. \"Hello, world!\" zawiera dwa słowa: \"Hello,\" i \"world!\"),\nliczbę znaków.\n\nUżyj menedżera kontekstu (with) i jawnie określ kodowanie encoding='utf-8'. Program powinien obsługiwać:\n\nFileNotFoundError — komunikatem Brak pliku: &lt;nazwa_pliku&gt;,\nOSError — komunikatem Błąd odczytu pliku: &lt;treść błędu&gt;.\n\nPrzykład:\nPodaj ścieżkę do pliku: wiersz.txt\nWiersze: 4\nSłowa:   26\nZnaki:   142",
+    "crumbs": [
+      "Laboratoria",
+      "Lab II: Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "lab_II/lab_II.html#inspekcja-pliku-binarnego",
+    "href": "lab_II/lab_II.html#inspekcja-pliku-binarnego",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "7 Inspekcja pliku binarnego",
+    "text": "7 Inspekcja pliku binarnego\nNapisz program, który wczytuje ścieżkę do pliku binarnego i wyświetla:\n\nrozmiar pliku w bajtach,\npierwszych 16 bajtów w reprezentacji szesnastkowej (hex),\nczy plik jest plikiem PNG — plik PNG zaczyna się od sygnatury b'\\x89PNG\\r\\n\\x1a\\n' (8 bajtów).\n\nUżyj trybu 'rb' w funkcji open() i menedżera kontekstu. Program powinien obsługiwać:\n\nFileNotFoundError — komunikatem Brak pliku: &lt;nazwa_pliku&gt;,\nOSError — komunikatem Błąd odczytu pliku: &lt;treść błędu&gt;.\n\n\n\n\n\n\n\nTipWskazówka\n\n\n\nAby wyświetlić bajty w formacie szesnastkowym, możesz użyć metody hex() obiektu bytes lub funkcji binascii.hexlify().\n\n\nPrzykład dla pliku PNG:\nPodaj ścieżkę do pliku: obrazek.png\nRozmiar: 24831 bajtów\nPierwsze 16 bajtów: 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52\nSygnatura PNG: TAK\nPrzykład dla innego pliku:\nPodaj ścieżkę do pliku: dane.bin\nRozmiar: 512 bajtów\nPierwsze 16 bajtów: 4d 5a 90 00 03 00 00 00 04 00 00 00 ff ff 00 00\nSygnatura PNG: NIE",
+    "crumbs": [
+      "Laboratoria",
+      "Lab II: Błędy i wyjątki"
     ]
   }
 ]

@@ -24,6 +24,7 @@ website:
         contents:
           - file: wyklad_I.qmd
           - file: wyklad_II.qmd
+          - file: wyklad_III.qmd
 
           
 

@@ -1,0 +1,575 @@
+---
+title: Zmienne. Instrukcja przypisania
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+## Przykład z C++
+
+W C++ zmienna to obszar pamięci, do którego dostęp zapewnia nazwa zmiennej.
+
+```C++
+{{< include src/cpp_vars.cpp >}}
+```
+
+Rezultat:
+
+```
+a: 1, b: 1
+
+adres a: 0x7fff42c1e4d8, adres b: 0x7fff42c1e4dc                                                                           
+
+a: 123, b: 1                                                                                                                                                                                 
+adres a: 0x7fff42c1e4d8, adres b: 0x7fff42c1e4dc 
+```
+
+* Zmienne w C++, C, Pascalu, ... można zilustrować metaforą *pudełka* -- każda zmienna to inne pudełko, do którego wkładana jest wartość.
+* **Definiowanie zmiennej** to proces tworzenia pudełka. Często określany jest wtedy **typ** zmiennej.
+* Zdefiniowana zmienna, której nie przypisano żadnej wartości jest zmienną **niezainicjalizowaną** (nie ma poprawnej wartości startowej).
+
+## W Pythonie jest inaczej
+
+* Zmienna w Pythonie to etykieta (nazwa, *identifier*, *reference*) nadawana **obiektowi**.
+* Jedyny sposób na utworzenie zmiennej, to wykonanie instrukcji przypisania.
+* Zmiennych się nie deklaruje, zmienne nie mają typów.
+* Na jeden obiekt może wskazywać wiele zmiennych; nazywa się je wtedy **aliasami**.
+
+## Obiekty
+
+* W Pythonie dane przetwarzane przez interpreter zawsze mają postać obiektów.
+* Każdy obiekt ma:
+  * typ,
+  * tożsamość,
+  * wartość.
+
+Obiekt możesz sobie wyobrazić jako znajdująca sie gdzieś w pamięci kapsułę zawierającą wartość (lub wartości, jeśli jest to kolekcja).
+
+- Każda kapsuła jest określonego typu i ma unikalną tożsamość.
+- Metody i atrybuty obiektu zapewniają dostęp do wartości zamkniętej w kapsule.
+- Zmienna to etykieta umieszczona na kapsule.
+
+### Typ i wartość
+
+**Typ** to rodzaj danych definiowany przez zbiór wartości i możliwych na nich operacji:
+
+* Liczby całkowite (`int`) mają wartości `..., -2, -1, 0, 1, 2, ...` i operacje takie jak dodawanie, mnożenie, porównywanie itp.
+* Wartości logiczne (`bool`) to `True` i `False` a operacje to np.: `and`, `or`, `not`.
+* Wartości typu łańcuchy znaków (`str`) to ciągi znaków a operacje na nich to np.: konkatenacja, dostęp do elementu, wycinki, `upper()`, `replace()`, ...
+* itd.
+
+Czym jest wartość obiektu? Dla liczb i wartości logicznych odpowiedź jest oczywista. Dla kolekcji sprawa jest bardziej subtelna - wrócimy do niej w dalszej części wykładu.
+
+### Funkcja `type()`
+
+Zwraca typ obiektu.
+
+```python
+print(type(1))
+```
+Rezultat:
+
+```
+<class 'int'>
+```
+
+Funkcji `type()` używa się do sprawdzenia typu nowego obiektu, zwykle w konsoli interaktywnej lub w trakcie debugowania. W kodzie programu rzadko się ją stosuje.
+
+### Tożsamość 
+
+* **Tożsamość** obiektu to miejsce w pamięci, w którym obiekt się znajduje.
+* **Numer identyfikacyjny** to liczba całkowita reprezentująca tożsamość obiektu.
+  * Numer identyfikacyjny jest niezmienny przez czas trwania obiektu.
+  * Dwa obiekty mają te same tożsamości dokładnie wtedy, gdy mają równe numery identyfikacyjne.
+  * Numer identyfikacyjny uzyskuje się poleceniem `id()`.
+* Operator `is` sprawdza, czy dwa obiekty mają tę samą tożsamość.
+
+### Operacja `==`
+
+Operator `==` sprawdza, czy dwa obiekty mają tę samą wartość. Wynikiem jest wartość logiczna `True` lub `False`.
+
+```python
+print(1 == 1)
+```
+Rezultat:
+
+```
+True
+```
+
+### Funkcja `id()` i operator `is`
+
+`id()` zwraca identyfikator obiektu określający jego tożsamość. Operator `is` sprawdza, czy dwa obiekty są tym samym obiektem.
+
+### Identyczność vs. równość
+
+* **Identyczność** to cecha obiektu, która oznacza, że dwa obiekty są tym samym obiektem.
+* **Równość** to cecha obiektu, która oznacza, że dwa obiekty mają tę samą wartość.
+
+### Przykład
+
+
+```python
+a = 2**100
+c = 2**100
+b = a
+
+print(f"a is b: {a is b}")
+print(f"b is c: {b is c}")
+print(f"a == b: {a == b}")
+print(f"b == c: {b == c}")
+print(f"id(a): {id(a)}, id(b): {id(b)}, id(c): {id(c)}")
+```
+
+Rezultat:
+
+```
+a is b: True
+b is c: False
+a == b: True
+b == c: True
+id(a): 140241985505296, id(b): 140241985505296, id(c): 140241985505344
+```
+
+W tym przykładzie:
+
+* `a`, `b` są aliasami -- różnymi nazwami tego samego obiektu.
+* Przypisanie `c = 2**100` tworzy nowy obiekt o tej samej wartości. W tym przypadku wartość prawej strony jest obliczana. Interpreter nie sprawdza czy obiekt o tej samej wartości już się w pamięci znajduje. Dlatego musi powstać nowy obiekt.
+
+Ogólnie:
+
+* jeśli prawa strona przypisania jest zmienną, to tworzony jest alias;
+* jeśli prawa strona przypisania jest wyrażeniem bardziej złożonym niż czysta zmienna, to tworzony jest nowy obiekt.
+
+Czasem jednak Python oszukuje.
+
+```python
+a = 1
+b = 3**2 - 8
+
+print(f"id(a) == {id(a)}")
+print(f"id(b) == {id(b)}")
+```
+
+Rezultat:
+
+```
+id(a) == 8885000
+id(b) == 8885000
+```
+
+Dla niektórych "małych" lub często używanych wartości tworzony jest tylko jeden obiekt. Jest to kwestia wewnętrzna interpretera związana z optymalizacją.
+
+### Kiedy używać `is` a kiedy `==`?
+
+`is` porównuje tożsamości, `==` porównuje wartości, dlatego najczęściej używa się `==`, gdyż zwykle interesują nas wartości.
+
+Wyjątkiem jest przypadek testowania, czy obiekt jest typu `None`. Zalecany kod:
+```python
+x is None
+```
+oraz
+```python
+x is not None
+```
+
+## Czas życia obiektu
+
+* Obiekty, do których nie ma żadnych referencji (nie mają nazw, nie wiszą na nich żadne etykiety) są usuwane z pamięci.
+* Mechanizm automatycznego uwalniania pamięci nazywa się **odśmiecaniem pamięci** (**garbage collection**).
+
+
+Funkcja `sys.getrefcount()` zwraca liczbę zmiennych odnoszących się do obiektu:
+
+```python
+from sys import getrefcount
+
+a = "hello"
+print(getrefcount(a))  
+b = a
+print(getrefcount(a))
+c = [a]
+print(getrefcount(a))
+d = c[0]
+print(getrefcount(a))
+```
+
+Rezultat:
+
+```
+4
+5
+6
+7
+```
+
+Każde przypisanie do `a` zwiększa liczbę referencji o 1. Sama wartość startowa jest większa od 1 (w tym przypadku 4), ponieważ sam argument wywołania `getrefcount()` tworzy tymczasową referencję, a interpreter może współdzielić często używane obiekty. 
+
+## Obiekty zmienne
+
+Obiekt zmienny to taki, który może zmienić wartość.
+
+```python
+a = [1, 2, 3]
+b = a
+a.append(4)
+print(a)
+print(b)
+```
+
+Rezultat:
+
+```
+[1, 2, 3, 4]
+[1, 2, 3, 4]
+```
+
+Należy pamiętać o tym efekcie, gdy tworzymy aliasy!
+
+::: {.callout-note}
+## Python Tutor
+
+Przetestuj ten i inne przykłady z tego wykładu w [Python Tutor](http://pythontutor.com/). To pozwoli Ci zobaczyć, jak Python wykonuje kod krok po kroku, i zrozumieć, co dzieje się z obiektami i zmiennymi.  
+:::
+
+### Aliasy i skutki uboczne
+
+Chcemy utworzyć macierz `3 x 3` wypełnioną zerami. Następnie w lewym górnym rogu chcemy umieścić `123`.
+
+```python
+wiersz = [0, 0, 0]
+macierz = [wiersz, wiersz, wiersz]
+print(macierz)
+macierz[0][0] = 123
+print(macierz)
+```
+
+Rezultat:
+
+```
+[[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+[[123, 0, 0], [123, 0, 0], [123, 0, 0]]
+```
+
+Niestety! Nasza macierz zawiera trzy pozycje, z których każda jest referencją do tego samego obiektu.
+
+Ten sam efekt występuje, gdy mnożymy listę przez liczbę:
+
+```python
+wiersz = [0, 0, 0]
+macierz = 3 * [wiersz]
+print(macierz)
+macierz[0][0] = 123
+print(macierz)
+```
+
+Rezultat:
+
+```
+[[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+[[123, 0, 0], [123, 0, 0], [123, 0, 0]]
+```
+
+Pamięć jest współdzielona: istnieje tylko jeden obiekt `wiersz` z wieloma nazwami.
+
+Obejście problemu: utworzenie trzech kopii listy `wiersz`, np. z pełnych wycinków `wiersz[:]`
+
+```python
+wiersz = [0, 0, 0]
+macierz = []
+print(macierz)
+
+for k in range(3):
+    macierz.append(wiersz[:])
+
+macierz[0][0] = 123
+print(macierz)
+```
+
+Rezultat:
+
+```
+[[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+[[123, 0, 0], [0, 0, 0], [0, 0, 0]]
+```
+
+
+Wykonaj ten przykład w [http://pythontutor.com/](http://pythontutor.com/).
+
+### `a += b` vs `a = a + b`
+
+Przypisanie złożone `+=`, `*=`, `...` jest formą przypisania, w której po prawej stronie znajduje się wyrażenie.
+
+Jeśli obiekt po lewej stronie przypisania złożonego `+=`, `*=`, `...` jest zmienny, to przypisanie wykonywane jest "w miejscu" i nowy obiekt nie jest tworzony.
+
+```python
+a = [1, 2]
+print(id(a))
+a += [3]
+print(id(a))
+a = a + [4]
+print(id(a))
+```
+
+Rezultat:
+
+```
+140358655437824
+140358655437824
+140358653641792
+```
+
+### Typy zmienne (mutable types)
+
+Przykłady wbudowanych typów zmiennych:
+
+* `list` -- listy,
+* `dict` -- słowniki,
+* `set` -- zbiory,
+* `bytearray` -- zmienne sekwencje bajtów,
+* `...`
+
+### Typy niezmienne (immutable types)
+
+Przykłady wbudowanych typów niezmiennych:
+
+* `int`, `float`, `complex`, `bool` -- wszystkie typy numeryczne,
+* `str` -- łańcuchy,
+* `tuple` -- krotki,
+* `frozenset` -- zbiory "zamrożone",
+* `range` -- zakresy,
+* `bytes` -- sekwencje bajtów,
+* `...`
+
+### Co tak naprawdę przechowują kolekcje?
+
+Jaki efekt będzie miało wykonanie poniższego kodu?
+
+```python
+krotka = (1, 2, 3, [])
+krotka[-1].append('X')
+print(krotka)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+(1, 2, 3, ['X'])
+```
+:::
+
+Na poziomie codziennego użycia mówimy, że lista `[1, 2, 3]` zawiera trzy liczby — i jest to prawidłowy sposób myślenia. Pod spodem jednak kolekcje przechowują referencje do obiektów, nie same obiekty. Dopóki elementy są niezmienne, różnica ta nie ma praktycznego znaczenia. Staje się istotna, gdy elementem kolekcji jest obiekt zmienny - jak lista wewnątrz krotki w powyższym przykładzie.
+
+::: {.callout-note}
+## Z [dokumentacji](https://docs.python.org/3/reference/datamodel.html#objects-values-and-types):
+The *value* of some objects can change. Objects whose value can change are said to be *mutable*; objects whose value is unchangeable once they are created are called *immutable*. (The value of an immutable container object that contains a reference to a mutable object can change when the latter’s value is changed; however the container is still considered immutable, because the collection of objects it contains cannot be changed. So, immutability is not strictly the same as having an unchangeable value, it is more subtle.) An object’s mutability is determined by its type; for instance, numbers, strings and tuples are immutable, while dictionaries and lists are mutable.
+:::
+
+
+## Kopie
+
+Jeśli obiekt jest niezmienny, to utworzenie jego kopii sprowadza się do utworzenia aliasu. Nie jest to oczywiście prawdziwa kopia, ale z praktycznego punktu widzenia nie ma to żadnego znaczenia.
+
+```python
+a = 'Ala ma kota'
+b = a
+print(f"a is b: {a is b}")
+```
+
+Ten kod jest bezpieczny, gdyż nie ma metody, która mogłaby zmienić łańcuch, na który wskazują `a` i `b` - każda z tych zmiennych może grać rolę niezależnej kopii drugiej.
+
+Tutaj jest inaczej:
+
+```python
+a = [1, 2, 3]
+b = a
+print(f"a is b: {a is b}")
+a.append(4)
+print(f"a: {a}, b: {b}")
+```
+
+Podobnie jak poprzednio `a` i `b` to aliasy, ale tym razem obiekt, na który wskazują, jest zmienny. Zatem `b` nie może grać roli niezależnej kopii `a`. 
+
+Jeśli obiekt jest zmienny, to najlepiej:
+* mieć dla niego tylko jedną nazwę;
+* w razie potrzeby tworzyć kopie (jak?).
+
+### Kopiowanie list
+
+Listy kopiujemy stosując:
+* wycinki,
+* metodę `copy()`,
+* funkcję `list()`.
+
+```python
+a = [1, 2, 3]
+b = a[:]
+c = a.copy()
+d = list(a)
+print(f"id(a): {id(a)}, id(b): {id(b)}, id(c): {id(c)}, id(d): {id(d)}")
+```
+
+Rezultat:
+
+```
+id(a): 140306044431488, id(b): 140306044482816, id(c): 140306042635520, id(d): 140306042146240
+```
+
+### Kopiowanie słowników i zbiorów
+
+Słownik / zbiór skopiujesz stosując:
+* metodę `copy()`,
+* funkcję `dict() / set()`.
+
+### Ograniczenia kopii płytkich
+
+Zgadnij jaki efekt będzie miało wykonanie kodu:
+
+```python
+d1 = {100: 'a', 2: [1, 2, 3]}
+d2 = d1.copy()
+d1[2].append('X')
+d1[25] = 'b'
+print('d1:', d1)
+print('d2:', d2)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+d1: {100: 'a', 2: [1, 2, 3, 'X'], 25: 'b'}
+d2: {100: 'a', 2: [1, 2, 3, 'X']}
+```
+:::
+
+Listy, krotki, słowniki itp., zawierają nie obiekty, lecz referencje do tych obiektów
+
+Omówione dotąd kopie są płytkie. Oznacza to, że tworzą one nowe obiekty zawierające nowe referencje... do starych obiektów.
+
+W tym przykładzie `d1[2]` i `d2[2]` są różnymi referencjami do tego samego obiektu.
+
+### Moduł [`copy`](https://docs.python.org/3/library/copy.html)
+
+Zawiera dwie funkcje:
+
+ * `copy()` zwracającą kopię płytką argumentu.
+ * `deepcopy()` zwracającą kopię głęboką.
+
+### Kopie głębokie
+
+Funkcja `deepcopy()` z modułu `copy` tworzy kopie głębokie obiektów.
+
+```python
+import copy
+
+d1 = {100: 'a', 2: [1, 2, 3]}
+d2 = copy.deepcopy(d1)
+d1[2].append('X')
+
+print('d1:', d1)
+print('d2:', d2)
+print(f"d1[2] is d2[2]: {d1[2] is d2[2]}")
+```
+
+Rezultat:
+
+```
+d1: {100: 'a', 2: [1, 2, 3, 'X']}
+d2: {100: 'a', 2: [1, 2, 3]}
+d1 is d2: False
+d1[2] is d2[2]: False
+```
+
+Aliasy do krotek zawierających obiekty zmienne nie mogą grać roli niezależnych kopii:
+
+```python
+a = (1, [2, 3])
+b = a
+a[-1].append(999)
+print(f"a: {a}, b: {b}")
+```
+
+Rezultat:
+
+```
+a: (1, [2, 3, 999]), b: (1, [2, 3, 999])
+```
+
+Sprawy nie rozwiązuje wykonanie płytkiej kopii: 
+
+```python
+a = (1, [2, 3])
+b = copy.copy(a)
+a[-1].append(999)
+print(f'a={a}, b={b}')
+```
+
+Rezultat:
+
+```
+a=(1, [2, 3, 999]), b=(1, [2, 3, 999])
+```
+
+Dopiero kopia głęboka tworzy faktycznie niezależne kopie:
+
+```python
+a = (1, [2, 3])
+b = copy.deepcopy(a)
+a[-1].append(999)
+print(f'a={a}, b={b}')
+```
+
+Rezultat:
+
+```
+a=(1, [2, 3, 999]), b=(1, [2, 3])
+```
+
+## Odwołanie cykliczne
+
+Na jaką wartość wskazuje `lst` po wykonaniu tego kodu?
+
+```python
+lst = [1]
+lst.append(lst)
+print(lst)
+```
+
+Rezultat:
+
+```
+[1, [...]]
+```
+
+Wielokropek wskazuje na odwołanie cykliczne. Zauważ, że ta lista ma nieskończoną głębokość!
+
+Ile jest równe `lst[-1]`?
+
+```
+print(lst[-1])
+```
+
+Rezultat:
+
+```
+[1, [...]]
+```
+
+Ponadto:
+
+```python
+print(lst is lst[-1])
+```
+
+Rezultat:
+
+```
+True
+```
+
+## Warto przeczytać
+
+[https://nedbatchelder.com/text/names.html](https://nedbatchelder.com/text/names.html)
+
+[https://pythonforthelab.com/blog/mutable-or-immutable-tuples/](https://pythonforthelab.com/blog/mutable-or-immutable-tuples/)

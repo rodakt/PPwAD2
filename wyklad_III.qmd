@@ -392,6 +392,7 @@ print(f"a: {a}, b: {b}")
 Podobnie jak poprzednio `a` i `b` to aliasy, ale tym razem obiekt, na który wskazują, jest zmienny. Zatem `b` nie może grać roli niezależnej kopii `a`. 
 
 Jeśli obiekt jest zmienny, to najlepiej:
+
 * mieć dla niego tylko jedną nazwę;
 * w razie potrzeby tworzyć kopie (jak?).
 
@@ -419,6 +420,7 @@ id(a): 140306044431488, id(b): 140306044482816, id(c): 140306042635520, id(d): 1
 ### Kopiowanie słowników i zbiorów
 
 Słownik / zbiór skopiujesz stosując:
+
 * metodę `copy()`,
 * funkcję `dict() / set()`.
 
@@ -453,8 +455,8 @@ W tym przykładzie `d1[2]` i `d2[2]` są różnymi referencjami do tego samego o
 
 Zawiera dwie funkcje:
 
- * `copy()` zwracającą kopię płytką argumentu.
- * `deepcopy()` zwracającą kopię głęboką.
+* `copy()` zwracającą kopię płytką argumentu.
+* `deepcopy()` zwracającą kopię głęboką.
 
 ### Kopie głębokie
 

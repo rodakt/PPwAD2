@@ -613,7 +613,11 @@ id(b) == 8885000</code></pre>
 <span id="cb28-4"><a href="#cb28-4"></a>a.append(<span class="dv">4</span>)</span>
 <span id="cb28-5"><a href="#cb28-5"></a><span class="bu">print</span>(<span class="ss">f"a: </span><span class="sc">{</span>a<span class="sc">}</span><span class="ss">, b: </span><span class="sc">{</span>b<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Podobnie jak poprzednio <code>a</code> i <code>b</code> to aliasy, ale tym razem obiekt, na który wskazują, jest zmienny. Zatem <code>b</code> nie może grać roli niezależnej kopii <code>a</code>.</p>
-<p>Jeśli obiekt jest zmienny, to najlepiej: * mieć dla niego tylko jedną nazwę; * w razie potrzeby tworzyć kopie (jak?).</p>
+<p>Jeśli obiekt jest zmienny, to najlepiej:</p>
+<ul>
+<li>mieć dla niego tylko jedną nazwę;</li>
+<li>w razie potrzeby tworzyć kopie (jak?).</li>
+</ul>
 <section id="kopiowanie-list" class="level3" data-number="6.1">
 <h3 data-number="6.1" class="anchored" data-anchor-id="kopiowanie-list"><span class="header-section-number">6.1</span> Kopiowanie list</h3>
 <p>Listy kopiujemy stosując: * wycinki, * metodę <code>copy()</code>, * funkcję <code>list()</code>.</p>
@@ -627,7 +631,11 @@ id(b) == 8885000</code></pre>
 </section>
 <section id="kopiowanie-słowników-i-zbiorów" class="level3" data-number="6.2">
 <h3 data-number="6.2" class="anchored" data-anchor-id="kopiowanie-słowników-i-zbiorów"><span class="header-section-number">6.2</span> Kopiowanie słowników i zbiorów</h3>
-<p>Słownik / zbiór skopiujesz stosując: * metodę <code>copy()</code>, * funkcję <code>dict() / set()</code>.</p>
+<p>Słownik / zbiór skopiujesz stosując:</p>
+<ul>
+<li>metodę <code>copy()</code>,</li>
+<li>funkcję <code>dict() / set()</code>.</li>
+</ul>
 </section>
 <section id="ograniczenia-kopii-płytkich" class="level3" data-number="6.3">
 <h3 data-number="6.3" class="anchored" data-anchor-id="ograniczenia-kopii-płytkich"><span class="header-section-number">6.3</span> Ograniczenia kopii płytkich</h3>

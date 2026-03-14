@@ -25,6 +25,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 - [Laboratorium 1: Zadania na rozgrzewkę](lab_I/lab_I.qmd)
 - [Laboratorium 2: Błędy i wyjątki](lab_II/lab_II.qmd)
 - [Laboratorium 3: Testy jednostkowe](lab_III/lab_III.qmd)
+- [Laboratorium 4: Zmienne, aliasy, kopie](lab_IV/lab_IV.qmd)
 
 ## Zaliczenie
 

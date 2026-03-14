@@ -34,6 +34,7 @@ website:
           - file: lab_I/lab_I.qmd
           - file: lab_II/lab_II.qmd
           - file: lab_III/lab_III.qmd
+          - file: lab_IV/lab_IV.qmd
 
 format:
   html:

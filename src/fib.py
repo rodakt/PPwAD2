@@ -1,3 +1,4 @@
+# src/fib.py
 def fib_iter(n):
     """Iteracyjna wersja ciągu Fibonacciego
 

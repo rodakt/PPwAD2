@@ -175,6 +175,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Zmienne. Instrukcja przypisania</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wypakowywanie obiektów iterowalnych. Parametry i argumenty</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -225,41 +231,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#błędy-i-wyjątki" id="toc-błędy-i-wyjątki" class="nav-link active" data-scroll-target="#błędy-i-wyjątki"><span class="header-section-number">1</span> Błędy i wyjątki</a>
   <ul class="collapse">
   <li><a href="#czym-są-wyjątki-exceptions" id="toc-czym-są-wyjątki-exceptions" class="nav-link" data-scroll-target="#czym-są-wyjątki-exceptions"><span class="header-section-number">1.1</span> Czym są wyjątki (Exceptions)?</a></li>
-  <li><a href="#przykłady-wyjątków" id="toc-przykłady-wyjątków" class="nav-link" data-scroll-target="#przykłady-wyjątków"><span class="header-section-number">1.2</span> Przykłady wyjątków</a>
-  <ul class="collapse">
-  <li><a href="#ćwiczenie-i.1" id="toc-ćwiczenie-i.1" class="nav-link" data-scroll-target="#ćwiczenie-i.1"><span class="header-section-number">1.2.1</span> Ćwiczenie I.1</a></li>
-  <li><a href="#ćwiczenie-i.2" id="toc-ćwiczenie-i.2" class="nav-link" data-scroll-target="#ćwiczenie-i.2"><span class="header-section-number">1.2.2</span> Ćwiczenie I.2</a></li>
-  </ul></li>
+  <li><a href="#przykłady-wyjątków" id="toc-przykłady-wyjątków" class="nav-link" data-scroll-target="#przykłady-wyjątków"><span class="header-section-number">1.2</span> Przykłady wyjątków</a></li>
   <li><a href="#hierarchia-wyjątków" id="toc-hierarchia-wyjątków" class="nav-link" data-scroll-target="#hierarchia-wyjątków"><span class="header-section-number">1.3</span> Hierarchia wyjątków</a></li>
   <li><a href="#obsługa-wyjątków-instrukcja-try" id="toc-obsługa-wyjątków-instrukcja-try" class="nav-link" data-scroll-target="#obsługa-wyjątków-instrukcja-try"><span class="header-section-number">1.4</span> Obsługa wyjątków, instrukcja <code>try</code></a>
   <ul class="collapse">
-  <li><a href="#przykład-i.1" id="toc-przykład-i.1" class="nav-link" data-scroll-target="#przykład-i.1"><span class="header-section-number">1.4.1</span> Przykład I.1</a></li>
+  <li><a href="#przykład" id="toc-przykład" class="nav-link" data-scroll-target="#przykład"><span class="header-section-number">1.4.1</span> Przykład</a></li>
   </ul></li>
   <li><a href="#rola-dziedziczenia-w-obsłudze-wyjątków" id="toc-rola-dziedziczenia-w-obsłudze-wyjątków" class="nav-link" data-scroll-target="#rola-dziedziczenia-w-obsłudze-wyjątków"><span class="header-section-number">1.5</span> Rola dziedziczenia w obsłudze wyjątków</a>
   <ul class="collapse">
-  <li><a href="#przykład-i.2" id="toc-przykład-i.2" class="nav-link" data-scroll-target="#przykład-i.2"><span class="header-section-number">1.5.1</span> Przykład I.2</a></li>
+  <li><a href="#przykład-1" id="toc-przykład-1" class="nav-link" data-scroll-target="#przykład-1"><span class="header-section-number">1.5.1</span> Przykład</a></li>
   </ul></li>
   <li><a href="#jak-obsługiwać-wyjątki" id="toc-jak-obsługiwać-wyjątki" class="nav-link" data-scroll-target="#jak-obsługiwać-wyjątki"><span class="header-section-number">1.6</span> Jak obsługiwać wyjątki</a>
   <ul class="collapse">
-  <li><a href="#przykład-i.3" id="toc-przykład-i.3" class="nav-link" data-scroll-target="#przykład-i.3"><span class="header-section-number">1.6.1</span> Przykład I.3</a></li>
+  <li><a href="#przykład-2" id="toc-przykład-2" class="nav-link" data-scroll-target="#przykład-2"><span class="header-section-number">1.6.1</span> Przykład</a></li>
   </ul></li>
   <li><a href="#finally" id="toc-finally" class="nav-link" data-scroll-target="#finally"><span class="header-section-number">1.7</span> <code>finally</code></a>
   <ul class="collapse">
-  <li><a href="#ćwiczenie-i.3" id="toc-ćwiczenie-i.3" class="nav-link" data-scroll-target="#ćwiczenie-i.3"><span class="header-section-number">1.7.1</span> Ćwiczenie I.3</a></li>
-  <li><a href="#przykład-i.4" id="toc-przykład-i.4" class="nav-link" data-scroll-target="#przykład-i.4"><span class="header-section-number">1.7.2</span> Przykład I.4</a></li>
+  <li><a href="#przykład-3" id="toc-przykład-3" class="nav-link" data-scroll-target="#przykład-3"><span class="header-section-number">1.7.1</span> Przykład</a></li>
   </ul></li>
   <li><a href="#menedżer-kontekstu" id="toc-menedżer-kontekstu" class="nav-link" data-scroll-target="#menedżer-kontekstu"><span class="header-section-number">1.8</span> Menedżer kontekstu</a>
   <ul class="collapse">
-  <li><a href="#przykład-i.5" id="toc-przykład-i.5" class="nav-link" data-scroll-target="#przykład-i.5"><span class="header-section-number">1.8.1</span> Przykład I.5</a></li>
+  <li><a href="#przykład-4" id="toc-przykład-4" class="nav-link" data-scroll-target="#przykład-4"><span class="header-section-number">1.8.1</span> Przykład</a></li>
   </ul></li>
   <li><a href="#instrukcja-raise" id="toc-instrukcja-raise" class="nav-link" data-scroll-target="#instrukcja-raise"><span class="header-section-number">1.9</span> Instrukcja <code>raise</code></a>
   <ul class="collapse">
-  <li><a href="#przykład-i.6" id="toc-przykład-i.6" class="nav-link" data-scroll-target="#przykład-i.6"><span class="header-section-number">1.9.1</span> Przykład I.6</a></li>
+  <li><a href="#przykład-5" id="toc-przykład-5" class="nav-link" data-scroll-target="#przykład-5"><span class="header-section-number">1.9.1</span> Przykład</a></li>
   </ul></li>
   <li><a href="#traceback" id="toc-traceback" class="nav-link" data-scroll-target="#traceback"><span class="header-section-number">1.10</span> Traceback</a>
   <ul class="collapse">
-  <li><a href="#przykład-i.7" id="toc-przykład-i.7" class="nav-link" data-scroll-target="#przykład-i.7"><span class="header-section-number">1.10.1</span> Przykład I.7</a></li>
-  <li><a href="#ćwiczenie-i.4" id="toc-ćwiczenie-i.4" class="nav-link" data-scroll-target="#ćwiczenie-i.4"><span class="header-section-number">1.10.2</span> Ćwiczenie I.4</a></li>
+  <li><a href="#przykład-6" id="toc-przykład-6" class="nav-link" data-scroll-target="#przykład-6"><span class="header-section-number">1.10.1</span> Przykład</a></li>
   </ul></li>
   </ul></li>
   <li><a href="#do-poczytania" id="toc-do-poczytania" class="nav-link" data-scroll-target="#do-poczytania"><span class="header-section-number">2</span> Do poczytania</a></li>
@@ -322,14 +322,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>RecursionError</code> – przekroczony limit wywołań rekurencyjnych.</li>
 <li>…</li>
 </ul>
-<section id="ćwiczenie-i.1" class="level3" data-number="1.2.1">
-<h3 data-number="1.2.1" class="anchored" data-anchor-id="ćwiczenie-i.1"><span class="header-section-number">1.2.1</span> Ćwiczenie I.1</h3>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Ćwiczenie
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Znajdź w dokumentacji Pythona opisy podanych wyżej wyjątków.</p>
-</section>
-<section id="ćwiczenie-i.2" class="level3" data-number="1.2.2">
-<h3 data-number="1.2.2" class="anchored" data-anchor-id="ćwiczenie-i.2"><span class="header-section-number">1.2.2</span> Ćwiczenie I.2</h3>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Ćwiczenie
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Dla każdego z podanych wyżej wyjątków napisz program, który go zgłosi.</p>
-</section>
+</div>
+</div>
 </section>
 <section id="hierarchia-wyjątków" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="hierarchia-wyjątków"><span class="header-section-number">1.3</span> Hierarchia wyjątków</h2>
@@ -393,8 +411,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> e:</span>
 <span id="cb2-2"><a href="#cb2-2"></a>    <span class="bu">print</span>(<span class="ss">f"Wystąpił błąd: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Zmienna <code>e</code> przechowuje tu obiekt wyjątku, którego tekstowa reprezentacja zwykle opisuje przyczynę błędu.</p>
-<section id="przykład-i.1" class="level3" data-number="1.4.1">
-<h3 data-number="1.4.1" class="anchored" data-anchor-id="przykład-i.1"><span class="header-section-number">1.4.1</span> Przykład I.1</h3>
+<section id="przykład" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="przykład"><span class="header-section-number">1.4.1</span> Przykład</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># src/try_except_ZDE.py</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="cf">try</span>:</span>
 <span id="cb3-3"><a href="#cb3-3"></a>    x <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>(<span class="st">"Podaj liczbę: "</span>))</span>
@@ -412,8 +430,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="rola-dziedziczenia-w-obsłudze-wyjątków" class="level2" data-number="1.5">
 <h2 data-number="1.5" class="anchored" data-anchor-id="rola-dziedziczenia-w-obsłudze-wyjątków"><span class="header-section-number">1.5</span> Rola dziedziczenia w obsłudze wyjątków</h2>
 <p>Dziedziczenie w Pythonie odgrywa istotną rolę w obsłudze wyjątków. Blok <code>except</code> obsługuje wyjątki, które są instancjami klas wyjątków wymienionych w nagłówku bloku. Jeśli wyjątek jest instancją klasy, która dziedziczy po klasie wymienionej w nagłówku bloku, to wyjątek również zostanie obsłużony.</p>
-<section id="przykład-i.2" class="level3" data-number="1.5.1">
-<h3 data-number="1.5.1" class="anchored" data-anchor-id="przykład-i.2"><span class="header-section-number">1.5.1</span> Przykład I.2</h3>
+<section id="przykład-1" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="przykład-1"><span class="header-section-number">1.5.1</span> Przykład</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># src/try_except_AE.py</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="cf">try</span>:</span>
 <span id="cb4-3"><a href="#cb4-3"></a>    x <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>(<span class="st">"Podaj liczbę: "</span>))</span>
@@ -433,8 +451,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="jak-obsługiwać-wyjątki" class="level2" data-number="1.6">
 <h2 data-number="1.6" class="anchored" data-anchor-id="jak-obsługiwać-wyjątki"><span class="header-section-number">1.6</span> Jak obsługiwać wyjątki</h2>
 <p>Staramy się przechwytywać te wyjątki, dla których jesteśmy w stanie podjąć jakieś działania naprawcze. Wyjątek, którego nie jesteśmy w stanie w żaden sensowny sposób obsłużyć, powinien być naturalnie przekazywany na wyższy poziom programu.</p>
-<section id="przykład-i.3" class="level3" data-number="1.6.1">
-<h3 data-number="1.6.1" class="anchored" data-anchor-id="przykład-i.3"><span class="header-section-number">1.6.1</span> Przykład I.3</h3>
+<section id="przykład-2" class="level3" data-number="1.6.1">
+<h3 data-number="1.6.1" class="anchored" data-anchor-id="przykład-2"><span class="header-section-number">1.6.1</span> Przykład</h3>
 <p>Program wczytuje od użytkownika liczbę całkowitą i wypisuje informację o jej parzystości.</p>
 <p>Wartość zwracana przez <code>input()</code> jest zawsze łańcuchem znaków, wartość tę konwertujemy na liczbę całkowitą za pomocą funkcji <code>int()</code>. Jednak użytkownik może podać coś innego niż liczba całkowita, coś czego <code>int()</code> nie jest w stanie skonwertować. Jeśli tak się stanie, to <code>int()</code> zgłosi wyjątek <code>ValueError</code>. Program nie jest w stanie podać liczby za użytkownika, może jednak wyświetlić komunikat o błędzie i ponowić próbę wczytania liczby. A zatem w tym przypadku wyjątek może być sensownie obsłużony.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># src/try_except_even_odd.py</span></span>
@@ -468,12 +486,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="finally" class="level2" data-number="1.7">
 <h2 data-number="1.7" class="anchored" data-anchor-id="finally"><span class="header-section-number">1.7</span> <code>finally</code></h2>
 <p>Blok <code>finally</code> jest wykonywany zawsze, niezależnie od tego czy wyjątek został zgłoszony czy nie, czy został obsłużony czy nie. Blok <code>finally</code> jest wykonywany nawet wtedy, gdy w bloku <code>try</code> wystąpił <code>return</code> lub <code>break</code>. Cel bloku <code>finally</code> to akcje czyszczące, które muszą być wykonane niezależnie od tego, co się stało w <code>try</code>, <code>except</code> i <code>else</code>. Typowym zastosowaniem <code>finally</code> jest zamykanie plików, zamykanie połączeń sieciowych, zwalnianie zasobów, itp.</p>
-<section id="ćwiczenie-i.3" class="level3" data-number="1.7.1">
-<h3 data-number="1.7.1" class="anchored" data-anchor-id="ćwiczenie-i.3"><span class="header-section-number">1.7.1</span> Ćwiczenie I.3</h3>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Ćwiczenie
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Napisz programy testujące działanie <code>finally</code> w różnych scenariuszach. Sprawdź, czy blok <code>finally</code> jest rzeczywiście zawsze wykonywany.</p>
-</section>
-<section id="przykład-i.4" class="level3" data-number="1.7.2">
-<h3 data-number="1.7.2" class="anchored" data-anchor-id="przykład-i.4"><span class="header-section-number">1.7.2</span> Przykład I.4</h3>
+</div>
+</div>
+<section id="przykład-3" class="level3" data-number="1.7.1">
+<h3 data-number="1.7.1" class="anchored" data-anchor-id="przykład-3"><span class="header-section-number">1.7.1</span> Przykład</h3>
 <p>Nieco bardziej realistyczny przykład. Skrypt <code>file_size_v1.py</code> oblicza rozmiar pliku w bajtach. Działa z wiersza poleceń. Przyjmuje dokładnie jeden argument, który jest nazwą pliku. Wyświetla rozmiar pliku w bajtach lub komunikat o błędzie. Program obsługuje dwa wyjątki: <code>FileNotFoundError</code> i <code>OSError</code>. W bloku <code>finally</code> zostaje podjęta próba zamknięcia pliku w kolejnym bloku <code>try</code>. Postępujemy w ten sposób, ponieważ otwarcie pliku może się nie powieść i wtedy zmienna <code>f</code> nie będzie istnieć.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Path: src/file_size_v1.py</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="co">"""</span></span>
@@ -525,8 +552,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="menedżer-kontekstu" class="level2" data-number="1.8">
 <h2 data-number="1.8" class="anchored" data-anchor-id="menedżer-kontekstu"><span class="header-section-number">1.8</span> Menedżer kontekstu</h2>
 <p>Menedżer kontekstu to mechanizm, który umożliwia efektywne zarządzanie zasobami, takimi jak pliki, połączenia sieciowe, itp. Podstawowym przykładem zastosowania menedżera kontekstu jest otwieranie pliku. Wykorzystuje się do tego instrukcję <code>with</code> i funkcję <code>open()</code>. Użycie menedżera kontekstu jest zalecane w tej sytuacji, gdyż zapewnia ono, że plik zostanie zawsze zamknięty, nawet jeśli w trakcie pracy z plikiem zostanie zgłoszony wyjątek. Dzięki temu nie trzeba pisać bloku <code>finally</code> do zamykania pliku.</p>
-<section id="przykład-i.5" class="level3" data-number="1.8.1">
-<h3 data-number="1.8.1" class="anchored" data-anchor-id="przykład-i.5"><span class="header-section-number">1.8.1</span> Przykład I.5</h3>
+<section id="przykład-4" class="level3" data-number="1.8.1">
+<h3 data-number="1.8.1" class="anchored" data-anchor-id="przykład-4"><span class="header-section-number">1.8.1</span> Przykład</h3>
 <p>Program <code>file_size_v2.py</code> jest modyfikacją programu <code>file_size_v1.py</code>. W tej wersji plik jest otwierany tą samą funkcją <code>open()</code>, ale w managerze kontekstu. Manager kontekstu dla funkcji <code>open()</code> zapewnia zamknięcie pliku w każdym przypadku, nawet jeśli w trakcie pracy z plikiem zostanie zgłoszony wyjątek.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># src/file_size_v2.py</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="co">"""</span></span>
@@ -589,8 +616,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-2"><a href="#cb9-2"></a></span>
 <span id="cb9-3"><a href="#cb9-3"></a><span class="cf">if</span> x <span class="op">&lt;</span> <span class="dv">0</span>:</span>
 <span id="cb9-4"><a href="#cb9-4"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"x nie może być ujemne"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<section id="przykład-i.6" class="level3" data-number="1.9.1">
-<h3 data-number="1.9.1" class="anchored" data-anchor-id="przykład-i.6"><span class="header-section-number">1.9.1</span> Przykład I.6</h3>
+<section id="przykład-5" class="level3" data-number="1.9.1">
+<h3 data-number="1.9.1" class="anchored" data-anchor-id="przykład-5"><span class="header-section-number">1.9.1</span> Przykład</h3>
 <p>Funkcja obliczająca średnią arytmetyczną z sekwencji liczb. Funkcja zgłasza wyjątek <code>ValueError</code>, jeśli sekwencja jest pusta.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># src/average.py</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a><span class="kw">def</span> average(seq):</span>
@@ -610,8 +637,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="traceback" class="level2" data-number="1.10">
 <h2 data-number="1.10" class="anchored" data-anchor-id="traceback"><span class="header-section-number">1.10</span> Traceback</h2>
 <p>Traceback, czyli ślad stosu, to lista wywołań funkcji, które doprowadziły do zgłoszenia wyjątku. Traceback jest wyświetlany w momencie zgłoszenia wyjątku.</p>
-<section id="przykład-i.7" class="level3" data-number="1.10.1">
-<h3 data-number="1.10.1" class="anchored" data-anchor-id="przykład-i.7"><span class="header-section-number">1.10.1</span> Przykład I.7</h3>
+<section id="przykład-6" class="level3" data-number="1.10.1">
+<h3 data-number="1.10.1" class="anchored" data-anchor-id="przykład-6"><span class="header-section-number">1.10.1</span> Przykład</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># src/traceback_example.py</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a><span class="kw">def</span> f():</span>
 <span id="cb11-3"><a href="#cb11-3"></a>    g()</span>
@@ -640,10 +667,19 @@ Exception: Błąd</code></pre>
 <p>Kolejność elementów listy jest odwrotna do kolejności wywołań. Ostatni element listy to miejsce, w którym wyjątek został zgłoszony. W tym przypadku jest to funkcja <code>h()</code> w linii 11 pliku <code>traceback_example.py</code>.</p>
 <p>Traceback jest bardzo pomocny w diagnozowaniu błędów. Dzięki niemu można zlokalizować miejsce, w którym błąd został zgłoszony, a także zrozumieć, jaki był kontekst, w którym to się stało.</p>
 <p>Odkładanie się kolejnych wywołań funkcji na stosie bardzo ładnie wizualizuje serwis <a href="http://pythontutor.com/visualize.html#mode=edit">pythontutor.com</a>.</p>
-</section>
-<section id="ćwiczenie-i.4" class="level3" data-number="1.10.2">
-<h3 data-number="1.10.2" class="anchored" data-anchor-id="ćwiczenie-i.4"><span class="header-section-number">1.10.2</span> Ćwiczenie I.4</h3>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Ćwiczenie
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Wykonaj program <code>traceback_example.py</code> na <a href="http://pythontutor.com/visualize.html#mode=edit">pythontutor.com</a>. Zobacz, jak wygląda stos wywołań funkcji w momencie zgłoszenia wyjątku.</p>
+</div>
+</div>
 </section>
 </section>
 </section>

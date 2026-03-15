@@ -1,3 +1,4 @@
+# src/nwd.py
 def nwd(a, b):
     """
     Zwraca największy wspólny dzielnik dwóch liczb.
@@ -7,8 +8,7 @@ def nwd(a, b):
     Zwraca:
         int: nwd(a, b)
     """
-    if b < 0:
-        b = -b
+    a, b = abs(a), abs(b)
 
     while b != 0:
         a, b = b, a % b

@@ -26,13 +26,17 @@ author: Tomasz Rodak
 - `RecursionError` -- przekroczony limit wywołań rekurencyjnych.
 - ...
 
-### Ćwiczenie I.1
+::: {.callout-tip}
+## Ćwiczenie 
 
 Znajdź w dokumentacji Pythona opisy podanych wyżej wyjątków.
+:::
 
-### Ćwiczenie I.2
+::: {.callout-tip}
+## Ćwiczenie 
 
 Dla każdego z podanych wyżej wyjątków napisz program, który go zgłosi.
+:::
 
 ## Hierarchia wyjątków
 
@@ -94,7 +98,7 @@ except OSError as e:
 
 Zmienna `e` przechowuje tu obiekt wyjątku, którego tekstowa reprezentacja zwykle opisuje przyczynę błędu.
 
-### Przykład I.1
+### Przykład 
 
 ```python
 {{< include src/try_except_ZDE.py >}}
@@ -104,7 +108,7 @@ Zmienna `e` przechowuje tu obiekt wyjątku, którego tekstowa reprezentacja zwyk
 
 Dziedziczenie w Pythonie odgrywa istotną rolę w obsłudze wyjątków. Blok `except` obsługuje wyjątki, które są instancjami klas wyjątków wymienionych w nagłówku bloku. Jeśli wyjątek jest instancją klasy, która dziedziczy po klasie wymienionej w nagłówku bloku, to wyjątek również zostanie obsłużony.
 
-### Przykład I.2
+### Przykład
 
 ```python
 {{< include src/try_except_AE.py >}}
@@ -114,7 +118,7 @@ Dziedziczenie w Pythonie odgrywa istotną rolę w obsłudze wyjątków. Blok `ex
 
 Staramy się przechwytywać te wyjątki, dla których jesteśmy w stanie podjąć jakieś działania naprawcze. Wyjątek, którego nie jesteśmy w stanie w żaden sensowny sposób obsłużyć, powinien być naturalnie przekazywany na wyższy poziom programu.
 
-### Przykład I.3
+### Przykład 
 
 Program wczytuje od użytkownika liczbę całkowitą i wypisuje informację o jej parzystości.
 
@@ -138,11 +142,13 @@ W powyższym programie łatwo zgadnąć, jaki wyjątek zostanie zgłoszony, jeś
 
 Blok `finally` jest wykonywany zawsze, niezależnie od tego czy wyjątek został zgłoszony czy nie, czy został obsłużony czy nie. Blok `finally` jest wykonywany nawet wtedy, gdy w bloku `try` wystąpił `return` lub `break`. Cel bloku `finally` to akcje czyszczące, które muszą być wykonane niezależnie od tego, co się stało w `try`, `except` i `else`. Typowym zastosowaniem `finally` jest zamykanie plików, zamykanie połączeń sieciowych, zwalnianie zasobów, itp.
 
-### Ćwiczenie I.3
+::: {.callout-tip}
+## Ćwiczenie 
 
 Napisz programy testujące działanie `finally` w różnych scenariuszach. Sprawdź, czy blok `finally` jest rzeczywiście zawsze wykonywany.
+:::
 
-### Przykład I.4
+### Przykład 
 
 Nieco bardziej realistyczny przykład. Skrypt `file_size_v1.py` oblicza rozmiar pliku w bajtach. Działa z wiersza poleceń. Przyjmuje dokładnie jeden argument, który jest nazwą pliku. Wyświetla rozmiar pliku w bajtach lub komunikat o błędzie. Program obsługuje dwa wyjątki: `FileNotFoundError` i `OSError`. W bloku `finally` zostaje podjęta próba zamknięcia pliku w kolejnym bloku `try`. Postępujemy w ten sposób, ponieważ otwarcie pliku może się nie powieść i wtedy zmienna `f` nie będzie istnieć.
 
@@ -156,7 +162,7 @@ Zwróć uwagę, że `return` w bloku `else` nie zapobiega wykonaniu bloku `final
 
 Menedżer kontekstu to mechanizm, który umożliwia efektywne zarządzanie zasobami, takimi jak pliki, połączenia sieciowe, itp. Podstawowym przykładem zastosowania menedżera kontekstu jest otwieranie pliku. Wykorzystuje się do tego instrukcję `with` i funkcję `open()`. Użycie menedżera kontekstu jest zalecane w tej sytuacji, gdyż zapewnia ono, że plik zostanie zawsze zamknięty, nawet jeśli w trakcie pracy z plikiem zostanie zgłoszony wyjątek. Dzięki temu nie trzeba pisać bloku `finally` do zamykania pliku.
 
-### Przykład I.5
+### Przykład
 
 Program `file_size_v2.py` jest modyfikacją programu `file_size_v1.py`. W tej wersji plik jest otwierany tą samą funkcją `open()`, ale w managerze kontekstu. Manager kontekstu dla funkcji `open()` zapewnia zamknięcie pliku w każdym przypadku, nawet jeśli w trakcie pracy z plikiem zostanie zgłoszony wyjątek. 
 
@@ -192,7 +198,7 @@ if x < 0:
     raise ValueError("x nie może być ujemne")
 ```
 
-### Przykład I.6
+### Przykład 
 
 Funkcja obliczająca średnią arytmetyczną z sekwencji liczb. Funkcja zgłasza wyjątek `ValueError`, jeśli sekwencja jest pusta.
 
@@ -204,7 +210,7 @@ Funkcja obliczająca średnią arytmetyczną z sekwencji liczb. Funkcja zgłasza
 
 Traceback, czyli ślad stosu, to lista wywołań funkcji, które doprowadziły do zgłoszenia wyjątku. Traceback jest wyświetlany w momencie zgłoszenia wyjątku. 
 
-### Przykład I.7
+### Przykład 
 
 ```python
 {{< include src/traceback_example.py >}}
@@ -238,9 +244,11 @@ Traceback jest bardzo pomocny w diagnozowaniu błędów. Dzięki niemu można zl
 
 Odkładanie się kolejnych wywołań funkcji na stosie bardzo ładnie wizualizuje serwis [pythontutor.com](http://pythontutor.com/visualize.html#mode=edit). 
 
-### Ćwiczenie I.4
+::: {.callout-tip}
+## Ćwiczenie 
 
 Wykonaj program `traceback_example.py` na [pythontutor.com](http://pythontutor.com/visualize.html#mode=edit). Zobacz, jak wygląda stos wywołań funkcji w momencie zgłoszenia wyjątku.
+:::
 
 # Do poczytania
 

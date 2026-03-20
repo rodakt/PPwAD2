@@ -331,7 +331,7 @@ def change_sign(x):
 2. Funkcje `add()`, `sub()`, `mul()` i `int_div()` **nie mogą** korzystać z operatorów `+`, `-`, `*` i `//`. Dozwolone są jedynie operacje za pośrednictwem `increment()`, `decrement()` i `change_sign()`.
 3. Dokonaj implementacji brakujących funkcji.
 
-Testy: `test_basic_arithmetic_ops.py`
+Testy: [`test_basic_arithmetic_ops.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IV/test_basic_arithmetic_ops.py)
 
 ::: {.callout-tip}
 ## Wskazówka: mnożenie
@@ -401,4 +401,5 @@ Napisz moduł `continued_fractions.py` zawierający podane niżej funkcje:
 
 Napisz program, który importuje moduł `continued_fractions` i znajduje ułamek $p/q$, $1\leq p\leq 1000$, $1\leq q\leq 1000$, który ma najdłuższe rozwinięcie w postaci ułamka łańcuchowego. Graficzną postać ułamka możesz podejrzeć na stronie [Wolfram Alpha](https://www.wolframalpha.com/input/?i=continued+fraction+of+22%2F7).
 
-Testy: `test_continued_fractions.py`
+
+Testy: [`test_continued_fractions.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IV/test_continued_fractions.py).

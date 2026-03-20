@@ -1,0 +1,283 @@
+---
+title: "Lab V: Wypakowywanie i parametry funkcji"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+---
+
+Te ćwiczenia nawiązują do materiału z wykładu o wypakowywaniu obiektów iterowalnych oraz o parametrach i argumentach funkcji.
+
+## Rozgrzewka: wypakowywanie
+
+Dla każdego z poniższych fragmentów kodu podaj wartości zmiennych po wykonaniu przypisania. Odpowiedz bez uruchamiania kodu, a następnie sprawdź odpowiedź w konsoli interaktywnej.
+
+**1.**
+
+```python
+a, b, c = range(3)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`a` ma wartość `0`, `b` ma wartość `1`, `c` ma wartość `2`.
+:::
+
+**2.**
+
+```python
+a, (b, c) = 'X', [10, 20]
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`a` ma wartość `'X'`, `b` ma wartość `10`, `c` ma wartość `20`.
+:::
+
+**3.**
+
+```python
+first, *rest = 'Python'
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`first` ma wartość `'P'`, `rest` ma wartość `['y', 't', 'h', 'o', 'n']`.
+:::
+
+**4.**
+
+```python
+a, *b, c = [10, 20, 30, 40, 50]
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`a` ma wartość `10`, `b` ma wartość `[20, 30, 40]`, `c` ma wartość `50`.
+:::
+
+**5.**
+
+```python
+a = [*range(3), *'ab']
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`a` ma wartość `[0, 1, 2, 'a', 'b']`.
+:::
+
+**6.**
+
+```python
+a, (*b, c) = 1, 'xyz'
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`a` ma wartość `1`, `b` ma wartość `['x', 'y']`, `c` ma wartość `'z'`.
+:::
+
+**7.**
+
+```python
+def f(x, y):
+    return x - y
+
+d = {'y': 3, 'x': 10}
+f(**d)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Wywołanie zwróci `7`.
+:::
+
+**8.**
+
+```python
+(a, b), *c = 'XY', 1, 2, 3
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`a` ma wartość `'X'`, `b` ma wartość `'Y'`, `c` ma wartość `[1, 2, 3]`.
+:::
+
+***
+
+## Przetwarzanie rekordów
+
+Dana jest lista zawierająca dane o transakcjach giełdowych. Każdy rekord ma postać krotki `(data, (ticker, cena), liczba_akcji)`, gdzie `liczba_akcji` jest dodatnia dla kupna i ujemna dla sprzedaży.
+
+```python
+transakcje = [
+    ("2025-01-15", ("AAPL", 150.25), 10),
+    ("2025-01-20", ("GOOGL", 178.50), 5),
+    ("2025-02-10", ("AAPL", 155.00), -3),
+    ("2025-02-15", ("MSFT", 420.75), 8),
+    ("2025-03-01", ("GOOGL", 182.30), -5),
+    ("2025-03-10", ("MSFT", 415.50), 4),
+]
+```
+
+Napisz program, który korzystając z wypakowywania zagnieżdżonego w pętli `for`:
+
+1. wypisze sformatowaną tabelę transakcji w postaci:
+
+    ```
+    2025-01-15  AAPL    150.25  x  10  =   1502.50  KUPNO
+    2025-01-20  GOOGL   178.50  x   5  =    892.50  KUPNO
+    2025-02-10  AAPL    155.00  x  -3  =   -465.00  SPRZEDAŻ
+    2025-02-15  MSFT    420.75  x   8  =   3366.00  KUPNO
+    2025-03-01  GOOGL   182.30  x  -5  =   -911.50  SPRZEDAŻ
+    2025-03-10  MSFT    415.50  x   4  =   1662.00  KUPNO
+    ```
+
+2. obliczy i wypisze łączną wartość kupna i łączną wartość sprzedaży.
+
+***
+
+## Ciągi uogólnione
+
+Ciągiem $k$-Fibonacciego rzędu $k \geqslant 2$ z warunkami początkowymi $a_0, a_1, \ldots, a_{k-1}$ nazywamy ciąg zdefiniowany rekurencyjnie:
+
+$$
+f_n = a_n \quad \text{dla } 0 \leqslant n < k,\qquad
+f_n = f_{n-k} + f_{n-k+1} + \cdots + f_{n-1} \quad \text{dla } n \geqslant k.
+$$
+
+Przypadki szczególne:
+
+* $k = 2$: ciąg Fibonacciego (klasycznie $a_0 = 0$, $a_1 = 1$),
+* $k = 3$: ciąg Tribonacciego (klasycznie $a_0 = 0$, $a_1 = 0$, $a_2 = 1$),
+* $k = 4$: ciąg Tetranacciego (klasycznie $a_0 = 0$, $a_1 = 0$, $a_2 = 0$, $a_3 = 1$).
+
+Napisz moduł `fib.py` zawierający funkcje:
+
+1. `fib(n, a=0, b=1)` — zwraca wyraz $f_n$ ciągu Fibonacciego,
+2. `trib(n, a=0, b=0, c=1)` — zwraca wyraz $f_n$ ciągu Tribonacciego,
+3. `tetra(n, a=0, b=0, c=0, d=1)` — zwraca wyraz $f_n$ ciągu Tetranacciego,
+4. `fib_general(n, a, b, *args)` — zwraca wyraz $f_n$ ciągu $k$-Fibonacciego, gdzie $k = 2 + \text{len(args)}$, a warunki początkowe to `a`, `b`, `*args`.
+
+Argument `n` jest indeksem wyrazu ciągu. Jeśli `n` jest ujemne, to funkcje zgłaszają wyjątek `NotImplementedError` z komunikatem `Brak implementacji dla indeksów ujemnych`.
+
+Testy modułu `fib.py` znajdują się w pliku [test_fib.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IV/test_fib.py).
+
+::: {.callout-tip}
+## Wskazówka
+Wykorzystaj przypisanie wielokrotne. Obliczenie kolejnego wyrazu ciągu Fibonacciego sprowadza się do jednej linii:
+
+```python
+a, b = b, a + b
+```
+
+Analogicznie dla wyższych rzędów. W `fib_general` warunki początkowe wygodnie przechowywać w liście i aktualizować go w każdej iteracji.
+:::
+
+***
+
+## Przekazywanie argumentów
+
+### Logowanie wywołań
+
+Napisz funkcję:
+
+```python
+def call_and_log(f, *args, verbose=False, **kwargs):
+    """Wywołuje f(*args, **kwargs) i zwraca wynik.
+
+    Jeśli verbose jest True, wypisuje informację o wywołaniu
+    i wyniku w formacie: nazwa(argumenty) -> wynik.
+
+    >>> def add(a, b):
+    ...     return a + b
+    >>> call_and_log(add, 2, 3)
+    5
+    >>> call_and_log(add, 2, 3, verbose=True)
+    add(2, 3) -> 5
+    5
+    >>> call_and_log(pow, 2, 10, verbose=True)
+    pow(2, 10) -> 1024
+    1024
+    >>> call_and_log(add, a=2, b=3, verbose=True)
+    add(a=2, b=3) -> 5
+    5
+    """
+    pass
+```
+
+Zwróć uwagę na pozycję parametru `verbose` w sygnaturze funkcji. Stoi on za `*args`, co czyni go parametrem *jedynie nazwy*. Dzięki temu wywołanie `call_and_log(add, 2, 3, True)` przekaże `True` jako argument do `f`, a nie jako wartość `verbose`.
+
+::: {.callout-tip}
+## Wskazówka
+Nazwę funkcji `f` uzyskasz przez `f.__name__`. Do formatowania argumentów przydadzą się `repr()` oraz `str.join()`.
+:::
+
+### Wielokrotne zastosowanie
+
+Napisz funkcję:
+
+```python
+def apply_n(f, n, x):
+    """Zwraca wynik n-krotnego zastosowania f do x.
+
+    apply_n(f, 0, x) zwraca x.
+    apply_n(f, n, x) zwraca f(f(...f(x)...)), gdzie f występuje n razy.
+
+    >>> apply_n(abs, 0, -5)
+    -5
+    >>> apply_n(abs, 1, -5)
+    5
+    >>> from math import sqrt
+    >>> apply_n(sqrt, 0, 16)
+    16
+    >>> apply_n(sqrt, 1, 16)
+    4.0
+    >>> apply_n(sqrt, 2, 16)
+    2.0
+    """
+    pass
+```
+
+Sprawdź poprawność implementacji obu funkcji za pomocą `doctest.testmod()`.
+
+***
+
+## Losowanie z urny
+
+Napisz moduł `fprob.py` zawierający funkcję `draw_from_urn()` symulującą losowanie z urny zawierającej kule w różnych kolorach.
+
+Sygnatura funkcji: `draw_from_urn(number_of_draws=1, with_replacement=True, **balls)`
+
+Funkcja przyjmuje następujące argumenty:
+
+* `number_of_draws` — liczba losowań z urny (domyślnie 1),
+* `with_replacement` — flaga określająca, czy po wylosowaniu kuli wraca ona do urny (domyślnie `True`),
+* `**balls` — argumenty nazwane, gdzie klucz to kolor kuli, a wartość to liczba kul danego koloru w urnie.
+
+Funkcja zwraca listę kolejno wylosowanych kul. Jeśli losowanie jest bez zwracania i `number_of_draws` przewyższa liczbę kul w urnie, to funkcja zgłasza wyjątek `ValueError` z komunikatem `Liczba losowań bez zwracania przekracza liczbę kul w urnie.`
+
+Testy modułu `fprob.py` znajdują się w pliku [`test_fprob.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_V/test_fprob.py).
+
+***
+
+## Zastosowania losowania z urny
+
+**Interpretacja częstościowa prawdopodobieństwa.** Dane jest doświadczenie losowe. Chcemy wyznaczyć prawdopodobieństwo zajścia pewnego wyniku tego doświadczenia losowego. W interpretacji częstościowej wykonujemy to doświadczenie wielokrotnie i zliczamy, ile razy otrzymaliśmy interesujący nas wynik. Jeśli doświadczenie powtórzyliśmy $N$ razy, wynik wypadł $k$ razy i powtórzenia były niezależne, to prawdopodobieństwo badanego wyniku szacujemy na $k/N$.
+
+Podane niżej zadania rozwiąż stosując częstościową interpretację prawdopodobieństwa. Wyniki potwierdź rozwiązaniem analitycznym.
+
+### Kule białe
+
+W urnie jest `5` kul białych i `2` czarne. Losujemy bez zwracania `3` kule. Jakie jest prawdopodobieństwo, że wszystkie będą białe?
+
+Rozwiąż to zadanie na "kartce" i numerycznie. Do rozwiązania numerycznego użyj funkcji `draw_from_urn()`. Wykonaj losowanie dużą liczbę razy — powiedzmy `1000` lub `10000` powtórzeń — zlicz ile razy wypadły trzy kule białe, następnie oblicz częstość.
+
+### Wybór urny
+
+Dane są dwie urny: w pierwszej znajdują się dwie kule czarne i jedna biała, w drugiej — trzy białe. Losujemy urnę (z prawdopodobieństwem `1/2`) a następnie losujemy jedną kulę. Jakie jest prawdopodobieństwo tego, że losowaliśmy z pierwszej urny, jeżeli wiadomo, że wylosowana kula jest biała?
+
+Rozwiąż zadanie dwoma sposobami: tradycyjnie wykorzystując teorię prawdopodobieństwa i numerycznie. W rozwiązaniu numerycznym skorzystaj z funkcji `draw_from_urn()`.
+
+### Rozkład łączny
+
+Rozpatrujemy doświadczenie losowe jak w poprzednim podpunkcie. Niech $U$ będzie zmienną losową oznaczającą wylosowaną urnę, a $K$ zmienną losową oznaczającą wylosowaną kulę. Napisz program, który korzystając z częstościowej interpretacji prawdopodobieństwa wyznaczy przybliżoną tabelę rozkładu łącznego wektora losowego $(U, K)$. Wykorzystaj wyznaczoną tabelę do ponownego rozwiązania poprzedniego zadania.

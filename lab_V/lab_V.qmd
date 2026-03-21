@@ -160,7 +160,7 @@ Napisz moduł `fib.py` zawierający funkcje:
 
 Argument `n` jest indeksem wyrazu ciągu. Jeśli `n` jest ujemne, to funkcje zgłaszają wyjątek `NotImplementedError` z komunikatem `Brak implementacji dla indeksów ujemnych`.
 
-Testy modułu `fib.py` znajdują się w pliku [test_fib.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IV/test_fib.py).
+Testy modułu `fib.py` znajdują się w pliku [test_fib.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_V/test_fib.py).
 
 ::: {.callout-tip}
 ## Wskazówka

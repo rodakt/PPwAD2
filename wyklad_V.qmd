@@ -1,0 +1,547 @@
+---
+title: "Przestrzenie nazw i moduły"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+## Przestrzeń nazw (*namespace*)
+
+**Przestrzeń nazw** to przyporządkowanie od nazw do obiektów. Z jednej strony mamy obiekty, z drugiej ich nazwy i zbiór tych nazw tworzy przestrzeń nazw. 
+
+Języki programowania zwykle dopuszczają równoczesne istnienie wielu rozłącznych przestrzeni nazw. Dzięki temu:
+
+* łatwiej unikać kolizji między nazwami;
+* funkcje mogą występować w roli "czarnych skrzynek" nie wpływających na stan środowiska.
+
+Język Python, tak jak wiele innych języków programowania, korzysta z wielu przestrzeni nazw. Ze względu na rodzaj w kierunku malejącej ogólności są to:
+
+1. wbudowana przestrzeń nazw,
+2. globalna przestrzeń nazw,
+3. zakres dołączony (omówimy na następnym wykładzie),
+4. lokalna przestrzeń nazw.
+
+Interpreter, widząc odniesienie do nazwy, przeszukuje te przestrzenie w kierunku od najmniej do najbardziej ogólnej. Zasada ta nosi nazwę [LEGB](https://sebastianraschka.com/Articles/2014_python_scope_and_namespaces.html#3-legb---local-enclosed-global-built-in).
+
+### Wbudowana przestrzeń nazw
+
+Wbudowana przestrzeń nazw (*built-in namespace*) grupuje nazwy obiektów wbudowanych i stanowiących rdzeń języka Python. Obiekty wbudowane są dostępne poprzez swoje nazwy zawsze i bez konieczności wykonywania żadnego importu. 
+Przykłady obiektów wbudowanych:
+
+* funkcje `print()`, `int()`, ([dokumentacja](https://docs.python.org/3/library/functions.html#built-in-funcs))
+* stałe `True`, `None`, ([dokumentacja](https://docs.python.org/3/library/constants.html#built-in-consts))
+* wyjątki `TypeError`, `SyntaxError`, ([dokumentacja](https://docs.python.org/3/library/exceptions.html)).
+
+W Pythonie przestrzeń nazw implementowana jest jako słownik. Z tego powodu instrukcja przypisania wykorzystująca istniejącą nazwę likwiduje możliwość dostępu do pierwotnego obiektu. 
+
+Przykład nieprawidłowego nazewnictwa zmiennych:
+
+```python
+>>> ## Szukamy liczby z zakresu 1..1000 o największej 
+>>> ## sumie dzielników właściwych.
+>>> a, b = 1, 1000 
+>>> liczby = range(a, b+1)
+>>> max = 0 # Przesłonięcie wbudowanej funkcji max()
+>>> for n in liczby:
+...     sum = 0 # Przesłonięcie wbudowanej funkcji sum()
+...     for d in range(1, n//2 + 1):
+...         if n % d == 0:
+...             sum += d
+...     if sum > max:
+...         max = sum
+...         liczba = n
+...
+>>> print(f'Liczba: {liczba}\nSuma dzielników właściwych: {max}')
+Liczba: 960
+Suma dzielników właściwych: 2088
+>>> sum([1, 2, 3])
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-34-5b30f1e835bd> in <module>
+----> 1 sum([1, 2, 3])
+
+TypeError: 'int' object is not callable
+>>> max([3, -1, 0])
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-35-acfd7b805aec> in <module>
+----> 1 max([3, -1, 0])
+
+TypeError: 'int' object is not callable
+```
+
+Problemem w tym programie jest niewłaściwe wykorzystanie nazw: wbudowane funkcje `sum()` i `max()` zostały przesłonięte przez zmienne o tych samych nazwach. W wyniku tego nie można już korzystać z tych funkcji.
+
+Jak przywrócić przesłonięte nazwy? Zobaczymy to za chwilę, gdy poznamy mechanizm importowania modułów.
+
+::: {.callout-tip}
+## Ćwiczenie
+Popraw nazwy zmiennych w omawianym wyżej programie. Dobierz je tak, aby nie przesłaniały zmiennych wbudowanych, ale zachowały czytelność.
+:::
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Wystarczy zmienić `max` na `maks` (lub `max_suma`) i `sum` na `suma_dzielnikow`:
+
+```python
+a, b = 1, 1000
+liczby = range(a, b + 1)
+maks = 0
+for n in liczby:
+    suma_dzielnikow = 0
+    for d in range(1, n // 2 + 1):
+        if n % d == 0:
+            suma_dzielnikow += d
+    if suma_dzielnikow > maks:
+        maks = suma_dzielnikow
+        liczba = n
+
+print(f'Liczba: {liczba}\nSuma dzielników właściwych: {maks}')
+```
+:::
+
+Niektóre ciągi znaków są zastrzeżone i nie można używać ich jako nazw. Nazywamy je **słowami kluczowymi** (*keywords*). Lista wszystkich słów kluczowych znajduje się w module [`keyword`](https://docs.python.org/3/library/keyword.html):
+
+```python
+>>> import keyword
+>>> for k in keyword.kwlist:
+...     print(k, end=' ')
+False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield 
+```
+
+Zwróć uwagę, że wśród słów kluczowych tylko `True`, `False` i `None` są nazwami rozumianymi jako nazwy obiektów. Pozostałe stanowią składnię języka. Słowa `if`, `for` czy `return` nie są nazwami żadnych obiektów (i nie mogą być), więc nie są elementami wbudowanej (ani żadnej innej) przestrzeni nazw.
+
+### Globalna przestrzeń nazw
+
+**Globalna przestrzeń nazw** (albo **zasięg globalny**) to przestrzeń nazw definiowana przez moduł. Każdy moduł posiada swoją własną globalną przestrzeń nazw, niezależną od przestrzeni nazw innych modułów. 
+
+Globalne przestrzenie nazw tworzone są za pomocą instrukcji przypisania. Pamiętaj jednak, że w Pythonie instrukcja przypisania ma wiele form: poza znakiem `=` również instrukcje `def`, `class` czy `import` tworzą przypisanie.
+
+Nazwy zdefiniowane w module zobaczysz wywołując w tym module funkcję `dir()`. Oto wynik w dopiero co otwartej konsoli Pythona:
+
+```
+Python 3.7.6 (default, Jan  8 2020, 19:59:22) 
+[GCC 7.3.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> dir()
+['__annotations__', '__builtins__', '__doc__', '__loader__', '__name__', '__package__', '__spec__']
+```
+
+Zauważ, że nie ma tu funkcji `sum()`, `print()` czy stałej `True`. One nie należą do przestrzeni nazw globalnej — należą do przestrzeni wbudowanej. Gdy odwołujesz się do `sum()`, interpreter szuka najpierw w przestrzeni globalnej, a dopiero potem w wbudowanej (zgodnie z LEGB).
+
+Czym jest moduł i w jaki sposób globalne przestrzenie nazw mogą ze sobą komunikować, powiemy w następnej sekcji.
+
+## Moduły i importowanie
+
+### Czym jest moduł
+
+W Pythonie **modułem** jest każdy plik z kodem w języku Python. Modułami są również tzw. moduły rozszerzeń, czyli programy napisane w C, C++, Javie itp. tak, aby były możliwe do zwykłego zaimportowania. Każdy moduł definiuje swoją własną globalną przestrzeń nazw.
+
+Każda globalna przestrzeń nazw ma nazwę. Sprawdzamy ją odczytując wartość zmiennej specjalnej `__name__`:
+
+```python
+>>> __name__
+'__main__'
+```
+
+Wartość `'__main__'` widzisz dlatego, że sesja interaktywna jest szczególnym rodzajem modułu. Moduły importowane mają natomiast za `__name__` swoją zwykłą nazwę — zobaczymy to za chwilę.
+
+### Tworzenie modułu
+
+Tworzenie modułów w j. Python jest bardzo proste, gdyż po prostu każdy skrypt Pythona z programem jest równocześnie modułem. Utwórz w dowolnym edytorze dwa pliki w tym samym katalogu:
+
+```python
+# Path: greetings.py
+message = 'Witaj, świecie!'
+
+def hello(name):
+    print(f'Cześć, {name}!')
+
+print(f'Moduł: {__name__}')
+```
+
+```python
+# Path: app.py
+import greetings
+
+print(greetings.message)
+greetings.hello('Anna')
+```
+
+Uruchom `app.py`:
+
+```
+$ python app.py
+Moduł: greetings
+Witaj, świecie!
+Cześć, Anna!
+```
+
+### Co się właściwie stało
+
+Wykonanie `import greetings` w `app.py` powoduje trzy rzeczy:
+
+1. Python odczytuje i **wykonuje cały kod** w pliku `greetings.py`.
+2. Tworzy **obiekt modułu** zawierający przestrzeń nazw z nazwami `message`, `hello` i kilkoma innymi.
+3. **Przypisuje** ten obiekt do nazwy `greetings` w przestrzeni nazw `app.py`.
+
+Zwróć uwagę na trzy ważne konsekwencje:
+
+* Napis `Moduł: greetings` pojawił się w wyniku, bo `print()` w `greetings.py` został wykonany podczas importu. Zmienna `__name__` ma wartość `'greetings'` — nazwę modułu.
+* Dostęp do obiektów zdefiniowanych w `greetings.py` odbywa się za pomocą *notacji z kropką*: `greetings.message`, `greetings.hello`.
+* Przestrzenie nazw `app.py` i `greetings.py` są **rozłączne**. Gdybyśmy w `app.py` napisali `message = 'coś innego'`, to `greetings.message` nie uległoby zmianie.
+
+### Formy instrukcji `import`
+
+Instrukcja `import` występuje w kilku postaciach. W każdej z nich cały importowany moduł zostaje odczytany, wykonany i przetłumaczony na kod bajtowy.
+
+**Postać 1**: `import <nazwa_modułu>`
+
+W przestrzeni importującej pojawia się jedna nazwa — obiekt modułu. Dostęp do wnętrza modułu zapewnia notacja z kropką:
+
+```python
+>>> import itertools
+>>> list(itertools.permutations('abc'))
+[('a', 'b', 'c'), ('a', 'c', 'b'), ('b', 'a', 'c'), ('b', 'c', 'a'), ('c', 'a', 'b'), ('c', 'b', 'a')]
+```
+
+**Postać 2**: `import <nazwa_modułu> as <alias>`
+
+Moduł jest dostępny pod inną nazwą:
+
+```python
+>>> import itertools as it
+>>> list(it.permutations('ab'))
+[('a', 'b'), ('b', 'a')]
+```
+
+**Postać 3**: `from <nazwa_modułu> import <nazwa>`
+
+Z modułu importowany jest jedynie wybrany obiekt — bezpośrednio do bieżącej przestrzeni nazw. Sam moduł pozostaje niedostępny:
+
+```python
+>>> from itertools import permutations
+>>> list(permutations('ab'))
+[('a', 'b'), ('b', 'a')]
+>>> itertools  # Nazwa modułu nie jest dostępna!
+NameError: name 'itertools' is not defined
+```
+
+Wariant: `from <nazwa_modułu> import <nazwa> as <inna_nazwa>`.
+
+**Postać 4**: `from <nazwa_modułu> import *`
+
+Importuje z modułu wszystkie nazwy z wyjątkiem tych zaczynających się podkreślnikiem. Zwykle uważa się to za złą praktykę, gdyż miesza przestrzenie nazw i przy dużych modułach wprowadza bardzo wiele nowych nazw. Tym niemniej czasem się tak postępuje, przede wszystkim w sesji interaktywnej, przykład znajdziesz [tutaj](https://docs.sympy.org/latest/tutorial/intro.html#the-power-of-symbolic-computation).
+
+::: {.callout-important}
+## Kluczowa różnica
+
+Po `import math` w bieżącej przestrzeni nazw pojawia się jedna nazwa: `math` (obiekt modułu). Piszemy `math.sqrt(2)`.
+
+Po `from math import sqrt` w bieżącej przestrzeni nazw pojawia się jedna nazwa: `sqrt` (obiekt funkcji). Piszemy `sqrt(2)`, ale `math` nie jest dostępne.
+
+Ta różnica ma znaczenie praktyczne: `from math import sqrt` niesie ryzyko przesłonięcia — jeśli w tym samym module napiszemy `sqrt = 7`, to utracimy dostęp do funkcji.
+:::
+
+### Przywracanie przesłoniętych nazw wbudowanych
+
+Wracamy do problemu z sekcji o przestrzeni wbudowanej. Aby przywrócić przesłonięte nazwy `sum` i `max`, wystarczy wykorzystać moduł [`builtins`](https://docs.python.org/3/library/builtins.html), który zawiera identyfikatory obiektów wbudowanych:
+
+```python
+>>> import builtins
+>>> sum = builtins.sum
+>>> max = builtins.max
+>>> sum([1, 2, 3])
+6
+>>> max([3, -1, 0])
+3
+```
+
+Teraz, gdy znamy mechanizm importu, jest jasne co tu się dzieje: importujemy moduł `builtins` i za pomocą notacji z kropką uzyskujemy dostęp do oryginalnych funkcji wbudowanych.
+
+### Rozłączność przestrzeni nazw modułów
+
+Oto bardziej rozbudowany przykład ilustrujący rozłączność przestrzeni nazw:
+
+```python
+# Path: src/module_demo.py
+a = 'Ala ma kota.'
+
+print(f'Moduł: {__name__}')
+
+def f():
+    print(a)
+
+f()
+```
+
+Import i eksperymenty w sesji interaktywnej (katalog bieżący interpretera musi zawierać plik `module_demo.py`; zmianę katalogu wykonasz funkcją `os.chdir()`):
+
+```python
+>>> import os
+>>> os.chdir('/tmp/') ## Wpisz swoją ścieżkę.
+>>> import module_demo
+Moduł: module_demo
+Ala ma kota.
+>>> module_demo
+<module 'module_demo' from '/tmp/module_demo.py'>
+>>> module_demo.a
+'Ala ma kota.'
+>>> a = "Monty Python"
+>>> module_demo.f
+<function f at 0x7f99238b1710>
+>>> module_demo.f()
+Ala ma kota.
+```
+
+Widzimy, że:
+
+* Moduł został wykonany jak zwykły program — stąd napisy `Moduł: module_demo` i `Ala ma kota.`.
+* Wewnątrz modułu `__name__` to `'module_demo'`.
+* Notacja z kropką pozwala na dostęp do zmiennych i funkcji z modułu.
+* Przypisanie `a = "Monty Python"` w sesji interaktywnej nie wpłynęło na `module_demo.a` — to dwie różne nazwy w dwóch różnych przestrzeniach.
+
+Więcej informacji o modułach znajdziesz w [tym rozdziale](https://docs.python.org/3/tutorial/modules.html#) oficjalnego tutorialu.
+
+## Moduł `__main__`
+
+### Szczytowe środowisko uruchomieniowe
+
+Gdy uruchamiasz skrypt z wiersza poleceń, gdy piszesz kod w sesji interaktywnej, w komórce notatnika Jupyter — zawsze istnieje jakaś globalna przestrzeń nazw, w której ten kod jest wykonywany. Ta przestrzeń musi istnieć po to, aby cokolwiek mogło działać. Python nadaje jej specjalną nazwę: `__main__`.
+
+Sprawdźmy. Utwórz plik `p1.py`:
+
+```python
+# Path: p1.py
+print(f'Moduł: {__name__}')
+```
+
+Uruchom go z terminala:
+
+```
+$ python p1.py
+Moduł: __main__
+```
+
+Ten sam wynik zobaczysz uruchamiając program z IDLE czy Thonny. I taki sam wynik daje sesja interaktywna:
+
+```python
+>>> __name__
+'__main__'
+```
+
+### Asymetria `__main__` wobec innych modułów
+
+Porównajmy to z naszym wcześniejszym `greetings.py`. Gdy uruchomisz go *bezpośrednio*:
+
+```
+$ python greetings.py
+Moduł: __main__
+Witaj, świecie!
+Cześć, Anna!
+```
+
+`__name__` ma wartość `'__main__'`, bo `greetings.py` jest programem głównym. Ale gdy ten sam plik jest *importowany*:
+
+```python
+>>> import greetings
+Moduł: greetings
+```
+
+`__name__` ma wartość `'greetings'`. Reguła jest więc prosta:
+
+* Jeśli plik jest uruchamiany jako program → `__name__ == '__main__'`.
+* Jeśli plik jest importowany → `__name__` przyjmuje nazwę modułu.
+
+### Strażnik `if __name__ == '__main__'`
+
+Ta asymetria stwarza problem, gdy skrypt gra równocześnie rolę wykonywalnego programu i modułu z obiektami wartymi importowania. Podczas importu cały kod modułu zostaje wykonany — również te fragmenty, które miały się uruchomić tylko przy bezpośrednim wywołaniu (np. `input()`, wyświetlanie wyników, itp.).
+
+Rozwiązaniem jest konstrukcja warunkowa:
+
+```python
+<Kod modułu: definicje funkcji, zmiennych>
+
+if __name__ == '__main__':
+    <Kod programu: wywołania, input(), print()>
+```
+
+Jeśli moduł jest uruchamiany jako program, to `__name__` przyjmuje wartość `'__main__'` i kod wewnątrz warunku zostaje wykonany. W przeciwnym przypadku, gdy moduł jest importowany, ten kod nie jest wykonywany.
+
+Oto przykład. Plik `greetings.py` w zmienionej wersji:
+
+```python
+# Path: greetings.py
+message = 'Witaj, świecie!'
+
+def hello(name):
+    print(f'Cześć, {name}!')
+
+if __name__ == '__main__':
+    print(message)
+    hello('świat')
+```
+
+Teraz uruchomienie jako programu daje:
+
+```
+$ python greetings.py
+Witaj, świecie!
+Cześć, świat!
+```
+
+Natomiast import jest cichy — wykonywane są tylko definicje:
+
+```python
+>>> import greetings
+>>> greetings.hello('Anna')
+Cześć, Anna!
+```
+
+::: {.callout-note}
+## Podsumowanie
+
+`__main__` to nazwa globalnej przestrzeni nazw stanowiącej [szczytowe środowisko uruchomieniowe](https://docs.python.org/3/library/__main__.html#what-is-the-top-level-code-environment) języka Python. Pochodzi z modułu [`__main__`](https://docs.python.org/3/library/__main__.html) z biblioteki standardowej. Każdy moduł uruchamiany bezpośrednio staje się `__main__`; każdy moduł importowany zachowuje swoją własną nazwę.
+:::
+
+## Lokalna przestrzeń nazw
+
+Lokalne przestrzenie nazw tworzone są podczas rozmaitych okazji, przede wszystkim podczas wywoływania funkcji i metod. Nazwa utworzona w takiej przestrzeni nazywana jest *lokalną*. Nazwy utworzone w przestrzeni globalnej to nazwy *globalne*, no i mamy jeszcze omówione wyżej nazwy *wbudowane*. Nazwy globalne i wbudowane nietrudno odróżnić, gdyż wbudowane należą do rdzenia języka, a globalne tworzone są na poziomie modułu. Jak jednak odróżnić nazwy lokalne od globalnych? W jaki sposób nazwy lokalne powstają?
+
+W dalszej dyskusji ograniczę się do lokalnych przestrzeni nazw tworzonych przez wywołania funkcji. Przestrzenie lokalne tworzone w innych kontekstach nie będą się istotnie różniły. 
+
+Oto przykład ilustrujący istnienie lokalnej przestrzeni nazw. Wykonaj go w serwisie PythonTutor.
+
+```python
+s = 'Jestem Ziemianinem!'
+
+def f():
+    s = 'Jestem Marsjaninem!'
+    print(s)
+
+f()
+print(s)
+```
+
+Rezultat:
+```
+Jestem Marsjaninem!
+Jestem Ziemianinem!
+```
+
+Dlaczego widzimy "Jestem Ziemianinem!", pomimo tego że łańcuch `s` został zmieniony na "Jestem Marsjaninem!" i to dwa razy: w ciele funkcji i podczas jej wywołania? Otóż przypisanie 
+```python
+s = 'Jestem Ziemianinem!'
+```
+tworzy zmienną globalną `s`. Fakt, że w ciele funkcji `f` mamy przypisanie
+```python
+s = 'Jestem Marsjaninem!'
+```
+oznacza, że w lokalnej przestrzeni nazw utworzonej przez wywołanie `f()` tworzona jest nowa nazwa lokalna `s`. Przestrzeń globalna i lokalna są rozłączne. Dlatego nazwa `s` z przestrzeni globalnej nie została przeniesiona na nowy łańcuch. Przeciwnie, przez chwilę istnieją dwie różne nazwy `s` znajdujące się w różnych przestrzeniach. Gdy w wywołaniu `f()` interpreter dociera do `print(s)`, to widzi odwołanie do zmiennej `s` i zaczyna jej poszukiwanie w bieżącej przestrzeni lokalnej. Ponieważ tam zmienną znajduje, więc jego poszukiwania na tym się kończą. Okazuje się, że uzyskany wyżej efekt jest wypadkową istnienia różnych przestrzeni nazw i hierarchii w jakiej interpreter je przeszukuje. Gdy funkcja zakończy działanie, cała lokalna przestrzeń nazw utworzona z okazji jej wywołania zostaje zapomniana. Znakomicie ilustrują to rysunki w serwisie PythonTutor. `print(s)` z ostatniej linii odwołuje się do zmiennej globalnej `s`, która nie została zmodyfikowana przez wcześniejsze wywołanie `f()`, a jedynie na chwilę przesłonięta.
+
+```python
+s = 'Jestem Ziemianinem!'
+
+def f():
+    print(s)
+
+f()
+print(s)
+```
+Wynik:
+```
+Jestem Ziemianinem!
+Jestem Ziemianinem!
+```
+
+Ten przykład jest już teraz jasny. Podczas wywołania `f()` tworzona jest lokalna przestrzeń nazw, ale nie ma w niej zmiennej `s`. Dlatego interpreter przenosi poszukiwania do przestrzeni globalnej. Gdyby i tam nie znalazł, to przeszedłby do nazw wbudowanych i wtedy w razie niepowodzenia zgłosił `NameError`.
+
+Oto mniej oczywisty przykład:
+
+```python
+s = 'Jestem Ziemianinem!'
+
+def f():
+    print(s) 
+    s = 'Jestem Marsjaninem!'
+    print(s)
+
+f()
+print(s)
+```
+
+Wynik:
+```
+---------------------------------------------------------------------------
+UnboundLocalError                         Traceback (most recent call last)
+<ipython-input-25-f0269b267812> in <module>
+      6     print(s)
+      7 
+----> 8 f()
+      9 print(s)
+
+<ipython-input-25-f0269b267812> in f()
+      2 
+      3 def f():
+----> 4     print(s)
+      5     s = 'Jestem Marsjaninem!'
+      6     print(s)
+
+UnboundLocalError: local variable 's' referenced before assignment
+```
+
+Dostajemy dziwny wyjątek `UnboundLocalError`, choć na pierwszy rzut oka wydaje się, że powinniśmy zobaczyć:
+```
+Jestem Ziemianinem!
+Jestem Marsjaninem!
+Jestem Ziemianinem!
+```
+Jednak wybór projektowy zastosowany w języku jest inny. Ponieważ zmienna `s` jest przypisana w ciele funkcji, więc podczas wywołania `f()` tworzona jest zmienna lokalna `s` i interpreter wie o tym **zanim dotrze do przypisania**
+```python
+s = 'Jestem Marsjaninem!'
+```
+Faktyczne przypisanie wykonywane jest później, wtedy gdy interpreter dotrze do wiersza z przypisaniem, jednak zbiór nazw z tworzonej lokalnej przestrzeni nazw znany jest natychmiast. Ponieważ `s` jest lokalna i nie została jeszcze przypisana, więc nie może zostać wyświetlona, i w ogóle nie może się powieść żadne do niej odwołanie. Rzucony wyjątek jest przypadkiem szczególnym `NameError`, o czym przekonuje nas [hierarchia wyjątków](https://docs.python.org/3/library/exceptions.html#exception-hierarchy).
+
+### Instrukcja `global`
+
+Deklaracja `global` informuje o tym, że zmienna przypisana w ciele funkcji ma być traktowana jak globalna. 
+
+```python
+s = 'Jestem Ziemianinem!'
+
+def f():
+    global s
+    print(s)
+    s = 'Jestem Marsjaninem!'
+    print(s)
+
+f()
+print(s) # s została zmieniona 
+```
+
+Wynik:
+```
+Jestem Ziemianinem!
+Jestem Marsjaninem!
+Jestem Marsjaninem!
+```
+
+Zmienna `s` jest przypisana w ciele `f`, ale jest też zadeklarowana jako globalna. Dlatego w lokalnej przestrzeni nazw tworzonej przez wywołanie `f()` nazwy `s` nie ma. Nazwa `s` istnieje tylko w zakresie globalnym. Z tego też powodu przypisanie
+
+```python
+s = 'Jestem Marsjaninem!'
+```
+przenosi nazwę `s` z jednego łańcucha na drugi. Łańcuch `'Jestem Ziemianinem!'` zostaje zapomniany.
+
+Tego typu zmiana nosi w programowaniu nazwę *efektu ubocznego* (<a href="https://en.wikipedia.org/wiki/Side_effect_(computer_science)"><em>side effect</em></a>). Chodzi o to, że stan środowiska przed wywołaniem funkcji i po jej wywołaniu nie jest taki sam — w naszym przypadku zmienna `s` zmieniła wartość. 
+
+Kod, który wprowadza wiele efektów ubocznych może początkowo wydawać się prosty w pisaniu, w rzeczywistości jednak szybko się komplikuje i staje trudny do odczytania, testów i dalszego rozwoju.
+
+### Czas życia przestrzeni nazw
+
+Tym co odróżnia rodzaje przestrzeni nazw jest porządek w jakim interpreter je przeszukuje (LEGB) oraz czas ich życia:
+
+* **Wbudowana** — tworzona przy starcie interpretera, istnieje do jego zakończenia.
+* **Globalna** — tworzona przy uruchomieniu modułu (jako program lub przez import), istnieje do zakończenia skryptu.
+* **Lokalna** — tworzona przy wywołaniu funkcji, niszczona po jej zakończeniu.

@@ -114,6 +114,8 @@ Zwróć uwagę, że wśród słów kluczowych tylko `True`, `False` i `None` są
 
 ### Globalna przestrzeń nazw
 
+Pomocna jest następująca intuicja: **każda linijka kodu, którą piszesz, należy do jakiejś przestrzeni nazw.** Jeśli piszesz na poziomie modułu — poza ciałem jakiejkolwiek funkcji — to jesteś w globalnej przestrzeni nazw tego modułu. Jeśli piszesz wewnątrz ciała funkcji, to jesteś w przestrzeni lokalnej, która powstanie przy każdym wywołaniu tej funkcji. Przestrzeń wbudowana jest zawsze dostępna jako ostatnia deska ratunku. To, *gdzie* piszesz, decyduje o tym, *do której* przestrzeni trafia tworzona nazwa.
+
 **Globalna przestrzeń nazw** (albo **zasięg globalny**) to przestrzeń nazw definiowana przez moduł. Każdy moduł posiada swoją własną globalną przestrzeń nazw, niezależną od przestrzeni nazw innych modułów. 
 
 Globalne przestrzenie nazw tworzone są za pomocą instrukcji przypisania. Pamiętaj jednak, że w Pythonie instrukcja przypisania ma wiele form: poza znakiem `=` również instrukcje `def`, `class` czy `import` tworzą przypisanie.

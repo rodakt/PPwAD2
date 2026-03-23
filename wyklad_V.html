@@ -409,6 +409,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="globalna-przestrzeń-nazw" class="level3" data-number="1.2">
 <h3 data-number="1.2" class="anchored" data-anchor-id="globalna-przestrzeń-nazw"><span class="header-section-number">1.2</span> Globalna przestrzeń nazw</h3>
+<p>Pomocna jest następująca intuicja: <strong>każda linijka kodu, którą piszesz, należy do jakiejś przestrzeni nazw.</strong> Jeśli piszesz na poziomie modułu — poza ciałem jakiejkolwiek funkcji — to jesteś w globalnej przestrzeni nazw tego modułu. Jeśli piszesz wewnątrz ciała funkcji, to jesteś w przestrzeni lokalnej, która powstanie przy każdym wywołaniu tej funkcji. Przestrzeń wbudowana jest zawsze dostępna jako ostatnia deska ratunku. To, <em>gdzie</em> piszesz, decyduje o tym, <em>do której</em> przestrzeni trafia tworzona nazwa.</p>
 <p><strong>Globalna przestrzeń nazw</strong> (albo <strong>zasięg globalny</strong>) to przestrzeń nazw definiowana przez moduł. Każdy moduł posiada swoją własną globalną przestrzeń nazw, niezależną od przestrzeni nazw innych modułów.</p>
 <p>Globalne przestrzenie nazw tworzone są za pomocą instrukcji przypisania. Pamiętaj jednak, że w Pythonie instrukcja przypisania ma wiele form: poza znakiem <code>=</code> również instrukcje <code>def</code>, <code>class</code> czy <code>import</code> tworzą przypisanie.</p>
 <p>Nazwy zdefiniowane w module zobaczysz wywołując w tym module funkcję <code>dir()</code>. Oto wynik w dopiero co otwartej konsoli Pythona:</p>

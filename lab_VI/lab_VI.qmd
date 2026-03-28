@@ -1,0 +1,289 @@
+---
+title: "Lab VI: Geometria żółwia"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+---
+
+Te ćwiczenia nawiązują do materiału z wykładu o przestrzeniach nazw, zmiennych globalnych i modułach. Głównym tematem jest implementacja żółwia — stworzenia znanego z języka LOGO, które przemieszcza się po ekranie zgodnie z poleceniami `forward`, `right`, `left`. Poprawność rozwiązań zadań 4 i 5 weryfikuj za pomocą dołączonych plików z testami.
+
+## Wprowadzenie
+
+Żółw to punkt przemieszczający się po płaszczyźnie z układem współrzędnych. W danej chwili żółw znajduje się w pewnym położeniu i patrzy w pewnym kierunku. Trzy polecenia sterują żółwiem:
+
+- `forward r` — żółw przesuwa się o dystans `r` w kierunku, w którym patrzy,
+- `right a` — żółw obraca się w prawo (zgodnie z ruchem wskazówek zegara) o kąt `a`,
+- `left a` — żółw obraca się w lewo o kąt `a`.
+
+Stan żółwia opisują trzy liczby: współrzędna `x`, współrzędna `y` oraz **azymut** — kąt (w stopniach) między aktualnym kierunkiem żółwia a dodatnią osią x (wschodem). Znając te trzy wartości, żółw jest w stanie wykonać każde z poleceń.
+
+Polecenia `left a` i `right a` zmieniają wyłącznie azymut:
+
+```python
+azimuth += a   # left
+azimuth -= a   # right
+```
+
+Polecenie `forward r` zmienia współrzędne:
+
+```python
+x += r * cos(azimuth)
+y += r * sin(azimuth)
+```
+
+Azymut nie ulega zmianie — żółw patrzy nadal w tym samym kierunku.
+
+::: {.callout-important}
+## Radiany
+Funkcje `math.cos()` i `math.sin()` przyjmują kąt w **radianach**. Azymut przechowujemy w stopniach, więc przed użyciem tych funkcji konieczna jest konwersja: `math.radians(azimuth)`.
+:::
+
+Stan żółwia będziemy przechowywać w słowniku i przekazywać go do funkcji jako argument. Jest to podejście pośrednie między zmiennymi globalnymi (które nie skalują się do wielu żółwi) a programowaniem obiektowym (które poznamy w przyszłości). Motywację do takiego projektu dostarczą rozgrzewka i zadanie 3.
+
+::: {.callout-warning}
+## Zastrzeżenie
+Biblioteka standardowa zawiera moduł [`turtle`](https://docs.python.org/3/library/turtle.html) z gotową implementacją żółwia. W praktycznych zastosowaniach należy korzystać z takich profesjonalnych rozwiązań — nasza implementacja ma charakter dydaktyczny.
+:::
+
+
+## Rozgrzewka: przestrzenie nazw
+
+Dla każdego z poniższych fragmentów kodu przewidź, co wypisze program. Odpowiedz bez uruchamiania kodu, a następnie sprawdź odpowiedź w konsoli.
+
+**1.**
+
+```python
+x = 10
+
+def f():
+    x = 20
+    return x
+
+print(f())
+print(x)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+20
+10
+```
+Przypisanie `x = 20` w ciele `f` tworzy zmienną **lokalną** `x`. Zmienna globalna `x` pozostaje bez zmian.
+:::
+
+**2.**
+
+```python
+n = 0
+
+def increment():
+    n += 1
+    return n
+
+increment()
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`UnboundLocalError: local variable 'n' referenced before assignment`.
+
+Przypisanie `n += 1` (równoważne `n = n + 1`) powoduje, że `n` jest traktowana jako lokalna. Ponieważ nie została wcześniej przypisana w ciele funkcji, odwołanie do niej po prawej stronie `+=` kończy się wyjątkiem.
+:::
+
+**3.**
+
+```python
+n = 0
+
+def increment():
+    global n
+    n += 1
+
+increment()
+increment()
+print(n)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+2
+```
+Deklaracja `global n` sprawia, że `n` w ciele `increment` odnosi się do zmiennej globalnej. Każde wywołanie zwiększa tę samą zmienną.
+:::
+
+**4.**
+
+```python
+dane = {"n": 0}
+
+def increment(d):
+    d["n"] += 1
+
+increment(dane)
+increment(dane)
+print(dane["n"])
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+2
+```
+Słownik jest obiektem zmiennym (*mutable*). Funkcja `increment` otrzymuje referencję do tego samego słownika i modyfikuje go w miejscu — deklaracja `global` nie jest potrzebna. To podejście zastosujemy w implementacji żółwia.
+:::
+
+***
+
+## Od zmiennych globalnych do słownika
+
+Dany jest moduł `counter.py` implementujący prosty licznik za pomocą zmiennej globalnej:
+
+```python
+# counter.py
+count = 0
+
+def increment():
+    global count
+    count += 1
+
+def reset():
+    global count
+    count = 0
+
+def get_count():
+    return count
+```
+
+Moduł działa poprawnie dla jednego licznika, ale nie pozwala na prowadzenie dwóch niezależnych liczników jednocześnie — zmienna `count` jest jedna.
+
+Przepisz moduł tak, aby stan licznika był przechowywany w słowniku przekazywanym do funkcji jako argument. Dodaj funkcję `create_counter(start=0)` tworzącą nowy licznik. Przykład użycia:
+
+```python
+c1 = create_counter()
+c2 = create_counter(10)
+increment(c1)
+increment(c1)
+increment(c2)
+print(get_count(c1))  # 2
+print(get_count(c2))  # 11
+```
+
+***
+
+## Moduł żółwia
+
+Napisz moduł `logo_turtle.py` z implementacją żółwia według wytycznych z wprowadzenia. Moduł powinien zawierać funkcje:
+
+- `create_turtle(x=0, y=0, azimuth=0, name="")` — tworzy żółwia w położeniu `(x, y)` patrzącego w kierunku `azimuth` stopni od wschodu, o nazwie `name`. Funkcja zwraca słownik o kluczach:
+    - `position` — lista `[(x, y)]` zawierająca na ostatniej pozycji krotkę ze współrzędnymi aktualnego położenia żółwia. Gdy żółw jest tworzony, lista zawiera jedną krotkę z położeniem początkowym; po każdym wykonaniu polecenia `forward` lista jest rozszerzana o nowe położenie.
+    - `azimuth` — azymut żółwia w stopniach.
+    - `name` — nazwa żółwia.
+- `forward(turtle, r)` — przesuwa żółwia `turtle` o dystans `r` w kierunku, w którym żółw patrzy. Przesunięcie polega na dodaniu do listy `position` nowego położenia obliczonego na podstawie ostatniego położenia, azymutu i dystansu `r`.
+- `right(turtle, a)` — obraca żółwia `turtle` o kąt `a` w prawo. Obrót zmienia wartość `azimuth` o `-a`.
+- `left(turtle, a)` — obraca żółwia `turtle` o kąt `a` w lewo. Obrót zmienia wartość `azimuth` o `a`.
+- `to_csv(*turtles, filename)` — zapisuje historię położeń żółwi `turtles` do pliku CSV o nazwie `filename`. Plik CSV zawiera nagłówek z nazwami kolumn: `x`, `y`, `name`. Wiersze odpowiadają kolejnym położeniom żółwi — najpierw wszystkie położenia pierwszego żółwia, potem drugiego itd.
+
+Testy modułu `logo_turtle.py` znajdują się w pliku `test_logo_turtle.py`.
+
+::: {.callout-tip}
+## Moduł `csv`
+Moduł [`csv`](https://docs.python.org/3/library/csv.html) z biblioteki standardowej ułatwia zapis danych do plików CSV:
+
+```python
+import csv
+
+with open("output.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["x", "y", "name"])    # nagłówek
+    writer.writerow([1.5, 2.3, "Tolek"])   # wiersz danych
+```
+
+Parametr `newline=""` w `open()` jest wymagany przez moduł `csv` — zapobiega wstawianiu pustych wierszy w pliku wynikowym.
+:::
+
+Trasę żółwia zapisaną w pliku CSV możesz zwizualizować:
+
+* w notatniku Jupyter, korzystając z bibliotek `pandas` i `matplotlib`,
+* w arkuszu kalkulacyjnym, np. programie Excel,
+* w narzędziu online, np. [csvplot](https://www.csvplot.com).
+
+
+***
+
+## Wielokąty żółwiowe
+
+Jedna z najprostszych procedur w geometrii żółwia wygląda tak:
+
+```python
+def polygon(turtle, a, r):
+    while True:
+        forward(turtle, r)
+        right(turtle, a)
+```
+
+Żółw nieskończenie długo naprzemiennie wędruje naprzód o `r` i wykonuje obrót w prawo o `a`. Dystans i kąt obrotu są ustalone. Jeśli po pewnej niezerowej liczbie kroków położenie i azymut żółwia będą takie jak na starcie, żółw zacznie chodzić po swoich śladach — otrzymamy krzywą zamkniętą. Stanie się tak np. wtedy, gdy kąt `a` jest dzielnikiem 360 — ścieżka żółwia jest wówczas wielokątem foremnym. Ogólniej:
+
+**Twierdzenie o zamknięciu wielokąta.** *Załóżmy, że kąt `a` nie jest całkowitą wielokrotnością 360. Wtedy `polygon(turtle, a, r)` przemieszcza żółwia po łamanej, która zamknie się dokładnie wtedy, gdy obrót całkowity żółwia będzie całkowitą wielokrotnością 360.*
+
+Twierdzenie stosujemy tak: w pętli `while` funkcji `polygon()` zliczamy obrót całkowity żółwia. Gdy obrót całkowity osiągnie wielokrotność 360, krzywa żółwiowa właśnie się zamknęła i możemy zakończyć pętlę. Jeśli obrót całkowity nigdy nie stanie się wielokrotnością 360, krzywa nigdy się nie zamknie. Wynika stąd, że łamana rysowana przez `polygon()` jest zamknięta wtedy i tylko wtedy, gdy kąt `a` jest liczbą wymierną nie będącą wielokrotnością 360. W pozostałych przypadkach — gdy `a` jest niewymierny lub jest wielokrotnością 360 — krzywa jest nieskończona.
+
+Przykłady:
+
+* dla `a = 144` trasa zamknie się po 5 krokach, gdyż $5 \cdot 144 = 720 = 2 \cdot 360$,
+* dla `a = 72` trasa zamknie się po 5 krokach, gdyż $5 \cdot 72 = 360 = 1 \cdot 360$,
+* dla `a = Fraction(360, 7)` trasa zamknie się po 7 krokach, gdyż $7 \cdot \frac{360}{7} = 360 = 1 \cdot 360$.
+
+Więcej szczegółów, w tym dowód twierdzenia, znajdziesz [tutaj](https://mitpress.mit.edu/books/turtle-geometry) i [tutaj](http://math.uni.lodz.pl/~rodakt/fn.html).
+
+::: {.callout-tip}
+## Moduł `fractions`
+Moduł [`fractions`](https://docs.python.org/3/library/fractions.html) z biblioteki standardowej udostępnia typ `Fraction` reprezentujący ułamki zwykłe z dokładną arytmetyką:
+
+```python
+from fractions import Fraction
+
+a = Fraction(360, 7)   # 360/7
+print(a * 7)           # 360
+print(a % 360)         # Fraction(360, 7)
+print(isinstance(a, (int, Fraction)))  # True
+```
+
+Operator `%` działa dla obiektów `Fraction`, co ułatwia sprawdzenie warunku zamknięcia wielokąta.
+:::
+
+Napisz moduł `polygons.py` zawierający funkcje:
+
+- `polygon(turtle, a, r)` — wersja funkcji `polygon()` z warunkiem stopu. Parametry:
+    - `turtle` — słownik reprezentujący żółwia z modułu `logo_turtle.py`,
+    - `a` — kąt obrotu w stopniach, liczba typu `int` lub `fractions.Fraction`,
+    - `r` — długość boku.
+
+    Funkcja zwraca liczbę boków wielokąta. Jeśli `a` nie jest typu `int` ani `fractions.Fraction`, funkcja zgłasza wyjątek `TypeError` z komunikatem `kąt musi być liczbą całkowitą lub wymierną`. Jeśli `a` jest prawidłowego typu, ale nie spełnia warunków twierdzenia o zamknięciu wielokąta, funkcja zgłasza wyjątek `ValueError` z komunikatem `kąt musi być liczbą wymierną nie będącą wielokrotnością 360`.
+
+- `regular_polygon(turtle, n, r)` — rysuje `n`-kąt foremny o boku `r`. Parametry:
+    - `turtle` — słownik reprezentujący żółwia z modułu `logo_turtle.py`,
+    - `n` — liczba wierzchołków wielokąta,
+    - `r` — długość boku.
+
+Testy modułu `polygons.py` znajdują się w pliku `test_polygons.py`.
+
+***
+
+## Błądzenie losowe
+
+Napisz program realizujący błądzenie losowe (*random walk*) żółwia po kracie. Żółw zaczyna w punkcie `(0, 0)` i patrzy na wschód. W każdym kroku:
+
+1. losuje jeden z czterech kierunków: północ, południe, wschód, zachód,
+2. ustawia się w wybranym kierunku,
+3. przesuwa się o jedną jednostkę.
+
+Program wykonuje `N = 1000` kroków (wartość zdefiniuj jako stałą), a następnie zapisuje historię położeń żółwia do pliku CSV za pomocą funkcji `to_csv`.
+
+Rozszerzenie: uruchom jednocześnie kilku żółwi (np. trzech) wykonujących niezależne błądzenia losowe. Zapisz historie wszystkich żółwi do jednego pliku CSV i zwizualizuj ich trasy.
+
+***
+
+## MiniLogia
+
+Strona [MiniLogia](https://minilogia.oeiizk.waw.pl/#!/) zawiera wiele zadań związanych z geometrią żółwia. Wybierz jedno z zadań i rozwiąż je za pomocą modułu `logo_turtle.py`. Zaniedbaj kolory.

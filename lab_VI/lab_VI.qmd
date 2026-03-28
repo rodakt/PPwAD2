@@ -184,7 +184,7 @@ Napisz moduł `logo_turtle.py` z implementacją żółwia według wytycznych z w
 - `left(turtle, a)` — obraca żółwia `turtle` o kąt `a` w lewo. Obrót zmienia wartość `azimuth` o `a`.
 - `to_csv(*turtles, filename)` — zapisuje historię położeń żółwi `turtles` do pliku CSV o nazwie `filename`. Plik CSV zawiera nagłówek z nazwami kolumn: `x`, `y`, `name`. Wiersze odpowiadają kolejnym położeniom żółwi — najpierw wszystkie położenia pierwszego żółwia, potem drugiego itd.
 
-Testy modułu `logo_turtle.py` znajdują się w pliku `test_logo_turtle.py`.
+Testy modułu `logo_turtle.py` znajdują się w pliku [test_logo_turtle.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VI/test_logo_turtle.py).
 
 ::: {.callout-tip}
 ## Moduł `csv`
@@ -266,7 +266,7 @@ Napisz moduł `polygons.py` zawierający funkcje:
     - `n` — liczba wierzchołków wielokąta,
     - `r` — długość boku.
 
-Testy modułu `polygons.py` znajdują się w pliku `test_polygons.py`.
+Testy modułu `polygons.py` znajdują się w pliku [test_polygons.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VI/test_polygons.py).
 
 ***
 

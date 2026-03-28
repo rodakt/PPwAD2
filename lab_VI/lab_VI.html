@@ -8,7 +8,7 @@
 
 <meta name="author" content="Tomasz Rodak">
 
-<title>Lab V: Wypakowywanie i parametry funkcji – Podstawy programowania (AD) 2</title>
+<title>Lab VI: Geometria żółwia – Podstawy programowania (AD) 2</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -148,7 +148,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_V/lab_V.html">Lab V: Wypakowywanie i parametry funkcji</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_VI/lab_VI.html">Lab VI: Geometria żółwia</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -255,13 +255,13 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../lab_V/lab_V.html" class="sidebar-item-text sidebar-link active">
+  <a href="../lab_V/lab_V.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Lab V: Wypakowywanie i parametry funkcji</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../lab_VI/lab_VI.html" class="sidebar-item-text sidebar-link">
+  <a href="../lab_VI/lab_VI.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Lab VI: Geometria żółwia</span></a>
   </div>
 </li>
@@ -277,30 +277,22 @@ window.Quarto = {
     <h2 id="toc-title">Spis treści</h2>
    
   <ul>
-  <li><a href="#rozgrzewka-wypakowywanie" id="toc-rozgrzewka-wypakowywanie" class="nav-link active" data-scroll-target="#rozgrzewka-wypakowywanie"><span class="header-section-number">1</span> Rozgrzewka: wypakowywanie</a></li>
-  <li><a href="#przetwarzanie-rekordów" id="toc-przetwarzanie-rekordów" class="nav-link" data-scroll-target="#przetwarzanie-rekordów"><span class="header-section-number">2</span> Przetwarzanie rekordów</a></li>
-  <li><a href="#ciągi-uogólnione" id="toc-ciągi-uogólnione" class="nav-link" data-scroll-target="#ciągi-uogólnione"><span class="header-section-number">3</span> Ciągi uogólnione</a></li>
-  <li><a href="#przekazywanie-argumentów" id="toc-przekazywanie-argumentów" class="nav-link" data-scroll-target="#przekazywanie-argumentów"><span class="header-section-number">4</span> Przekazywanie argumentów</a>
-  <ul class="collapse">
-  <li><a href="#logowanie-wywołań" id="toc-logowanie-wywołań" class="nav-link" data-scroll-target="#logowanie-wywołań"><span class="header-section-number">4.1</span> Logowanie wywołań</a></li>
-  <li><a href="#wielokrotne-zastosowanie" id="toc-wielokrotne-zastosowanie" class="nav-link" data-scroll-target="#wielokrotne-zastosowanie"><span class="header-section-number">4.2</span> Wielokrotne zastosowanie</a></li>
-  </ul></li>
-  <li><a href="#losowanie-z-urny" id="toc-losowanie-z-urny" class="nav-link" data-scroll-target="#losowanie-z-urny"><span class="header-section-number">5</span> Losowanie z urny</a></li>
-  <li><a href="#zastosowania-losowania-z-urny" id="toc-zastosowania-losowania-z-urny" class="nav-link" data-scroll-target="#zastosowania-losowania-z-urny"><span class="header-section-number">6</span> Zastosowania losowania z urny</a>
-  <ul class="collapse">
-  <li><a href="#kule-białe" id="toc-kule-białe" class="nav-link" data-scroll-target="#kule-białe"><span class="header-section-number">6.1</span> Kule białe</a></li>
-  <li><a href="#wybór-urny" id="toc-wybór-urny" class="nav-link" data-scroll-target="#wybór-urny"><span class="header-section-number">6.2</span> Wybór urny</a></li>
-  <li><a href="#rozkład-łączny" id="toc-rozkład-łączny" class="nav-link" data-scroll-target="#rozkład-łączny"><span class="header-section-number">6.3</span> Rozkład łączny</a></li>
-  </ul></li>
+  <li><a href="#wprowadzenie" id="toc-wprowadzenie" class="nav-link active" data-scroll-target="#wprowadzenie"><span class="header-section-number">1</span> Wprowadzenie</a></li>
+  <li><a href="#rozgrzewka-przestrzenie-nazw" id="toc-rozgrzewka-przestrzenie-nazw" class="nav-link" data-scroll-target="#rozgrzewka-przestrzenie-nazw"><span class="header-section-number">2</span> Rozgrzewka: przestrzenie nazw</a></li>
+  <li><a href="#od-zmiennych-globalnych-do-słownika" id="toc-od-zmiennych-globalnych-do-słownika" class="nav-link" data-scroll-target="#od-zmiennych-globalnych-do-słownika"><span class="header-section-number">3</span> Od zmiennych globalnych do słownika</a></li>
+  <li><a href="#moduł-żółwia" id="toc-moduł-żółwia" class="nav-link" data-scroll-target="#moduł-żółwia"><span class="header-section-number">4</span> Moduł żółwia</a></li>
+  <li><a href="#wielokąty-żółwiowe" id="toc-wielokąty-żółwiowe" class="nav-link" data-scroll-target="#wielokąty-żółwiowe"><span class="header-section-number">5</span> Wielokąty żółwiowe</a></li>
+  <li><a href="#błądzenie-losowe" id="toc-błądzenie-losowe" class="nav-link" data-scroll-target="#błądzenie-losowe"><span class="header-section-number">6</span> Błądzenie losowe</a></li>
+  <li><a href="#minilogia" id="toc-minilogia" class="nav-link" data-scroll-target="#minilogia"><span class="header-section-number">7</span> MiniLogia</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_V/lab_V.html">Lab V: Wypakowywanie i parametry funkcji</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_VI/lab_VI.html">Lab VI: Geometria żółwia</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Lab V: Wypakowywanie i parametry funkcji</h1>
+<h1 class="title">Lab VI: Geometria żółwia</h1>
 <p class="subtitle lead">Podstawy programowania (AD) 2</p>
 </div>
 
@@ -324,48 +316,63 @@ window.Quarto = {
 </header>
 
 
-<p>Te ćwiczenia nawiązują do materiału z wykładu o wypakowywaniu obiektów iterowalnych oraz o parametrach i argumentach funkcji.</p>
-<section id="rozgrzewka-wypakowywanie" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="rozgrzewka-wypakowywanie"><span class="header-section-number">1</span> Rozgrzewka: wypakowywanie</h2>
-<p>Dla każdego z poniższych fragmentów kodu podaj wartości zmiennych po wykonaniu przypisania. Odpowiedz bez uruchamiania kodu, a następnie sprawdź odpowiedź w konsoli interaktywnej.</p>
+<p>Te ćwiczenia nawiązują do materiału z wykładu o przestrzeniach nazw, zmiennych globalnych i modułach. Głównym tematem jest implementacja żółwia — stworzenia znanego z języka LOGO, które przemieszcza się po ekranie zgodnie z poleceniami <code>forward</code>, <code>right</code>, <code>left</code>. Poprawność rozwiązań zadań 4 i 5 weryfikuj za pomocą dołączonych plików z testami.</p>
+<section id="wprowadzenie" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="wprowadzenie"><span class="header-section-number">1</span> Wprowadzenie</h2>
+<p>Żółw to punkt przemieszczający się po płaszczyźnie z układem współrzędnych. W danej chwili żółw znajduje się w pewnym położeniu i patrzy w pewnym kierunku. Trzy polecenia sterują żółwiem:</p>
+<ul>
+<li><code>forward r</code> — żółw przesuwa się o dystans <code>r</code> w kierunku, w którym patrzy,</li>
+<li><code>right a</code> — żółw obraca się w prawo (zgodnie z ruchem wskazówek zegara) o kąt <code>a</code>,</li>
+<li><code>left a</code> — żółw obraca się w lewo o kąt <code>a</code>.</li>
+</ul>
+<p>Stan żółwia opisują trzy liczby: współrzędna <code>x</code>, współrzędna <code>y</code> oraz <strong>azymut</strong> — kąt (w stopniach) między aktualnym kierunkiem żółwia a dodatnią osią x (wschodem). Znając te trzy wartości, żółw jest w stanie wykonać każde z poleceń.</p>
+<p>Polecenia <code>left a</code> i <code>right a</code> zmieniają wyłącznie azymut:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a>azimuth <span class="op">+=</span> a   <span class="co"># left</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>azimuth <span class="op">-=</span> a   <span class="co"># right</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Polecenie <code>forward r</code> zmienia współrzędne:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a>x <span class="op">+=</span> r <span class="op">*</span> cos(azimuth)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>y <span class="op">+=</span> r <span class="op">*</span> sin(azimuth)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Azymut nie ulega zmianie — żółw patrzy nadal w tym samym kierunku.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Radiany
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Funkcje <code>math.cos()</code> i <code>math.sin()</code> przyjmują kąt w <strong>radianach</strong>. Azymut przechowujemy w stopniach, więc przed użyciem tych funkcji konieczna jest konwersja: <code>math.radians(azimuth)</code>.</p>
+</div>
+</div>
+<p>Stan żółwia będziemy przechowywać w słowniku i przekazywać go do funkcji jako argument. Jest to podejście pośrednie między zmiennymi globalnymi (które nie skalują się do wielu żółwi) a programowaniem obiektowym (które poznamy w przyszłości). Motywację do takiego projektu dostarczą rozgrzewka i zadanie 3.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Zastrzeżenie
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Biblioteka standardowa zawiera moduł <a href="https://docs.python.org/3/library/turtle.html"><code>turtle</code></a> z gotową implementacją żółwia. W praktycznych zastosowaniach należy korzystać z takich profesjonalnych rozwiązań — nasza implementacja ma charakter dydaktyczny.</p>
+</div>
+</div>
+</section>
+<section id="rozgrzewka-przestrzenie-nazw" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="rozgrzewka-przestrzenie-nazw"><span class="header-section-number">2</span> Rozgrzewka: przestrzenie nazw</h2>
+<p>Dla każdego z poniższych fragmentów kodu przewidź, co wypisze program. Odpowiedz bez uruchamiania kodu, a następnie sprawdź odpowiedź w konsoli.</p>
 <p><strong>1.</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a>a, b, c <span class="op">=</span> <span class="bu">range</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Odpowiedź
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p><code>a</code> ma wartość <code>0</code>, <code>b</code> ma wartość <code>1</code>, <code>c</code> ma wartość <code>2</code>.</p>
-</div>
-</div>
-</div>
-<p><strong>2.</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a>a, (b, c) <span class="op">=</span> <span class="st">'X'</span>, [<span class="dv">10</span>, <span class="dv">20</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Odpowiedź
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p><code>a</code> ma wartość <code>'X'</code>, <code>b</code> ma wartość <code>10</code>, <code>c</code> ma wartość <code>20</code>.</p>
-</div>
-</div>
-</div>
-<p><strong>3.</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a>first, <span class="op">*</span>rest <span class="op">=</span> <span class="st">'Python'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a>x <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">def</span> f():</span>
+<span id="cb3-4"><a href="#cb3-4"></a>    x <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>    <span class="cf">return</span> x</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="bu">print</span>(f())</span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="bu">print</span>(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -378,12 +385,20 @@ window.Quarto = {
 </div>
 <div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><code>first</code> ma wartość <code>'P'</code>, <code>rest</code> ma wartość <code>['y', 't', 'h', 'o', 'n']</code>.</p>
+<pre><code>20
+10</code></pre>
+<p>Przypisanie <code>x = 20</code> w ciele <code>f</code> tworzy zmienną <strong>lokalną</strong> <code>x</code>. Zmienna globalna <code>x</code> pozostaje bez zmian.</p>
 </div>
 </div>
 </div>
-<p><strong>4.</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a>a, <span class="op">*</span>b, c <span class="op">=</span> [<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>, <span class="dv">50</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>2.</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a>n <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">def</span> increment():</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    n <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>    <span class="cf">return</span> n</span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a>increment()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -396,12 +411,21 @@ window.Quarto = {
 </div>
 <div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><code>a</code> ma wartość <code>10</code>, <code>b</code> ma wartość <code>[20, 30, 40]</code>, <code>c</code> ma wartość <code>50</code>.</p>
+<p><code>UnboundLocalError: local variable 'n' referenced before assignment</code>.</p>
+<p>Przypisanie <code>n += 1</code> (równoważne <code>n = n + 1</code>) powoduje, że <code>n</code> jest traktowana jako lokalna. Ponieważ nie została wcześniej przypisana w ciele funkcji, odwołanie do niej po prawej stronie <code>+=</code> kończy się wyjątkiem.</p>
 </div>
 </div>
 </div>
-<p><strong>5.</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a>a <span class="op">=</span> [<span class="op">*</span><span class="bu">range</span>(<span class="dv">3</span>), <span class="op">*</span><span class="st">'ab'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>3.</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a>n <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="kw">def</span> increment():</span>
+<span id="cb6-4"><a href="#cb6-4"></a>    <span class="kw">global</span> n</span>
+<span id="cb6-5"><a href="#cb6-5"></a>    n <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a></span>
+<span id="cb6-7"><a href="#cb6-7"></a>increment()</span>
+<span id="cb6-8"><a href="#cb6-8"></a>increment()</span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="bu">print</span>(n)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -414,12 +438,20 @@ window.Quarto = {
 </div>
 <div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><code>a</code> ma wartość <code>[0, 1, 2, 'a', 'b']</code>.</p>
+<pre><code>2</code></pre>
+<p>Deklaracja <code>global n</code> sprawia, że <code>n</code> w ciele <code>increment</code> odnosi się do zmiennej globalnej. Każde wywołanie zwiększa tę samą zmienną.</p>
 </div>
 </div>
 </div>
-<p><strong>6.</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a>a, (<span class="op">*</span>b, c) <span class="op">=</span> <span class="dv">1</span>, <span class="st">'xyz'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>4.</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a>dane <span class="op">=</span> {<span class="st">"n"</span>: <span class="dv">0</span>}</span>
+<span id="cb8-2"><a href="#cb8-2"></a></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">def</span> increment(d):</span>
+<span id="cb8-4"><a href="#cb8-4"></a>    d[<span class="st">"n"</span>] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a></span>
+<span id="cb8-6"><a href="#cb8-6"></a>increment(dane)</span>
+<span id="cb8-7"><a href="#cb8-7"></a>increment(dane)</span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="bu">print</span>(dane[<span class="st">"n"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -432,216 +464,157 @@ window.Quarto = {
 </div>
 <div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><code>a</code> ma wartość <code>1</code>, <code>b</code> ma wartość <code>['x', 'y']</code>, <code>c</code> ma wartość <code>'z'</code>.</p>
-</div>
-</div>
-</div>
-<p><strong>7.</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">def</span> f(x, y):</span>
-<span id="cb7-2"><a href="#cb7-2"></a>    <span class="cf">return</span> x <span class="op">-</span> y</span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a>d <span class="op">=</span> {<span class="st">'y'</span>: <span class="dv">3</span>, <span class="st">'x'</span>: <span class="dv">10</span>}</span>
-<span id="cb7-5"><a href="#cb7-5"></a>f(<span class="op">**</span>d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Odpowiedź
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Wywołanie zwróci <code>7</code>.</p>
-</div>
-</div>
-</div>
-<p><strong>8.</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a>(a, b), <span class="op">*</span>c <span class="op">=</span> <span class="st">'XY'</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Odpowiedź
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-8" class="callout-8-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p><code>a</code> ma wartość <code>'X'</code>, <code>b</code> ma wartość <code>'Y'</code>, <code>c</code> ma wartość <code>[1, 2, 3]</code>.</p>
+<pre><code>2</code></pre>
+<p>Słownik jest obiektem zmiennym (<em>mutable</em>). Funkcja <code>increment</code> otrzymuje referencję do tego samego słownika i modyfikuje go w miejscu — deklaracja <code>global</code> nie jest potrzebna. To podejście zastosujemy w implementacji żółwia.</p>
 </div>
 </div>
 </div>
 <hr>
 </section>
-<section id="przetwarzanie-rekordów" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="przetwarzanie-rekordów"><span class="header-section-number">2</span> Przetwarzanie rekordów</h2>
-<p>Dana jest lista zawierająca dane o transakcjach giełdowych. Każdy rekord ma postać krotki <code>(data, (ticker, cena), liczba_akcji)</code>, gdzie <code>liczba_akcji</code> jest dodatnia dla kupna i ujemna dla sprzedaży.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a>transakcje <span class="op">=</span> [</span>
-<span id="cb9-2"><a href="#cb9-2"></a>    (<span class="st">"2025-01-15"</span>, (<span class="st">"AAPL"</span>, <span class="fl">150.25</span>), <span class="dv">10</span>),</span>
-<span id="cb9-3"><a href="#cb9-3"></a>    (<span class="st">"2025-01-20"</span>, (<span class="st">"GOOGL"</span>, <span class="fl">178.50</span>), <span class="dv">5</span>),</span>
-<span id="cb9-4"><a href="#cb9-4"></a>    (<span class="st">"2025-02-10"</span>, (<span class="st">"AAPL"</span>, <span class="fl">155.00</span>), <span class="op">-</span><span class="dv">3</span>),</span>
-<span id="cb9-5"><a href="#cb9-5"></a>    (<span class="st">"2025-02-15"</span>, (<span class="st">"MSFT"</span>, <span class="fl">420.75</span>), <span class="dv">8</span>),</span>
-<span id="cb9-6"><a href="#cb9-6"></a>    (<span class="st">"2025-03-01"</span>, (<span class="st">"GOOGL"</span>, <span class="fl">182.30</span>), <span class="op">-</span><span class="dv">5</span>),</span>
-<span id="cb9-7"><a href="#cb9-7"></a>    (<span class="st">"2025-03-10"</span>, (<span class="st">"MSFT"</span>, <span class="fl">415.50</span>), <span class="dv">4</span>),</span>
-<span id="cb9-8"><a href="#cb9-8"></a>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Napisz program, który korzystając z wypakowywania zagnieżdżonego w pętli <code>for</code>:</p>
-<ol type="1">
-<li><p>wypisze sformatowaną tabelę transakcji w postaci:</p>
-<pre><code>2025-01-15  AAPL    150.25  x  10  =   1502.50  KUPNO
-2025-01-20  GOOGL   178.50  x   5  =    892.50  KUPNO
-2025-02-10  AAPL    155.00  x  -3  =   -465.00  SPRZEDAŻ
-2025-02-15  MSFT    420.75  x   8  =   3366.00  KUPNO
-2025-03-01  GOOGL   182.30  x  -5  =   -911.50  SPRZEDAŻ
-2025-03-10  MSFT    415.50  x   4  =   1662.00  KUPNO</code></pre></li>
-<li><p>obliczy i wypisze łączną wartość kupna i łączną wartość sprzedaży.</p></li>
-</ol>
+<section id="od-zmiennych-globalnych-do-słownika" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="od-zmiennych-globalnych-do-słownika"><span class="header-section-number">3</span> Od zmiennych globalnych do słownika</h2>
+<p>Dany jest moduł <code>counter.py</code> implementujący prosty licznik za pomocą zmiennej globalnej:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># counter.py</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>count <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="kw">def</span> increment():</span>
+<span id="cb10-5"><a href="#cb10-5"></a>    <span class="kw">global</span> count</span>
+<span id="cb10-6"><a href="#cb10-6"></a>    count <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="kw">def</span> reset():</span>
+<span id="cb10-9"><a href="#cb10-9"></a>    <span class="kw">global</span> count</span>
+<span id="cb10-10"><a href="#cb10-10"></a>    count <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="kw">def</span> get_count():</span>
+<span id="cb10-13"><a href="#cb10-13"></a>    <span class="cf">return</span> count</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Moduł działa poprawnie dla jednego licznika, ale nie pozwala na prowadzenie dwóch niezależnych liczników jednocześnie — zmienna <code>count</code> jest jedna.</p>
+<p>Przepisz moduł tak, aby stan licznika był przechowywany w słowniku przekazywanym do funkcji jako argument. Dodaj funkcję <code>create_counter(start=0)</code> tworzącą nowy licznik. Przykład użycia:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a>c1 <span class="op">=</span> create_counter()</span>
+<span id="cb11-2"><a href="#cb11-2"></a>c2 <span class="op">=</span> create_counter(<span class="dv">10</span>)</span>
+<span id="cb11-3"><a href="#cb11-3"></a>increment(c1)</span>
+<span id="cb11-4"><a href="#cb11-4"></a>increment(c1)</span>
+<span id="cb11-5"><a href="#cb11-5"></a>increment(c2)</span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="bu">print</span>(get_count(c1))  <span class="co"># 2</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="bu">print</span>(get_count(c2))  <span class="co"># 11</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <hr>
 </section>
-<section id="ciągi-uogólnione" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="ciągi-uogólnione"><span class="header-section-number">3</span> Ciągi uogólnione</h2>
-<p>Ciągiem <span class="math inline">\(k\)</span>-Fibonacciego rzędu <span class="math inline">\(k \geqslant 2\)</span> z warunkami początkowymi <span class="math inline">\(a_0, a_1, \ldots, a_{k-1}\)</span> nazywamy ciąg zdefiniowany rekurencyjnie:</p>
-<p><span class="math display">\[
-f_n = a_n \quad \text{dla } 0 \leqslant n &lt; k,\qquad
-f_n = f_{n-k} + f_{n-k+1} + \cdots + f_{n-1} \quad \text{dla } n \geqslant k.
-\]</span></p>
-<p>Przypadki szczególne:</p>
+<section id="moduł-żółwia" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="moduł-żółwia"><span class="header-section-number">4</span> Moduł żółwia</h2>
+<p>Napisz moduł <code>logo_turtle.py</code> z implementacją żółwia według wytycznych z wprowadzenia. Moduł powinien zawierać funkcje:</p>
 <ul>
-<li><span class="math inline">\(k = 2\)</span>: ciąg Fibonacciego (klasycznie <span class="math inline">\(a_0 = 0\)</span>, <span class="math inline">\(a_1 = 1\)</span>),</li>
-<li><span class="math inline">\(k = 3\)</span>: ciąg Tribonacciego (klasycznie <span class="math inline">\(a_0 = 0\)</span>, <span class="math inline">\(a_1 = 0\)</span>, <span class="math inline">\(a_2 = 1\)</span>),</li>
-<li><span class="math inline">\(k = 4\)</span>: ciąg Tetranacciego (klasycznie <span class="math inline">\(a_0 = 0\)</span>, <span class="math inline">\(a_1 = 0\)</span>, <span class="math inline">\(a_2 = 0\)</span>, <span class="math inline">\(a_3 = 1\)</span>).</li>
+<li><code>create_turtle(x=0, y=0, azimuth=0, name="")</code> — tworzy żółwia w położeniu <code>(x, y)</code> patrzącego w kierunku <code>azimuth</code> stopni od wschodu, o nazwie <code>name</code>. Funkcja zwraca słownik o kluczach:
+<ul>
+<li><code>position</code> — lista <code>[(x, y)]</code> zawierająca na ostatniej pozycji krotkę ze współrzędnymi aktualnego położenia żółwia. Gdy żółw jest tworzony, lista zawiera jedną krotkę z położeniem początkowym; po każdym wykonaniu polecenia <code>forward</code> lista jest rozszerzana o nowe położenie.</li>
+<li><code>azimuth</code> — azymut żółwia w stopniach.</li>
+<li><code>name</code> — nazwa żółwia.</li>
+</ul></li>
+<li><code>forward(turtle, r)</code> — przesuwa żółwia <code>turtle</code> o dystans <code>r</code> w kierunku, w którym żółw patrzy. Przesunięcie polega na dodaniu do listy <code>position</code> nowego położenia obliczonego na podstawie ostatniego położenia, azymutu i dystansu <code>r</code>.</li>
+<li><code>right(turtle, a)</code> — obraca żółwia <code>turtle</code> o kąt <code>a</code> w prawo. Obrót zmienia wartość <code>azimuth</code> o <code>-a</code>.</li>
+<li><code>left(turtle, a)</code> — obraca żółwia <code>turtle</code> o kąt <code>a</code> w lewo. Obrót zmienia wartość <code>azimuth</code> o <code>a</code>.</li>
+<li><code>to_csv(*turtles, filename)</code> — zapisuje historię położeń żółwi <code>turtles</code> do pliku CSV o nazwie <code>filename</code>. Plik CSV zawiera nagłówek z nazwami kolumn: <code>x</code>, <code>y</code>, <code>name</code>. Wiersze odpowiadają kolejnym położeniom żółwi — najpierw wszystkie położenia pierwszego żółwia, potem drugiego itd.</li>
 </ul>
-<p>Napisz moduł <code>fib.py</code> zawierający funkcje:</p>
-<ol type="1">
-<li><code>fib(n, a=0, b=1)</code> — zwraca wyraz <span class="math inline">\(f_n\)</span> ciągu Fibonacciego,</li>
-<li><code>trib(n, a=0, b=0, c=1)</code> — zwraca wyraz <span class="math inline">\(f_n\)</span> ciągu Tribonacciego,</li>
-<li><code>tetra(n, a=0, b=0, c=0, d=1)</code> — zwraca wyraz <span class="math inline">\(f_n\)</span> ciągu Tetranacciego,</li>
-<li><code>fib_general(n, a, b, *args)</code> — zwraca wyraz <span class="math inline">\(f_n\)</span> ciągu <span class="math inline">\(k\)</span>-Fibonacciego, gdzie <span class="math inline">\(k = 2 + \text{len(args)}\)</span>, a warunki początkowe to <code>a</code>, <code>b</code>, <code>*args</code>.</li>
-</ol>
-<p>Argument <code>n</code> jest indeksem wyrazu ciągu. Jeśli <code>n</code> jest ujemne, to funkcje zgłaszają wyjątek <code>NotImplementedError</code> z komunikatem <code>Brak implementacji dla indeksów ujemnych</code>.</p>
-<p>Testy modułu <code>fib.py</code> znajdują się w pliku <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_V/test_fib.py">test_fib.py</a>.</p>
+<p>Testy modułu <code>logo_turtle.py</code> znajdują się w pliku <code>test_logo_turtle.py</code>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Wskazówka
+<span class="screen-reader-only">Tip</span>Moduł <code>csv</code>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Wykorzystaj przypisanie wielokrotne. Obliczenie kolejnego wyrazu ciągu Fibonacciego sprowadza się do jednej linii:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a>a, b <span class="op">=</span> b, a <span class="op">+</span> b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Analogicznie dla wyższych rzędów. W <code>fib_general</code> warunki początkowe wygodnie przechowywać w liście i aktualizować go w każdej iteracji.</p>
+<p>Moduł <a href="https://docs.python.org/3/library/csv.html"><code>csv</code></a> z biblioteki standardowej ułatwia zapis danych do plików CSV:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="im">import</span> csv</span>
+<span id="cb12-2"><a href="#cb12-2"></a></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"output.csv"</span>, <span class="st">"w"</span>, newline<span class="op">=</span><span class="st">""</span>) <span class="im">as</span> f:</span>
+<span id="cb12-4"><a href="#cb12-4"></a>    writer <span class="op">=</span> csv.writer(f)</span>
+<span id="cb12-5"><a href="#cb12-5"></a>    writer.writerow([<span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"name"</span>])    <span class="co"># nagłówek</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a>    writer.writerow([<span class="fl">1.5</span>, <span class="fl">2.3</span>, <span class="st">"Tolek"</span>])   <span class="co"># wiersz danych</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Parametr <code>newline=""</code> w <code>open()</code> jest wymagany przez moduł <code>csv</code> — zapobiega wstawianiu pustych wierszy w pliku wynikowym.</p>
 </div>
 </div>
+<p>Trasę żółwia zapisaną w pliku CSV możesz zwizualizować:</p>
+<ul>
+<li>w notatniku Jupyter, korzystając z bibliotek <code>pandas</code> i <code>matplotlib</code>,</li>
+<li>w arkuszu kalkulacyjnym, np. programie Excel,</li>
+<li>w narzędziu online, np. <a href="https://www.csvplot.com">csvplot</a>.</li>
+</ul>
 <hr>
 </section>
-<section id="przekazywanie-argumentów" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="przekazywanie-argumentów"><span class="header-section-number">4</span> Przekazywanie argumentów</h2>
-<section id="logowanie-wywołań" class="level3" data-number="4.1">
-<h3 data-number="4.1" class="anchored" data-anchor-id="logowanie-wywołań"><span class="header-section-number">4.1</span> Logowanie wywołań</h3>
-<p>Napisz funkcję:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">def</span> call_and_log(f, <span class="op">*</span>args, verbose<span class="op">=</span><span class="va">False</span>, <span class="op">**</span>kwargs):</span>
-<span id="cb12-2"><a href="#cb12-2"></a>    <span class="co">"""Wywołuje f(*args, **kwargs) i zwraca wynik.</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a></span>
-<span id="cb12-4"><a href="#cb12-4"></a><span class="co">    Jeśli verbose jest True, wypisuje informację o wywołaniu</span></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="co">    i wyniku w formacie: nazwa(argumenty) -&gt; wynik.</span></span>
-<span id="cb12-6"><a href="#cb12-6"></a></span>
-<span id="cb12-7"><a href="#cb12-7"></a><span class="co">    &gt;&gt;&gt; def add(a, b):</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a><span class="co">    ...     return a + b</span></span>
-<span id="cb12-9"><a href="#cb12-9"></a><span class="co">    &gt;&gt;&gt; call_and_log(add, 2, 3)</span></span>
-<span id="cb12-10"><a href="#cb12-10"></a><span class="co">    5</span></span>
-<span id="cb12-11"><a href="#cb12-11"></a><span class="co">    &gt;&gt;&gt; call_and_log(add, 2, 3, verbose=True)</span></span>
-<span id="cb12-12"><a href="#cb12-12"></a><span class="co">    add(2, 3) -&gt; 5</span></span>
-<span id="cb12-13"><a href="#cb12-13"></a><span class="co">    5</span></span>
-<span id="cb12-14"><a href="#cb12-14"></a><span class="co">    &gt;&gt;&gt; call_and_log(pow, 2, 10, verbose=True)</span></span>
-<span id="cb12-15"><a href="#cb12-15"></a><span class="co">    pow(2, 10) -&gt; 1024</span></span>
-<span id="cb12-16"><a href="#cb12-16"></a><span class="co">    1024</span></span>
-<span id="cb12-17"><a href="#cb12-17"></a><span class="co">    &gt;&gt;&gt; call_and_log(add, a=2, b=3, verbose=True)</span></span>
-<span id="cb12-18"><a href="#cb12-18"></a><span class="co">    add(a=2, b=3) -&gt; 5</span></span>
-<span id="cb12-19"><a href="#cb12-19"></a><span class="co">    5</span></span>
-<span id="cb12-20"><a href="#cb12-20"></a><span class="co">    """</span></span>
-<span id="cb12-21"><a href="#cb12-21"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Zwróć uwagę na pozycję parametru <code>verbose</code> w sygnaturze funkcji. Stoi on za <code>*args</code>, co czyni go parametrem <em>jedynie nazwy</em>. Dzięki temu wywołanie <code>call_and_log(add, 2, 3, True)</code> przekaże <code>True</code> jako argument do <code>f</code>, a nie jako wartość <code>verbose</code>.</p>
+<section id="wielokąty-żółwiowe" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="wielokąty-żółwiowe"><span class="header-section-number">5</span> Wielokąty żółwiowe</h2>
+<p>Jedna z najprostszych procedur w geometrii żółwia wygląda tak:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">def</span> polygon(turtle, a, r):</span>
+<span id="cb13-2"><a href="#cb13-2"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb13-3"><a href="#cb13-3"></a>        forward(turtle, r)</span>
+<span id="cb13-4"><a href="#cb13-4"></a>        right(turtle, a)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Żółw nieskończenie długo naprzemiennie wędruje naprzód o <code>r</code> i wykonuje obrót w prawo o <code>a</code>. Dystans i kąt obrotu są ustalone. Jeśli po pewnej niezerowej liczbie kroków położenie i azymut żółwia będą takie jak na starcie, żółw zacznie chodzić po swoich śladach — otrzymamy krzywą zamkniętą. Stanie się tak np. wtedy, gdy kąt <code>a</code> jest dzielnikiem 360 — ścieżka żółwia jest wówczas wielokątem foremnym. Ogólniej:</p>
+<p><strong>Twierdzenie o zamknięciu wielokąta.</strong> <em>Załóżmy, że kąt <code>a</code> nie jest całkowitą wielokrotnością 360. Wtedy <code>polygon(turtle, a, r)</code> przemieszcza żółwia po łamanej, która zamknie się dokładnie wtedy, gdy obrót całkowity żółwia będzie całkowitą wielokrotnością 360.</em></p>
+<p>Twierdzenie stosujemy tak: w pętli <code>while</code> funkcji <code>polygon()</code> zliczamy obrót całkowity żółwia. Gdy obrót całkowity osiągnie wielokrotność 360, krzywa żółwiowa właśnie się zamknęła i możemy zakończyć pętlę. Jeśli obrót całkowity nigdy nie stanie się wielokrotnością 360, krzywa nigdy się nie zamknie. Wynika stąd, że łamana rysowana przez <code>polygon()</code> jest zamknięta wtedy i tylko wtedy, gdy kąt <code>a</code> jest liczbą wymierną nie będącą wielokrotnością 360. W pozostałych przypadkach — gdy <code>a</code> jest niewymierny lub jest wielokrotnością 360 — krzywa jest nieskończona.</p>
+<p>Przykłady:</p>
+<ul>
+<li>dla <code>a = 144</code> trasa zamknie się po 5 krokach, gdyż <span class="math inline">\(5 \cdot 144 = 720 = 2 \cdot 360\)</span>,</li>
+<li>dla <code>a = 72</code> trasa zamknie się po 5 krokach, gdyż <span class="math inline">\(5 \cdot 72 = 360 = 1 \cdot 360\)</span>,</li>
+<li>dla <code>a = Fraction(360, 7)</code> trasa zamknie się po 7 krokach, gdyż <span class="math inline">\(7 \cdot \frac{360}{7} = 360 = 1 \cdot 360\)</span>.</li>
+</ul>
+<p>Więcej szczegółów, w tym dowód twierdzenia, znajdziesz <a href="https://mitpress.mit.edu/books/turtle-geometry">tutaj</a> i <a href="http://math.uni.lodz.pl/~rodakt/fn.html">tutaj</a>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Wskazówka
+<span class="screen-reader-only">Tip</span>Moduł <code>fractions</code>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Nazwę funkcji <code>f</code> uzyskasz przez <code>f.__name__</code>. Do formatowania argumentów przydadzą się <code>repr()</code> oraz <code>str.join()</code>.</p>
+<p>Moduł <a href="https://docs.python.org/3/library/fractions.html"><code>fractions</code></a> z biblioteki standardowej udostępnia typ <code>Fraction</code> reprezentujący ułamki zwykłe z dokładną arytmetyką:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="im">from</span> fractions <span class="im">import</span> Fraction</span>
+<span id="cb14-2"><a href="#cb14-2"></a></span>
+<span id="cb14-3"><a href="#cb14-3"></a>a <span class="op">=</span> Fraction(<span class="dv">360</span>, <span class="dv">7</span>)   <span class="co"># 360/7</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="bu">print</span>(a <span class="op">*</span> <span class="dv">7</span>)           <span class="co"># 360</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="bu">print</span>(a <span class="op">%</span> <span class="dv">360</span>)         <span class="co"># Fraction(360, 7)</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="bu">print</span>(<span class="bu">isinstance</span>(a, (<span class="bu">int</span>, Fraction)))  <span class="co"># True</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Operator <code>%</code> działa dla obiektów <code>Fraction</code>, co ułatwia sprawdzenie warunku zamknięcia wielokąta.</p>
 </div>
 </div>
-</section>
-<section id="wielokrotne-zastosowanie" class="level3" data-number="4.2">
-<h3 data-number="4.2" class="anchored" data-anchor-id="wielokrotne-zastosowanie"><span class="header-section-number">4.2</span> Wielokrotne zastosowanie</h3>
-<p>Napisz funkcję:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">def</span> apply_n(f, n, x):</span>
-<span id="cb13-2"><a href="#cb13-2"></a>    <span class="co">"""Zwraca wynik n-krotnego zastosowania f do x.</span></span>
-<span id="cb13-3"><a href="#cb13-3"></a></span>
-<span id="cb13-4"><a href="#cb13-4"></a><span class="co">    apply_n(f, 0, x) zwraca x.</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a><span class="co">    apply_n(f, n, x) zwraca f(f(...f(x)...)), gdzie f występuje n razy.</span></span>
-<span id="cb13-6"><a href="#cb13-6"></a></span>
-<span id="cb13-7"><a href="#cb13-7"></a><span class="co">    &gt;&gt;&gt; apply_n(abs, 0, -5)</span></span>
-<span id="cb13-8"><a href="#cb13-8"></a><span class="co">    -5</span></span>
-<span id="cb13-9"><a href="#cb13-9"></a><span class="co">    &gt;&gt;&gt; apply_n(abs, 1, -5)</span></span>
-<span id="cb13-10"><a href="#cb13-10"></a><span class="co">    5</span></span>
-<span id="cb13-11"><a href="#cb13-11"></a><span class="co">    &gt;&gt;&gt; from math import sqrt</span></span>
-<span id="cb13-12"><a href="#cb13-12"></a><span class="co">    &gt;&gt;&gt; apply_n(sqrt, 0, 16)</span></span>
-<span id="cb13-13"><a href="#cb13-13"></a><span class="co">    16</span></span>
-<span id="cb13-14"><a href="#cb13-14"></a><span class="co">    &gt;&gt;&gt; apply_n(sqrt, 1, 16)</span></span>
-<span id="cb13-15"><a href="#cb13-15"></a><span class="co">    4.0</span></span>
-<span id="cb13-16"><a href="#cb13-16"></a><span class="co">    &gt;&gt;&gt; apply_n(sqrt, 2, 16)</span></span>
-<span id="cb13-17"><a href="#cb13-17"></a><span class="co">    2.0</span></span>
-<span id="cb13-18"><a href="#cb13-18"></a><span class="co">    """</span></span>
-<span id="cb13-19"><a href="#cb13-19"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Sprawdź poprawność implementacji obu funkcji za pomocą <code>doctest.testmod()</code>.</p>
-<hr>
-</section>
-</section>
-<section id="losowanie-z-urny" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="losowanie-z-urny"><span class="header-section-number">5</span> Losowanie z urny</h2>
-<p>Napisz moduł <code>fprob.py</code> zawierający funkcję <code>draw_from_urn()</code> symulującą losowanie z urny zawierającej kule w różnych kolorach.</p>
-<p>Sygnatura funkcji: <code>draw_from_urn(number_of_draws=1, with_replacement=True, **balls)</code></p>
-<p>Funkcja przyjmuje następujące argumenty:</p>
+<p>Napisz moduł <code>polygons.py</code> zawierający funkcje:</p>
 <ul>
-<li><code>number_of_draws</code> — liczba losowań z urny (domyślnie 1),</li>
-<li><code>with_replacement</code> — flaga określająca, czy po wylosowaniu kuli wraca ona do urny (domyślnie <code>True</code>),</li>
-<li><code>**balls</code> — argumenty nazwane, gdzie klucz to kolor kuli, a wartość to liczba kul danego koloru w urnie.</li>
+<li><p><code>polygon(turtle, a, r)</code> — wersja funkcji <code>polygon()</code> z warunkiem stopu. Parametry:</p>
+<ul>
+<li><code>turtle</code> — słownik reprezentujący żółwia z modułu <code>logo_turtle.py</code>,</li>
+<li><code>a</code> — kąt obrotu w stopniach, liczba typu <code>int</code> lub <code>fractions.Fraction</code>,</li>
+<li><code>r</code> — długość boku.</li>
 </ul>
-<p>Funkcja zwraca listę kolejno wylosowanych kul. Jeśli losowanie jest bez zwracania i <code>number_of_draws</code> przewyższa liczbę kul w urnie, to funkcja zgłasza wyjątek <code>ValueError</code> z komunikatem <code>Liczba losowań bez zwracania przekracza liczbę kul w urnie.</code></p>
-<p>Testy modułu <code>fprob.py</code> znajdują się w pliku <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_V/test_fprob.py"><code>test_fprob.py</code></a>.</p>
+<p>Funkcja zwraca liczbę boków wielokąta. Jeśli <code>a</code> nie jest typu <code>int</code> ani <code>fractions.Fraction</code>, funkcja zgłasza wyjątek <code>TypeError</code> z komunikatem <code>kąt musi być liczbą całkowitą lub wymierną</code>. Jeśli <code>a</code> jest prawidłowego typu, ale nie spełnia warunków twierdzenia o zamknięciu wielokąta, funkcja zgłasza wyjątek <code>ValueError</code> z komunikatem <code>kąt musi być liczbą wymierną nie będącą wielokrotnością 360</code>.</p></li>
+<li><p><code>regular_polygon(turtle, n, r)</code> — rysuje <code>n</code>-kąt foremny o boku <code>r</code>. Parametry:</p>
+<ul>
+<li><code>turtle</code> — słownik reprezentujący żółwia z modułu <code>logo_turtle.py</code>,</li>
+<li><code>n</code> — liczba wierzchołków wielokąta,</li>
+<li><code>r</code> — długość boku.</li>
+</ul></li>
+</ul>
+<p>Testy modułu <code>polygons.py</code> znajdują się w pliku <code>test_polygons.py</code>.</p>
 <hr>
 </section>
-<section id="zastosowania-losowania-z-urny" class="level2" data-number="6">
-<h2 data-number="6" class="anchored" data-anchor-id="zastosowania-losowania-z-urny"><span class="header-section-number">6</span> Zastosowania losowania z urny</h2>
-<p><strong>Interpretacja częstościowa prawdopodobieństwa.</strong> Dane jest doświadczenie losowe. Chcemy wyznaczyć prawdopodobieństwo zajścia pewnego wyniku tego doświadczenia losowego. W interpretacji częstościowej wykonujemy to doświadczenie wielokrotnie i zliczamy, ile razy otrzymaliśmy interesujący nas wynik. Jeśli doświadczenie powtórzyliśmy <span class="math inline">\(N\)</span> razy, wynik wypadł <span class="math inline">\(k\)</span> razy i powtórzenia były niezależne, to prawdopodobieństwo badanego wyniku szacujemy na <span class="math inline">\(k/N\)</span>.</p>
-<p>Podane niżej zadania rozwiąż stosując częstościową interpretację prawdopodobieństwa. Wyniki potwierdź rozwiązaniem analitycznym.</p>
-<section id="kule-białe" class="level3" data-number="6.1">
-<h3 data-number="6.1" class="anchored" data-anchor-id="kule-białe"><span class="header-section-number">6.1</span> Kule białe</h3>
-<p>W urnie jest <code>5</code> kul białych i <code>2</code> czarne. Losujemy bez zwracania <code>3</code> kule. Jakie jest prawdopodobieństwo, że wszystkie będą białe?</p>
-<p>Rozwiąż to zadanie na “kartce” i numerycznie. Do rozwiązania numerycznego użyj funkcji <code>draw_from_urn()</code>. Wykonaj losowanie dużą liczbę razy — powiedzmy <code>1000</code> lub <code>10000</code> powtórzeń — zlicz ile razy wypadły trzy kule białe, następnie oblicz częstość.</p>
+<section id="błądzenie-losowe" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="błądzenie-losowe"><span class="header-section-number">6</span> Błądzenie losowe</h2>
+<p>Napisz program realizujący błądzenie losowe (<em>random walk</em>) żółwia po kracie. Żółw zaczyna w punkcie <code>(0, 0)</code> i patrzy na wschód. W każdym kroku:</p>
+<ol type="1">
+<li>losuje jeden z czterech kierunków: północ, południe, wschód, zachód,</li>
+<li>ustawia się w wybranym kierunku,</li>
+<li>przesuwa się o jedną jednostkę.</li>
+</ol>
+<p>Program wykonuje <code>N = 1000</code> kroków (wartość zdefiniuj jako stałą), a następnie zapisuje historię położeń żółwia do pliku CSV za pomocą funkcji <code>to_csv</code>.</p>
+<p>Rozszerzenie: uruchom jednocześnie kilku żółwi (np. trzech) wykonujących niezależne błądzenia losowe. Zapisz historie wszystkich żółwi do jednego pliku CSV i zwizualizuj ich trasy.</p>
+<hr>
 </section>
-<section id="wybór-urny" class="level3" data-number="6.2">
-<h3 data-number="6.2" class="anchored" data-anchor-id="wybór-urny"><span class="header-section-number">6.2</span> Wybór urny</h3>
-<p>Dane są dwie urny: w pierwszej znajdują się dwie kule czarne i jedna biała, w drugiej — trzy białe. Losujemy urnę (z prawdopodobieństwem <code>1/2</code>) a następnie losujemy jedną kulę. Jakie jest prawdopodobieństwo tego, że losowaliśmy z pierwszej urny, jeżeli wiadomo, że wylosowana kula jest biała?</p>
-<p>Rozwiąż zadanie dwoma sposobami: tradycyjnie wykorzystując teorię prawdopodobieństwa i numerycznie. W rozwiązaniu numerycznym skorzystaj z funkcji <code>draw_from_urn()</code>.</p>
-</section>
-<section id="rozkład-łączny" class="level3" data-number="6.3">
-<h3 data-number="6.3" class="anchored" data-anchor-id="rozkład-łączny"><span class="header-section-number">6.3</span> Rozkład łączny</h3>
-<p>Rozpatrujemy doświadczenie losowe jak w poprzednim podpunkcie. Niech <span class="math inline">\(U\)</span> będzie zmienną losową oznaczającą wylosowaną urnę, a <span class="math inline">\(K\)</span> zmienną losową oznaczającą wylosowaną kulę. Napisz program, który korzystając z częstościowej interpretacji prawdopodobieństwa wyznaczy przybliżoną tabelę rozkładu łącznego wektora losowego <span class="math inline">\((U, K)\)</span>. Wykorzystaj wyznaczoną tabelę do ponownego rozwiązania poprzedniego zadania.</p>
+<section id="minilogia" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="minilogia"><span class="header-section-number">7</span> MiniLogia</h2>
+<p>Strona <a href="https://minilogia.oeiizk.waw.pl/#!/">MiniLogia</a> zawiera wiele zadań związanych z geometrią żółwia. Wybierz jedno z zadań i rozwiąż je za pomocą modułu <code>logo_turtle.py</code>. Zaniedbaj kolory.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

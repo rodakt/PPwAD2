@@ -1,0 +1,668 @@
+---
+title: "Funkcje jako obiekty. Domknięcia"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+## [Obiekty pierwszej klasy](https://en.wikipedia.org/wiki/First-class_citizen)
+
+W językach programowania obiekt pierwszej klasy to taki, który:
+
+* może być wartością zmiennej;
+* może być argumentem funkcji;
+* może być zwrócony z funkcji.
+
+Zamierzeniem projektowym Pythona było, aby **wszystkie** obiekty były obiektami pierwszej klasy.
+
+> One of my goals for Python was to make it so that all objects were "first class." By this, I meant that I wanted   all objects that could be named in the language (e.g., integers, strings, functions, classes, modules, methods,   etc.) to have equal status. That is, they can be assigned to variables, placed in lists, stored in dictionaries,   passed as arguments, and so forth.<br>
+[*Guido van Rossum, The History of Python*](http://python-history.blogspot.com/2009/02/first-class-everything.html)
+
+Funkcje w Pythonie są obiektami pierwszej klasy. Sprawdźmy to.
+
+
+### Funkcja jako wartość zmiennej
+
+Zmienna wskazująca na funkcję wbudowaną:
+
+```python
+>>> wartość_bezwzględna = abs
+>>> wartość_bezwzględna(-5)
+5
+```
+
+Zmienna wskazująca na funkcję zdefiniowaną przez użytkownika:
+
+```python
+>>> sumator = lambda seq: sum(seq)
+>>> sumator([1, 2, 3])
+6
+>>> sklej = lambda s: ' '.join(s)
+>>> sklej(['ala', 'ma', 'kota'])
+'ala ma kota'
+>>> def signum(x):
+...     if x > 0:
+...         return 1
+...     if x < 0:
+...         return -1
+...     return 0
+>>> znak_liczby = signum
+>>> znak_liczby(-3), znak_liczby(0), znak_liczby(23.87)
+(-1, 0, 1)
+```
+
+### Wyrażenie `lambda`
+
+W przykładach wyżej pojawił się zapis `lambda seq: sum(seq)`. Słowo `lambda` jest słowem kluczowym Pythona (tak jak `if`, `def` czy `global`), które umożliwia konstrukcję **wyrażenia lambda** — wyrażenia zwracającego obiekt funkcji. Ogólna składnia to:
+
+```python
+lambda parametry: wyrażenie
+```
+
+Wyrażenie lambda tworzy obiekt funkcji, który:
+
+* przyjmuje parametry wymienione przed dwukropkiem,
+* zwraca wartość wyrażenia po dwukropku.
+
+Oto porównanie z instrukcją `def`:
+
+```python
+>>> # Instrukcja def:
+>>> def double(x):
+...     return 2 * x
+>>> # Równoważne wyrażenie lambda:
+>>> double = lambda x: 2 * x
+>>> double(5)
+10
+```
+
+Oba zapisy tworzą funkcję, ale nie są całkowicie identyczne. Najważniejsze różnice są następujące:
+
+* `lambda` jest **wyrażeniem** — zwraca wartość, czyli obiekt funkcji, podobnie jak `2 + 3` zwraca liczbę. Dzięki temu można jej użyć wszędzie tam, gdzie dozwolone jest wyrażenie, na przykład jako argument funkcji, element listy albo wartość w słowniku. `def` jest natomiast **instrukcją** — tworzy funkcję i wiąże ją z nazwą, ale samo w sobie nie jest wyrażeniem, więc nie może wystąpić w miejscach, gdzie oczekiwane jest wyrażenie.
+* `lambda` może zawierać tylko **jedno wyrażenie**. Nie można w niej umieszczać instrukcji takich jak `for`, `while`, `return`, `try` czy przypisań. Można natomiast użyć wyrażenia warunkowego, na przykład `x if warunek else y`.
+* Funkcja utworzona przez `lambda` ma w metadanych nazwę `'<lambda>'`, więc na przykład `f.__name__` zwróci właśnie `'<lambda>'`. Funkcja zdefiniowana przez `def` otrzymuje zwykle nazwę podaną w definicji.
+
+Lambda jest szczególnie przydatna, gdy potrzebujemy przekazać krótką funkcję jako argument:
+
+```python
+>>> students = [('Anna', 3.5), ('Jan', 4.0), ('Ewa', 3.0), ('Piotr', 4.5)]
+>>> sorted(students, key=lambda s: s[1])
+[('Ewa', 3.0), ('Anna', 3.5), ('Jan', 4.0), ('Piotr', 4.5)]
+```
+
+Sortujemy listę krotek po drugim elemencie (średniej ocen). Nie istnieje gotowa funkcja, którą moglibyśmy tu przekazać — lambda pozwala zdefiniować kryterium sortowania w miejscu wywołania.
+
+Lambda z wieloma parametrami:
+
+```python
+>>> area = lambda a, b: a * b
+>>> area(3, 5)
+15
+```
+
+Lambda z wyrażeniem warunkowym:
+
+```python
+>>> clamp = lambda x, lo, hi: lo if x < lo else hi if x > hi else x
+>>> clamp(15, 0, 10)
+10
+>>> clamp(-3, 0, 10)
+0
+>>> clamp(7, 0, 10)
+7
+```
+
+::: {.callout-important}
+## Kiedy używać `lambda`, a kiedy `def`?
+Wyrażenie `lambda` jest przeznaczone do krótkich, jednorazowych funkcji — najczęściej przekazywanych jako argumenty. Jeśli funkcja wymaga kilku linii kodu, docstringa lub ma być wielokrotnie wywoływana przez nazwę, użyj `def`. Przypisanie `f = lambda ...: ...` jest w zasadzie zawsze gorsze od `def f(...): ...` — ten ostatni zapis jest czytelniejszy i daje funkcji właściwą nazwę w komunikatach o błędach.
+:::
+
+### Nazwa funkcji: `__name__` i `__code__.co_name`
+
+Dygresja: co tak naprawdę jest nazwą funkcji? W komórce wyżej zdefiniowaliśmy funkcję `signum()` i utworzyliśmy dla niej alias `znak_liczby`, który jak widać zachowuje się jak funkcja. Czy możemy mówić, że `znak_liczby` jest funkcją i to o takiej właśnie nazwie? 
+
+Tworzenie aliasu jest wygodne, gdyż pozwala na dostosowanie nazwy wywołującej funkcję, jednak dla narzędzi odwołujących się do metadanych funkcji nie jest to jej właściwa nazwa.
+Nazwa funkcji przechowywana jest w dwóch atrybutach:
+
+* `.__name__`
+* `.__code__.co_name`:
+
+```python
+>>> znak_liczby.__name__
+'signum'
+>>> znak_liczby.__code__.co_name
+'signum'
+>>> f = lambda x: 2 * x
+>>> f
+<function <lambda> at 0x7f87fce14c20>
+>>> f.__name__
+'<lambda>'
+>>> f.__code__.co_name
+'<lambda>'
+```
+
+Wartości tych atrybutów mogą się różnić, gdyż wartość atrybutu `.__name__` można zmienić na inną. Atrybut `.__code__.co_name` jest tylko do odczytu. Gdy tworzysz funkcję instrukcją `def`, to oba te atrybuty zostają ustawione w funkcji na nazwę występującą po słowie `def`. Ponadto niejawnie wykonywane jest przypisanie tworzące zmienną wskazującą na zdefiniowaną właśnie funkcję. Możesz oczywiście utworzyć dowolną ilość aliasów do funkcji, nie ma to jednak żadnego wpływu na metadane funkcji, w tym na opisane wyżej atrybuty. Więcej informacji na ten temat znajdziesz [tutaj.](https://medium.com/@vadimpushtaev/name-of-python-function-e6d650806c4) Post ten zawiera przykłady dekoratorów — powiemy o nich w następnym wykładzie.
+
+### Funkcja jako argument funkcji
+
+Chcemy pokazać, że w Pythonie funkcje mogą być argumentami innych funkcji. Jest to temat ciekawy sam w sobie i posiadający liczne zastosowania, dlatego omówimy go nieco szerzej. Przedstawienie oprzemy na materiale ze strony [Composing Programs](http://composingprograms.com/pages/16-higher-order-functions.html), zawierającej kurs CS1 na uniwersytecie Berkeley.
+
+Funkcje manipulujące innymi funkcjami to **funkcje wyższego rzędu**. Użycie funkcji wyższego rzędu pozwala na implementację wzorców obliczeniowych w oderwaniu od konkretnych wartości. Dzięki temu zmniejsza się ilość powtórzeń w kodzie występujących na poziomie metod, rośnie natomiast czytelność i łatwość utrzymania kodu.
+
+Podane niżej funkcje obliczają skończone sumy różnych ciągów:
+
+```python
+>>> def sum_naturals(n):
+...     '''Zwraca 1 + 2 + ... + n.'''
+...     total = 0
+...     for k in range(1, n + 1):
+...         total = total + k
+...     return total
+>>> def sum_cubes(n):
+...     '''Zwraca 1**3 + 2**3 + ... + n**3.'''
+...     total = 0
+...     for k in range(1, n + 1):
+...         total = total + k*k*k
+...     return total
+>>> def sum_inverses(n):
+...     '''Zwraca 1/1 + 1/2 + ... + 1/n'''
+...     total = 0
+...     for k in range(1, n + 1):
+...         total = total + 1/k
+...     return total
+>>> sum_naturals(3)
+6
+>>> sum_cubes(3)
+36
+>>> sum_inverses(3)
+1.8333333333333333
+```
+
+Widać, że na poziomie algorytmu każda z tych funkcji robi to samo, a różnice biorą się jedynie z nazwy i wyrazu ogólnego w aktualizowanej sumie. Każdą z tych funkcji moglibyśmy wygenerować za pomocą szablonu:
+
+```python
+def <nazwa_funkcji>(n):
+    total = 0
+   
+    for k in range(1, n + 1):
+        total = total + <term>(k)
+   
+    return total
+```
+
+Interpretując ten szablon jako funkcję widzimy, że nie tylko `n` możemy traktować jako jego parametr ale również i `<term>`. Jakiego rodzaju parametrem powinien być `term`? Jeśli sumujemy liczby naturalne, to `term(k)` ma wartość `k`, jeśli sumujemy sześciany, to `term(k)` ma wartość `k**3`. Zatem `term` jest funkcją!
+
+Oto implementacja szablonu:
+
+```python
+>>> def partial_sum(n, term):
+...     '''Zwraca sumę term(1) + term(2) + ... + term(n)'''
+...     total = 0
+...     for k in range(1, n + 1):
+...         total = total + term(k)
+...     return total
+```
+
+Tak zdefiniowana funkcja będzie gotowa do wykonania sumowania, gdy podamy liczbę wyrazów do obliczenia i przepis na wyraz ciągu, czyli parametr `term`:
+
+```python
+>>> def identity(k):
+...     return k
+>>> def cube(k):
+...     return k**3
+>>> def inverse(k):
+...     return 1 / k
+>>> partial_sum(5, identity)
+15
+>>> partial_sum(5, cube)
+225
+>>> partial_sum(5, inverse)
+2.2833333333333333
+```
+
+Możemy teraz zdefiniować konkretną funkcję sumującą w oparciu o szablon:
+
+```python
+>>> def sum_cubes(n):
+...     '''Zwraca 1**3 + 2**3 + ... + n**3.'''
+...     return partial_sum(n, cube)
+>>> sum_cubes(3)
+36
+```
+
+::: {.callout-tip}
+## Ćwiczenie
+Zdefiniuj w oparciu o szablon `partial_sum()` funkcje `sum_naturals()` i `sum_inverses()`.
+:::
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+
+```python
+>>> def sum_naturals(n):
+...     '''Zwraca 1 + 2 + ... + n.'''
+...     return partial_sum(n, identity)
+>>> def sum_inverses(n):
+...     '''Zwraca 1/1 + 1/2 + ... + 1/n.'''
+...     return partial_sum(n, inverse)
+>>> sum_naturals(5)
+15
+>>> sum_inverses(5)
+2.283333333333333
+```
+:::
+
+### Funkcja jako wartość zwracana z funkcji
+
+W Pythonie funkcja może zostać zwrócona z funkcji. Fakt ten zilustrujemy, a zarazem wykorzystamy do jeszcze nieco innego rozwiązania problemu z sumą fragmentu ciągu. 
+
+Wykorzystujemy powtórnie algorytm z szablonem w innej konfiguracji: 
+
+```python
+>>> def make_summator(term):
+...     '''Zwraca funkcję obliczającą sumy term(1) + term(2) + ... + term(n)'''
+...     def summator(n):
+...         total = 0
+...         for k in range(1, n + 1):
+...             total = total + term(k)
+...         return total
+...     return summator
+```
+
+Zauważ, że parametry `n` i `term` występujące na tym samym poziomie w funkcji `partial_sum()` tu zostały rozdzielone. Parametr `term` jest parametrem głównym — to on determinuje, jaką konkretną sumę liczymy. Parametr `n` przejął rolę parametru tymczasowego. Funkcja `make_summator()` definiuje nową funkcję w oparciu o argument `term`. Nowa funkcja `summator()` jest funkcją jednej zmiennej `n` zwracającą sumę 
+
+```
+term(1) + term(2) + ... + term(n)
+```
+
+::: {.callout-tip}
+## Ćwiczenie
+Zdefiniuj trzy omawiane wcześniej konkretne funkcje sumujące (`sum_naturals`, `sum_cubes`, `sum_inverses`) za pomocą `make_summator()`.
+:::
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+
+```python
+>>> sum_naturals = make_summator(identity)
+>>> sum_cubes = make_summator(cube)
+>>> sum_inverses = make_summator(inverse)
+>>> sum_naturals(5)
+15
+>>> sum_cubes(3)
+36
+>>> sum_inverses(3)
+1.8333333333333333
+```
+:::
+
+::: {.callout-tip}
+## Ćwiczenie
+Przerób funkcję `make_summator()` tak, aby teraz parametr `n` był główny, a `term` tymczasowy. Zmień, jeśli trzeba, nazwy funkcji. Co zwraca nowa funkcja po tej zmianie?
+:::
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+
+```python
+>>> def make_n_summator(n):
+...     '''Zwraca funkcję obliczającą sumy term(1) + ... + term(n) dla ustalonego n.'''
+...     def summator(term):
+...         total = 0
+...         for k in range(1, n + 1):
+...             total = total + term(k)
+...         return total
+...     return summator
+>>> sum_first_5 = make_n_summator(5)
+>>> sum_first_5(identity)
+15
+>>> sum_first_5(cube)
+225
+```
+
+Po tej zmianie `make_n_summator(n)` zwraca funkcję jednego argumentu `term`, która oblicza sumę `term(1) + ... + term(n)` dla ustalonego `n`. Zwrócona funkcja jest więc zdolna do sumowania dowolnego ciągu — do ustalonej z góry liczby wyrazów.
+:::
+
+### Currying
+
+Porównajmy dwie wersje naszego algorytmu sumowania:
+
+```python
+>>> partial_sum(5, cube)      # dwa argumenty naraz
+225
+>>> make_summator(cube)(5)    # dwa argumenty po kolei
+225
+```
+
+W obu przypadkach wynik jest taki sam. Różnica polega na sposobie przekazania argumentów. Funkcja `partial_sum()` przyjmuje oba argumenty w jednym wywołaniu. Wywołanie `make_summator(cube)` przyjmuje pierwszy argument i zwraca nową funkcję, którą dopiero potem wywołujemy z drugim argumentem. Wzorzec `f(a)(b)` — wywołanie łańcuchowe — jest tu kluczowy: najpierw `make_summator(cube)` zwraca funkcję, a nawiasy `(5)` natychmiast tę funkcję wywołują.
+
+Przekształcenie funkcji wielu argumentów w łańcuch funkcji jednoargumentowych nosi nazwę **curryingu** — od nazwiska logika [Haskella Curry'ego](https://en.wikipedia.org/wiki/Haskell_Curry). Idea jest prosta: zamiast funkcji $f(a, b)$ tworzymy funkcję $g(a)$ zwracającą funkcję $h(b)$, tak że $g(a)(b) = f(a, b)$.
+
+Zobaczmy to na prostszym przykładzie. Oto zwykła funkcja dodająca dwie liczby:
+
+```python
+>>> def add(x, y):
+...     return x + y
+>>> add(3, 5)
+8
+```
+
+A oto jej wersja *scurryfikowana* (*curried*):
+
+```python
+>>> def curried_add(x):
+...     def inner(y):
+...         return x + y
+...     return inner
+>>> curried_add(3)(5)
+8
+```
+
+Wywołanie `curried_add(3)` zwraca funkcję, która dodaje 3 do swojego argumentu. Możemy ją zachować w zmiennej:
+
+```python
+>>> add_3 = curried_add(3)
+>>> add_3(5)
+8
+>>> add_3(10)
+13
+```
+
+Widzimy, że currying pozwala na *częściowe zastosowanie* funkcji — ustalenie jednego argumentu i uzyskanie wyspecjalizowanej funkcji jednoargumentowej. Warto zauważyć, że równoważny efekt osiągniemy za pomocą `lambda`:
+
+```python
+>>> curried_add = lambda x: lambda y: x + y
+>>> curried_add(3)(5)
+8
+```
+
+Oto jeszcze jeden przykład — scurryfikowana potęga:
+
+```python
+>>> def curried_pow(base):
+...     def inner(exp):
+...         return base ** exp
+...     return inner
+>>> square = curried_pow(2)
+>>> square(10)
+1024
+>>> cube_of = curried_pow(3)
+>>> cube_of(4)
+81
+```
+
+Wróćmy teraz do naszego problemu. Funkcja `make_summator()` jest w istocie scurryfikowaną wersją `partial_sum()`. Dlatego możemy napisać:
+
+```python
+>>> def sum_squares(n):
+...     return make_summator(lambda x: x**2)(n)
+>>> sum_squares(3)
+14
+```
+
+Zapis `make_summator(lambda x: x**2)(n)` to właśnie wzorzec wywołania łańcuchowego: `make_summator(lambda x: x**2)` zwraca funkcję, a `(n)` natychmiast ją wywołuje.
+
+::: {.callout-tip}
+## Ćwiczenie
+Napisz funkcję `curry2(f)`, która przyjmuje funkcję dwuargumentową `f` i zwraca jej scurryfikowaną wersję. Przetestuj ją na funkcjach `add` i `pow`.
+:::
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+
+```python
+>>> def curry2(f):
+...     '''Zamienia funkcję f(a, b) na g(a)(b).'''
+...     def outer(a):
+...         def inner(b):
+...             return f(a, b)
+...         return inner
+...     return outer
+>>> curried_add = curry2(add)
+>>> curried_add(3)(5)
+8
+>>> curried_pow = curry2(pow)
+>>> curried_pow(2)(10)
+1024
+```
+
+Możesz też napisać funkcję odwrotną — `uncurry2(g)`:
+
+```python
+>>> def uncurry2(g):
+...     '''Zamienia funkcję g(a)(b) na f(a, b).'''
+...     def f(a, b):
+...         return g(a)(b)
+...     return f
+>>> uncurried_add = uncurry2(curried_add)
+>>> uncurried_add(3, 5)
+8
+```
+:::
+
+## Domknięcia
+
+Podane w poprzedniej sekcji przykłady, po bliższym przyjrzeniu się, wydają się stać w sprzeczności z tym, co już wiemy na temat lokalnej przestrzeni nazw. W poprzednim wykładzie twierdziłem przecież, że lokalna przestrzeń nazw utworzona podczas wywołania funkcji po zakończeniu jej działania (czyli po zwróceniu wartości) zostaje zapomniana. 
+
+Jak w takim razie działa ten kod?
+
+```python
+>>> def make_summator(term):
+...     '''Zwraca funkcję obliczającą sumy term(1) + term(2) + ... + term(n)'''
+...     def summator(n):
+...         total = 0
+...         for k in range(1, n + 1):
+...             total = total + term(k)
+...         return total
+...     return summator
+>>> sum_squares = make_summator(lambda x: x**2)
+>>> sum_squares(3)
+14
+```
+
+Przebieg zdarzeń:
+
+* Funkcja `make_summator()` zwraca funkcję `summator()`.
+* Funkcja `summator()` odnosi się do zmiennej `term`.
+* Po wykonaniu 
+  ```python
+  >>> sum_squares = make_summator(lambda x: x**2)
+  ```
+  `make_summator()` kończy działanie.
+* Zmienna `term` przestaje istnieć, gdyż jest to zmienna lokalna.
+* Istnieje jednak funkcja `sum_squares()`, która odwołuje się do nieistniejącej/zapomnianej zmiennej `term`.
+* **Skąd funkcja `sum_squares()` wie, że zmienna `term` ma wartość `lambda x: x**2`?**
+
+Rozwiązanie tej zagadki tkwi w mechanizmie <a href="https://en.wikipedia.org/wiki/Closure_(computer_programming)"><b>domknięcia</b></a>  (*closure*).
+
+::: {.callout-important}
+## Domknięcie (*closure*)
+Domknięcie polega na dołączeniu do funkcji informacji o stanie środowiska, w którym funkcja została utworzona. Jeśli funkcja wewnętrzna odwołuje się do zmiennej zdefiniowanej w funkcji zewnętrznej, to ta zmienna zostaje zachowana — nawet po zakończeniu działania funkcji zewnętrznej. W pamięci zachowany zostaje obiekt, który ta zmienna nazywa.
+:::
+
+W przypadku funkcji `summator()` niezbędna do jej działania jest zewnętrzna wobec jej przestrzeni nazw zmienna `term`. Dlatego zmienna ta zostaje dołączona do zwracanej funkcji.
+
+Dołączone zmienne znajdują się w atrybucie `.__code__.co_freevars`:
+
+```python
+>>> sum_squares.__code__.co_freevars
+('term',)
+```
+
+Atrybut `.__closure__[0].cell_contents` zawiera odpowiadające im wartości.
+
+```python
+>>> sum_squares.__closure__[0].cell_contents
+<function <lambda> at 0x7f87fce14c20>
+```
+
+Wcześniej powiedzieliśmy już, że istnieją zmienne:
+
+* globalne — tworzone na poziomie modułu,
+* lokalne — tworzone podczas wywołania funkcji.
+
+Jaką w takim razie zmienną z punktu widzenia funkcji `summator()` jest `term`? Otóż jest to trzeci rodzaj zmiennej — **zmienna swobodna** (*free variable*). Z dokumentacji Pythona:
+
+>  If a variable is used in a code block but not defined there, it is a free variable.
+
+Z punktu widzenia funkcji `make_summator()` zmienna `term` jest po prostu lokalna. Z punktu widzenia funkcji `summator()` zmienna `term` jest zmienną swobodną. Funkcja `summator()` nie definiuje tej zmiennej, ale jej używa. W momencie wywołania funkcji `make_summator()` zmienna `term` zostaje dołączona do funkcji `summator()`, która staje się funkcją domkniętą.
+
+Więcej szczegółów znajdziesz w oficjalnej [dokumentacji](https://docs.python.org/3/reference/executionmodel.html#naming-and-binding). Przeczytaj też ciekawą dyskusję [stąd.](https://stackoverflow.com/questions/12919278/how-to-define-free-variable-in-python)
+
+### LEGB
+
+Pamiętamy z poprzedniego wykładu, że w Pythonie występują trzy podstawowe rodzaje przestrzeni nazw: wbudowana, globalna, lokalna, i że zapowiedzieliśmy jeszcze czwartą — zakres dołączony. Teraz możemy ją omówić.
+
+Zmienne swobodne, takie jak `term` w funkcji `summator()`, należą właśnie do zakresu dołączonego (*enclosed scope*). Jest to przestrzeń nazw funkcji zewnętrznej, widoczna z wnętrza funkcji zagnieżdżonej.
+
+Uzupełniona hierarchia przeszukiwania wygląda tak:
+
+```
+lokalna --> dołączona --> globalna --> wbudowana
+```
+
+Od pierwszych liter
+
+```
+Local --> Enclosed --> Global --> Built-in
+```
+
+zasada ta nazywana jest [LEGB.](https://sebastianraschka.com/Articles/2014_python_scope_and_namespaces.html#3-legb---local-enclosed-global-built-in) 
+
+::: {.callout-note}
+## Zasada LEGB
+Gdy interpreter napotyka odniesienie do nazwy, przeszukuje przestrzenie nazw w kolejności:
+
+1. **L**ocal — lokalna przestrzeń nazw bieżącej funkcji,
+2. **E**nclosed — przestrzenie nazw funkcji obejmujących (zewnętrznych),
+3. **G**lobal — globalna przestrzeń nazw modułu,
+4. **B**uilt-in — wbudowana przestrzeń nazw.
+
+Przeszukiwanie kończy się na pierwszej przestrzeni, w której nazwa zostanie znaleziona.
+:::
+
+### Instrukcja `nonlocal`
+
+Oto ciekawy przykład realizacji domknięcia zaczerpnięty z książki L. Ramalho:
+
+```python
+>>> def moving_average():
+...     '''Zwraca średnią kroczącą.'''
+...     values = []
+...     def average(value):
+...         values.append(value)
+...         return sum(values) / len(values)
+...     return average
+>>> grades = moving_average()
+>>> other_grades = moving_average()
+>>> grades(5), other_grades(4)
+(5.0, 4.0)
+>>> grades(3), other_grades(3)
+(4.0, 3.5)
+>>> grades(5), other_grades(2)
+(4.333333333333333, 3.0)
+```
+
+Zwróć uwagę, że `grades` i `other_grades` to dwa niezależne domknięcia — każde wywołanie `moving_average()` tworzy **nową** listę `values`, więc obie funkcje prowadzą oddzielne historie.
+
+Zmienne swobodne i ich wartości:
+
+```python
+>>> grades.__code__.co_freevars
+('values',)
+>>> grades.__closure__[0].cell_contents
+[5, 3, 5]
+>>> other_grades.__code__.co_freevars
+('values',)
+>>> other_grades.__closure__[0].cell_contents
+[4, 3, 2]
+```
+
+Aby obliczyć średnią wystarczy pamiętać dotychczasową sumę wartości i ich liczbę.
+Poddajmy refaktoryzacji funkcję `moving_average()` zgodnie z tą sugestią.
+
+Oto pierwsza próba. Jest błędna. Widzisz błąd?
+
+```python
+>>> def moving_average():
+...     '''Zwraca średnią kroczącą.'''
+...     total, count = 0, 0
+...     def average(value):
+...         total += value
+...         count += 1
+...         return total / count
+...     return average
+```
+
+Zmienne `total` i `count` są przypisane w ciele funkcji `average()`, są to zatem zmienne lokalne! 
+
+```python
+>>> grades = moving_average()
+>>> grades(5)
+---------------------------------------------------------------------------
+UnboundLocalError                         Traceback (most recent call last)
+...
+UnboundLocalError: cannot access local variable 'total' where it is not associated with a value
+```
+
+Widzimy analogię między zmienną swobodną a lokalną i zmienną globalną a lokalną. Jeśli zmienna jest przypisana w funkcji, to jest lokalna i **tylko** w zakresie lokalnym będzie poszukiwana. Pamiętamy, że używamy instrukcji `global`, aby zmienna przypisana w ciele funkcji była globalna.
+
+Analogicznie, aby zmienna przypisana w ciele funkcji była swobodna, trzeba zadeklarować ją jako swobodną instrukcją `nonlocal`:
+
+
+```python
+>>> def moving_average():
+...     '''Zwraca średnią kroczącą.'''
+...     total, count = 0, 0
+...     def average(value):
+...         nonlocal total, count
+...         total += value
+...         count += 1
+...         return total / count
+...     return average
+>>> grades = moving_average()
+>>> grades(5)
+5.0
+>>> grades(3)
+4.0
+>>> grades(5)
+4.333333333333333
+```
+
+Sprawdźmy zmienne swobodne i ich wartości. Atrybut `co_freevars` zawiera nazwy w porządku alfabetycznym:
+
+```python
+>>> grades.__code__.co_freevars
+('count', 'total')
+>>> grades.__closure__[0].cell_contents   # count
+3
+>>> grades.__closure__[1].cell_contents   # total
+13
+```
+
+Wartości zgadzają się z oczekiwaniami: po trzech wywołaniach `grades(5)`, `grades(3)`, `grades(5)` mamy `count = 3` i `total = 5 + 3 + 5 = 13`.
+
+::: {.callout-tip}
+## Ćwiczenie
+Zauważ, że w pierwszej wersji `moving_average()` (z listą `values`) instrukcja `nonlocal` nie była potrzebna, mimo że `values` jest zmienną swobodną. Dlaczego?
+:::
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+W pierwszej wersji lista `values` nie jest *przypisywana* w ciele `average()` — jest jedynie *modyfikowana* (`values.append(value)`). Reguła Pythona mówi: zmienna staje się lokalna, gdy występuje po lewej stronie przypisania. Wywołanie metody `.append()` nie jest przypisaniem — nie zmienia tego, na jaki obiekt wskazuje nazwa `values`, lecz modyfikuje sam obiekt. Dlatego interpreter poprawnie rozpoznaje `values` jako zmienną swobodną bez potrzeby deklaracji `nonlocal`.
+
+W drugiej wersji `total += value` jest równoważne `total = total + value`, co jest przypisaniem — stąd konieczność `nonlocal`.
+:::
+
+## Podsumowanie
+
+Na tym wykładzie zobaczyliśmy, że:
+
+* Funkcje w Pythonie są obiektami pierwszej klasy — mogą być wartościami zmiennych, argumentami innych funkcji i wartościami zwracanymi z funkcji.
+* Funkcje wyższego rzędu pozwalają na implementację ogólnych wzorców obliczeniowych, eliminując powtórzenia w kodzie.
+* Currying to technika zamiany funkcji wielu argumentów w łańcuch funkcji jednoargumentowych.
+* Domknięcie to mechanizm pozwalający funkcji wewnętrznej zachować dostęp do zmiennych swobodnych z funkcji zewnętrznej, nawet po zakończeniu jej działania.
+* Zasada LEGB opisuje pełną hierarchię przeszukiwania przestrzeni nazw: Local → Enclosed → Global → Built-in.
+* Instrukcja `nonlocal` pozwala na modyfikację zmiennych swobodnych wewnątrz domknięcia — analogicznie do instrukcji `global` pozwalającej na modyfikację zmiennych globalnych.
+
+Na następnym wykładzie poznamy **dekoratory** — jedno z najważniejszych praktycznych zastosowań domknięć i funkcji wyższego rzędu.

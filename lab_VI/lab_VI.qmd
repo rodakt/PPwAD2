@@ -47,7 +47,7 @@ Biblioteka standardowa zawiera moduł [`turtle`](https://docs.python.org/3/libra
 
 ## Rozgrzewka: przestrzenie nazw
 
-Dla każdego z poniższych fragmentów kodu przewidź, co wypisze program. Odpowiedz bez uruchamiania kodu, a następnie sprawdź odpowiedź w konsoli.
+Przewidź jaki będzie efekt uruchomienia każdego z poniższych programów.
 
 **1.**
 
@@ -78,9 +78,9 @@ n = 0
 
 def increment():
     n += 1
-    return n
 
 increment()
+print(n)
 ```
 
 ::: {.callout-note collapse="true"}

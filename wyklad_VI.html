@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tomasz Rodak">
+
+<title>Funkcje jako obiekty. Domknięcia – Podstawy programowania (AD) 2</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-634f942dad0b50a9642875181807b803.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./wyklad_I.html">Wykłady</a></li><li class="breadcrumb-item"><a href="./wyklad_VI.html">Funkcje jako obiekty. Domknięcia</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Podstawy programowania (AD) 2</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Strona główna</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Wykłady</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Zmienne. Instrukcja przypisania</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wypakowywanie obiektów iterowalnych. Parametry i argumenty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Przestrzenie nazw i moduły</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_VI.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Funkcje jako obiekty. Domknięcia</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Laboratoria</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab I: Zadania na rozgrzewkę</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_II/lab_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab II: Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_III/lab_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab III: Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_IV/lab_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IV: Zmienne, aliasy, kopie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_V/lab_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab V: Wypakowywanie i parametry funkcji</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_VI/lab_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VI: Geometria żółwia</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Spis treści</h2>
+   
+  <ul>
+  <li><a href="#obiekty-pierwszej-klasy" id="toc-obiekty-pierwszej-klasy" class="nav-link active" data-scroll-target="#obiekty-pierwszej-klasy"><span class="header-section-number">1</span> Obiekty pierwszej klasy</a>
+  <ul class="collapse">
+  <li><a href="#funkcja-jako-wartość-zmiennej" id="toc-funkcja-jako-wartość-zmiennej" class="nav-link" data-scroll-target="#funkcja-jako-wartość-zmiennej"><span class="header-section-number">1.1</span> Funkcja jako wartość zmiennej</a></li>
+  <li><a href="#wyrażenie-lambda" id="toc-wyrażenie-lambda" class="nav-link" data-scroll-target="#wyrażenie-lambda"><span class="header-section-number">1.2</span> Wyrażenie <code>lambda</code></a></li>
+  <li><a href="#nazwa-funkcji-__name__-i-__code__.co_name" id="toc-nazwa-funkcji-__name__-i-__code__.co_name" class="nav-link" data-scroll-target="#nazwa-funkcji-__name__-i-__code__.co_name"><span class="header-section-number">1.3</span> Nazwa funkcji: <code>__name__</code> i <code>__code__.co_name</code></a></li>
+  <li><a href="#funkcja-jako-argument-funkcji" id="toc-funkcja-jako-argument-funkcji" class="nav-link" data-scroll-target="#funkcja-jako-argument-funkcji"><span class="header-section-number">1.4</span> Funkcja jako argument funkcji</a></li>
+  <li><a href="#funkcja-jako-wartość-zwracana-z-funkcji" id="toc-funkcja-jako-wartość-zwracana-z-funkcji" class="nav-link" data-scroll-target="#funkcja-jako-wartość-zwracana-z-funkcji"><span class="header-section-number">1.5</span> Funkcja jako wartość zwracana z funkcji</a></li>
+  <li><a href="#currying" id="toc-currying" class="nav-link" data-scroll-target="#currying"><span class="header-section-number">1.6</span> Currying</a></li>
+  </ul></li>
+  <li><a href="#domknięcia" id="toc-domknięcia" class="nav-link" data-scroll-target="#domknięcia"><span class="header-section-number">2</span> Domknięcia</a>
+  <ul class="collapse">
+  <li><a href="#legb" id="toc-legb" class="nav-link" data-scroll-target="#legb"><span class="header-section-number">2.1</span> LEGB</a></li>
+  <li><a href="#instrukcja-nonlocal" id="toc-instrukcja-nonlocal" class="nav-link" data-scroll-target="#instrukcja-nonlocal"><span class="header-section-number">2.2</span> Instrukcja <code>nonlocal</code></a></li>
+  </ul></li>
+  <li><a href="#podsumowanie" id="toc-podsumowanie" class="nav-link" data-scroll-target="#podsumowanie"><span class="header-section-number">3</span> Podsumowanie</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./wyklad_I.html">Wykłady</a></li><li class="breadcrumb-item"><a href="./wyklad_VI.html">Funkcje jako obiekty. Domknięcia</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Funkcje jako obiekty. Domknięcia</h1>
+<p class="subtitle lead">Podstawy programowania (AD) 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tomasz Rodak </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="obiekty-pierwszej-klasy" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="obiekty-pierwszej-klasy"><span class="header-section-number">1</span> <a href="https://en.wikipedia.org/wiki/First-class_citizen">Obiekty pierwszej klasy</a></h2>
+<p>W językach programowania obiekt pierwszej klasy to taki, który:</p>
+<ul>
+<li>może być wartością zmiennej;</li>
+<li>może być argumentem funkcji;</li>
+<li>może być zwrócony z funkcji.</li>
+</ul>
+<p>Zamierzeniem projektowym Pythona było, aby <strong>wszystkie</strong> obiekty były obiektami pierwszej klasy.</p>
+<blockquote class="blockquote">
+<p>One of my goals for Python was to make it so that all objects were “first class.” By this, I meant that I wanted all objects that could be named in the language (e.g., integers, strings, functions, classes, modules, methods, etc.) to have equal status. That is, they can be assigned to variables, placed in lists, stored in dictionaries, passed as arguments, and so forth.<br> <a href="http://python-history.blogspot.com/2009/02/first-class-everything.html"><em>Guido van Rossum, The History of Python</em></a></p>
+</blockquote>
+<p>Funkcje w Pythonie są obiektami pierwszej klasy. Sprawdźmy to.</p>
+<section id="funkcja-jako-wartość-zmiennej" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="funkcja-jako-wartość-zmiennej"><span class="header-section-number">1.1</span> Funkcja jako wartość zmiennej</h3>
+<p>Zmienna wskazująca na funkcję wbudowaną:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="op">&gt;&gt;&gt;</span> wartość_bezwzględna <span class="op">=</span> <span class="bu">abs</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="op">&gt;&gt;&gt;</span> wartość_bezwzględna(<span class="op">-</span><span class="dv">5</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="dv">5</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zmienna wskazująca na funkcję zdefiniowaną przez użytkownika:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="op">&gt;&gt;&gt;</span> sumator <span class="op">=</span> <span class="kw">lambda</span> seq: <span class="bu">sum</span>(seq)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="op">&gt;&gt;&gt;</span> sumator([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="dv">6</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="op">&gt;&gt;&gt;</span> sklej <span class="op">=</span> <span class="kw">lambda</span> s: <span class="st">' '</span>.join(s)</span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="op">&gt;&gt;&gt;</span> sklej([<span class="st">'ala'</span>, <span class="st">'ma'</span>, <span class="st">'kota'</span>])</span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co">'ala ma kota'</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> signum(x):</span>
+<span id="cb2-8"><a href="#cb2-8"></a>...     <span class="cf">if</span> x <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb2-9"><a href="#cb2-9"></a>...         <span class="cf">return</span> <span class="dv">1</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>...     <span class="cf">if</span> x <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb2-11"><a href="#cb2-11"></a>...         <span class="cf">return</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>...     <span class="cf">return</span> <span class="dv">0</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="op">&gt;&gt;&gt;</span> znak_liczby <span class="op">=</span> signum</span>
+<span id="cb2-14"><a href="#cb2-14"></a><span class="op">&gt;&gt;&gt;</span> znak_liczby(<span class="op">-</span><span class="dv">3</span>), znak_liczby(<span class="dv">0</span>), znak_liczby(<span class="fl">23.87</span>)</span>
+<span id="cb2-15"><a href="#cb2-15"></a>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="wyrażenie-lambda" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="wyrażenie-lambda"><span class="header-section-number">1.2</span> Wyrażenie <code>lambda</code></h3>
+<p>W przykładach wyżej pojawił się zapis <code>lambda seq: sum(seq)</code>. Słowo <code>lambda</code> jest słowem kluczowym Pythona (tak jak <code>if</code>, <code>def</code> czy <code>global</code>), które umożliwia konstrukcję <strong>wyrażenia lambda</strong> — wyrażenia zwracającego obiekt funkcji. Ogólna składnia to:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">lambda</span> parametry: wyrażenie</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wyrażenie lambda tworzy obiekt funkcji, który:</p>
+<ul>
+<li>przyjmuje parametry wymienione przed dwukropkiem,</li>
+<li>zwraca wartość wyrażenia po dwukropku.</li>
+</ul>
+<p>Oto porównanie z instrukcją <code>def</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># Instrukcja def:</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> double(x):</span>
+<span id="cb4-3"><a href="#cb4-3"></a>...     <span class="cf">return</span> <span class="dv">2</span> <span class="op">*</span> x</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># Równoważne wyrażenie lambda:</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="op">&gt;&gt;&gt;</span> double <span class="op">=</span> <span class="kw">lambda</span> x: <span class="dv">2</span> <span class="op">*</span> x</span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="op">&gt;&gt;&gt;</span> double(<span class="dv">5</span>)</span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="dv">10</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Oba zapisy tworzą funkcję, ale nie są całkowicie identyczne. Najważniejsze różnice są następujące:</p>
+<ul>
+<li><code>lambda</code> jest <strong>wyrażeniem</strong> — zwraca wartość, czyli obiekt funkcji, podobnie jak <code>2 + 3</code> zwraca liczbę. Dzięki temu można jej użyć wszędzie tam, gdzie dozwolone jest wyrażenie, na przykład jako argument funkcji, element listy albo wartość w słowniku. <code>def</code> jest natomiast <strong>instrukcją</strong> — tworzy funkcję i wiąże ją z nazwą, ale samo w sobie nie jest wyrażeniem, więc nie może wystąpić w miejscach, gdzie oczekiwane jest wyrażenie.</li>
+<li><code>lambda</code> może zawierać tylko <strong>jedno wyrażenie</strong>. Nie można w niej umieszczać instrukcji takich jak <code>for</code>, <code>while</code>, <code>return</code>, <code>try</code> czy przypisań. Można natomiast użyć wyrażenia warunkowego, na przykład <code>x if warunek else y</code>.</li>
+<li>Funkcja utworzona przez <code>lambda</code> ma w metadanych nazwę <code>'&lt;lambda&gt;'</code>, więc na przykład <code>f.__name__</code> zwróci właśnie <code>'&lt;lambda&gt;'</code>. Funkcja zdefiniowana przez <code>def</code> otrzymuje zwykle nazwę podaną w definicji.</li>
+</ul>
+<p>Lambda jest szczególnie przydatna, gdy potrzebujemy przekazać krótką funkcję jako argument:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">&gt;&gt;&gt;</span> students <span class="op">=</span> [(<span class="st">'Anna'</span>, <span class="fl">3.5</span>), (<span class="st">'Jan'</span>, <span class="fl">4.0</span>), (<span class="st">'Ewa'</span>, <span class="fl">3.0</span>), (<span class="st">'Piotr'</span>, <span class="fl">4.5</span>)]</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">sorted</span>(students, key<span class="op">=</span><span class="kw">lambda</span> s: s[<span class="dv">1</span>])</span>
+<span id="cb5-3"><a href="#cb5-3"></a>[(<span class="st">'Ewa'</span>, <span class="fl">3.0</span>), (<span class="st">'Anna'</span>, <span class="fl">3.5</span>), (<span class="st">'Jan'</span>, <span class="fl">4.0</span>), (<span class="st">'Piotr'</span>, <span class="fl">4.5</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Sortujemy listę krotek po drugim elemencie (średniej ocen). Nie istnieje gotowa funkcja, którą moglibyśmy tu przekazać — lambda pozwala zdefiniować kryterium sortowania w miejscu wywołania.</p>
+<p>Lambda z wieloma parametrami:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="op">&gt;&gt;&gt;</span> area <span class="op">=</span> <span class="kw">lambda</span> a, b: a <span class="op">*</span> b</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="op">&gt;&gt;&gt;</span> area(<span class="dv">3</span>, <span class="dv">5</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="dv">15</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lambda z wyrażeniem warunkowym:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="op">&gt;&gt;&gt;</span> clamp <span class="op">=</span> <span class="kw">lambda</span> x, lo, hi: lo <span class="cf">if</span> x <span class="op">&lt;</span> lo <span class="cf">else</span> hi <span class="cf">if</span> x <span class="op">&gt;</span> hi <span class="cf">else</span> x</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="op">&gt;&gt;&gt;</span> clamp(<span class="dv">15</span>, <span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="dv">10</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="op">&gt;&gt;&gt;</span> clamp(<span class="op">-</span><span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="dv">0</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="op">&gt;&gt;&gt;</span> clamp(<span class="dv">7</span>, <span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="dv">7</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Kiedy używać <code>lambda</code>, a kiedy <code>def</code>?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Wyrażenie <code>lambda</code> jest przeznaczone do krótkich, jednorazowych funkcji — najczęściej przekazywanych jako argumenty. Jeśli funkcja wymaga kilku linii kodu, docstringa lub ma być wielokrotnie wywoływana przez nazwę, użyj <code>def</code>. Przypisanie <code>f = lambda ...: ...</code> jest w zasadzie zawsze gorsze od <code>def f(...): ...</code> — ten ostatni zapis jest czytelniejszy i daje funkcji właściwą nazwę w komunikatach o błędach.</p>
+</div>
+</div>
+</section>
+<section id="nazwa-funkcji-__name__-i-__code__.co_name" class="level3" data-number="1.3">
+<h3 data-number="1.3" class="anchored" data-anchor-id="nazwa-funkcji-__name__-i-__code__.co_name"><span class="header-section-number">1.3</span> Nazwa funkcji: <code>__name__</code> i <code>__code__.co_name</code></h3>
+<p>Dygresja: co tak naprawdę jest nazwą funkcji? W komórce wyżej zdefiniowaliśmy funkcję <code>signum()</code> i utworzyliśmy dla niej alias <code>znak_liczby</code>, który jak widać zachowuje się jak funkcja. Czy możemy mówić, że <code>znak_liczby</code> jest funkcją i to o takiej właśnie nazwie?</p>
+<p>Tworzenie aliasu jest wygodne, gdyż pozwala na dostosowanie nazwy wywołującej funkcję, jednak dla narzędzi odwołujących się do metadanych funkcji nie jest to jej właściwa nazwa. Nazwa funkcji przechowywana jest w dwóch atrybutach:</p>
+<ul>
+<li><code>.__name__</code></li>
+<li><code>.__code__.co_name</code>:</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">&gt;&gt;&gt;</span> znak_liczby.<span class="va">__name__</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="co">'signum'</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="op">&gt;&gt;&gt;</span> znak_liczby.__code__.co_name</span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co">'signum'</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="op">&gt;&gt;&gt;</span> f <span class="op">=</span> <span class="kw">lambda</span> x: <span class="dv">2</span> <span class="op">*</span> x</span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="op">&gt;&gt;&gt;</span> f</span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="op">&lt;</span>function <span class="op">&lt;</span><span class="kw">lambda</span><span class="op">&gt;</span> at <span class="bn">0x7f87fce14c20</span><span class="op">&gt;</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="op">&gt;&gt;&gt;</span> f.<span class="va">__name__</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="co">'&lt;lambda&gt;'</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="op">&gt;&gt;&gt;</span> f.__code__.co_name</span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="co">'&lt;lambda&gt;'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wartości tych atrybutów mogą się różnić, gdyż wartość atrybutu <code>.__name__</code> można zmienić na inną. Atrybut <code>.__code__.co_name</code> jest tylko do odczytu. Gdy tworzysz funkcję instrukcją <code>def</code>, to oba te atrybuty zostają ustawione w funkcji na nazwę występującą po słowie <code>def</code>. Ponadto niejawnie wykonywane jest przypisanie tworzące zmienną wskazującą na zdefiniowaną właśnie funkcję. Możesz oczywiście utworzyć dowolną ilość aliasów do funkcji, nie ma to jednak żadnego wpływu na metadane funkcji, w tym na opisane wyżej atrybuty. Więcej informacji na ten temat znajdziesz <a href="https://medium.com/@vadimpushtaev/name-of-python-function-e6d650806c4">tutaj.</a> Post ten zawiera przykłady dekoratorów — powiemy o nich w następnym wykładzie.</p>
+</section>
+<section id="funkcja-jako-argument-funkcji" class="level3" data-number="1.4">
+<h3 data-number="1.4" class="anchored" data-anchor-id="funkcja-jako-argument-funkcji"><span class="header-section-number">1.4</span> Funkcja jako argument funkcji</h3>
+<p>Chcemy pokazać, że w Pythonie funkcje mogą być argumentami innych funkcji. Jest to temat ciekawy sam w sobie i posiadający liczne zastosowania, dlatego omówimy go nieco szerzej. Przedstawienie oprzemy na materiale ze strony <a href="http://composingprograms.com/pages/16-higher-order-functions.html">Composing Programs</a>, zawierającej kurs CS1 na uniwersytecie Berkeley.</p>
+<p>Funkcje manipulujące innymi funkcjami to <strong>funkcje wyższego rzędu</strong>. Użycie funkcji wyższego rzędu pozwala na implementację wzorców obliczeniowych w oderwaniu od konkretnych wartości. Dzięki temu zmniejsza się ilość powtórzeń w kodzie występujących na poziomie metod, rośnie natomiast czytelność i łatwość utrzymania kodu.</p>
+<p>Podane niżej funkcje obliczają skończone sumy różnych ciągów:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> sum_naturals(n):</span>
+<span id="cb9-2"><a href="#cb9-2"></a>...     <span class="st">'''Zwraca 1 + 2 + ... + n.'''</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>...     total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>...     <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb9-5"><a href="#cb9-5"></a>...         total <span class="op">=</span> total <span class="op">+</span> k</span>
+<span id="cb9-6"><a href="#cb9-6"></a>...     <span class="cf">return</span> total</span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> sum_cubes(n):</span>
+<span id="cb9-8"><a href="#cb9-8"></a>...     <span class="st">'''Zwraca 1**3 + 2**3 + ... + n**3.'''</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a>...     total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a>...     <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb9-11"><a href="#cb9-11"></a>...         total <span class="op">=</span> total <span class="op">+</span> k<span class="op">*</span>k<span class="op">*</span>k</span>
+<span id="cb9-12"><a href="#cb9-12"></a>...     <span class="cf">return</span> total</span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> sum_inverses(n):</span>
+<span id="cb9-14"><a href="#cb9-14"></a>...     <span class="st">'''Zwraca 1/1 + 1/2 + ... + 1/n'''</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a>...     total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-16"><a href="#cb9-16"></a>...     <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb9-17"><a href="#cb9-17"></a>...         total <span class="op">=</span> total <span class="op">+</span> <span class="dv">1</span><span class="op">/</span>k</span>
+<span id="cb9-18"><a href="#cb9-18"></a>...     <span class="cf">return</span> total</span>
+<span id="cb9-19"><a href="#cb9-19"></a><span class="op">&gt;&gt;&gt;</span> sum_naturals(<span class="dv">3</span>)</span>
+<span id="cb9-20"><a href="#cb9-20"></a><span class="dv">6</span></span>
+<span id="cb9-21"><a href="#cb9-21"></a><span class="op">&gt;&gt;&gt;</span> sum_cubes(<span class="dv">3</span>)</span>
+<span id="cb9-22"><a href="#cb9-22"></a><span class="dv">36</span></span>
+<span id="cb9-23"><a href="#cb9-23"></a><span class="op">&gt;&gt;&gt;</span> sum_inverses(<span class="dv">3</span>)</span>
+<span id="cb9-24"><a href="#cb9-24"></a><span class="fl">1.8333333333333333</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Widać, że na poziomie algorytmu każda z tych funkcji robi to samo, a różnice biorą się jedynie z nazwy i wyrazu ogólnego w aktualizowanej sumie. Każdą z tych funkcji moglibyśmy wygenerować za pomocą szablonu:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">def</span> <span class="op">&lt;</span>nazwa_funkcji<span class="op">&gt;</span>(n):</span>
+<span id="cb10-2"><a href="#cb10-2"></a>    total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>   </span>
+<span id="cb10-4"><a href="#cb10-4"></a>    <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb10-5"><a href="#cb10-5"></a>        total <span class="op">=</span> total <span class="op">+</span> <span class="op">&lt;</span>term<span class="op">&gt;</span>(k)</span>
+<span id="cb10-6"><a href="#cb10-6"></a>   </span>
+<span id="cb10-7"><a href="#cb10-7"></a>    <span class="cf">return</span> total</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Interpretując ten szablon jako funkcję widzimy, że nie tylko <code>n</code> możemy traktować jako jego parametr ale również i <code>&lt;term&gt;</code>. Jakiego rodzaju parametrem powinien być <code>term</code>? Jeśli sumujemy liczby naturalne, to <code>term(k)</code> ma wartość <code>k</code>, jeśli sumujemy sześciany, to <code>term(k)</code> ma wartość <code>k**3</code>. Zatem <code>term</code> jest funkcją!</p>
+<p>Oto implementacja szablonu:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> partial_sum(n, term):</span>
+<span id="cb11-2"><a href="#cb11-2"></a>...     <span class="st">'''Zwraca sumę term(1) + term(2) + ... + term(n)'''</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>...     total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>...     <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb11-5"><a href="#cb11-5"></a>...         total <span class="op">=</span> total <span class="op">+</span> term(k)</span>
+<span id="cb11-6"><a href="#cb11-6"></a>...     <span class="cf">return</span> total</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Tak zdefiniowana funkcja będzie gotowa do wykonania sumowania, gdy podamy liczbę wyrazów do obliczenia i przepis na wyraz ciągu, czyli parametr <code>term</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> identity(k):</span>
+<span id="cb12-2"><a href="#cb12-2"></a>...     <span class="cf">return</span> k</span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> cube(k):</span>
+<span id="cb12-4"><a href="#cb12-4"></a>...     <span class="cf">return</span> k<span class="op">**</span><span class="dv">3</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> inverse(k):</span>
+<span id="cb12-6"><a href="#cb12-6"></a>...     <span class="cf">return</span> <span class="dv">1</span> <span class="op">/</span> k</span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="op">&gt;&gt;&gt;</span> partial_sum(<span class="dv">5</span>, identity)</span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="dv">15</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="op">&gt;&gt;&gt;</span> partial_sum(<span class="dv">5</span>, cube)</span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="dv">225</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="op">&gt;&gt;&gt;</span> partial_sum(<span class="dv">5</span>, inverse)</span>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="fl">2.2833333333333333</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Możemy teraz zdefiniować konkretną funkcję sumującą w oparciu o szablon:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> sum_cubes(n):</span>
+<span id="cb13-2"><a href="#cb13-2"></a>...     <span class="st">'''Zwraca 1**3 + 2**3 + ... + n**3.'''</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a>...     <span class="cf">return</span> partial_sum(n, cube)</span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="op">&gt;&gt;&gt;</span> sum_cubes(<span class="dv">3</span>)</span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="dv">36</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Ćwiczenie
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Zdefiniuj w oparciu o szablon <code>partial_sum()</code> funkcje <code>sum_naturals()</code> i <code>sum_inverses()</code>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> sum_naturals(n):</span>
+<span id="cb14-2"><a href="#cb14-2"></a>...     <span class="st">'''Zwraca 1 + 2 + ... + n.'''</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a>...     <span class="cf">return</span> partial_sum(n, identity)</span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> sum_inverses(n):</span>
+<span id="cb14-5"><a href="#cb14-5"></a>...     <span class="st">'''Zwraca 1/1 + 1/2 + ... + 1/n.'''</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a>...     <span class="cf">return</span> partial_sum(n, inverse)</span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="op">&gt;&gt;&gt;</span> sum_naturals(<span class="dv">5</span>)</span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="dv">15</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a><span class="op">&gt;&gt;&gt;</span> sum_inverses(<span class="dv">5</span>)</span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="fl">2.283333333333333</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="funkcja-jako-wartość-zwracana-z-funkcji" class="level3" data-number="1.5">
+<h3 data-number="1.5" class="anchored" data-anchor-id="funkcja-jako-wartość-zwracana-z-funkcji"><span class="header-section-number">1.5</span> Funkcja jako wartość zwracana z funkcji</h3>
+<p>W Pythonie funkcja może zostać zwrócona z funkcji. Fakt ten zilustrujemy, a zarazem wykorzystamy do jeszcze nieco innego rozwiązania problemu z sumą fragmentu ciągu.</p>
+<p>Wykorzystujemy powtórnie algorytm z szablonem w innej konfiguracji:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> make_summator(term):</span>
+<span id="cb15-2"><a href="#cb15-2"></a>...     <span class="st">'''Zwraca funkcję obliczającą sumy term(1) + term(2) + ... + term(n)'''</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a>...     <span class="kw">def</span> summator(n):</span>
+<span id="cb15-4"><a href="#cb15-4"></a>...         total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a>...         <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb15-6"><a href="#cb15-6"></a>...             total <span class="op">=</span> total <span class="op">+</span> term(k)</span>
+<span id="cb15-7"><a href="#cb15-7"></a>...         <span class="cf">return</span> total</span>
+<span id="cb15-8"><a href="#cb15-8"></a>...     <span class="cf">return</span> summator</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zauważ, że parametry <code>n</code> i <code>term</code> występujące na tym samym poziomie w funkcji <code>partial_sum()</code> tu zostały rozdzielone. Parametr <code>term</code> jest parametrem głównym — to on determinuje, jaką konkretną sumę liczymy. Parametr <code>n</code> przejął rolę parametru tymczasowego. Funkcja <code>make_summator()</code> definiuje nową funkcję w oparciu o argument <code>term</code>. Nowa funkcja <code>summator()</code> jest funkcją jednej zmiennej <code>n</code> zwracającą sumę</p>
+<pre><code>term(1) + term(2) + ... + term(n)</code></pre>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Ćwiczenie
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Zdefiniuj trzy omawiane wcześniej konkretne funkcje sumujące (<code>sum_naturals</code>, <code>sum_cubes</code>, <code>sum_inverses</code>) za pomocą <code>make_summator()</code>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="op">&gt;&gt;&gt;</span> sum_naturals <span class="op">=</span> make_summator(identity)</span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="op">&gt;&gt;&gt;</span> sum_cubes <span class="op">=</span> make_summator(cube)</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="op">&gt;&gt;&gt;</span> sum_inverses <span class="op">=</span> make_summator(inverse)</span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="op">&gt;&gt;&gt;</span> sum_naturals(<span class="dv">5</span>)</span>
+<span id="cb17-5"><a href="#cb17-5"></a><span class="dv">15</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a><span class="op">&gt;&gt;&gt;</span> sum_cubes(<span class="dv">3</span>)</span>
+<span id="cb17-7"><a href="#cb17-7"></a><span class="dv">36</span></span>
+<span id="cb17-8"><a href="#cb17-8"></a><span class="op">&gt;&gt;&gt;</span> sum_inverses(<span class="dv">3</span>)</span>
+<span id="cb17-9"><a href="#cb17-9"></a><span class="fl">1.8333333333333333</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Ćwiczenie
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Przerób funkcję <code>make_summator()</code> tak, aby teraz parametr <code>n</code> był główny, a <code>term</code> tymczasowy. Zmień, jeśli trzeba, nazwy funkcji. Co zwraca nowa funkcja po tej zmianie?</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> make_n_summator(n):</span>
+<span id="cb18-2"><a href="#cb18-2"></a>...     <span class="st">'''Zwraca funkcję obliczającą sumy term(1) + ... + term(n) dla ustalonego n.'''</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a>...     <span class="kw">def</span> summator(term):</span>
+<span id="cb18-4"><a href="#cb18-4"></a>...         total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a>...         <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb18-6"><a href="#cb18-6"></a>...             total <span class="op">=</span> total <span class="op">+</span> term(k)</span>
+<span id="cb18-7"><a href="#cb18-7"></a>...         <span class="cf">return</span> total</span>
+<span id="cb18-8"><a href="#cb18-8"></a>...     <span class="cf">return</span> summator</span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="op">&gt;&gt;&gt;</span> sum_first_5 <span class="op">=</span> make_n_summator(<span class="dv">5</span>)</span>
+<span id="cb18-10"><a href="#cb18-10"></a><span class="op">&gt;&gt;&gt;</span> sum_first_5(identity)</span>
+<span id="cb18-11"><a href="#cb18-11"></a><span class="dv">15</span></span>
+<span id="cb18-12"><a href="#cb18-12"></a><span class="op">&gt;&gt;&gt;</span> sum_first_5(cube)</span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="dv">225</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Po tej zmianie <code>make_n_summator(n)</code> zwraca funkcję jednego argumentu <code>term</code>, która oblicza sumę <code>term(1) + ... + term(n)</code> dla ustalonego <code>n</code>. Zwrócona funkcja jest więc zdolna do sumowania dowolnego ciągu — do ustalonej z góry liczby wyrazów.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="currying" class="level3" data-number="1.6">
+<h3 data-number="1.6" class="anchored" data-anchor-id="currying"><span class="header-section-number">1.6</span> Currying</h3>
+<p>Porównajmy dwie wersje naszego algorytmu sumowania:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a><span class="op">&gt;&gt;&gt;</span> partial_sum(<span class="dv">5</span>, cube)      <span class="co"># dwa argumenty naraz</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="dv">225</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="op">&gt;&gt;&gt;</span> make_summator(cube)(<span class="dv">5</span>)    <span class="co"># dwa argumenty po kolei</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="dv">225</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>W obu przypadkach wynik jest taki sam. Różnica polega na sposobie przekazania argumentów. Funkcja <code>partial_sum()</code> przyjmuje oba argumenty w jednym wywołaniu. Wywołanie <code>make_summator(cube)</code> przyjmuje pierwszy argument i zwraca nową funkcję, którą dopiero potem wywołujemy z drugim argumentem. Wzorzec <code>f(a)(b)</code> — wywołanie łańcuchowe — jest tu kluczowy: najpierw <code>make_summator(cube)</code> zwraca funkcję, a nawiasy <code>(5)</code> natychmiast tę funkcję wywołują.</p>
+<p>Przekształcenie funkcji wielu argumentów w łańcuch funkcji jednoargumentowych nosi nazwę <strong>curryingu</strong> — od nazwiska logika <a href="https://en.wikipedia.org/wiki/Haskell_Curry">Haskella Curry’ego</a>. Idea jest prosta: zamiast funkcji <span class="math inline">\(f(a, b)\)</span> tworzymy funkcję <span class="math inline">\(g(a)\)</span> zwracającą funkcję <span class="math inline">\(h(b)\)</span>, tak że <span class="math inline">\(g(a)(b) = f(a, b)\)</span>.</p>
+<p>Zobaczmy to na prostszym przykładzie. Oto zwykła funkcja dodająca dwie liczby:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> add(x, y):</span>
+<span id="cb20-2"><a href="#cb20-2"></a>...     <span class="cf">return</span> x <span class="op">+</span> y</span>
+<span id="cb20-3"><a href="#cb20-3"></a><span class="op">&gt;&gt;&gt;</span> add(<span class="dv">3</span>, <span class="dv">5</span>)</span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="dv">8</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A oto jej wersja <em>scurryfikowana</em> (<em>curried</em>):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> curried_add(x):</span>
+<span id="cb21-2"><a href="#cb21-2"></a>...     <span class="kw">def</span> inner(y):</span>
+<span id="cb21-3"><a href="#cb21-3"></a>...         <span class="cf">return</span> x <span class="op">+</span> y</span>
+<span id="cb21-4"><a href="#cb21-4"></a>...     <span class="cf">return</span> inner</span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="op">&gt;&gt;&gt;</span> curried_add(<span class="dv">3</span>)(<span class="dv">5</span>)</span>
+<span id="cb21-6"><a href="#cb21-6"></a><span class="dv">8</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wywołanie <code>curried_add(3)</code> zwraca funkcję, która dodaje 3 do swojego argumentu. Możemy ją zachować w zmiennej:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a><span class="op">&gt;&gt;&gt;</span> add_3 <span class="op">=</span> curried_add(<span class="dv">3</span>)</span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="op">&gt;&gt;&gt;</span> add_3(<span class="dv">5</span>)</span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="dv">8</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a><span class="op">&gt;&gt;&gt;</span> add_3(<span class="dv">10</span>)</span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="dv">13</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Widzimy, że currying pozwala na <em>częściowe zastosowanie</em> funkcji — ustalenie jednego argumentu i uzyskanie wyspecjalizowanej funkcji jednoargumentowej. Warto zauważyć, że równoważny efekt osiągniemy za pomocą <code>lambda</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1"></a><span class="op">&gt;&gt;&gt;</span> curried_add <span class="op">=</span> <span class="kw">lambda</span> x: <span class="kw">lambda</span> y: x <span class="op">+</span> y</span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="op">&gt;&gt;&gt;</span> curried_add(<span class="dv">3</span>)(<span class="dv">5</span>)</span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="dv">8</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Oto jeszcze jeden przykład — scurryfikowana potęga:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> curried_pow(base):</span>
+<span id="cb24-2"><a href="#cb24-2"></a>...     <span class="kw">def</span> inner(exp):</span>
+<span id="cb24-3"><a href="#cb24-3"></a>...         <span class="cf">return</span> base <span class="op">**</span> exp</span>
+<span id="cb24-4"><a href="#cb24-4"></a>...     <span class="cf">return</span> inner</span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="op">&gt;&gt;&gt;</span> square <span class="op">=</span> curried_pow(<span class="dv">2</span>)</span>
+<span id="cb24-6"><a href="#cb24-6"></a><span class="op">&gt;&gt;&gt;</span> square(<span class="dv">10</span>)</span>
+<span id="cb24-7"><a href="#cb24-7"></a><span class="dv">1024</span></span>
+<span id="cb24-8"><a href="#cb24-8"></a><span class="op">&gt;&gt;&gt;</span> cube_of <span class="op">=</span> curried_pow(<span class="dv">3</span>)</span>
+<span id="cb24-9"><a href="#cb24-9"></a><span class="op">&gt;&gt;&gt;</span> cube_of(<span class="dv">4</span>)</span>
+<span id="cb24-10"><a href="#cb24-10"></a><span class="dv">81</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wróćmy teraz do naszego problemu. Funkcja <code>make_summator()</code> jest w istocie scurryfikowaną wersją <code>partial_sum()</code>. Dlatego możemy napisać:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> sum_squares(n):</span>
+<span id="cb25-2"><a href="#cb25-2"></a>...     <span class="cf">return</span> make_summator(<span class="kw">lambda</span> x: x<span class="op">**</span><span class="dv">2</span>)(n)</span>
+<span id="cb25-3"><a href="#cb25-3"></a><span class="op">&gt;&gt;&gt;</span> sum_squares(<span class="dv">3</span>)</span>
+<span id="cb25-4"><a href="#cb25-4"></a><span class="dv">14</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zapis <code>make_summator(lambda x: x**2)(n)</code> to właśnie wzorzec wywołania łańcuchowego: <code>make_summator(lambda x: x**2)</code> zwraca funkcję, a <code>(n)</code> natychmiast ją wywołuje.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Ćwiczenie
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Napisz funkcję <code>curry2(f)</code>, która przyjmuje funkcję dwuargumentową <code>f</code> i zwraca jej scurryfikowaną wersję. Przetestuj ją na funkcjach <code>add</code> i <code>pow</code>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> curry2(f):</span>
+<span id="cb26-2"><a href="#cb26-2"></a>...     <span class="st">'''Zamienia funkcję f(a, b) na g(a)(b).'''</span></span>
+<span id="cb26-3"><a href="#cb26-3"></a>...     <span class="kw">def</span> outer(a):</span>
+<span id="cb26-4"><a href="#cb26-4"></a>...         <span class="kw">def</span> inner(b):</span>
+<span id="cb26-5"><a href="#cb26-5"></a>...             <span class="cf">return</span> f(a, b)</span>
+<span id="cb26-6"><a href="#cb26-6"></a>...         <span class="cf">return</span> inner</span>
+<span id="cb26-7"><a href="#cb26-7"></a>...     <span class="cf">return</span> outer</span>
+<span id="cb26-8"><a href="#cb26-8"></a><span class="op">&gt;&gt;&gt;</span> curried_add <span class="op">=</span> curry2(add)</span>
+<span id="cb26-9"><a href="#cb26-9"></a><span class="op">&gt;&gt;&gt;</span> curried_add(<span class="dv">3</span>)(<span class="dv">5</span>)</span>
+<span id="cb26-10"><a href="#cb26-10"></a><span class="dv">8</span></span>
+<span id="cb26-11"><a href="#cb26-11"></a><span class="op">&gt;&gt;&gt;</span> curried_pow <span class="op">=</span> curry2(<span class="bu">pow</span>)</span>
+<span id="cb26-12"><a href="#cb26-12"></a><span class="op">&gt;&gt;&gt;</span> curried_pow(<span class="dv">2</span>)(<span class="dv">10</span>)</span>
+<span id="cb26-13"><a href="#cb26-13"></a><span class="dv">1024</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Możesz też napisać funkcję odwrotną — <code>uncurry2(g)</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> uncurry2(g):</span>
+<span id="cb27-2"><a href="#cb27-2"></a>...     <span class="st">'''Zamienia funkcję g(a)(b) na f(a, b).'''</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a>...     <span class="kw">def</span> f(a, b):</span>
+<span id="cb27-4"><a href="#cb27-4"></a>...         <span class="cf">return</span> g(a)(b)</span>
+<span id="cb27-5"><a href="#cb27-5"></a>...     <span class="cf">return</span> f</span>
+<span id="cb27-6"><a href="#cb27-6"></a><span class="op">&gt;&gt;&gt;</span> uncurried_add <span class="op">=</span> uncurry2(curried_add)</span>
+<span id="cb27-7"><a href="#cb27-7"></a><span class="op">&gt;&gt;&gt;</span> uncurried_add(<span class="dv">3</span>, <span class="dv">5</span>)</span>
+<span id="cb27-8"><a href="#cb27-8"></a><span class="dv">8</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="domknięcia" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="domknięcia"><span class="header-section-number">2</span> Domknięcia</h2>
+<p>Podane w poprzedniej sekcji przykłady, po bliższym przyjrzeniu się, wydają się stać w sprzeczności z tym, co już wiemy na temat lokalnej przestrzeni nazw. W poprzednim wykładzie twierdziłem przecież, że lokalna przestrzeń nazw utworzona podczas wywołania funkcji po zakończeniu jej działania (czyli po zwróceniu wartości) zostaje zapomniana.</p>
+<p>Jak w takim razie działa ten kod?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> make_summator(term):</span>
+<span id="cb28-2"><a href="#cb28-2"></a>...     <span class="st">'''Zwraca funkcję obliczającą sumy term(1) + term(2) + ... + term(n)'''</span></span>
+<span id="cb28-3"><a href="#cb28-3"></a>...     <span class="kw">def</span> summator(n):</span>
+<span id="cb28-4"><a href="#cb28-4"></a>...         total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb28-5"><a href="#cb28-5"></a>...         <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb28-6"><a href="#cb28-6"></a>...             total <span class="op">=</span> total <span class="op">+</span> term(k)</span>
+<span id="cb28-7"><a href="#cb28-7"></a>...         <span class="cf">return</span> total</span>
+<span id="cb28-8"><a href="#cb28-8"></a>...     <span class="cf">return</span> summator</span>
+<span id="cb28-9"><a href="#cb28-9"></a><span class="op">&gt;&gt;&gt;</span> sum_squares <span class="op">=</span> make_summator(<span class="kw">lambda</span> x: x<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb28-10"><a href="#cb28-10"></a><span class="op">&gt;&gt;&gt;</span> sum_squares(<span class="dv">3</span>)</span>
+<span id="cb28-11"><a href="#cb28-11"></a><span class="dv">14</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Przebieg zdarzeń:</p>
+<ul>
+<li><p>Funkcja <code>make_summator()</code> zwraca funkcję <code>summator()</code>.</p></li>
+<li><p>Funkcja <code>summator()</code> odnosi się do zmiennej <code>term</code>.</p></li>
+<li><p>Po wykonaniu</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1"></a><span class="op">&gt;&gt;&gt;</span> sum_squares <span class="op">=</span> make_summator(<span class="kw">lambda</span> x: x<span class="op">**</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>make_summator()</code> kończy działanie.</p></li>
+<li><p>Zmienna <code>term</code> przestaje istnieć, gdyż jest to zmienna lokalna.</p></li>
+<li><p>Istnieje jednak funkcja <code>sum_squares()</code>, która odwołuje się do nieistniejącej/zapomnianej zmiennej <code>term</code>.</p></li>
+<li><p><strong>Skąd funkcja <code>sum_squares()</code> wie, że zmienna <code>term</code> ma wartość <code>lambda x: x**2</code>?</strong></p></li>
+</ul>
+<p>Rozwiązanie tej zagadki tkwi w mechanizmie <a href="https://en.wikipedia.org/wiki/Closure_(computer_programming)"><b>domknięcia</b></a> (<em>closure</em>).</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Domknięcie (<em>closure</em>)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Domknięcie polega na dołączeniu do funkcji informacji o stanie środowiska, w którym funkcja została utworzona. Jeśli funkcja wewnętrzna odwołuje się do zmiennej zdefiniowanej w funkcji zewnętrznej, to ta zmienna zostaje zachowana — nawet po zakończeniu działania funkcji zewnętrznej. W pamięci zachowany zostaje obiekt, który ta zmienna nazywa.</p>
+</div>
+</div>
+<p>W przypadku funkcji <code>summator()</code> niezbędna do jej działania jest zewnętrzna wobec jej przestrzeni nazw zmienna <code>term</code>. Dlatego zmienna ta zostaje dołączona do zwracanej funkcji.</p>
+<p>Dołączone zmienne znajdują się w atrybucie <code>.__code__.co_freevars</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1"></a><span class="op">&gt;&gt;&gt;</span> sum_squares.__code__.co_freevars</span>
+<span id="cb30-2"><a href="#cb30-2"></a>(<span class="st">'term'</span>,)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Atrybut <code>.__closure__[0].cell_contents</code> zawiera odpowiadające im wartości.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1"></a><span class="op">&gt;&gt;&gt;</span> sum_squares.__closure__[<span class="dv">0</span>].cell_contents</span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="op">&lt;</span>function <span class="op">&lt;</span><span class="kw">lambda</span><span class="op">&gt;</span> at <span class="bn">0x7f87fce14c20</span><span class="op">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wcześniej powiedzieliśmy już, że istnieją zmienne:</p>
+<ul>
+<li>globalne — tworzone na poziomie modułu,</li>
+<li>lokalne — tworzone podczas wywołania funkcji.</li>
+</ul>
+<p>Jaką w takim razie zmienną z punktu widzenia funkcji <code>summator()</code> jest <code>term</code>? Otóż jest to trzeci rodzaj zmiennej — <strong>zmienna swobodna</strong> (<em>free variable</em>). Z dokumentacji Pythona:</p>
+<blockquote class="blockquote">
+<p>If a variable is used in a code block but not defined there, it is a free variable.</p>
+</blockquote>
+<p>Z punktu widzenia funkcji <code>make_summator()</code> zmienna <code>term</code> jest po prostu lokalna. Z punktu widzenia funkcji <code>summator()</code> zmienna <code>term</code> jest zmienną swobodną. Funkcja <code>summator()</code> nie definiuje tej zmiennej, ale jej używa. W momencie wywołania funkcji <code>make_summator()</code> zmienna <code>term</code> zostaje dołączona do funkcji <code>summator()</code>, która staje się funkcją domkniętą.</p>
+<p>Więcej szczegółów znajdziesz w oficjalnej <a href="https://docs.python.org/3/reference/executionmodel.html#naming-and-binding">dokumentacji</a>. Przeczytaj też ciekawą dyskusję <a href="https://stackoverflow.com/questions/12919278/how-to-define-free-variable-in-python">stąd.</a></p>
+<section id="legb" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="legb"><span class="header-section-number">2.1</span> LEGB</h3>
+<p>Pamiętamy z poprzedniego wykładu, że w Pythonie występują trzy podstawowe rodzaje przestrzeni nazw: wbudowana, globalna, lokalna, i że zapowiedzieliśmy jeszcze czwartą — zakres dołączony. Teraz możemy ją omówić.</p>
+<p>Zmienne swobodne, takie jak <code>term</code> w funkcji <code>summator()</code>, należą właśnie do zakresu dołączonego (<em>enclosed scope</em>). Jest to przestrzeń nazw funkcji zewnętrznej, widoczna z wnętrza funkcji zagnieżdżonej.</p>
+<p>Uzupełniona hierarchia przeszukiwania wygląda tak:</p>
+<pre><code>lokalna --&gt; dołączona --&gt; globalna --&gt; wbudowana</code></pre>
+<p>Od pierwszych liter</p>
+<pre><code>Local --&gt; Enclosed --&gt; Global --&gt; Built-in</code></pre>
+<p>zasada ta nazywana jest <a href="https://sebastianraschka.com/Articles/2014_python_scope_and_namespaces.html#3-legb---local-enclosed-global-built-in">LEGB.</a></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Zasada LEGB
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Gdy interpreter napotyka odniesienie do nazwy, przeszukuje przestrzenie nazw w kolejności:</p>
+<ol type="1">
+<li><strong>L</strong>ocal — lokalna przestrzeń nazw bieżącej funkcji,</li>
+<li><strong>E</strong>nclosed — przestrzenie nazw funkcji obejmujących (zewnętrznych),</li>
+<li><strong>G</strong>lobal — globalna przestrzeń nazw modułu,</li>
+<li><strong>B</strong>uilt-in — wbudowana przestrzeń nazw.</li>
+</ol>
+<p>Przeszukiwanie kończy się na pierwszej przestrzeni, w której nazwa zostanie znaleziona.</p>
+</div>
+</div>
+</section>
+<section id="instrukcja-nonlocal" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="instrukcja-nonlocal"><span class="header-section-number">2.2</span> Instrukcja <code>nonlocal</code></h3>
+<p>Oto ciekawy przykład realizacji domknięcia zaczerpnięty z książki L. Ramalho:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> moving_average():</span>
+<span id="cb34-2"><a href="#cb34-2"></a>...     <span class="st">'''Zwraca średnią kroczącą.'''</span></span>
+<span id="cb34-3"><a href="#cb34-3"></a>...     values <span class="op">=</span> []</span>
+<span id="cb34-4"><a href="#cb34-4"></a>...     <span class="kw">def</span> average(value):</span>
+<span id="cb34-5"><a href="#cb34-5"></a>...         values.append(value)</span>
+<span id="cb34-6"><a href="#cb34-6"></a>...         <span class="cf">return</span> <span class="bu">sum</span>(values) <span class="op">/</span> <span class="bu">len</span>(values)</span>
+<span id="cb34-7"><a href="#cb34-7"></a>...     <span class="cf">return</span> average</span>
+<span id="cb34-8"><a href="#cb34-8"></a><span class="op">&gt;&gt;&gt;</span> grades <span class="op">=</span> moving_average()</span>
+<span id="cb34-9"><a href="#cb34-9"></a><span class="op">&gt;&gt;&gt;</span> other_grades <span class="op">=</span> moving_average()</span>
+<span id="cb34-10"><a href="#cb34-10"></a><span class="op">&gt;&gt;&gt;</span> grades(<span class="dv">5</span>), other_grades(<span class="dv">4</span>)</span>
+<span id="cb34-11"><a href="#cb34-11"></a>(<span class="fl">5.0</span>, <span class="fl">4.0</span>)</span>
+<span id="cb34-12"><a href="#cb34-12"></a><span class="op">&gt;&gt;&gt;</span> grades(<span class="dv">3</span>), other_grades(<span class="dv">3</span>)</span>
+<span id="cb34-13"><a href="#cb34-13"></a>(<span class="fl">4.0</span>, <span class="fl">3.5</span>)</span>
+<span id="cb34-14"><a href="#cb34-14"></a><span class="op">&gt;&gt;&gt;</span> grades(<span class="dv">5</span>), other_grades(<span class="dv">2</span>)</span>
+<span id="cb34-15"><a href="#cb34-15"></a>(<span class="fl">4.333333333333333</span>, <span class="fl">3.0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zwróć uwagę, że <code>grades</code> i <code>other_grades</code> to dwa niezależne domknięcia — każde wywołanie <code>moving_average()</code> tworzy <strong>nową</strong> listę <code>values</code>, więc obie funkcje prowadzą oddzielne historie.</p>
+<p>Zmienne swobodne i ich wartości:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1"></a><span class="op">&gt;&gt;&gt;</span> grades.__code__.co_freevars</span>
+<span id="cb35-2"><a href="#cb35-2"></a>(<span class="st">'values'</span>,)</span>
+<span id="cb35-3"><a href="#cb35-3"></a><span class="op">&gt;&gt;&gt;</span> grades.__closure__[<span class="dv">0</span>].cell_contents</span>
+<span id="cb35-4"><a href="#cb35-4"></a>[<span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">5</span>]</span>
+<span id="cb35-5"><a href="#cb35-5"></a><span class="op">&gt;&gt;&gt;</span> other_grades.__code__.co_freevars</span>
+<span id="cb35-6"><a href="#cb35-6"></a>(<span class="st">'values'</span>,)</span>
+<span id="cb35-7"><a href="#cb35-7"></a><span class="op">&gt;&gt;&gt;</span> other_grades.__closure__[<span class="dv">0</span>].cell_contents</span>
+<span id="cb35-8"><a href="#cb35-8"></a>[<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Aby obliczyć średnią wystarczy pamiętać dotychczasową sumę wartości i ich liczbę. Poddajmy refaktoryzacji funkcję <code>moving_average()</code> zgodnie z tą sugestią.</p>
+<p>Oto pierwsza próba. Jest błędna. Widzisz błąd?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> moving_average():</span>
+<span id="cb36-2"><a href="#cb36-2"></a>...     <span class="st">'''Zwraca średnią kroczącą.'''</span></span>
+<span id="cb36-3"><a href="#cb36-3"></a>...     total, count <span class="op">=</span> <span class="dv">0</span>, <span class="dv">0</span></span>
+<span id="cb36-4"><a href="#cb36-4"></a>...     <span class="kw">def</span> average(value):</span>
+<span id="cb36-5"><a href="#cb36-5"></a>...         total <span class="op">+=</span> value</span>
+<span id="cb36-6"><a href="#cb36-6"></a>...         count <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb36-7"><a href="#cb36-7"></a>...         <span class="cf">return</span> total <span class="op">/</span> count</span>
+<span id="cb36-8"><a href="#cb36-8"></a>...     <span class="cf">return</span> average</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zmienne <code>total</code> i <code>count</code> są przypisane w ciele funkcji <code>average()</code>, są to zatem zmienne lokalne!</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1"></a><span class="op">&gt;&gt;&gt;</span> grades <span class="op">=</span> moving_average()</span>
+<span id="cb37-2"><a href="#cb37-2"></a><span class="op">&gt;&gt;&gt;</span> grades(<span class="dv">5</span>)</span>
+<span id="cb37-3"><a href="#cb37-3"></a><span class="op">---------------------------------------------------------------------------</span></span>
+<span id="cb37-4"><a href="#cb37-4"></a><span class="pp">UnboundLocalError</span>                         Traceback (most recent call last)</span>
+<span id="cb37-5"><a href="#cb37-5"></a>...</span>
+<span id="cb37-6"><a href="#cb37-6"></a><span class="pp">UnboundLocalError</span>: cannot access local variable <span class="st">'total'</span> where it <span class="kw">is</span> <span class="kw">not</span> associated <span class="cf">with</span> a value</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Widzimy analogię między zmienną swobodną a lokalną i zmienną globalną a lokalną. Jeśli zmienna jest przypisana w funkcji, to jest lokalna i <strong>tylko</strong> w zakresie lokalnym będzie poszukiwana. Pamiętamy, że używamy instrukcji <code>global</code>, aby zmienna przypisana w ciele funkcji była globalna.</p>
+<p>Analogicznie, aby zmienna przypisana w ciele funkcji była swobodna, trzeba zadeklarować ją jako swobodną instrukcją <code>nonlocal</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> moving_average():</span>
+<span id="cb38-2"><a href="#cb38-2"></a>...     <span class="st">'''Zwraca średnią kroczącą.'''</span></span>
+<span id="cb38-3"><a href="#cb38-3"></a>...     total, count <span class="op">=</span> <span class="dv">0</span>, <span class="dv">0</span></span>
+<span id="cb38-4"><a href="#cb38-4"></a>...     <span class="kw">def</span> average(value):</span>
+<span id="cb38-5"><a href="#cb38-5"></a>...         <span class="kw">nonlocal</span> total, count</span>
+<span id="cb38-6"><a href="#cb38-6"></a>...         total <span class="op">+=</span> value</span>
+<span id="cb38-7"><a href="#cb38-7"></a>...         count <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb38-8"><a href="#cb38-8"></a>...         <span class="cf">return</span> total <span class="op">/</span> count</span>
+<span id="cb38-9"><a href="#cb38-9"></a>...     <span class="cf">return</span> average</span>
+<span id="cb38-10"><a href="#cb38-10"></a><span class="op">&gt;&gt;&gt;</span> grades <span class="op">=</span> moving_average()</span>
+<span id="cb38-11"><a href="#cb38-11"></a><span class="op">&gt;&gt;&gt;</span> grades(<span class="dv">5</span>)</span>
+<span id="cb38-12"><a href="#cb38-12"></a><span class="fl">5.0</span></span>
+<span id="cb38-13"><a href="#cb38-13"></a><span class="op">&gt;&gt;&gt;</span> grades(<span class="dv">3</span>)</span>
+<span id="cb38-14"><a href="#cb38-14"></a><span class="fl">4.0</span></span>
+<span id="cb38-15"><a href="#cb38-15"></a><span class="op">&gt;&gt;&gt;</span> grades(<span class="dv">5</span>)</span>
+<span id="cb38-16"><a href="#cb38-16"></a><span class="fl">4.333333333333333</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Sprawdźmy zmienne swobodne i ich wartości. Atrybut <code>co_freevars</code> zawiera nazwy w porządku alfabetycznym:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1"></a><span class="op">&gt;&gt;&gt;</span> grades.__code__.co_freevars</span>
+<span id="cb39-2"><a href="#cb39-2"></a>(<span class="st">'count'</span>, <span class="st">'total'</span>)</span>
+<span id="cb39-3"><a href="#cb39-3"></a><span class="op">&gt;&gt;&gt;</span> grades.__closure__[<span class="dv">0</span>].cell_contents   <span class="co"># count</span></span>
+<span id="cb39-4"><a href="#cb39-4"></a><span class="dv">3</span></span>
+<span id="cb39-5"><a href="#cb39-5"></a><span class="op">&gt;&gt;&gt;</span> grades.__closure__[<span class="dv">1</span>].cell_contents   <span class="co"># total</span></span>
+<span id="cb39-6"><a href="#cb39-6"></a><span class="dv">13</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wartości zgadzają się z oczekiwaniami: po trzech wywołaniach <code>grades(5)</code>, <code>grades(3)</code>, <code>grades(5)</code> mamy <code>count = 3</code> i <code>total = 5 + 3 + 5 = 13</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Ćwiczenie
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Zauważ, że w pierwszej wersji <code>moving_average()</code> (z listą <code>values</code>) instrukcja <code>nonlocal</code> nie była potrzebna, mimo że <code>values</code> jest zmienną swobodną. Dlaczego?</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>W pierwszej wersji lista <code>values</code> nie jest <em>przypisywana</em> w ciele <code>average()</code> — jest jedynie <em>modyfikowana</em> (<code>values.append(value)</code>). Reguła Pythona mówi: zmienna staje się lokalna, gdy występuje po lewej stronie przypisania. Wywołanie metody <code>.append()</code> nie jest przypisaniem — nie zmienia tego, na jaki obiekt wskazuje nazwa <code>values</code>, lecz modyfikuje sam obiekt. Dlatego interpreter poprawnie rozpoznaje <code>values</code> jako zmienną swobodną bez potrzeby deklaracji <code>nonlocal</code>.</p>
+<p>W drugiej wersji <code>total += value</code> jest równoważne <code>total = total + value</code>, co jest przypisaniem — stąd konieczność <code>nonlocal</code>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="podsumowanie" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="podsumowanie"><span class="header-section-number">3</span> Podsumowanie</h2>
+<p>Na tym wykładzie zobaczyliśmy, że:</p>
+<ul>
+<li>Funkcje w Pythonie są obiektami pierwszej klasy — mogą być wartościami zmiennych, argumentami innych funkcji i wartościami zwracanymi z funkcji.</li>
+<li>Funkcje wyższego rzędu pozwalają na implementację ogólnych wzorców obliczeniowych, eliminując powtórzenia w kodzie.</li>
+<li>Currying to technika zamiany funkcji wielu argumentów w łańcuch funkcji jednoargumentowych.</li>
+<li>Domknięcie to mechanizm pozwalający funkcji wewnętrznej zachować dostęp do zmiennych swobodnych z funkcji zewnętrznej, nawet po zakończeniu jej działania.</li>
+<li>Zasada LEGB opisuje pełną hierarchię przeszukiwania przestrzeni nazw: Local → Enclosed → Global → Built-in.</li>
+<li>Instrukcja <code>nonlocal</code> pozwala na modyfikację zmiennych swobodnych wewnątrz domknięcia — analogicznie do instrukcji <code>global</code> pozwalającej na modyfikację zmiennych globalnych.</li>
+</ul>
+<p>Na następnym wykładzie poznamy <strong>dekoratory</strong> — jedno z najważniejszych praktycznych zastosowań domknięć i funkcji wyższego rzędu.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/rodakt\.github\.io\/PPwAD2\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<hr><center><small>Ostatnia aktualizacja: last-modified</small></center>
+
+
+
+
+</body></html>

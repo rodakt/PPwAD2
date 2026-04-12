@@ -63,3 +63,7 @@ markdown/
 /.quarto/
 **/*.quarto_ipynb
 /_site/
+
+# temporary folders
+sandbox/
+_review/

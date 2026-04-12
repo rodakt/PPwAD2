@@ -22,6 +22,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 - [Wykład IV: Wypakowywanie obiektów iterowalnych. Parametry i argumenty](wyklad_IV.qmd)
 - [Wykład V: Przestrzenie nazw i moduły](wyklad_V.qmd)
 - [Wykład VI: Funkcje jako obiekty. Domknięcia](wyklad_VI.qmd)
+- [Wykład VII: Dekoratory](wyklad_VII.qmd)
 
 ## Laboratoria
 
@@ -31,6 +32,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 - [Laboratorium 4: Zmienne, aliasy, kopie](lab_IV/lab_IV.qmd)
 - [Laboratorium 5: Wypakowywanie i parametry funkcji](lab_V/lab_V.qmd)
 - [Laboratorium 6: Geometria żółwia](lab_VI/lab_VI.qmd)
+- [Laboratorium 7: Funkcje wyższego rzędu. Domknięcia](lab_VII/lab_VII.qmd)
 
 ## Zaliczenie
 

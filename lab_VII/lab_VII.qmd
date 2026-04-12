@@ -1,0 +1,531 @@
+---
+title: "Lab VII: Funkcje wyższego rzędu. Domknięcia"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+Te ćwiczenia nawiązują do materiału z wykładu o funkcjach jako obiektach pierwszej klasy, funkcjach wyższego rzędu, domknięciach, curryingu i wyrażeniach `lambda`.
+
+## Rozgrzewka: domknięcia
+
+Przewidź, jaki będzie efekt uruchomienia każdego z poniższych programów. Odpowiedz bez uruchamiania kodu, a następnie sprawdź odpowiedź w konsoli interaktywnej.
+
+**1.**
+
+```python
+def make_greeter(name):
+    def greet():
+        return f"Cześć, {name}!"
+    return greet
+
+hello = make_greeter("Ala")
+print(hello())
+print(hello.__code__.co_freevars)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+Cześć, Ala!
+('name',)
+```
+Wywołanie `make_greeter("Ala")` zwraca funkcję `greet`, która zamyka zmienną `name` o wartości `"Ala"`. Atrybut `co_freevars` zawiera krotki nazw zmiennych swobodnych.
+:::
+
+**2.**
+
+```python
+def make_adder(x):
+    return lambda y: x + y
+
+add2 = make_adder(2)
+add5 = make_adder(5)
+print(add2(10), add5(10))
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+12 15
+```
+Każde wywołanie `make_adder` tworzy nowe domknięcie z własną wartością `x`. Domknięcia `add2` i `add5` są niezależne.
+:::
+
+**3.**
+
+```python
+def counter():
+    n = 0
+    def increment():
+        nonlocal n
+        n += 1
+        return n
+    return increment
+
+c = counter()
+print(c(), c(), c())
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+1 2 3
+```
+Deklaracja `nonlocal n` pozwala funkcji `increment` modyfikować zmienną `n` z przestrzeni nazw funkcji `counter`. Każde wywołanie `c()` zwiększa tę samą zmienną `n`.
+:::
+
+**4.**
+
+```python
+def make_history():
+    events = []
+    def add(event):
+        events.append(event)
+        return events
+    return add
+
+log = make_history()
+print(log("start"))
+print(log("stop"))
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+['start']
+['start', 'stop']
+```
+Lista `events` jest obiektem zmiennym (*mutable*). Wywołanie `.append()` modyfikuje istniejący obiekt, ale nie przypisuje nowej wartości do nazwy `events` — dlatego instrukcja `nonlocal` nie jest tu potrzebna. Porównaj z przykładem `moving_average()` z wykładu, gdzie `values.append(value)` działało bez `nonlocal`, ale `total += value` wymagało deklaracji `nonlocal`.
+:::
+
+**5.**
+
+```python
+functions = []
+i = 0
+functions.append(lambda: i)
+i = 1
+functions.append(lambda: i)
+i = 2
+functions.append(lambda: i)
+
+print([f() for f in functions])
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+[2, 2, 2]
+```
+Wynik **nie** jest `[0, 1, 2]`. Wszystkie trzy lambdy odwołują się do **tej samej** zmiennej `i`. Żadna z nich nie zapamiętuje wartości `i` z momentu, w którym została utworzona — zamiast tego każda wyszukuje bieżącą wartość `i` dopiero w momencie **wywołania**. Gdy wykonujemy `[f() for f in functions]`, zmienna `i` ma wartość `2` (ostatnią przypisaną), więc każda lambda zwraca `2`.
+
+Mechanizm ten nazywamy **późnym wiązaniem** (*late binding*): wartość zmiennej nielokalnej jest odczytywana w momencie wywołania funkcji, a nie w momencie jej definicji. Python nie kopiuje wartości zmiennej do lambdy — lambda przechowuje jedynie *odniesienie* do nazwy.
+
+Zauważ, że w tym przykładzie `i` jest zmienną globalną, więc nie mamy tu do czynienia z domknięciem. Lambdy odwołują się do `i` przez globalną przestrzeń nazw. Późne wiązanie dotyczy jednak również zmiennych swobodnych w domknięciach — zobaczymy to w przykładzie 7.
+:::
+
+**6.**
+
+```python
+functions = []
+i = 0
+functions.append(lambda i=i: i)
+i = 1
+functions.append(lambda i=i: i)
+i = 2
+functions.append(lambda i=i: i)
+
+print([f() for f in functions])
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+[0, 1, 2]
+```
+Zapis `lambda i=i: i` definiuje parametr `i` z wartością domyślną. Kluczowa zasada: **wartości domyślne parametrów są obliczane w momencie definicji funkcji**, nie w momencie wywołania. Dlatego `lambda i=i: i` uchwytuje bieżącą wartość zmiennej globalnej `i` jako wartość domyślną parametru. Każda lambda otrzymuje inną wartość domyślną: `0`, `1`, `2`.
+
+Parametr `i` wewnątrz lambdy jest teraz zmienną **lokalną** (nie odnosi się do globalnego `i`), więc późne wiązanie nie wchodzi w grę.
+:::
+
+**7.**
+
+```python
+def make_functions():
+    functions = []
+    for i in range(3):
+        functions.append(lambda: i)
+    return functions
+
+print([f() for f in make_functions()])
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+[2, 2, 2]
+```
+Ten sam efekt co w przykładzie 5, ale teraz `i` **jest** zmienną swobodną — lambdy tworzą domknięcia zamykające zmienną `i` z przestrzeni nazw funkcji `make_functions`. Późne wiązanie działa identycznie: wszystkie lambdy współdzielą tę samą zmienną `i`, a jej wartość w momencie wywołania to `2`. Poprawkę zastosowalibyśmy tak samo jak w przykładzie 6: `lambda i=i: i`.
+:::
+
+***
+
+## Licznik jako domknięcie
+
+Dokończ implementację funkcji `make_counter(start=0, step=1)`:
+
+```python
+def make_counter(start=0, step=1):
+    """
+    Zwraca funkcję, która jest licznikiem. Funkcja ta, po każdym wywołaniu,
+    zwraca kolejną liczbę, zaczynając od `start` z odstępem `step`.
+
+    Parametry:
+    start -- liczba, od której zaczynamy zliczać
+    step -- liczba, o którą zmieniamy licznik po każdym wywołaniu
+
+    Zwraca:
+    funkcję, która zlicza od start do nieskończoności
+
+    Przykłady:
+    >>> counter = make_counter()
+    >>> counter()
+    0
+    >>> counter()
+    1
+    >>> counter()
+    2
+    >>> new_counter = make_counter(10)
+    >>> new_counter()
+    10
+    >>> new_counter()
+    11
+    >>> yet_another_counter = make_counter(10, 2)
+    >>> yet_another_counter()
+    10
+    >>> yet_another_counter()
+    12
+    >>> yet_another_counter()
+    14
+    >>> counter()
+    3
+    >>> new_counter()
+    12
+    >>> float_counter = make_counter(0.5, -0.5)
+    >>> float_counter()
+    0.5
+    >>> float_counter()
+    0.0
+    >>> float_counter()
+    -0.5
+    """
+    pass
+```
+
+::: {.callout-tip}
+## Porównanie z lab VI
+W lab VI implementowałeś licznik za pomocą słownika przekazywanego do funkcji jako argument. Teraz stan licznika przechowywany jest w domknięciu — porównaj oba podejścia. Które jest wygodniejsze w użyciu?
+:::
+
+***
+
+## Złożenie funkcji
+
+Dokończ implementację funkcji `compose(f, g)`:
+
+```python
+def compose(f, g):
+    """
+    Zwraca funkcję, która jest złożeniem funkcji f i g. Funkcja f jest
+    wywoływana na wyniku funkcji g. Zwrócona funkcja przyjmuje takie same
+    argumenty jak g.
+
+    Parametry:
+    f -- funkcja, która ma być wywołana na wyniku funkcji g
+    g -- funkcja, która ma być wywołana jako pierwsza
+
+    Zwraca:
+    funkcję, która jest złożeniem f i g
+
+    Przykłady:
+    >>> def add_one(x):
+    ...     return x + 1
+    >>> def square(x):
+    ...     return x * x
+    >>> add_one_square = compose(add_one, square)
+    >>> add_one_square(2)
+    5
+    >>> square_add_one = compose(square, add_one)
+    >>> square_add_one(2)
+    9
+    >>> compose(str, pow)(2, 10)
+    '1024'
+    """
+    pass
+```
+
+***
+
+## Currying kalkulatora
+
+Dana jest funkcja:
+
+```python
+def calculator(x, y, operation):
+    if operation == '+':
+        return x + y
+    elif operation == '-':
+        return x - y
+    elif operation == '*':
+        return x * y
+    elif operation == '/':
+        if y == 0:
+            raise ValueError("Dzielenie przez zero")
+        return x / y
+    else:
+        raise ValueError("Nieznana operacja")
+```
+
+Napisz funkcję `make_calculator()` stanowiącą równoważny wariant funkcji `calculator()` w postaci złożenia trzech jednoparametrowych funkcji:
+
+```python
+calculator(x, y, operation) == make_calculator(operation)(x)(y)
+```
+
+::: {.callout-note}
+## Currying
+Technikę polegającą na zapisywaniu funkcji wieloparametrowych jako złożenia funkcji jednoparametrowych nazywamy [*curryingiem*](https://en.wikipedia.org/wiki/Currying). Na wykładzie poznałeś funkcję `curry2(f)` zamieniającą `f(a, b)` na `g(a)(b)`. Tutaj curryfikujesz ręcznie funkcję trójargumentową.
+:::
+
+***
+
+## Predykaty i własności ciągów
+
+Napisz moduł `seq_info.py`, zawierający funkcje:
+
+1. `check_adjacent(seq, pred)` — zwraca `True`, jeśli dla każdej pary **sąsiednich** elementów `x`, `y` sekwencji `seq` zachodzi `pred(x, y)` (gdzie `pred` jest funkcją dwuargumentową), w przeciwnym razie zwraca `False`.
+2. `is_ascending(seq)` — zwraca `True`, jeśli sekwencja `seq` jest niemalejąca.
+3. `is_strictly_ascending(seq)` — zwraca `True`, jeśli sekwencja `seq` jest ściśle rosnąca.
+4. `is_descending(seq)` — zwraca `True`, jeśli sekwencja `seq` jest nierosnąca.
+5. `is_strictly_descending(seq)` — zwraca `True`, jeśli sekwencja `seq` jest ściśle malejąca.
+6. `is_monotonic(seq)` — zwraca `True`, jeśli sekwencja `seq` jest monotoniczna.
+7. `is_strictly_monotonic(seq)` — zwraca `True`, jeśli sekwencja `seq` jest ściśle monotoniczna.
+8. `is_constant(seq)` — zwraca `True`, jeśli sekwencja `seq` jest stała.
+9. `is_alternating(seq)` — zwraca `True`, jeśli sekwencja `seq` jest naprzemienna. Zakładamy, że `seq` jest sekwencją wartości liczbowych. Ciąg liczbowy nazwiemy naprzemiennym, jeśli dla każdej pary sąsiednich elementów $a$, $b$ zachodzi $a \cdot b < 0$.
+10. `is_arithmetic(seq, r=None)` — `seq` jest sekwencją liczb całkowitych. Jeśli `r` jest `None`, to funkcja zwraca `True`, jeśli `seq` jest ciągiem arytmetycznym, w przeciwnym razie zwraca `False`. Jeśli `r` jest podane, to funkcja zwraca `True`, jeśli `seq` jest ciągiem arytmetycznym o różnicy `r`, w przeciwnym razie zwraca `False`.
+11. `is_geometric(seq, q=None)` — `seq` jest sekwencją liczb całkowitych. Zakładamy, że ciąg geometryczny nie zawiera zer. Jeśli `q` jest `None`, to funkcja zwraca `True`, jeśli `seq` jest ciągiem geometrycznym o całkowitym ilorazie, w przeciwnym razie zwraca `False`. Jeśli całkowite `q` jest podane, to funkcja zwraca `True`, jeśli `seq` jest ciągiem geometrycznym o ilorazie `q`, w przeciwnym razie zwraca `False`.
+*Sekwencja, w której iloraz sąsiednich wyrazów nie jest liczbą całkowitą (np. `[8, 12, 18, 27]` z `q=3/2`), nie jest uznawana za ciąg geometryczny w rozumieniu tej funkcji.*
+
+**Wszystkie funkcje powinny korzystać z funkcji `check_adjacent()` dla odpowiednich predykatów.**
+Testy modułu `seq_info.py` znajdują się w pliku [test_seq_info.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VII/test_seq_info.py).
+
+
+::: {.callout-tip}
+## Wskazówka
+Funkcje `is_ascending` — `is_constant` sprowadzają się do wywołania `check_adjacent` z odpowiednią lambdą. Funkcje `is_arithmetic` i `is_geometric` z parametrem `r`/`q` równym `None` wymagają dodatkowego kroku: wyznacz różnicę (iloraz) z dwóch pierwszych elementów, a następnie użyj `check_adjacent`.
+:::
+
+***
+
+## Automat losujący
+
+::: {.callout-note}
+## Powiązanie z lab V
+W lab V pisałeś funkcję `draw_from_urn()`, która przyjmowała parametry losowania (liczbę losowań, tryb zwracania, kolory kul) i zwracała wynik. Teraz napiszesz wariant oparty na domknięciu: funkcja `random_ball_machine()` zwraca *automat* — bezparametrową funkcję, która pamięta stan urny między wywołaniami.
+:::
+
+Napisz moduł `ball_machine.py`, zawierający funkcję `random_ball_machine(return_balls, **balls)`. Funkcja zwraca bezparametrową funkcję `machine()`, która symuluje losowanie kul z urny. Opis parametrów:
+
+* `return_balls` — `True` lub `False`, domyślnie `True`. Decyduje o tym, czy losowania są prowadzone ze zwracaniem (domyślnie tak).
+* `balls` — przyjmuje argumenty postaci `color=quantity`, gdzie:
+    * `color` — łańcuch znaków oznaczający kolor kuli,
+    * `quantity` — liczba całkowita nieujemna określająca liczbę kul danego koloru w urnie.
+
+Każde wywołanie funkcji `machine()` zwraca kulę wylosowaną z urny. Jeśli `return_balls` jest ustawione na `True`, to kulę losuje się ze zwracaniem, w przeciwnym razie bez zwracania. Jeśli urna jest pusta, `machine()` powinien zgłaszać wyjątek `LookupError` z komunikatem `'urna jest pusta.'`.
+
+Testy: [`test_ball_machine.py`](https://githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VII/test_ball_machine.py)
+
+::: {.callout-tip}
+## Wskazówka
+Stan urny (listę kul) zbuduj wewnątrz `random_ball_machine()` przed definicją `machine()` — lista ta znajdzie się w domknięciu. Przy losowaniu bez zwracania usuwaj wylosowaną kulę z listy.
+:::
+
+***
+
+## Szyfr jako domknięcie
+
+Celem tego zadania jest napisanie nowej wersji programu szyfrującego z zadania II.4.
+
+Przypomnijmy zasadę szyfrowania.
+*Używając klucza `ma-li-no-we-bu-ty` można zaszyfrować wiadomość wymieniając znaki leżące wewnątrz tych samych sylab klucza: `m --> a`, `a --> m`, `l --> i`, `i --> l`, itd. Znaki, których nie ma w kluczu, pozostawia się bez zmian. Przykładowo tekst `ziemia jest płaska` wymaga wymienienia 9 znaków i po zaszyfrowaniu ma postać `zlwalm jwsy płmskm`. Powtórne zaszyfrowanie przywraca pierwotną postać tekstu.*
+
+Napisz moduł `malinowebuty.py` zawierający funkcje:
+
+1. `create_key(s)` — parametr `s` jest łańcuchem znaków. Funkcja zwraca słownik par `k: v`, gdzie:
+    * `k` — znak łańcucha `s`,
+    * `v` — znak, na który `k` jest wymieniany.
+
+    Prawidłowy klucz, to taki niepusty łańcuch znaków, który jest różnowartościowy i ma parzystą długość. W przypadku wykrycia nieprawidłowego klucza funkcja ma zgłaszać wyjątek `ValueError` z komunikatem: `nieprawidłowy klucz.`.
+
+2. `create_encryptor(s)` — parametr `s` jest łańcuchem domyślnie ustawionym na `'malinowebuty'`. Funkcja zwraca **funkcję** `encryptor(text)`. Parametr `text` jest łańcuchem znaków. Funkcja `encryptor()` zwraca zaszyfrowany tekst zgodnie z kluczem `s`. Do szyfrowania funkcja `encryptor()` powinna korzystać z klucza `s` w postaci słownika wymiany znaków zwróconego przez `create_key()`. Słownik ten powinien być obliczany **przed** definicją funkcji `encryptor()`, a zatem ma znajdować się w jej **domknięciu**.
+
+Testy: [`test_malinowebuty.py`](https://githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VII/test_malinowebuty.py)
+
+::: {.callout-tip}
+## Struktura rozwiązania
+Schemat funkcji `create_encryptor`:
+
+```python
+def create_encryptor(s='malinowebuty'):
+    key = create_key(s)       # słownik obliczony raz
+    def encryptor(text):
+        ...                   # key jest zmienną swobodną
+    return encryptor
+```
+
+Słownik `key` jest obliczany przy wywołaniu `create_encryptor()` i zamykany w domknięciu funkcji `encryptor()`.
+:::
+
+***
+
+## Sortowanie z `lambda`
+
+Rozwiąż poniższe zadania za pomocą wyrażeń `lambda`. Sprawdź poprawność za pomocą `doctest.testmod()`.
+
+```python
+def sort_by_second(pairs):
+    """Sortuje listę krotek rosnąco po drugim elemencie.
+
+    >>> sort_by_second([(1, 3), (2, 1), (3, 2)])
+    [(2, 1), (3, 2), (1, 3)]
+    >>> sort_by_second([('a', 5), ('b', 2), ('c', 8)])
+    [('b', 2), ('a', 5), ('c', 8)]
+    """
+    pass
+
+
+def sort_words_by_last_char(words):
+    """Sortuje listę słów alfabetycznie po ostatnim znaku.
+
+    >>> sort_words_by_last_char(['python', 'java', 'rust', 'go'])
+    ['java', 'go', 'python', 'rust']
+    """
+    pass
+
+
+def filter_long_words(words, min_length):
+    """Zwraca listę słów o długości co najmniej min_length.
+
+    >>> filter_long_words(['ala', 'ma', 'kota', 'i', 'psa'], 3)
+    ['ala', 'kota', 'psa']
+    >>> filter_long_words(['x', 'yy', 'zzz'], 4)
+    []
+    """
+    pass
+```
+
+***
+
+## Potok funkcji
+
+Napisz funkcję `pipeline(*functions)`, która uogólnia `compose` na dowolną liczbę funkcji. Funkcje są stosowane od lewej do prawej — pierwsza funkcja na liście jest wywoływana jako pierwsza.
+
+```python
+def pipeline(*functions):
+    """Zwraca złożenie funkcji stosowanych od lewej do prawej.
+
+    pipeline()(x) zwraca x.
+    pipeline(f)(x) zwraca f(x).
+    pipeline(f, g)(x) zwraca g(f(x)).
+    pipeline(f, g, h)(x) zwraca h(g(f(x))).
+
+    >>> pipeline()(5)
+    5
+    >>> pipeline(abs)(-3)
+    3
+    >>> def double(x):
+    ...     return 2 * x
+    >>> def add_one(x):
+    ...     return x + 1
+    >>> pipeline(abs, double, add_one)(-3)
+    7
+    >>> pipeline(add_one, double)(-3)
+    -4
+    >>> pipeline(double, add_one)(-3)
+    -5
+    """
+    pass
+```
+
+***
+
+## Zapamiętywanie wyników
+
+Napisz funkcję `make_memoized(f)`, która przyjmuje jednoargumentową funkcję `f` i zwraca jej wersję zapamiętującą wyniki. Przy pierwszym wywołaniu z danym argumentem wynik jest obliczany i zapamiętywany; przy kolejnych wywołaniach z tym samym argumentem zwracany jest zapamiętany wynik bez powtórnego obliczania.
+
+```python
+def make_memoized(f):
+    """Zwraca wersję f zapamiętującą wyniki wcześniejszych wywołań.
+
+    >>> call_count = 0
+    >>> def slow_square(x):
+    ...     global call_count
+    ...     call_count += 1
+    ...     return x * x
+    >>> memo_square = make_memoized(slow_square)
+    >>> memo_square(4)
+    16
+    >>> memo_square(4)
+    16
+    >>> memo_square(5)
+    25
+    >>> call_count
+    2
+    """
+    pass
+```
+
+::: {.callout-important}
+## Pomost do dekoratorów
+Wzorzec „funkcja przyjmująca funkcję i zwracająca jej ulepszoną wersję" to serce **dekoratorów** — tematu następnego wykładu. Funkcja `make_memoized` jest właśnie takim dekoratorem, tyle że stosowanym ręcznie: `memo_square = make_memoized(slow_square)`. Na kolejnym wykładzie poznasz składnię `@`, która automatyzuje ten zapis.
+:::
+
+***
+
+## Zamrażanie argumentów ★
+
+Napisz moduł `freeze_args.py`, zawierający funkcję `freeze_args(f, *args, **kwargs)`. Parametr `f` jest dowolnym obiektem wywoływalnym. Funkcja zwraca nową funkcję zachowującą się jak `f`, ale z ustalonymi (*zamrożonymi*) argumentami pozycyjnymi `args` i nazwanymi `kwargs`. Do wywołania zwróconej funkcji mogą zostać przekazane dodatkowe argumenty pozycyjne (dopisywane za `args`) oraz nazwane (dołączane do `kwargs`).
+
+```python
+def freeze_args(f, *args, **kwargs):
+    """Zwraca funkcję zachowującą się jak f z zamrożonymi argumentami.
+
+    >>> def add(a, b):
+    ...     return a + b
+    >>> add5 = freeze_args(add, 5)
+    >>> add5(3)
+    8
+    >>> add5(10)
+    15
+    >>> power_of_2 = freeze_args(pow, 2)
+    >>> power_of_2(10)
+    1024
+    >>> power_of_2(8)
+    256
+    >>> say_hello = freeze_args(print, "Hello", sep=", ")
+    >>> say_hello("World")
+    Hello, World
+    >>> say_hello("Python")
+    Hello, Python
+    """
+    pass
+```
+
+Testy: [`test_freeze_args.py`](https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_freeze_args.py)
+
+::: {.callout-note}
+## `functools.partial`
+Biblioteka standardowa zawiera funkcję [`functools.partial`](https://docs.python.org/3/library/functools.html#functools.partial), która realizuje dokładnie ten sam wzorzec. Po napisaniu własnej wersji porównaj swoje rozwiązanie z `functools.partial`.
+:::

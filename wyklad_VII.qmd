@@ -1,0 +1,498 @@
+---
+title: "Dekoratory"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+## Składnia
+
+Dekorator to dowolny obiekt wywoływalny, np. funkcja,  którego zadaniem jest zmodyfikowanie (wzbogacenie funkcjonalności) innej funkcji lub metody. Dekorator bezparametrowy akceptuje jeden argument -- dekorowaną funkcję, którą następnie modyfikuje i zwraca, albo też zwraca zupełnie inny obiekt wywoływalny.  Dekorator z parametrami wywołany na argumentach zwraca funkcję będącą dekoratorem bezparametrowym.
+
+### Dekorator bezparametrowy
+
+Załóżmy, że mamy dany bezparametrowy dekorator o nazwie `deco`. Wtedy `deco` jest obiektem wywoływalnym, jednoargumentowym, akceptującym funkcje i inne obiekty wywoływalne. Jeżeli piszemy funkcję `f()` i chcielibyśmy ją udekorować dekoratorem `deco()`, to robimy to za pomocą składni:
+```python
+@deco
+def f(<parametry>):
+    <kod funkcji>
+```
+
+::: {.callout-important}
+## Składnia dekoratora bezparametrowego
+Powyższy kod jest równoważny z:
+```python
+def f(<parametry>):
+    <kod funkcji>
+
+f = deco(f)
+```
+Składnia `@deco` jest zatem [lukrem składniowym](https://pl.wikipedia.org/wiki/Lukier_sk%C5%82adniowy) (*syntactic sugar*).
+:::
+
+Przetestujmy to na jakimś banalnym przykładzie:
+
+
+```python
+>>> def deco(f):
+...     def xyz():
+...         print('Jestem funkcją xyz().')
+...     return xyz
+>>>
+>>> @deco
+... def abc():
+...     print('Jestem funkcją abc().')
+...
+>>> abc()
+Jestem funkcją xyz().
+```
+
+Teraz to samo, gdybyśmy zrezygnowali ze składni dekoratora. Sprawdźmy, że rzeczywiście efekt jest identyczny:
+
+```python
+>>> def deco(f):
+...     def xyz():
+...         print('Jestem funkcją xyz().')
+...     return xyz
+>>> def abc():
+...     print('Jestem funkcją abc().')
+...
+>>> abc = deco(abc)
+>>> abc()
+Jestem funkcją xyz().
+```
+
+W obu komórkach powyżej dzieje się to samo: zmienna `abc` zostaje przeniesiona z funkcji `abc()` na funkcję `xyz()` zwracaną przez `deco()` -- funkcja `xyz()` po prostu zastępuje `abc()` niezależnie od tego, jak `abc()` zostałaby zdefiniowana. 
+
+### Typowy wzorzec
+
+Typowy wzorzec przy konstrukcji dekoratora wygląda następująco:
+
+* pobierz wszystkie argumenty przekazane do dekorowanej funkcji;
+* wywołaj dekorowaną funkcję na tych argumentach i przechowaj zwracaną wartość;
+* wykonaj jakieś ekstra działania.
+
+Punkt drugi musi zostać wykonany po pierwszym, ale punkt trzeci może być wykonywany w dowolnym momencie.
+
+Zilustrujemy ten wzorzec (znów banalnym) przykładem. Napiszemy dekorator, który zmienia zachowanie dekorowanej funkcji tylko w jednym: udekorowana funkcja podczas wywołania wyświetla napis `Ziemia jest płaska!`. 
+
+```python
+>>> def ekstra_napis(f):
+...     '''Sprawia, że udekorowana funkcja wyświetla podczas
+...     wywołania napis "Ziemia jest płaska!"'''
+...     def wrapper(*args, **kwargs):
+...         print('Ziemia jest płaska!')
+...         wynik = f(*args, **kwargs)
+...         return wynik
+...     return wrapper
+```
+
+Zwróć uwagę jak przekazywane są argumenty. Udekorowana funkcja `f()` w rzeczywistości będzie funkcją `wrapper()`, a zatem użytkownik wywołując `f()` będzie w rzeczywistości wywoływał `wrapper()`. Funkcja `wrapper()` otrzyma w takim razie argumenty przeznaczone dla `f()`. Ponieważ nic nie wiemy o parametrach `f()`, więc korzystamy z modyfikatorów `*` i `**` w definicji `wrapper()`, aby **każdy** układ argumentów mógł zostać zaakceptowany. Te przekazane przez pozycję znajdą się w krotce `args`, te przekazane przez nazwę znajdą się w słowniku `kwargs`. W wierszu
+```python
+wynik = f(*args, **kwargs)
+```
+funkcja `wrapper()` wywołuje funkcję `f()` i następnie zwraca wynik. Z zachowania funkcji `f()` nic nie zostaje stracone.
+
+Pokażemy jak `ekstra_napis()` dekoruje prostą funkcję obliczającą potęgę liczby:
+
+```python
+>>> @ekstra_napis
+... def potęga(podstawa, wykładnik=2):
+...     '''Zwraca podstawa ** wykładnik.
+...     Domyślnie wykładnik ma wartość 2.'''
+...     return podstawa ** wykładnik
+>>> potęga(7)
+Ziemia jest płaska!
+49
+```
+
+### Dekorator z parametrami
+
+Dekorator przyjmujący parametry wywoływany jest nieco inaczej. Załóżmy, że `deco()` jest takim dekoratorem. Wówczas dekorując nim funkcję `f()` piszemy tak:
+```python
+@deco(<parametry deco>)
+def f(<parametry f>):
+    <kod funkcji f>
+```
+Tym razem składnia ta jest równoważna z:
+```python
+def f(<parametry f>):
+    <kod funkcji f>
+
+f = deco(<parametry deco>)(f)
+```
+Jeśli parametry `deco()` są opcjonalne i odpowiadają nam ich domyślne wartości to możemy napisać tak:
+```python
+@deco()
+def f(<parametry f>):
+    <kod funkcji f>
+```
+**Nie możemy** jednak napisać:
+```python
+@deco
+def f(<parametry f>):
+    <kod funkcji f>
+```
+Ta składnia (bez nawiasów po nazwie dekoratora) zarezerwowana jest dla dekoratorów bezparametrowych.
+
+Pisanie dekoratora z parametrami wymaga w istocie napisania fabryki dekoratorów. Działa to tak. Powiedzmy, że chcemy napisać dekorator `deco()` z paramerem `p`. Wtedy wywołanie `deco(p)` na konkretnym `p` zwraca funkcję (różną dla różnych `p`) i dopiero ta funkcja jest dekoratorem bezparametrowym funkcji `f`. Zauważ, że schemat `deco(p)(f)` — funkcja zwracająca funkcję zwracającą funkcję — to zastosowanie techniki curryingu, którą poznaliśmy na poprzednim wykładzie.
+
+Zróbmy przykład:
+
+```python
+>>> def ekstra_napis(s='Ziemia jest płaska!'):
+...     '''s jest łańcuchem wyświetlanym przez dekorowaną
+...     funkcję podczas wywołania.
+...     Domyślnie "Ziemia jest płaska!"'''
+...     def dekorator(f):
+...         def wrapper(*args, **kwargs):
+...             print(s)
+...             wynik = f(*args, **kwargs)
+...             return wynik
+...         return wrapper
+...     return dekorator
+...
+>>> @ekstra_napis('Świat Dysku podpierają cztery słonie!')
+... def średnia(a, *b, typ='arytmetyczna'):
+...     '''Zwraca średnią (domyślnie arytmetyczną).'''
+...     if typ == 'arytmetyczna':
+...         return (a + sum(b)) / (1 + len(b))
+...     else:
+...         iloczyn = a
+...         for x in b:
+...             iloczyn *= x
+...         return iloczyn ** (1 / (1 + len(b)))
+>>> średnia(1, 2, 3, 4)
+Świat Dysku podpierają cztery słonie!
+2.5
+```
+
+Oto użycie dekoratora `ekstra_napis()` bez składni ze znakiem `@`: 
+
+```python
+>>> def potęga(podstawa, wykładnik=2):
+...     '''Zwraca podstawa ** wykładnik.
+...     Domyślnie wykładnik ma wartość 2.'''
+...     return podstawa ** wykładnik
+>>> potęga = ekstra_napis('Ala ma kota')(potęga)
+>>> potęga(7)
+Ala ma kota
+49
+```
+
+## Dekorator `wraps()`
+
+Wróćmy do przykładu z bezparametrowym dekoratorem `ekstra_napis()`:
+
+```python
+>>> def ekstra_napis(f):
+...     '''Sprawia, że udekorowana funkcja wyświetla podczas
+...     wywołania napis "Ziemia jest płaska!"'''
+...     def wrapper(*args, **kwargs):
+...         print('Ziemia jest płaska!')
+...         wynik = f(*args, **kwargs)
+...         return wynik
+...     return wrapper
+```
+
+Stosujemy go do funkcji `potęga()`:
+
+```python
+>>> @ekstra_napis
+... def potęga(podstawa, wykładnik=2):
+...     '''Zwraca podstawa ** wykładnik.
+...     Domyślnie wykładnik ma wartość 2.'''
+...     return podstawa ** wykładnik
+>>> potęga(7)
+Ziemia jest płaska!
+49
+```
+
+Pamiętamy, że sposób działania funkcji `potęga()` pozostaje zachowane -- funkcja nadal oblicza i zwraca potęgę. Efekt dekoratora sprowadza się do wyświetlenia napisu (którego normalnie, bez dekoracji, by nie było). Niestety, po drodze zgubiliśmy metadane funkcji.
+
+Nazwę i docstring:
+
+```python
+>>> potęga.__name__
+'wrapper'
+>>> potęga.__doc__
+>>> potęga.__code__.co_name
+'wrapper'
+>>> help(potęga)
+Help on function wrapper in module __main__:
+wrapper(*args, **kwargs)
+```
+
+Aby zachować metadane funkcji w definicji dekoratora należy użyć... dekoratora `wraps()` z modulu `functools`!
+Dekorator ten wstawiamy przed definicją funkcji podmieniającą funkcję dekorowaną. Obowiązkowym parametrem w tym dekoratorze jest dekorowana funkcja. Zwróć uwagę na różne role występujących funkcji: dla `ekstra_napis()` argument `f` jest funkcją dekorowaną, dla `wraps()` dekorowaną funkcją jest `wrapper()` a `f` jest parametrem.
+
+```python
+>>> from functools import wraps
+>>> def ekstra_napis(f):
+...     '''Sprawia, że udekorowana funkcja wyświetla podczas
+...     wywołania napis "Ziemia jest płaska!"'''
+...     @wraps(f)
+...     def wrapper(*args, **kwargs):
+...         print('Ziemia jest płaska!')
+...         wynik = f(*args, **kwargs)
+...         return wynik
+...     return wrapper
+>>> @ekstra_napis
+... def potęga(podstawa, wykładnik=2):
+...     '''Zwraca podstawa ** wykładnik.
+...     Domyślnie wykładnik ma wartość 2.'''
+...     return podstawa ** wykładnik
+>>> potęga(5, 3)
+Ziemia jest płaska!
+125
+>>> potęga.__name__
+'potęga'
+>>> potęga.__code__.co_name
+'wrapper'
+>>> help(potęga)
+Help on function potęga in module __main__:
+
+potęga(podstawa, wykładnik=2)
+    Zwraca podstawa ** wykładnik.
+    Domyślnie wykładnik ma wartość 2.
+```
+
+::: {.callout-note}
+## `__code__.co_name`
+Atrybut `.__code__.co_name` nie został zmieniony, gdyż jest tylko do odczytu. Dekorator `wraps()` kopiuje natomiast `.__name__`, `.__doc__` i kilka innych atrybutów, dzięki czemu metadane funkcji są zachowane.
+:::
+
+Analogiczna modyfikacja dla dekoratora z parametrami (import `wraps` obowiązuje z komórki powyżej):
+
+```python
+>>> def ekstra_napis(s='Ziemia jest płaska!'):
+...     '''s jest łańcuchem wyświetlanym przez dekorowaną
+...     funkcję podczas wywołania.
+...     Domyślnie "Ziemia jest płaska!"'''
+...     def dekorator(f):
+...         @wraps(f)
+...         def wrapper(*args, **kwargs):
+...             print(s)
+...             wynik = f(*args, **kwargs)
+...             return wynik
+...         return wrapper
+...     return dekorator
+```
+
+Przykłady użycia:
+
+```python
+>>> @ekstra_napis('Świat Dysku podpierają cztery słonie!')
+... def średnia(a, *b, typ='arytmetyczna'):
+...     '''Zwraca średnią (domyślnie arytmetyczną).'''
+...     if typ == 'arytmetyczna':
+...         return (a + sum(b)) / (1 + len(b))
+...     else:
+...         iloczyn = a
+...         for x in b:
+...             iloczyn *= x
+...         return iloczyn ** (1 / (1 + len(b)))
+>>> średnia(1, 2, 3, 4, 5)
+Świat Dysku podpierają cztery słonie!
+3.0
+>>> średnia.__name__
+'średnia'
+>>> help(średnia)
+Help on function średnia in module __main__:
+średnia(a, *b, typ='arytmetyczna')
+    Zwraca średnią (domyślnie arytmetyczną).
+```
+
+## Składanie dekoratorów
+
+::: {.callout-important}
+## Składanie dekoratorów
+Składnia:
+```python
+@deco1
+@deco2
+def f(<parametry>):
+    <kod funkcji>
+```
+jest równoważna z:
+```python
+f = deco1(deco2(f))
+```
+Dekoratory stosowane są od dołu do góry: najpierw `deco2`, potem `deco1`.
+:::
+
+Zilustrujmy to przykładem. Zdefiniujemy dwa proste dekoratory — oba wyświetlają linię przed wywołaniem funkcji, ale każdy inną:
+
+```python
+>>> from functools import wraps
+>>> def gwiazdki(f):
+...     @wraps(f)
+...     def wrapper(*args, **kwargs):
+...         print('***')
+...         return f(*args, **kwargs)
+...     return wrapper
+>>> def minusy(f):
+...     @wraps(f)
+...     def wrapper(*args, **kwargs):
+...         print('---')
+...         return f(*args, **kwargs)
+...     return wrapper
+>>> @gwiazdki
+... @minusy
+... def powitanie(imię):
+...     print(f'Cześć, {imię}!')
+>>> powitanie('Anna')
+***
+---
+Cześć, Anna!
+```
+
+Kolejność ma znaczenie. Zamiana dekoratorów miejscami zmienia kolejność wyświetlanych linii:
+
+```python
+>>> @minusy
+... @gwiazdki
+... def powitanie(imię):
+...     print(f'Cześć, {imię}!')
+>>> powitanie('Anna')
+---
+***
+Cześć, Anna!
+```
+
+## Przykład: Mierzenie czasu wykonania funkcji
+
+Funkcja [`perf_counter()`](https://docs.python.org/3/library/time.html#time.perf_counter) z modułu `time` pozwala mierzyć czas wykonania fragmentu kodu. Wywołanie `perf_counter()` zwraca czas w sekundach od jakiegoś punktu odniesienia, określonego w dokumentacji jako *undefined*:
+
+```python
+>>> from time import perf_counter
+>>> perf_counter()
+203691.495784303
+```
+
+Sensowną wartość daje dopiero różnica wartości zwrócona przez dwa wywołania `perf_counter()`. Zmierzmy ile czasu będzie trwało odliczanie od miliona do zera: 
+
+```python
+>>> def odliczanie(n):
+...     '''Odlicza od n do 0.'''
+...     while n > 0:
+...         n -= 1
+...
+>>> from time import perf_counter
+>>> n = 10**8
+>>> start = perf_counter(); odliczanie(n); end = perf_counter()
+>>> print('Czas: {} sekund.'.format(end - start))
+Czas: 1.9494607530068606 sekund.
+```
+
+Ciekawszy przykład: wiemy, że dodawanie wartości do listy metodą `.append()` jest znacznie bardziej wydajne niż wstawianie jej metodą `.insert()`. Sprawdźmy to eksperymentalnie. Piszemy dwie funkcje: `dodaj_na_końcu()` wykorzystuje `.append()`, `wstaw_na_początku()` wykorzystuje `.insert()` do wstawiania na pozycji 0.
+
+```python
+>>> import random
+>>> def dodaj_na_końcu(lst, liczba_wartości):
+...     for _ in range(liczba_wartości):
+...         lst.append(random.random())
+>>> def wstaw_na_początku(lst, liczba_wartości):
+...     for _ in range(liczba_wartości):
+...         lst.insert(0, random.random())
+```
+
+Prowadzimy dwa eksperymenty. Dodajemy losowe wartość do pustej początkowo listy:
+
+```python
+>>> lst = []
+>>> start = perf_counter()
+>>> dodaj_na_końcu(lst, liczba_wartości=10**5)
+>>> end = perf_counter()
+>>> r1 = end - start
+>>> print('Czas: {} sekund.'.format(r1))
+Czas: 0.005579272023169324 sekund.
+>>> lst = []
+>>> start = perf_counter()
+>>> wstaw_na_początku(lst, liczba_wartości=10**5)
+>>> end = perf_counter()
+>>> r2 = end - start
+>>> print('Czas: {} sekund.'.format(r2))
+Czas: 0.811013244005153 sekund.
+>>> r2 / r1
+145.3618394366178
+```
+
+Widać, że trzeba mieć naprawdę dobre powody, aby używać `.insert()` zamiast `.append()`!
+
+Jaki związek mają te testy z dekoratorami? Otóż można napisać dekorator dokładający funkcjonalność mierzenia czasu. W dekoratorze zamkniemy wzorzec mierzenia czasu zaprezentowany wyżej, w efekcie zniknie konieczność wielokrotnego pisania tego samego kodu.
+
+::: {.callout-tip}
+## Ćwiczenie
+Zatrzymaj się i spróbuj napisać taki dekorator sam. Dekorator dokładający napisy do funkcji już podaliśmy — teraz wystarczy, aby ten napis był czasem wykonania dekorowanej funkcji.
+:::
+
+Podam tutaj ten dekorator w (prawie) takiej formie, w jakiej występuje w książce [*Python Receptury*](https://www.worldcat.org/title/python-receptury/oclc/871683884&referer=brief_results):
+
+```python
+>>> from time import perf_counter
+>>> from functools import wraps
+>>> def timethis(f):
+...     @wraps(f)
+...     def wrapper(*args, **kwargs):
+...         start = perf_counter()
+...         wynik = f(*args, **kwargs)
+...         end = perf_counter()
+...         print('{}: {} sekund.'.format(f.__name__, end - start))
+...         return wynik
+...     return wrapper
+```
+
+Jako zastosowanie sprawdzimy wydajność różnych funkcji obliczających sumę wartości w sekwencji:
+
+```python
+>>> from functools import reduce
+>>> @timethis
+... def suma_pętlą_for(seq):
+...     suma = 0
+...     for w in seq:
+...         suma += w
+...     return suma
+>>> @timethis
+... def suma_pętlą_while(seq):
+...     i, suma = 0, 0
+...     while i < len(seq):
+...         suma += seq[i]
+...         i += 1
+...     return suma
+>>> from operator import add
+>>> @timethis
+... def suma_funkcją_reduce(seq):
+...     return reduce(add, seq, 0)
+>>> @timethis
+... def suma_funkcją_sum(seq):
+...     return sum(seq)
+>>> seq = range(10**6)
+>>> suma_pętlą_for(seq)
+suma_pętlą_for: 0.028646794002270326 sekund.
+499999500000
+>>> suma_pętlą_while(seq)
+suma_pętlą_while: 0.08484931400744244 sekund.
+499999500000
+>>> suma_funkcją_reduce(seq)
+suma_funkcją_reduce: 0.02702571201371029 sekund.
+499999500000
+>>> suma_funkcją_sum(seq)
+suma_funkcją_sum: 0.01586138500715606 sekund.
+499999500000
+```
+
+Powyższe testy warto wykonać kilka razy i w różnej kolejności. Jeśli akurat w danej chwili system jest obciążony innymi zadaniami, to fakt ten wpłynie na wynik. Do bardziej profesjonalnych zastosowań wykorzystuje się moduł `timeit`.
+
+Na moim komputerze wygrywa sumowanie wbudowaną funkcją `sum()`, najgorzej wypada pętla `while`.
+
+## Podsumowanie
+
+Na tym wykładzie zobaczyliśmy, że:
+
+* Dekorator to obiekt wywoływalny, który przyjmuje funkcję i zwraca zmodyfikowaną wersję tej funkcji (lub zupełnie inny obiekt wywoływalny). Składnia `@deco` jest lukrem składniowym dla `f = deco(f)`.
+* Typowy dekorator definiuje wewnętrzną funkcję `wrapper(*args, **kwargs)`, która wywołuje dekorowaną funkcję i dodaje ekstra funkcjonalność — jest to bezpośrednie zastosowanie domknięć i funkcji wyższego rzędu poznanych na poprzednim wykładzie.
+* Dekorator z parametrami to w istocie fabryka dekoratorów — funkcja, która zwraca dekorator bezparametrowy.
+* Dekorator `wraps()` z modułu `functools` zachowuje metadane dekorowanej funkcji (`__name__`, docstring).
+* Dekoratory można składać: `@deco1 @deco2 def f` oznacza `f = deco1(deco2(f))`, przy czym dekoratory stosowane są od dołu do góry.

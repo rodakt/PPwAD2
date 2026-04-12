@@ -1,266 +1,387 @@
 [
   {
-    "objectID": "lab_VI/lab_VI.html",
-    "href": "lab_VI/lab_VI.html",
-    "title": "Lab VI: Geometria żółwia",
+    "objectID": "lab_VII/lab_VII.html",
+    "href": "lab_VII/lab_VII.html",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
     "section": "",
-    "text": "Te ćwiczenia nawiązują do materiału z wykładu o przestrzeniach nazw, zmiennych globalnych i modułach. Głównym tematem jest implementacja żółwia — stworzenia znanego z języka LOGO, które przemieszcza się po ekranie zgodnie z poleceniami forward, right, left. Poprawność rozwiązań zadań 4 i 5 weryfikuj za pomocą dołączonych plików z testami.",
+    "text": "Te ćwiczenia nawiązują do materiału z wykładu o funkcjach jako obiektach pierwszej klasy, funkcjach wyższego rzędu, domknięciach, curryingu i wyrażeniach lambda.",
     "crumbs": [
       "Laboratoria",
-      "Lab VI: Geometria żółwia"
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
     ]
   },
   {
-    "objectID": "lab_VI/lab_VI.html#wprowadzenie",
-    "href": "lab_VI/lab_VI.html#wprowadzenie",
-    "title": "Lab VI: Geometria żółwia",
-    "section": "1 Wprowadzenie",
-    "text": "1 Wprowadzenie\nŻółw to punkt przemieszczający się po płaszczyźnie z układem współrzędnych. W danej chwili żółw znajduje się w pewnym położeniu i patrzy w pewnym kierunku. Trzy polecenia sterują żółwiem:\n\nforward r — żółw przesuwa się o dystans r w kierunku, w którym patrzy,\nright a — żółw obraca się w prawo (zgodnie z ruchem wskazówek zegara) o kąt a,\nleft a — żółw obraca się w lewo o kąt a.\n\nStan żółwia opisują trzy liczby: współrzędna x, współrzędna y oraz azymut — kąt (w stopniach) między aktualnym kierunkiem żółwia a dodatnią osią x (wschodem). Znając te trzy wartości, żółw jest w stanie wykonać każde z poleceń.\nPolecenia left a i right a zmieniają wyłącznie azymut:\nazimuth += a   # left\nazimuth -= a   # right\nPolecenie forward r zmienia współrzędne:\nx += r * cos(azimuth)\ny += r * sin(azimuth)\nAzymut nie ulega zmianie — żółw patrzy nadal w tym samym kierunku.\n\n\n\n\n\n\nImportantRadiany\n\n\n\nFunkcje math.cos() i math.sin() przyjmują kąt w radianach. Azymut przechowujemy w stopniach, więc przed użyciem tych funkcji konieczna jest konwersja: math.radians(azimuth).\n\n\nStan żółwia będziemy przechowywać w słowniku i przekazywać go do funkcji jako argument. Jest to podejście pośrednie między zmiennymi globalnymi (które nie skalują się do wielu żółwi) a programowaniem obiektowym (które poznamy w przyszłości). Motywację do takiego projektu dostarczą rozgrzewka i zadanie 3.\n\n\n\n\n\n\nWarningZastrzeżenie\n\n\n\nBiblioteka standardowa zawiera moduł turtle z gotową implementacją żółwia. W praktycznych zastosowaniach należy korzystać z takich profesjonalnych rozwiązań — nasza implementacja ma charakter dydaktyczny.",
+    "objectID": "lab_VII/lab_VII.html#rozgrzewka-domknięcia",
+    "href": "lab_VII/lab_VII.html#rozgrzewka-domknięcia",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
+    "section": "1 Rozgrzewka: domknięcia",
+    "text": "1 Rozgrzewka: domknięcia\nPrzewidź, jaki będzie efekt uruchomienia każdego z poniższych programów. Odpowiedz bez uruchamiania kodu, a następnie sprawdź odpowiedź w konsoli interaktywnej.\n1.\ndef make_greeter(name):\n    def greet():\n        return f\"Cześć, {name}!\"\n    return greet\n\nhello = make_greeter(\"Ala\")\nprint(hello())\nprint(hello.__code__.co_freevars)\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\nCześć, Ala!\n('name',)\nWywołanie make_greeter(\"Ala\") zwraca funkcję greet, która zamyka zmienną name o wartości \"Ala\". Atrybut co_freevars zawiera krotki nazw zmiennych swobodnych.\n\n\n\n2.\ndef make_adder(x):\n    return lambda y: x + y\n\nadd2 = make_adder(2)\nadd5 = make_adder(5)\nprint(add2(10), add5(10))\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n12 15\nKażde wywołanie make_adder tworzy nowe domknięcie z własną wartością x. Domknięcia add2 i add5 są niezależne.\n\n\n\n3.\ndef counter():\n    n = 0\n    def increment():\n        nonlocal n\n        n += 1\n        return n\n    return increment\n\nc = counter()\nprint(c(), c(), c())\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n1 2 3\nDeklaracja nonlocal n pozwala funkcji increment modyfikować zmienną n z przestrzeni nazw funkcji counter. Każde wywołanie c() zwiększa tę samą zmienną n.\n\n\n\n4.\ndef make_history():\n    events = []\n    def add(event):\n        events.append(event)\n        return events\n    return add\n\nlog = make_history()\nprint(log(\"start\"))\nprint(log(\"stop\"))\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n['start']\n['start', 'stop']\nLista events jest obiektem zmiennym (mutable). Wywołanie .append() modyfikuje istniejący obiekt, ale nie przypisuje nowej wartości do nazwy events — dlatego instrukcja nonlocal nie jest tu potrzebna. Porównaj z przykładem moving_average() z wykładu, gdzie values.append(value) działało bez nonlocal, ale total += value wymagało deklaracji nonlocal.\n\n\n\n5.\nfunctions = []\ni = 0\nfunctions.append(lambda: i)\ni = 1\nfunctions.append(lambda: i)\ni = 2\nfunctions.append(lambda: i)\n\nprint([f() for f in functions])\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n[2, 2, 2]\nWynik nie jest [0, 1, 2]. Wszystkie trzy lambdy odwołują się do tej samej zmiennej i. Żadna z nich nie zapamiętuje wartości i z momentu, w którym została utworzona — zamiast tego każda wyszukuje bieżącą wartość i dopiero w momencie wywołania. Gdy wykonujemy [f() for f in functions], zmienna i ma wartość 2 (ostatnią przypisaną), więc każda lambda zwraca 2.\nMechanizm ten nazywamy późnym wiązaniem (late binding): wartość zmiennej nielokalnej jest odczytywana w momencie wywołania funkcji, a nie w momencie jej definicji. Python nie kopiuje wartości zmiennej do lambdy — lambda przechowuje jedynie odniesienie do nazwy.\nZauważ, że w tym przykładzie i jest zmienną globalną, więc nie mamy tu do czynienia z domknięciem. Lambdy odwołują się do i przez globalną przestrzeń nazw. Późne wiązanie dotyczy jednak również zmiennych swobodnych w domknięciach — zobaczymy to w przykładzie 7.\n\n\n\n6.\nfunctions = []\ni = 0\nfunctions.append(lambda i=i: i)\ni = 1\nfunctions.append(lambda i=i: i)\ni = 2\nfunctions.append(lambda i=i: i)\n\nprint([f() for f in functions])\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n[0, 1, 2]\nZapis lambda i=i: i definiuje parametr i z wartością domyślną. Kluczowa zasada: wartości domyślne parametrów są obliczane w momencie definicji funkcji, nie w momencie wywołania. Dlatego lambda i=i: i uchwytuje bieżącą wartość zmiennej globalnej i jako wartość domyślną parametru. Każda lambda otrzymuje inną wartość domyślną: 0, 1, 2.\nParametr i wewnątrz lambdy jest teraz zmienną lokalną (nie odnosi się do globalnego i), więc późne wiązanie nie wchodzi w grę.\n\n\n\n7.\ndef make_functions():\n    functions = []\n    for i in range(3):\n        functions.append(lambda: i)\n    return functions\n\nprint([f() for f in make_functions()])\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n[2, 2, 2]\nTen sam efekt co w przykładzie 5, ale teraz i jest zmienną swobodną — lambdy tworzą domknięcia zamykające zmienną i z przestrzeni nazw funkcji make_functions. Późne wiązanie działa identycznie: wszystkie lambdy współdzielą tę samą zmienną i, a jej wartość w momencie wywołania to 2. Poprawkę zastosowalibyśmy tak samo jak w przykładzie 6: lambda i=i: i.",
     "crumbs": [
       "Laboratoria",
-      "Lab VI: Geometria żółwia"
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
     ]
   },
   {
-    "objectID": "lab_VI/lab_VI.html#rozgrzewka-przestrzenie-nazw",
-    "href": "lab_VI/lab_VI.html#rozgrzewka-przestrzenie-nazw",
-    "title": "Lab VI: Geometria żółwia",
-    "section": "2 Rozgrzewka: przestrzenie nazw",
-    "text": "2 Rozgrzewka: przestrzenie nazw\nPrzewidź jaki będzie efekt uruchomienia każdego z poniższych programów.\n1.\nx = 10\n\ndef f():\n    x = 20\n    return x\n\nprint(f())\nprint(x)\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n20\n10\nPrzypisanie x = 20 w ciele f tworzy zmienną lokalną x. Zmienna globalna x pozostaje bez zmian.\n\n\n\n2.\nn = 0\n\ndef increment():\n    n += 1\n\nincrement()\nprint(n)\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\nUnboundLocalError: local variable 'n' referenced before assignment.\nPrzypisanie n += 1 (równoważne n = n + 1) powoduje, że n jest traktowana jako lokalna. Ponieważ nie została wcześniej przypisana w ciele funkcji, odwołanie do niej po prawej stronie += kończy się wyjątkiem.\n\n\n\n3.\nn = 0\n\ndef increment():\n    global n\n    n += 1\n\nincrement()\nincrement()\nprint(n)\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n2\nDeklaracja global n sprawia, że n w ciele increment odnosi się do zmiennej globalnej. Każde wywołanie zwiększa tę samą zmienną.\n\n\n\n4.\ndane = {\"n\": 0}\n\ndef increment(d):\n    d[\"n\"] += 1\n\nincrement(dane)\nincrement(dane)\nprint(dane[\"n\"])\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n2\nSłownik jest obiektem zmiennym (mutable). Funkcja increment otrzymuje referencję do tego samego słownika i modyfikuje go w miejscu — deklaracja global nie jest potrzebna. To podejście zastosujemy w implementacji żółwia.",
+    "objectID": "lab_VII/lab_VII.html#licznik-jako-domknięcie",
+    "href": "lab_VII/lab_VII.html#licznik-jako-domknięcie",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
+    "section": "2 Licznik jako domknięcie",
+    "text": "2 Licznik jako domknięcie\nDokończ implementację funkcji make_counter(start=0, step=1):\ndef make_counter(start=0, step=1):\n    \"\"\"\n    Zwraca funkcję, która jest licznikiem. Funkcja ta, po każdym wywołaniu,\n    zwraca kolejną liczbę, zaczynając od `start` z odstępem `step`.\n\n    Parametry:\n    start -- liczba, od której zaczynamy zliczać\n    step -- liczba, o którą zmieniamy licznik po każdym wywołaniu\n\n    Zwraca:\n    funkcję, która zlicza od start do nieskończoności\n\n    Przykłady:\n    &gt;&gt;&gt; counter = make_counter()\n    &gt;&gt;&gt; counter()\n    0\n    &gt;&gt;&gt; counter()\n    1\n    &gt;&gt;&gt; counter()\n    2\n    &gt;&gt;&gt; new_counter = make_counter(10)\n    &gt;&gt;&gt; new_counter()\n    10\n    &gt;&gt;&gt; new_counter()\n    11\n    &gt;&gt;&gt; yet_another_counter = make_counter(10, 2)\n    &gt;&gt;&gt; yet_another_counter()\n    10\n    &gt;&gt;&gt; yet_another_counter()\n    12\n    &gt;&gt;&gt; yet_another_counter()\n    14\n    &gt;&gt;&gt; counter()\n    3\n    &gt;&gt;&gt; new_counter()\n    12\n    &gt;&gt;&gt; float_counter = make_counter(0.5, -0.5)\n    &gt;&gt;&gt; float_counter()\n    0.5\n    &gt;&gt;&gt; float_counter()\n    0.0\n    &gt;&gt;&gt; float_counter()\n    -0.5\n    \"\"\"\n    pass\n\n\n\n\n\n\nTipPorównanie z lab VI\n\n\n\nW lab VI implementowałeś licznik za pomocą słownika przekazywanego do funkcji jako argument. Teraz stan licznika przechowywany jest w domknięciu — porównaj oba podejścia. Które jest wygodniejsze w użyciu?",
     "crumbs": [
       "Laboratoria",
-      "Lab VI: Geometria żółwia"
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
     ]
   },
   {
-    "objectID": "lab_VI/lab_VI.html#od-zmiennych-globalnych-do-słownika",
-    "href": "lab_VI/lab_VI.html#od-zmiennych-globalnych-do-słownika",
-    "title": "Lab VI: Geometria żółwia",
-    "section": "3 Od zmiennych globalnych do słownika",
-    "text": "3 Od zmiennych globalnych do słownika\nDany jest moduł counter.py implementujący prosty licznik za pomocą zmiennej globalnej:\n# counter.py\ncount = 0\n\ndef increment():\n    global count\n    count += 1\n\ndef reset():\n    global count\n    count = 0\n\ndef get_count():\n    return count\nModuł działa poprawnie dla jednego licznika, ale nie pozwala na prowadzenie dwóch niezależnych liczników jednocześnie — zmienna count jest jedna.\nPrzepisz moduł tak, aby stan licznika był przechowywany w słowniku przekazywanym do funkcji jako argument. Dodaj funkcję create_counter(start=0) tworzącą nowy licznik. Przykład użycia:\nc1 = create_counter()\nc2 = create_counter(10)\nincrement(c1)\nincrement(c1)\nincrement(c2)\nprint(get_count(c1))  # 2\nprint(get_count(c2))  # 11",
+    "objectID": "lab_VII/lab_VII.html#złożenie-funkcji",
+    "href": "lab_VII/lab_VII.html#złożenie-funkcji",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
+    "section": "3 Złożenie funkcji",
+    "text": "3 Złożenie funkcji\nDokończ implementację funkcji compose(f, g):\ndef compose(f, g):\n    \"\"\"\n    Zwraca funkcję, która jest złożeniem funkcji f i g. Funkcja f jest\n    wywoływana na wyniku funkcji g. Zwrócona funkcja przyjmuje takie same\n    argumenty jak g.\n\n    Parametry:\n    f -- funkcja, która ma być wywołana na wyniku funkcji g\n    g -- funkcja, która ma być wywołana jako pierwsza\n\n    Zwraca:\n    funkcję, która jest złożeniem f i g\n\n    Przykłady:\n    &gt;&gt;&gt; def add_one(x):\n    ...     return x + 1\n    &gt;&gt;&gt; def square(x):\n    ...     return x * x\n    &gt;&gt;&gt; add_one_square = compose(add_one, square)\n    &gt;&gt;&gt; add_one_square(2)\n    5\n    &gt;&gt;&gt; square_add_one = compose(square, add_one)\n    &gt;&gt;&gt; square_add_one(2)\n    9\n    &gt;&gt;&gt; compose(str, pow)(2, 10)\n    '1024'\n    \"\"\"\n    pass",
     "crumbs": [
       "Laboratoria",
-      "Lab VI: Geometria żółwia"
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
     ]
   },
   {
-    "objectID": "lab_VI/lab_VI.html#moduł-żółwia",
-    "href": "lab_VI/lab_VI.html#moduł-żółwia",
-    "title": "Lab VI: Geometria żółwia",
-    "section": "4 Moduł żółwia",
-    "text": "4 Moduł żółwia\nNapisz moduł logo_turtle.py z implementacją żółwia według wytycznych z wprowadzenia. Moduł powinien zawierać funkcje:\n\ncreate_turtle(x=0, y=0, azimuth=0, name=\"\") — tworzy żółwia w położeniu (x, y) patrzącego w kierunku azimuth stopni od wschodu, o nazwie name. Funkcja zwraca słownik o kluczach:\n\nposition — lista [(x, y)] zawierająca na ostatniej pozycji krotkę ze współrzędnymi aktualnego położenia żółwia. Gdy żółw jest tworzony, lista zawiera jedną krotkę z położeniem początkowym; po każdym wykonaniu polecenia forward lista jest rozszerzana o nowe położenie.\nazimuth — azymut żółwia w stopniach.\nname — nazwa żółwia.\n\nforward(turtle, r) — przesuwa żółwia turtle o dystans r w kierunku, w którym żółw patrzy. Przesunięcie polega na dodaniu do listy position nowego położenia obliczonego na podstawie ostatniego położenia, azymutu i dystansu r.\nright(turtle, a) — obraca żółwia turtle o kąt a w prawo. Obrót zmienia wartość azimuth o -a.\nleft(turtle, a) — obraca żółwia turtle o kąt a w lewo. Obrót zmienia wartość azimuth o a.\nto_csv(*turtles, filename) — zapisuje historię położeń żółwi turtles do pliku CSV o nazwie filename. Plik CSV zawiera nagłówek z nazwami kolumn: x, y, name. Wiersze odpowiadają kolejnym położeniom żółwi — najpierw wszystkie położenia pierwszego żółwia, potem drugiego itd.\n\nTesty modułu logo_turtle.py znajdują się w pliku test_logo_turtle.py.\n\n\n\n\n\n\nTipModuł csv\n\n\n\nModuł csv z biblioteki standardowej ułatwia zapis danych do plików CSV:\nimport csv\n\nwith open(\"output.csv\", \"w\", newline=\"\") as f:\n    writer = csv.writer(f)\n    writer.writerow([\"x\", \"y\", \"name\"])    # nagłówek\n    writer.writerow([1.5, 2.3, \"Tolek\"])   # wiersz danych\nParametr newline=\"\" w open() jest wymagany przez moduł csv — zapobiega wstawianiu pustych wierszy w pliku wynikowym.\n\n\nTrasę żółwia zapisaną w pliku CSV możesz zwizualizować:\n\nw notatniku Jupyter, korzystając z bibliotek pandas i matplotlib,\nw arkuszu kalkulacyjnym, np. programie Excel,\nw narzędziu online, np. csvplot.",
+    "objectID": "lab_VII/lab_VII.html#currying-kalkulatora",
+    "href": "lab_VII/lab_VII.html#currying-kalkulatora",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
+    "section": "4 Currying kalkulatora",
+    "text": "4 Currying kalkulatora\nDana jest funkcja:\ndef calculator(x, y, operation):\n    if operation == '+':\n        return x + y\n    elif operation == '-':\n        return x - y\n    elif operation == '*':\n        return x * y\n    elif operation == '/':\n        if y == 0:\n            raise ValueError(\"Dzielenie przez zero\")\n        return x / y\n    else:\n        raise ValueError(\"Nieznana operacja\")\nNapisz funkcję make_calculator() stanowiącą równoważny wariant funkcji calculator() w postaci złożenia trzech jednoparametrowych funkcji:\ncalculator(x, y, operation) == make_calculator(operation)(x)(y)\n\n\n\n\n\n\nNoteCurrying\n\n\n\nTechnikę polegającą na zapisywaniu funkcji wieloparametrowych jako złożenia funkcji jednoparametrowych nazywamy curryingiem. Na wykładzie poznałeś funkcję curry2(f) zamieniającą f(a, b) na g(a)(b). Tutaj curryfikujesz ręcznie funkcję trójargumentową.",
     "crumbs": [
       "Laboratoria",
-      "Lab VI: Geometria żółwia"
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
     ]
   },
   {
-    "objectID": "lab_VI/lab_VI.html#wielokąty-żółwiowe",
-    "href": "lab_VI/lab_VI.html#wielokąty-żółwiowe",
-    "title": "Lab VI: Geometria żółwia",
-    "section": "5 Wielokąty żółwiowe",
-    "text": "5 Wielokąty żółwiowe\nJedna z najprostszych procedur w geometrii żółwia wygląda tak:\ndef polygon(turtle, a, r):\n    while True:\n        forward(turtle, r)\n        right(turtle, a)\nŻółw nieskończenie długo naprzemiennie wędruje naprzód o r i wykonuje obrót w prawo o a. Dystans i kąt obrotu są ustalone. Jeśli po pewnej niezerowej liczbie kroków położenie i azymut żółwia będą takie jak na starcie, żółw zacznie chodzić po swoich śladach — otrzymamy krzywą zamkniętą. Stanie się tak np. wtedy, gdy kąt a jest dzielnikiem 360 — ścieżka żółwia jest wówczas wielokątem foremnym. Ogólniej:\nTwierdzenie o zamknięciu wielokąta. Załóżmy, że kąt a nie jest całkowitą wielokrotnością 360. Wtedy polygon(turtle, a, r) przemieszcza żółwia po łamanej, która zamknie się dokładnie wtedy, gdy obrót całkowity żółwia będzie całkowitą wielokrotnością 360.\nTwierdzenie stosujemy tak: w pętli while funkcji polygon() zliczamy obrót całkowity żółwia. Gdy obrót całkowity osiągnie wielokrotność 360, krzywa żółwiowa właśnie się zamknęła i możemy zakończyć pętlę. Jeśli obrót całkowity nigdy nie stanie się wielokrotnością 360, krzywa nigdy się nie zamknie. Wynika stąd, że łamana rysowana przez polygon() jest zamknięta wtedy i tylko wtedy, gdy kąt a jest liczbą wymierną nie będącą wielokrotnością 360. W pozostałych przypadkach — gdy a jest niewymierny lub jest wielokrotnością 360 — krzywa jest nieskończona.\nPrzykłady:\n\ndla a = 144 trasa zamknie się po 5 krokach, gdyż \\(5 \\cdot 144 = 720 = 2 \\cdot 360\\),\ndla a = 72 trasa zamknie się po 5 krokach, gdyż \\(5 \\cdot 72 = 360 = 1 \\cdot 360\\),\ndla a = Fraction(360, 7) trasa zamknie się po 7 krokach, gdyż \\(7 \\cdot \\frac{360}{7} = 360 = 1 \\cdot 360\\).\n\nWięcej szczegółów, w tym dowód twierdzenia, znajdziesz tutaj i tutaj.\n\n\n\n\n\n\nTipModuł fractions\n\n\n\nModuł fractions z biblioteki standardowej udostępnia typ Fraction reprezentujący ułamki zwykłe z dokładną arytmetyką:\nfrom fractions import Fraction\n\na = Fraction(360, 7)   # 360/7\nprint(a * 7)           # 360\nprint(a % 360)         # Fraction(360, 7)\nprint(isinstance(a, (int, Fraction)))  # True\nOperator % działa dla obiektów Fraction, co ułatwia sprawdzenie warunku zamknięcia wielokąta.\n\n\nNapisz moduł polygons.py zawierający funkcje:\n\npolygon(turtle, a, r) — wersja funkcji polygon() z warunkiem stopu. Parametry:\n\nturtle — słownik reprezentujący żółwia z modułu logo_turtle.py,\na — kąt obrotu w stopniach, liczba typu int lub fractions.Fraction,\nr — długość boku.\n\nFunkcja zwraca liczbę boków wielokąta. Jeśli a nie jest typu int ani fractions.Fraction, funkcja zgłasza wyjątek TypeError z komunikatem kąt musi być liczbą całkowitą lub wymierną. Jeśli a jest prawidłowego typu, ale nie spełnia warunków twierdzenia o zamknięciu wielokąta, funkcja zgłasza wyjątek ValueError z komunikatem kąt musi być liczbą wymierną nie będącą wielokrotnością 360.\nregular_polygon(turtle, n, r) — rysuje n-kąt foremny o boku r. Parametry:\n\nturtle — słownik reprezentujący żółwia z modułu logo_turtle.py,\nn — liczba wierzchołków wielokąta,\nr — długość boku.\n\n\nTesty modułu polygons.py znajdują się w pliku test_polygons.py.",
+    "objectID": "lab_VII/lab_VII.html#predykaty-i-własności-ciągów",
+    "href": "lab_VII/lab_VII.html#predykaty-i-własności-ciągów",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
+    "section": "5 Predykaty i własności ciągów",
+    "text": "5 Predykaty i własności ciągów\nNapisz moduł seq_info.py, zawierający funkcje:\n\ncheck_adjacent(seq, pred) — zwraca True, jeśli dla każdej pary sąsiednich elementów x, y sekwencji seq zachodzi pred(x, y) (gdzie pred jest funkcją dwuargumentową), w przeciwnym razie zwraca False.\nis_ascending(seq) — zwraca True, jeśli sekwencja seq jest niemalejąca.\nis_strictly_ascending(seq) — zwraca True, jeśli sekwencja seq jest ściśle rosnąca.\nis_descending(seq) — zwraca True, jeśli sekwencja seq jest nierosnąca.\nis_strictly_descending(seq) — zwraca True, jeśli sekwencja seq jest ściśle malejąca.\nis_monotonic(seq) — zwraca True, jeśli sekwencja seq jest monotoniczna.\nis_strictly_monotonic(seq) — zwraca True, jeśli sekwencja seq jest ściśle monotoniczna.\nis_constant(seq) — zwraca True, jeśli sekwencja seq jest stała.\nis_alternating(seq) — zwraca True, jeśli sekwencja seq jest naprzemienna. Zakładamy, że seq jest sekwencją wartości liczbowych. Ciąg liczbowy nazwiemy naprzemiennym, jeśli dla każdej pary sąsiednich elementów \\(a\\), \\(b\\) zachodzi \\(a \\cdot b &lt; 0\\).\nis_arithmetic(seq, r=None) — seq jest sekwencją liczb całkowitych. Jeśli r jest None, to funkcja zwraca True, jeśli seq jest ciągiem arytmetycznym, w przeciwnym razie zwraca False. Jeśli r jest podane, to funkcja zwraca True, jeśli seq jest ciągiem arytmetycznym o różnicy r, w przeciwnym razie zwraca False.\nis_geometric(seq, q=None) — seq jest sekwencją liczb całkowitych. Zakładamy, że ciąg geometryczny nie zawiera zer. Jeśli q jest None, to funkcja zwraca True, jeśli seq jest ciągiem geometrycznym o całkowitym ilorazie, w przeciwnym razie zwraca False. Jeśli całkowite q jest podane, to funkcja zwraca True, jeśli seq jest ciągiem geometrycznym o ilorazie q, w przeciwnym razie zwraca False. Sekwencja, w której iloraz sąsiednich wyrazów nie jest liczbą całkowitą (np. [8, 12, 18, 27] z q=3/2), nie jest uznawana za ciąg geometryczny w rozumieniu tej funkcji.\n\nWszystkie funkcje powinny korzystać z funkcji check_adjacent() dla odpowiednich predykatów. Testy modułu seq_info.py znajdują się w pliku test_seq_info.py.\n\n\n\n\n\n\nTipWskazówka\n\n\n\nFunkcje is_ascending — is_constant sprowadzają się do wywołania check_adjacent z odpowiednią lambdą. Funkcje is_arithmetic i is_geometric z parametrem r/q równym None wymagają dodatkowego kroku: wyznacz różnicę (iloraz) z dwóch pierwszych elementów, a następnie użyj check_adjacent.",
     "crumbs": [
       "Laboratoria",
-      "Lab VI: Geometria żółwia"
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
     ]
   },
   {
-    "objectID": "lab_VI/lab_VI.html#błądzenie-losowe",
-    "href": "lab_VI/lab_VI.html#błądzenie-losowe",
-    "title": "Lab VI: Geometria żółwia",
-    "section": "6 Błądzenie losowe",
-    "text": "6 Błądzenie losowe\nNapisz program realizujący błądzenie losowe (random walk) żółwia po kracie. Żółw zaczyna w punkcie (0, 0) i patrzy na wschód. W każdym kroku:\n\nlosuje jeden z czterech kierunków: północ, południe, wschód, zachód,\nustawia się w wybranym kierunku,\nprzesuwa się o jedną jednostkę.\n\nProgram wykonuje N = 1000 kroków (wartość zdefiniuj jako stałą), a następnie zapisuje historię położeń żółwia do pliku CSV za pomocą funkcji to_csv.\nRozszerzenie: uruchom jednocześnie kilku żółwi (np. trzech) wykonujących niezależne błądzenia losowe. Zapisz historie wszystkich żółwi do jednego pliku CSV i zwizualizuj ich trasy.",
+    "objectID": "lab_VII/lab_VII.html#automat-losujący",
+    "href": "lab_VII/lab_VII.html#automat-losujący",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
+    "section": "6 Automat losujący",
+    "text": "6 Automat losujący\n\n\n\n\n\n\nNotePowiązanie z lab V\n\n\n\nW lab V pisałeś funkcję draw_from_urn(), która przyjmowała parametry losowania (liczbę losowań, tryb zwracania, kolory kul) i zwracała wynik. Teraz napiszesz wariant oparty na domknięciu: funkcja random_ball_machine() zwraca automat — bezparametrową funkcję, która pamięta stan urny między wywołaniami.\n\n\nNapisz moduł ball_machine.py, zawierający funkcję random_ball_machine(return_balls, **balls). Funkcja zwraca bezparametrową funkcję machine(), która symuluje losowanie kul z urny. Opis parametrów:\n\nreturn_balls — True lub False, domyślnie True. Decyduje o tym, czy losowania są prowadzone ze zwracaniem (domyślnie tak).\nballs — przyjmuje argumenty postaci color=quantity, gdzie:\n\ncolor — łańcuch znaków oznaczający kolor kuli,\nquantity — liczba całkowita nieujemna określająca liczbę kul danego koloru w urnie.\n\n\nKażde wywołanie funkcji machine() zwraca kulę wylosowaną z urny. Jeśli return_balls jest ustawione na True, to kulę losuje się ze zwracaniem, w przeciwnym razie bez zwracania. Jeśli urna jest pusta, machine() powinien zgłaszać wyjątek LookupError z komunikatem 'urna jest pusta.'.\nTesty: test_ball_machine.py\n\n\n\n\n\n\nTipWskazówka\n\n\n\nStan urny (listę kul) zbuduj wewnątrz random_ball_machine() przed definicją machine() — lista ta znajdzie się w domknięciu. Przy losowaniu bez zwracania usuwaj wylosowaną kulę z listy.",
     "crumbs": [
       "Laboratoria",
-      "Lab VI: Geometria żółwia"
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
     ]
   },
   {
-    "objectID": "lab_VI/lab_VI.html#minilogia",
-    "href": "lab_VI/lab_VI.html#minilogia",
-    "title": "Lab VI: Geometria żółwia",
-    "section": "7 MiniLogia",
-    "text": "7 MiniLogia\nStrona MiniLogia zawiera wiele zadań związanych z geometrią żółwia. Wybierz jedno z zadań i rozwiąż je za pomocą modułu logo_turtle.py. Zaniedbaj kolory.",
+    "objectID": "lab_VII/lab_VII.html#szyfr-jako-domknięcie",
+    "href": "lab_VII/lab_VII.html#szyfr-jako-domknięcie",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
+    "section": "7 Szyfr jako domknięcie",
+    "text": "7 Szyfr jako domknięcie\nCelem tego zadania jest napisanie nowej wersji programu szyfrującego z zadania II.4.\nPrzypomnijmy zasadę szyfrowania. Używając klucza ma-li-no-we-bu-ty można zaszyfrować wiadomość wymieniając znaki leżące wewnątrz tych samych sylab klucza: m --&gt; a, a --&gt; m, l --&gt; i, i --&gt; l, itd. Znaki, których nie ma w kluczu, pozostawia się bez zmian. Przykładowo tekst ziemia jest płaska wymaga wymienienia 9 znaków i po zaszyfrowaniu ma postać zlwalm jwsy płmskm. Powtórne zaszyfrowanie przywraca pierwotną postać tekstu.\nNapisz moduł malinowebuty.py zawierający funkcje:\n\ncreate_key(s) — parametr s jest łańcuchem znaków. Funkcja zwraca słownik par k: v, gdzie:\n\nk — znak łańcucha s,\nv — znak, na który k jest wymieniany.\n\nPrawidłowy klucz, to taki niepusty łańcuch znaków, który jest różnowartościowy i ma parzystą długość. W przypadku wykrycia nieprawidłowego klucza funkcja ma zgłaszać wyjątek ValueError z komunikatem: nieprawidłowy klucz..\ncreate_encryptor(s) — parametr s jest łańcuchem domyślnie ustawionym na 'malinowebuty'. Funkcja zwraca funkcję encryptor(text). Parametr text jest łańcuchem znaków. Funkcja encryptor() zwraca zaszyfrowany tekst zgodnie z kluczem s. Do szyfrowania funkcja encryptor() powinna korzystać z klucza s w postaci słownika wymiany znaków zwróconego przez create_key(). Słownik ten powinien być obliczany przed definicją funkcji encryptor(), a zatem ma znajdować się w jej domknięciu.\n\nTesty: test_malinowebuty.py\n\n\n\n\n\n\nTipStruktura rozwiązania\n\n\n\nSchemat funkcji create_encryptor:\ndef create_encryptor(s='malinowebuty'):\n    key = create_key(s)       # słownik obliczony raz\n    def encryptor(text):\n        ...                   # key jest zmienną swobodną\n    return encryptor\nSłownik key jest obliczany przy wywołaniu create_encryptor() i zamykany w domknięciu funkcji encryptor().",
     "crumbs": [
       "Laboratoria",
-      "Lab VI: Geometria żółwia"
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
     ]
   },
   {
-    "objectID": "lab_IV/lab_IV.html",
-    "href": "lab_IV/lab_IV.html",
-    "title": "Lab IV: Zmienne, aliasy, kopie",
+    "objectID": "lab_VII/lab_VII.html#sortowanie-z-lambda",
+    "href": "lab_VII/lab_VII.html#sortowanie-z-lambda",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
+    "section": "8 Sortowanie z lambda",
+    "text": "8 Sortowanie z lambda\nRozwiąż poniższe zadania za pomocą wyrażeń lambda. Sprawdź poprawność za pomocą doctest.testmod().\ndef sort_by_second(pairs):\n    \"\"\"Sortuje listę krotek rosnąco po drugim elemencie.\n\n    &gt;&gt;&gt; sort_by_second([(1, 3), (2, 1), (3, 2)])\n    [(2, 1), (3, 2), (1, 3)]\n    &gt;&gt;&gt; sort_by_second([('a', 5), ('b', 2), ('c', 8)])\n    [('b', 2), ('a', 5), ('c', 8)]\n    \"\"\"\n    pass\n\n\ndef sort_words_by_last_char(words):\n    \"\"\"Sortuje listę słów alfabetycznie po ostatnim znaku.\n\n    &gt;&gt;&gt; sort_words_by_last_char(['python', 'java', 'rust', 'go'])\n    ['java', 'go', 'python', 'rust']\n    \"\"\"\n    pass\n\n\ndef filter_long_words(words, min_length):\n    \"\"\"Zwraca listę słów o długości co najmniej min_length.\n\n    &gt;&gt;&gt; filter_long_words(['ala', 'ma', 'kota', 'i', 'psa'], 3)\n    ['ala', 'kota', 'psa']\n    &gt;&gt;&gt; filter_long_words(['x', 'yy', 'zzz'], 4)\n    []\n    \"\"\"\n    pass",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
+    ]
+  },
+  {
+    "objectID": "lab_VII/lab_VII.html#potok-funkcji",
+    "href": "lab_VII/lab_VII.html#potok-funkcji",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
+    "section": "9 Potok funkcji",
+    "text": "9 Potok funkcji\nNapisz funkcję pipeline(*functions), która uogólnia compose na dowolną liczbę funkcji. Funkcje są stosowane od lewej do prawej — pierwsza funkcja na liście jest wywoływana jako pierwsza.\ndef pipeline(*functions):\n    \"\"\"Zwraca złożenie funkcji stosowanych od lewej do prawej.\n\n    pipeline()(x) zwraca x.\n    pipeline(f)(x) zwraca f(x).\n    pipeline(f, g)(x) zwraca g(f(x)).\n    pipeline(f, g, h)(x) zwraca h(g(f(x))).\n\n    &gt;&gt;&gt; pipeline()(5)\n    5\n    &gt;&gt;&gt; pipeline(abs)(-3)\n    3\n    &gt;&gt;&gt; def double(x):\n    ...     return 2 * x\n    &gt;&gt;&gt; def add_one(x):\n    ...     return x + 1\n    &gt;&gt;&gt; pipeline(abs, double, add_one)(-3)\n    7\n    &gt;&gt;&gt; pipeline(add_one, double)(-3)\n    -4\n    &gt;&gt;&gt; pipeline(double, add_one)(-3)\n    -5\n    \"\"\"\n    pass",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
+    ]
+  },
+  {
+    "objectID": "lab_VII/lab_VII.html#zapamiętywanie-wyników",
+    "href": "lab_VII/lab_VII.html#zapamiętywanie-wyników",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
+    "section": "10 Zapamiętywanie wyników",
+    "text": "10 Zapamiętywanie wyników\nNapisz funkcję make_memoized(f), która przyjmuje jednoargumentową funkcję f i zwraca jej wersję zapamiętującą wyniki. Przy pierwszym wywołaniu z danym argumentem wynik jest obliczany i zapamiętywany; przy kolejnych wywołaniach z tym samym argumentem zwracany jest zapamiętany wynik bez powtórnego obliczania.\ndef make_memoized(f):\n    \"\"\"Zwraca wersję f zapamiętującą wyniki wcześniejszych wywołań.\n\n    &gt;&gt;&gt; call_count = 0\n    &gt;&gt;&gt; def slow_square(x):\n    ...     global call_count\n    ...     call_count += 1\n    ...     return x * x\n    &gt;&gt;&gt; memo_square = make_memoized(slow_square)\n    &gt;&gt;&gt; memo_square(4)\n    16\n    &gt;&gt;&gt; memo_square(4)\n    16\n    &gt;&gt;&gt; memo_square(5)\n    25\n    &gt;&gt;&gt; call_count\n    2\n    \"\"\"\n    pass\n\n\n\n\n\n\nImportantPomost do dekoratorów\n\n\n\nWzorzec „funkcja przyjmująca funkcję i zwracająca jej ulepszoną wersję” to serce dekoratorów — tematu następnego wykładu. Funkcja make_memoized jest właśnie takim dekoratorem, tyle że stosowanym ręcznie: memo_square = make_memoized(slow_square). Na kolejnym wykładzie poznasz składnię @, która automatyzuje ten zapis.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
+    ]
+  },
+  {
+    "objectID": "lab_VII/lab_VII.html#zamrażanie-argumentów",
+    "href": "lab_VII/lab_VII.html#zamrażanie-argumentów",
+    "title": "Lab VII: Funkcje wyższego rzędu. Domknięcia",
+    "section": "11 Zamrażanie argumentów ★",
+    "text": "11 Zamrażanie argumentów ★\nNapisz moduł freeze_args.py, zawierający funkcję freeze_args(f, *args, **kwargs). Parametr f jest dowolnym obiektem wywoływalnym. Funkcja zwraca nową funkcję zachowującą się jak f, ale z ustalonymi (zamrożonymi) argumentami pozycyjnymi args i nazwanymi kwargs. Do wywołania zwróconej funkcji mogą zostać przekazane dodatkowe argumenty pozycyjne (dopisywane za args) oraz nazwane (dołączane do kwargs).\ndef freeze_args(f, *args, **kwargs):\n    \"\"\"Zwraca funkcję zachowującą się jak f z zamrożonymi argumentami.\n\n    &gt;&gt;&gt; def add(a, b):\n    ...     return a + b\n    &gt;&gt;&gt; add5 = freeze_args(add, 5)\n    &gt;&gt;&gt; add5(3)\n    8\n    &gt;&gt;&gt; add5(10)\n    15\n    &gt;&gt;&gt; power_of_2 = freeze_args(pow, 2)\n    &gt;&gt;&gt; power_of_2(10)\n    1024\n    &gt;&gt;&gt; power_of_2(8)\n    256\n    &gt;&gt;&gt; say_hello = freeze_args(print, \"Hello\", sep=\", \")\n    &gt;&gt;&gt; say_hello(\"World\")\n    Hello, World\n    &gt;&gt;&gt; say_hello(\"Python\")\n    Hello, Python\n    \"\"\"\n    pass\nTesty: test_freeze_args.py\n\n\n\n\n\n\nNotefunctools.partial\n\n\n\nBiblioteka standardowa zawiera funkcję functools.partial, która realizuje dokładnie ten sam wzorzec. Po napisaniu własnej wersji porównaj swoje rozwiązanie z functools.partial.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VII: Funkcje wyższego rzędu. Domknięcia"
+    ]
+  },
+  {
+    "objectID": "lab_V/lab_V.html",
+    "href": "lab_V/lab_V.html",
+    "title": "Lab V: Wypakowywanie i parametry funkcji",
     "section": "",
-    "text": "Tematem tego laboratorium są zmienne w Pythonie: mechanizm etykiet (referencji), aliasy, obiekty zmienne i niezmienne, kopie płytkie i głębokie. Wiele zadań dotyczy list i list zagnieżdżonych — struktur, w których pułapki związane z aliasowaniem ujawniają się najwyraźniej. Poprawność rozwiązań weryfikuj za pomocą doctest.testmod() lub python -m doctest plik.py -v.",
+    "text": "Te ćwiczenia nawiązują do materiału z wykładu o wypakowywaniu obiektów iterowalnych oraz o parametrach i argumentach funkcji.",
     "crumbs": [
       "Laboratoria",
-      "Lab IV: Zmienne, aliasy, kopie"
+      "Lab V: Wypakowywanie i parametry funkcji"
     ]
   },
   {
-    "objectID": "lab_IV/lab_IV.html#aliasy-i-kopie-przewidywanie-wyników",
-    "href": "lab_IV/lab_IV.html#aliasy-i-kopie-przewidywanie-wyników",
-    "title": "Lab IV: Zmienne, aliasy, kopie",
-    "section": "1 Aliasy i kopie — przewidywanie wyników",
-    "text": "1 Aliasy i kopie — przewidywanie wyników\nDla każdego z poniższych fragmentów kodu najpierw przewidź wynik, a następnie sprawdź swoją odpowiedź w interpreterze lub na stronie pythontutor.com. Zwróć uwagę na to, kiedy dwie zmienne wskazują na ten sam obiekt, a kiedy na różne obiekty o tej samej wartości.\nFragment 1:\na = [1, 2, 3]\nb = a\na.append(4)\nprint(b)\nFragment 2:\na = [1, 2, 3]\nb = a[:]\na.append(4)\nprint(b)\nFragment 3:\na = [1, 2, 3]\nb = a\na = a + [4]\nprint(a, b, a is b)\nFragment 4:\na = [1, 2, 3]\nb = a\na += [4]\nprint(a, b, a is b)\nFragment 5:\na = [[1, 2], [3, 4]]\nb = a.copy()\na[0][0] = 99\nprint(b)\nFragment 6:\nimport copy\na = [[1, 2], [3, 4]]\nb = copy.deepcopy(a)\na[0][0] = 99\nprint(b)\n\n\n\n\n\n\nTipWskazówka\n\n\n\nKluczowe rozróżnienia: przypisanie b = a tworzy alias (tę samą etykietę na ten sam obiekt); a = a + [4] tworzy nowy obiekt i przesuwa etykietę a; a += [4] modyfikuje istniejący obiekt w miejscu; a.copy() tworzy kopię płytką — wewnętrzne listy nadal są współdzielone.",
+    "objectID": "lab_V/lab_V.html#rozgrzewka-wypakowywanie",
+    "href": "lab_V/lab_V.html#rozgrzewka-wypakowywanie",
+    "title": "Lab V: Wypakowywanie i parametry funkcji",
+    "section": "1 Rozgrzewka: wypakowywanie",
+    "text": "1 Rozgrzewka: wypakowywanie\nDla każdego z poniższych fragmentów kodu podaj wartości zmiennych po wykonaniu przypisania. Odpowiedz bez uruchamiania kodu, a następnie sprawdź odpowiedź w konsoli interaktywnej.\n1.\na, b, c = range(3)\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość 0, b ma wartość 1, c ma wartość 2.\n\n\n\n2.\na, (b, c) = 'X', [10, 20]\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość 'X', b ma wartość 10, c ma wartość 20.\n\n\n\n3.\nfirst, *rest = 'Python'\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\nfirst ma wartość 'P', rest ma wartość ['y', 't', 'h', 'o', 'n'].\n\n\n\n4.\na, *b, c = [10, 20, 30, 40, 50]\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość 10, b ma wartość [20, 30, 40], c ma wartość 50.\n\n\n\n5.\na = [*range(3), *'ab']\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość [0, 1, 2, 'a', 'b'].\n\n\n\n6.\na, (*b, c) = 1, 'xyz'\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość 1, b ma wartość ['x', 'y'], c ma wartość 'z'.\n\n\n\n7.\ndef f(x, y):\n    return x - y\n\nd = {'y': 3, 'x': 10}\nf(**d)\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\nWywołanie zwróci 7.\n\n\n\n8.\n(a, b), *c = 'XY', 1, 2, 3\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość 'X', b ma wartość 'Y', c ma wartość [1, 2, 3].",
     "crumbs": [
       "Laboratoria",
-      "Lab IV: Zmienne, aliasy, kopie"
+      "Lab V: Wypakowywanie i parametry funkcji"
     ]
   },
   {
-    "objectID": "lab_IV/lab_IV.html#tworzenie-siatki",
-    "href": "lab_IV/lab_IV.html#tworzenie-siatki",
-    "title": "Lab IV: Zmienne, aliasy, kopie",
-    "section": "2 Tworzenie siatki",
-    "text": "2 Tworzenie siatki\nDokończ definicje funkcji:\ndef create_grid(rows, cols, value=0):\n    \"\"\"Tworzy siatkę (listę list) o zadanych wymiarach wypełnioną wartością value.\n\n    Każdy wiersz musi być niezależnym obiektem.\n\n    &gt;&gt;&gt; create_grid(2, 3)\n    [[0, 0, 0], [0, 0, 0]]\n    &gt;&gt;&gt; create_grid(3, 2, 'x')\n    [['x', 'x'], ['x', 'x'], ['x', 'x']]\n    &gt;&gt;&gt; g = create_grid(3, 3)\n    &gt;&gt;&gt; g[0][0] = 1\n    &gt;&gt;&gt; g\n    [[1, 0, 0], [0, 0, 0], [0, 0, 0]]\n    &gt;&gt;&gt; g = create_grid(3, 3)\n    &gt;&gt;&gt; g[0] is g[1]\n    False\n    \"\"\"\n    pass\n\n\ndef identity_matrix(n):\n    \"\"\"Tworzy macierz jednostkową n x n.\n\n    &gt;&gt;&gt; identity_matrix(1)\n    [[1]]\n    &gt;&gt;&gt; identity_matrix(3)\n    [[1, 0, 0], [0, 1, 0], [0, 0, 1]]\n    &gt;&gt;&gt; m = identity_matrix(2)\n    &gt;&gt;&gt; m[0] is m[1]\n    False\n    \"\"\"\n    pass\nZwróć uwagę na testy z operatorem is — wykrywają one aliasowanie wierszy. Przypomnij sobie fragment z wykładu, w którym macierz = [wiersz, wiersz, wiersz] dawał niespodziewany efekt.",
+    "objectID": "lab_V/lab_V.html#przetwarzanie-rekordów",
+    "href": "lab_V/lab_V.html#przetwarzanie-rekordów",
+    "title": "Lab V: Wypakowywanie i parametry funkcji",
+    "section": "2 Przetwarzanie rekordów",
+    "text": "2 Przetwarzanie rekordów\nDana jest lista zawierająca dane o transakcjach giełdowych. Każdy rekord ma postać krotki (data, (ticker, cena), liczba_akcji), gdzie liczba_akcji jest dodatnia dla kupna i ujemna dla sprzedaży.\ntransakcje = [\n    (\"2025-01-15\", (\"AAPL\", 150.25), 10),\n    (\"2025-01-20\", (\"GOOGL\", 178.50), 5),\n    (\"2025-02-10\", (\"AAPL\", 155.00), -3),\n    (\"2025-02-15\", (\"MSFT\", 420.75), 8),\n    (\"2025-03-01\", (\"GOOGL\", 182.30), -5),\n    (\"2025-03-10\", (\"MSFT\", 415.50), 4),\n]\nNapisz program, który korzystając z wypakowywania zagnieżdżonego w pętli for:\n\nwypisze sformatowaną tabelę transakcji w postaci:\n2025-01-15  AAPL    150.25  x  10  =   1502.50  KUPNO\n2025-01-20  GOOGL   178.50  x   5  =    892.50  KUPNO\n2025-02-10  AAPL    155.00  x  -3  =   -465.00  SPRZEDAŻ\n2025-02-15  MSFT    420.75  x   8  =   3366.00  KUPNO\n2025-03-01  GOOGL   182.30  x  -5  =   -911.50  SPRZEDAŻ\n2025-03-10  MSFT    415.50  x   4  =   1662.00  KUPNO\nobliczy i wypisze łączną wartość kupna i łączną wartość sprzedaży.",
     "crumbs": [
       "Laboratoria",
-      "Lab IV: Zmienne, aliasy, kopie"
+      "Lab V: Wypakowywanie i parametry funkcji"
     ]
   },
   {
-    "objectID": "lab_IV/lab_IV.html#spłaszczanie-i-zmiana-kształtu",
-    "href": "lab_IV/lab_IV.html#spłaszczanie-i-zmiana-kształtu",
-    "title": "Lab IV: Zmienne, aliasy, kopie",
-    "section": "3 Spłaszczanie i zmiana kształtu",
-    "text": "3 Spłaszczanie i zmiana kształtu\nFunkcje flatten i reshape są inspirowane analogicznymi operacjami z biblioteki NumPy. W NumPy tablice wielowymiarowe mogą dzielić pamięć z tablicą źródłową (tzw. widoki). Tu pracujemy ze zwykłymi listami Pythona i wymagamy pełnej niezależności wynikowej struktury od wejściowej.\nDokończ definicje funkcji:\ndef flatten(matrix):\n    \"\"\"Spłaszcza macierz (listę list) do jednej listy.\n\n    &gt;&gt;&gt; flatten([[1, 2, 3], [4, 5, 6]])\n    [1, 2, 3, 4, 5, 6]\n    &gt;&gt;&gt; flatten([[1], [2], [3]])\n    [1, 2, 3]\n    &gt;&gt;&gt; flatten([[], [1, 2], []])\n    [1, 2]\n    &gt;&gt;&gt; flatten([])\n    []\n    \"\"\"\n    pass\n\n\ndef reshape(flat_list, rows, cols):\n    \"\"\"Przekształca płaską listę w macierz o zadanej liczbie wierszy i kolumn.\n\n    Jeśli rows * cols != len(flat_list), zgłasza ValueError.\n    Wiersze wynikowej macierzy są niezależne od flat_list.\n\n    &gt;&gt;&gt; reshape([1, 2, 3, 4, 5, 6], 2, 3)\n    [[1, 2, 3], [4, 5, 6]]\n    &gt;&gt;&gt; reshape([1, 2, 3, 4], 2, 2)\n    [[1, 2], [3, 4]]\n    &gt;&gt;&gt; reshape([], 0, 0)\n    []\n    &gt;&gt;&gt; flat = [1, 2, 3, 4, 5, 6]\n    &gt;&gt;&gt; m = reshape(flat, 2, 3)\n    &gt;&gt;&gt; m[0][0] = 99\n    &gt;&gt;&gt; flat\n    [1, 2, 3, 4, 5, 6]\n    &gt;&gt;&gt; reshape([1, 2, 3], 2, 2)\n    Traceback (most recent call last):\n        ...\n    ValueError: nie można przekształcić listy o długości 3 w macierz 2 x 2\n    \"\"\"\n    pass",
+    "objectID": "lab_V/lab_V.html#ciągi-uogólnione",
+    "href": "lab_V/lab_V.html#ciągi-uogólnione",
+    "title": "Lab V: Wypakowywanie i parametry funkcji",
+    "section": "3 Ciągi uogólnione",
+    "text": "3 Ciągi uogólnione\nCiągiem \\(k\\)-Fibonacciego rzędu \\(k \\geqslant 2\\) z warunkami początkowymi \\(a_0, a_1, \\ldots, a_{k-1}\\) nazywamy ciąg zdefiniowany rekurencyjnie:\n\\[\nf_n = a_n \\quad \\text{dla } 0 \\leqslant n &lt; k,\\qquad\nf_n = f_{n-k} + f_{n-k+1} + \\cdots + f_{n-1} \\quad \\text{dla } n \\geqslant k.\n\\]\nPrzypadki szczególne:\n\n\\(k = 2\\): ciąg Fibonacciego (klasycznie \\(a_0 = 0\\), \\(a_1 = 1\\)),\n\\(k = 3\\): ciąg Tribonacciego (klasycznie \\(a_0 = 0\\), \\(a_1 = 0\\), \\(a_2 = 1\\)),\n\\(k = 4\\): ciąg Tetranacciego (klasycznie \\(a_0 = 0\\), \\(a_1 = 0\\), \\(a_2 = 0\\), \\(a_3 = 1\\)).\n\nNapisz moduł fib.py zawierający funkcje:\n\nfib(n, a=0, b=1) — zwraca wyraz \\(f_n\\) ciągu Fibonacciego,\ntrib(n, a=0, b=0, c=1) — zwraca wyraz \\(f_n\\) ciągu Tribonacciego,\ntetra(n, a=0, b=0, c=0, d=1) — zwraca wyraz \\(f_n\\) ciągu Tetranacciego,\nfib_general(n, a, b, *args) — zwraca wyraz \\(f_n\\) ciągu \\(k\\)-Fibonacciego, gdzie \\(k = 2 + \\text{len(args)}\\), a warunki początkowe to a, b, *args.\n\nArgument n jest indeksem wyrazu ciągu. Jeśli n jest ujemne, to funkcje zgłaszają wyjątek NotImplementedError z komunikatem Brak implementacji dla indeksów ujemnych.\nTesty modułu fib.py znajdują się w pliku test_fib.py.\n\n\n\n\n\n\nTipWskazówka\n\n\n\nWykorzystaj przypisanie wielokrotne. Obliczenie kolejnego wyrazu ciągu Fibonacciego sprowadza się do jednej linii:\na, b = b, a + b\nAnalogicznie dla wyższych rzędów. W fib_general warunki początkowe wygodnie przechowywać w liście i aktualizować go w każdej iteracji.",
     "crumbs": [
       "Laboratoria",
-      "Lab IV: Zmienne, aliasy, kopie"
+      "Lab V: Wypakowywanie i parametry funkcji"
     ]
   },
   {
-    "objectID": "lab_IV/lab_IV.html#operacje-na-macierzach-w-miejscu-i-przez-kopię",
-    "href": "lab_IV/lab_IV.html#operacje-na-macierzach-w-miejscu-i-przez-kopię",
-    "title": "Lab IV: Zmienne, aliasy, kopie",
-    "section": "4 Operacje na macierzach: w miejscu i przez kopię",
-    "text": "4 Operacje na macierzach: w miejscu i przez kopię\nW NumPy wyrażenie A + 10 tworzy nową tablicę, a A += 10 modyfikuje tablicę w miejscu. Poniższe funkcje realizują analogiczne operacje na listach list.\nDokończ definicje funkcji:\ndef add_scalar(matrix, scalar):\n    \"\"\"Zwraca nową macierz, w której każdy element jest zwiększony o scalar.\n\n    Nie modyfikuje macierzy wejściowej.\n\n    &gt;&gt;&gt; m = [[1, 2], [3, 4]]\n    &gt;&gt;&gt; add_scalar(m, 10)\n    [[11, 12], [13, 14]]\n    &gt;&gt;&gt; m\n    [[1, 2], [3, 4]]\n    \"\"\"\n    pass\n\n\ndef add_scalar_in_place(matrix, scalar):\n    \"\"\"Zwiększa każdy element macierzy o scalar, modyfikując ją w miejscu.\n\n    Zwraca None.\n\n    &gt;&gt;&gt; m = [[1, 2], [3, 4]]\n    &gt;&gt;&gt; add_scalar_in_place(m, 10)\n    &gt;&gt;&gt; m\n    [[11, 12], [13, 14]]\n    \"\"\"\n    pass\n\n\ndef transpose(matrix):\n    \"\"\"Zwraca transponowaną macierz (listę list).\n\n    &gt;&gt;&gt; transpose([[1, 2, 3], [4, 5, 6]])\n    [[1, 4], [2, 5], [3, 6]]\n    &gt;&gt;&gt; transpose([[1]])\n    [[1]]\n    &gt;&gt;&gt; transpose([[1, 2], [3, 4], [5, 6]])\n    [[1, 3, 5], [2, 4, 6]]\n    \"\"\"\n    pass",
+    "objectID": "lab_V/lab_V.html#przekazywanie-argumentów",
+    "href": "lab_V/lab_V.html#przekazywanie-argumentów",
+    "title": "Lab V: Wypakowywanie i parametry funkcji",
+    "section": "4 Przekazywanie argumentów",
+    "text": "4 Przekazywanie argumentów\n\n4.1 Logowanie wywołań\nNapisz funkcję:\ndef call_and_log(f, *args, verbose=False, **kwargs):\n    \"\"\"Wywołuje f(*args, **kwargs) i zwraca wynik.\n\n    Jeśli verbose jest True, wypisuje informację o wywołaniu\n    i wyniku w formacie: nazwa(argumenty) -&gt; wynik.\n\n    &gt;&gt;&gt; def add(a, b):\n    ...     return a + b\n    &gt;&gt;&gt; call_and_log(add, 2, 3)\n    5\n    &gt;&gt;&gt; call_and_log(add, 2, 3, verbose=True)\n    add(2, 3) -&gt; 5\n    5\n    &gt;&gt;&gt; call_and_log(pow, 2, 10, verbose=True)\n    pow(2, 10) -&gt; 1024\n    1024\n    &gt;&gt;&gt; call_and_log(add, a=2, b=3, verbose=True)\n    add(a=2, b=3) -&gt; 5\n    5\n    \"\"\"\n    pass\nZwróć uwagę na pozycję parametru verbose w sygnaturze funkcji. Stoi on za *args, co czyni go parametrem jedynie nazwy. Dzięki temu wywołanie call_and_log(add, 2, 3, True) przekaże True jako argument do f, a nie jako wartość verbose.\n\n\n\n\n\n\nTipWskazówka\n\n\n\nNazwę funkcji f uzyskasz przez f.__name__. Do formatowania argumentów przydadzą się repr() oraz str.join().\n\n\n\n\n4.2 Wielokrotne zastosowanie\nNapisz funkcję:\ndef apply_n(f, n, x):\n    \"\"\"Zwraca wynik n-krotnego zastosowania f do x.\n\n    apply_n(f, 0, x) zwraca x.\n    apply_n(f, n, x) zwraca f(f(...f(x)...)), gdzie f występuje n razy.\n\n    &gt;&gt;&gt; apply_n(abs, 0, -5)\n    -5\n    &gt;&gt;&gt; apply_n(abs, 1, -5)\n    5\n    &gt;&gt;&gt; from math import sqrt\n    &gt;&gt;&gt; apply_n(sqrt, 0, 16)\n    16\n    &gt;&gt;&gt; apply_n(sqrt, 1, 16)\n    4.0\n    &gt;&gt;&gt; apply_n(sqrt, 2, 16)\n    2.0\n    \"\"\"\n    pass\nSprawdź poprawność implementacji obu funkcji za pomocą doctest.testmod().",
     "crumbs": [
       "Laboratoria",
-      "Lab IV: Zmienne, aliasy, kopie"
+      "Lab V: Wypakowywanie i parametry funkcji"
     ]
   },
   {
-    "objectID": "lab_IV/lab_IV.html#usuwanie-wartości-z-listy-nowa-kopia",
-    "href": "lab_IV/lab_IV.html#usuwanie-wartości-z-listy-nowa-kopia",
-    "title": "Lab IV: Zmienne, aliasy, kopie",
-    "section": "5 Usuwanie wartości z listy — nowa kopia",
-    "text": "5 Usuwanie wartości z listy — nowa kopia\nDokończ definicję funkcji:\ndef remove_all(lst, value):\n    \"\"\"Zwraca nową listę bez żadnych wystąpień value.\n\n    Nie modyfikuje listy wejściowej.\n    Zgłasza ValueError, jeśli value nie występuje w lst.\n\n    &gt;&gt;&gt; remove_all([1, 3, 2, 3, 4], 3)\n    [1, 2, 4]\n    &gt;&gt;&gt; remove_all([2, 2, 2], 2)\n    []\n    &gt;&gt;&gt; remove_all([1, 2, 3], 4)\n    Traceback (most recent call last):\n        ...\n    ValueError: 4 not in lst\n    &gt;&gt;&gt; original = [1, 3, 2, 3, 4]\n    &gt;&gt;&gt; remove_all(original, 3)\n    [1, 2, 4]\n    &gt;&gt;&gt; original\n    [1, 3, 2, 3, 4]\n    \"\"\"\n    pass\nZwróć uwagę na ostatni doctest — weryfikuje on, że lista wejściowa nie została zmodyfikowana.",
+    "objectID": "lab_V/lab_V.html#losowanie-z-urny",
+    "href": "lab_V/lab_V.html#losowanie-z-urny",
+    "title": "Lab V: Wypakowywanie i parametry funkcji",
+    "section": "5 Losowanie z urny",
+    "text": "5 Losowanie z urny\nNapisz moduł fprob.py zawierający funkcję draw_from_urn() symulującą losowanie z urny zawierającej kule w różnych kolorach.\nSygnatura funkcji: draw_from_urn(number_of_draws=1, with_replacement=True, **balls)\nFunkcja przyjmuje następujące argumenty:\n\nnumber_of_draws — liczba losowań z urny (domyślnie 1),\nwith_replacement — flaga określająca, czy po wylosowaniu kuli wraca ona do urny (domyślnie True),\n**balls — argumenty nazwane, gdzie klucz to kolor kuli, a wartość to liczba kul danego koloru w urnie.\n\nFunkcja zwraca listę kolejno wylosowanych kul. Jeśli losowanie jest bez zwracania i number_of_draws przewyższa liczbę kul w urnie, to funkcja zgłasza wyjątek ValueError z komunikatem Liczba losowań bez zwracania przekracza liczbę kul w urnie.\nTesty modułu fprob.py znajdują się w pliku test_fprob.py.",
     "crumbs": [
       "Laboratoria",
-      "Lab IV: Zmienne, aliasy, kopie"
+      "Lab V: Wypakowywanie i parametry funkcji"
     ]
   },
   {
-    "objectID": "lab_IV/lab_IV.html#usuwanie-wartości-z-listy-modyfikacja-w-miejscu",
-    "href": "lab_IV/lab_IV.html#usuwanie-wartości-z-listy-modyfikacja-w-miejscu",
-    "title": "Lab IV: Zmienne, aliasy, kopie",
-    "section": "6 Usuwanie wartości z listy — modyfikacja w miejscu",
-    "text": "6 Usuwanie wartości z listy — modyfikacja w miejscu\nDokończ definicję funkcji:\ndef remove_all_in_place(lst, value):\n    \"\"\"Usuwa wszystkie wystąpienia value z lst, modyfikując ją w miejscu.\n\n    Zgłasza ValueError, jeśli value nie występuje w lst.\n    Zwraca None.\n\n    &gt;&gt;&gt; lst = [1, 3, 2, 3, 4]\n    &gt;&gt;&gt; remove_all_in_place(lst, 3)\n    &gt;&gt;&gt; lst\n    [1, 2, 4]\n    &gt;&gt;&gt; lst = list(\"hello\")\n    &gt;&gt;&gt; remove_all_in_place(lst, \"l\")\n    &gt;&gt;&gt; lst\n    ['h', 'e', 'o']\n    &gt;&gt;&gt; lst = [2, 2, 2]\n    &gt;&gt;&gt; remove_all_in_place(lst, 2)\n    &gt;&gt;&gt; lst\n    []\n    &gt;&gt;&gt; lst = [1, 2, 3]\n    &gt;&gt;&gt; remove_all_in_place(lst, 4)\n    Traceback (most recent call last):\n        ...\n    ValueError: 4 not in lst\n    &gt;&gt;&gt; lst = 1_000_000 * [1]\n    &gt;&gt;&gt; remove_all_in_place(lst, 1)\n    &gt;&gt;&gt; lst\n    []\n    \"\"\"\n    pass\n\n\n\n\n\n\nWarningUwaga: wydajność\n\n\n\nTest z milionem elementów weryfikuje, czy Twoje rozwiązanie jest wystarczająco szybkie. Naiwne podejście polegające na wielokrotnym wywołaniu lst.remove(value) lub del lst[i] z przodu listy ma złożoność \\(O(n^2)\\) i nie przejdzie testu wydajnościowego. Rozważ podejście z dwoma indeksami: jeden indeks czyta kolejne elementy, drugi wskazuje pozycję, na którą należy zapisać element, który nie jest usuwany.",
+    "objectID": "lab_V/lab_V.html#zastosowania-losowania-z-urny",
+    "href": "lab_V/lab_V.html#zastosowania-losowania-z-urny",
+    "title": "Lab V: Wypakowywanie i parametry funkcji",
+    "section": "6 Zastosowania losowania z urny",
+    "text": "6 Zastosowania losowania z urny\nInterpretacja częstościowa prawdopodobieństwa. Dane jest doświadczenie losowe. Chcemy wyznaczyć prawdopodobieństwo zajścia pewnego wyniku tego doświadczenia losowego. W interpretacji częstościowej wykonujemy to doświadczenie wielokrotnie i zliczamy, ile razy otrzymaliśmy interesujący nas wynik. Jeśli doświadczenie powtórzyliśmy \\(N\\) razy, wynik wypadł \\(k\\) razy i powtórzenia były niezależne, to prawdopodobieństwo badanego wyniku szacujemy na \\(k/N\\).\nPodane niżej zadania rozwiąż stosując częstościową interpretację prawdopodobieństwa. Wyniki potwierdź rozwiązaniem analitycznym.\n\n6.1 Kule białe\nW urnie jest 5 kul białych i 2 czarne. Losujemy bez zwracania 3 kule. Jakie jest prawdopodobieństwo, że wszystkie będą białe?\nRozwiąż to zadanie na “kartce” i numerycznie. Do rozwiązania numerycznego użyj funkcji draw_from_urn(). Wykonaj losowanie dużą liczbę razy — powiedzmy 1000 lub 10000 powtórzeń — zlicz ile razy wypadły trzy kule białe, następnie oblicz częstość.\n\n\n6.2 Wybór urny\nDane są dwie urny: w pierwszej znajdują się dwie kule czarne i jedna biała, w drugiej — trzy białe. Losujemy urnę (z prawdopodobieństwem 1/2) a następnie losujemy jedną kulę. Jakie jest prawdopodobieństwo tego, że losowaliśmy z pierwszej urny, jeżeli wiadomo, że wylosowana kula jest biała?\nRozwiąż zadanie dwoma sposobami: tradycyjnie wykorzystując teorię prawdopodobieństwa i numerycznie. W rozwiązaniu numerycznym skorzystaj z funkcji draw_from_urn().\n\n\n6.3 Rozkład łączny\nRozpatrujemy doświadczenie losowe jak w poprzednim podpunkcie. Niech \\(U\\) będzie zmienną losową oznaczającą wylosowaną urnę, a \\(K\\) zmienną losową oznaczającą wylosowaną kulę. Napisz program, który korzystając z częstościowej interpretacji prawdopodobieństwa wyznaczy przybliżoną tabelę rozkładu łącznego wektora losowego \\((U, K)\\). Wykorzystaj wyznaczoną tabelę do ponownego rozwiązania poprzedniego zadania.",
     "crumbs": [
       "Laboratoria",
-      "Lab IV: Zmienne, aliasy, kopie"
+      "Lab V: Wypakowywanie i parametry funkcji"
     ]
   },
   {
-    "objectID": "lab_IV/lab_IV.html#arytmetyka-elementarna",
-    "href": "lab_IV/lab_IV.html#arytmetyka-elementarna",
-    "title": "Lab IV: Zmienne, aliasy, kopie",
-    "section": "7 Arytmetyka elementarna",
-    "text": "7 Arytmetyka elementarna\nUzupełnij moduł basic_arithmetic_ops.py:\n\"\"\"Moduł zawiera funkcje realizujące podstawowe operacje arytmetyczne.\n\nFunkcje:\n    increment(x) - zwraca wartość x zwiększoną o 1\n    decrement(x) - zwraca wartość x zmniejszoną o 1\n    change_sign(x) - zwraca wartość x ze zmienionym znakiem\n    add(x, y) - zwraca sumę x i y\n    sub(x, y) - zwraca różnicę x i y\n    mul(x, y) - zwraca iloczyn x i y\n    int_div(x, y) - zwraca wynik dzielenia całkowitego x przez y\n\nFunkcje add(), sub(), mul() i int_div() działają jedynie za pośrednictwem\nfunkcji increment(), decrement() i change_sign() (bezpośrednio lub pośrednio).\nNie korzystają z operatorów +, -, * i //.\n\"\"\"\n\n\ndef increment(x):\n    \"\"\"Zwiększa wartość x o 1.\"\"\"\n    return x + 1\n\n\ndef decrement(x):\n    \"\"\"Zmniejsza wartość x o 1.\"\"\"\n    return x - 1\n\n\ndef change_sign(x):\n    \"\"\"Zmienia znak liczby x na przeciwny.\"\"\"\n    return -x\n\nZapoznaj się z komentarzami w kodzie basic_arithmetic_ops.py, aby zrozumieć ograniczenia nałożone na implementację.\nFunkcje add(), sub(), mul() i int_div() nie mogą korzystać z operatorów +, -, * i //. Dozwolone są jedynie operacje za pośrednictwem increment(), decrement() i change_sign().\nDokonaj implementacji brakujących funkcji.\n\nTesty: test_basic_arithmetic_ops.py\n\n\n\n\n\n\nTipWskazówka: mnożenie\n\n\n\nNaiwne podejście — y razy wywołaj increment — nie wystarczy dla dużych wartości. Rozważ algorytm: jeśli y jest parzyste, to \\(x \\cdot y = (x + x) \\cdot (y / 2)\\).",
+    "objectID": "lab_III/lab_III.html",
+    "href": "lab_III/lab_III.html",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "",
+    "text": "Na tym laboratorium zaczynamy pracę z testami automatycznymi. Począwszy od tego laba wiele zadań będzie polegać na napisaniu modułu, który spełnia wymagania zawarte w gotowym pliku z testami. Schemat pracy jest następujący:\nTesty uruchamiaj z wiersza poleceń. Opcja -v wyświetla szczegółowe wyniki:\nPamiętaj o pozostałych opcjach modułu unittest opisanych na wykładzie.",
     "crumbs": [
       "Laboratoria",
-      "Lab IV: Zmienne, aliasy, kopie"
+      "Lab III: Testy jednostkowe"
     ]
   },
   {
-    "objectID": "lab_IV/lab_IV.html#ułamki-łańcuchowe",
-    "href": "lab_IV/lab_IV.html#ułamki-łańcuchowe",
-    "title": "Lab IV: Zmienne, aliasy, kopie",
-    "section": "8 Ułamki łańcuchowe",
-    "text": "8 Ułamki łańcuchowe\nCelem zadania jest napisanie modułu zawierającego kilka funkcji związanych z algorytmem Euklidesa.\nAlgorytm Euklidesa w wersji dla liczb całkowitych jest zdefiniowany rekurencyjnie w następujący sposób. Niech \\(r_1\\) i \\(r_2\\) będą liczbami całkowitymi, przy czym \\(r_2 &gt; 0\\). Dzielimy \\(r_1\\) przez \\(r_2\\) z resztą uzyskując \\[\nr_1 = q_1 r_2 + r_3,\n\\] gdzie \\(q_1\\) jest liczbą całkowitą, a \\(r_3\\in\\{0,1,\\ldots,r_2-1\\}\\). Jeśli \\(r_3 \\neq 0\\), to znów wykonujemy dzielenie z resztą, tym razem \\(r_2\\) przez \\(r_3\\), uzyskując \\[\nr_2 = q_2 r_3 + r_4,\n\\] gdzie \\(q_2\\) jest liczbą całkowitą, a \\(r_4\\in\\{0,1,\\ldots,r_3-1\\}\\). Jeśli \\(r_4 \\neq 0\\), to dzielimy \\(r_3\\) przez \\(r_4\\), itd. Ponieważ ciąg reszt \\(r_2, r_3, r_4, \\ldots\\) jest ściśle malejący i ma wartości nieujemne, to w pewnym momencie musi się zakończyć wartością 0.\nDwa główne zastosowania algorytmu Euklidesa, znane już w starożytności, to obliczanie największego wspólnego dzielnika (NWD) dwóch liczb całkowitych oraz obliczanie ułamka łańcuchowego dla danej liczby wymiernej.\nNajwiększy wspólny dzielnik (NWD, w j. ang. GCD) dwóch liczb całkowitych \\(a\\) i \\(b\\) to największa liczba całkowita, która dzieli obie liczby \\(a\\) i \\(b\\). NWD jest zawsze nieujemny, przy czym \\(\\text{NWD}(0,0)\\) jest zdefiniowany jako 0. Jeśli \\(r_2, r_3, r_4, \\ldots\\) jest ciągiem reszt uzyskanych w podanym wyżej algorytmie Euklidesa, to \\(\\text{NWD}(r_1,r_2)\\) jest równy ostatniej niezerowej reszcie.\nUłamek łańcuchowy to ułamek postaci \\[\na_0 + \\cfrac{1}{a_1 + \\cfrac{1}{a_2 + \\cfrac{1}{a_3 + \\cfrac{1}{\\ddots}}}}\n\\] gdzie \\(a_0\\) jest liczbą całkowitą, a \\(a_1, a_2, a_3, \\ldots\\) są liczbami całkowitymi dodatnimi. Ułamek łańcuchowy jest skończony, jeśli ciąg \\(a_1, a_2, a_3, \\ldots\\) jest skończony. Każdą liczbę wymierną \\(p/q\\) można jednoznacznie przedstawić w postaci skończonego ułamka łańcuchowego \\[\n\\frac{p}{q} = a_0 + \\cfrac{1}{a_1 + \\cfrac{1}{a_2 + \\cfrac{1}{\\ddots + \\cfrac{1}{a_n}}}}\\tag{1}\n\\] gdzie \\(a_0\\) jest częścią całkowitą ułamka, \\(a_1, a_2, a_3, \\ldots, a_n&gt;0\\) oraz \\(a_n\\neq 1\\). Liczby \\(a_0, a_1, a_2, a_3, \\ldots, a_n\\) to ilorazy kolejnych dzieleń z resztą w algorytmie Euklidesa dla liczb \\(p\\) i \\(q\\).\nNotacja: Ułamek łańcuchowy (1) zapisujemy jako \\([a_0; a_1, a_2, a_3, \\ldots, a_n]\\).\n\n8.1 Przykład\nDla \\(p=22\\) i \\(q=7\\) mamy \\[\n22 = 3\\cdot 7 + 1, \\quad 7 = 7\\cdot 1 + 0,\n\\] stąd \\[\n\\frac{22}{7} = 3 + \\cfrac{1}{7}= [3;7].\n\\] Dla \\(p=22\\) i \\(q=8\\) mamy \\[\n22 = 2\\cdot 8 + 6, \\quad 8 = 1\\cdot 6 + 2, \\quad 6 = 3\\cdot 2 + 0,\n\\] stąd \\[\n\\frac{22}{8} = 2 + \\cfrac{1}{1 + \\cfrac{1}{3}}= [2;1,3].\n\\]\nUłamek łańcuchowy postaci (1) reprezentujemy jako listę [a_0, a_1, a_2, a_3, ..., a_n]. Ponieważ \\(a_0\\) jest częścią całkowitą ułamka, lista nie może być pusta. Jest jednoelementowa dokładnie wtedy, gdy ułamek jest liczbą całkowitą.\nNapisz moduł continued_fractions.py zawierający podane niżej funkcje:\n\neuclid(a, b) — zgłasza wyjątek ValueError z komunikatem argument b musi być dodatni w przypadku, gdy \\(b\\leq 0\\). W przeciwnym przypadku zwraca krotkę zawierającą: listę reszt \\(r_1, r_2, r_3, \\ldots\\) wraz z końcowym zerem oraz listę ilorazów \\(q_1, q_2, q_3, \\ldots\\) uzyskanych w algorytmie Euklidesa.\ngcd(a, b) — zwraca największy wspólny dzielnik liczb \\(a\\) i \\(b\\).\nto_float(seq) — zwraca wartość ułamka łańcuchowego o współczynnikach w sekwencji seq jako liczbę zmiennoprzecinkową. Zgłasza ValueError z komunikatem sekwencja współczynników nie może być pusta, gdy seq jest pusta.\nto_fraction(seq) — zwraca wartość ułamka łańcuchowego o współczynnikach w sekwencji seq jako krotkę (licznik, mianownik). Zgłasza ValueError z komunikatem sekwencja współczynników nie może być pusta, gdy seq jest pusta.\ncontinued_fraction(a, b) — zwraca ułamek łańcuchowy dla liczby wymiernej \\(a/b\\) jako listę współczynników. Zgłasza ZeroDivisionError z komunikatem mianownik nie może być równy 0, gdy \\(b=0\\).\n\nNapisz program, który importuje moduł continued_fractions i znajduje ułamek \\(p/q\\), \\(1\\leq p\\leq 1000\\), \\(1\\leq q\\leq 1000\\), który ma najdłuższe rozwinięcie w postaci ułamka łańcuchowego. Graficzną postać ułamka możesz podejrzeć na stronie Wolfram Alpha.\nTesty: test_continued_fractions.py.",
+    "objectID": "lab_III/lab_III.html#niezmiennik-pętli",
+    "href": "lab_III/lab_III.html#niezmiennik-pętli",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "1 Niezmiennik pętli",
+    "text": "1 Niezmiennik pętli\nW pętli:\nn = 10\ni, j = 0, n\n\nwhile i &lt; n:\n    i += 1\n    j -= 1\nzidentyfikuj niezmiennik pętli i zaimplementuj go za pomocą instrukcji assert.",
     "crumbs": [
       "Laboratoria",
-      "Lab IV: Zmienne, aliasy, kopie"
+      "Lab III: Testy jednostkowe"
     ]
   },
   {
-    "objectID": "lab_II/lab_II.html#iloraz-liczb-całkowitych",
-    "href": "lab_II/lab_II.html#iloraz-liczb-całkowitych",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "1 Iloraz liczb całkowitych",
-    "text": "1 Iloraz liczb całkowitych\nNapisz program, który pobiera od użytkownika dwie liczby całkowite i oblicza ich iloraz. Program powinien obsługiwać dwa rodzaje wyjątków:\n\nValueError — jeśli użytkownik wprowadzi tekst zamiast liczby całkowitej,\nZeroDivisionError — jeśli użytkownik wprowadzi jako dzielnik liczbę 0.\n\nProgram powinien wyświetlać komunikat o błędzie odpowiedni do typu wyjątku.\nPrzykłady:\na: 10\nb: 0\nBłąd: dzielenie przez zero.\na: 10\nb: abc\nBłąd: nieprawidłowa wartość.\na: 10\nb: 4\n10 / 4 = 2.5",
+    "objectID": "lab_III/lab_III.html#ciąg-arytmetyczny",
+    "href": "lab_III/lab_III.html#ciąg-arytmetyczny",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "2 Ciąg arytmetyczny",
+    "text": "2 Ciąg arytmetyczny\nDokończ definicję funkcji:\ndef is_arithmetic(seq):\n    \"\"\"Zwraca True, jeśli seq jest ciągiem arytmetycznym; w przeciwnym razie zwraca False.\n\n    Parametry:\n    seq -- ciąg liczb\n    \n    Przykłady:\n    &gt;&gt;&gt; is_arithmetic([])\n    True\n    &gt;&gt;&gt; is_arithmetic([2])\n    True\n    &gt;&gt;&gt; is_arithmetic([5, -1])\n    True\n    &gt;&gt;&gt; is_arithmetic([1, 2, 3])\n    True\n    &gt;&gt;&gt; is_arithmetic(range(100, -1000, -7))\n    True\n    &gt;&gt;&gt; is_arithmetic((2, 5, 8, 10, 13))\n    False\n    \"\"\"\n    pass\nSprawdź poprawność implementacji na przykładach podanych w docstringu. Wykorzystaj funkcję doctest.testmod().",
     "crumbs": [
       "Laboratoria",
-      "Lab II: Błędy i wyjątki"
+      "Lab III: Testy jednostkowe"
     ]
   },
   {
-    "objectID": "lab_II/lab_II.html#hierarchia-wyjątków-arytmetycznych",
-    "href": "lab_II/lab_II.html#hierarchia-wyjątków-arytmetycznych",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "2 Hierarchia wyjątków arytmetycznych",
-    "text": "2 Hierarchia wyjątków arytmetycznych\nZapoznaj się z fragmentem hierarchii wyjątków arytmetycznych w Pythonie:\nBaseException\n  └── Exception\n        └── ArithmeticError\n              ├── ZeroDivisionError\n              ├── OverflowError\n              └── FloatingPointError\nNapisz program, który oblicza wyrażenie 2.0 ** x / (x - 3) dla liczby x podanej przez użytkownika. Obsłuż wyjątek ArithmeticError jednym blokiem except. Przetestuj program dla:\n\nx = 3 (dzielenie przez zero — ZeroDivisionError),\nx = 1024 (przepełnienie — OverflowError, bo 2.0 ** 1024 przekracza maksymalną wartość float),\nx = 5 (poprawne dane).\n\nPrzykłady:\nPodaj x: 3\nBłąd arytmetyczny: float division by zero\nPodaj x: 1024\nBłąd arytmetyczny: (34, 'Numerical result out of range')\nPodaj x: 5\n2.0 ** 5 / (5 - 3) = 16.0",
+    "objectID": "lab_III/lab_III.html#test-pierwszości",
+    "href": "lab_III/lab_III.html#test-pierwszości",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "3 Test pierwszości",
+    "text": "3 Test pierwszości\nNapisz moduł is_prime.py zawierający funkcję is_prime(n), która zwraca True, jeśli n jest liczbą pierwszą, w przeciwnym razie False. Dla n ujemnego funkcja zgłasza wyjątek ValueError z komunikatem argument musi być nieujemny.\nTesty modułu is_prime.py znajdują się w pliku test_is_prime.py. Uruchom testy i upewnij się, że wszystkie przechodzą.",
     "crumbs": [
       "Laboratoria",
-      "Lab II: Błędy i wyjątki"
+      "Lab III: Testy jednostkowe"
     ]
   },
   {
-    "objectID": "lab_II/lab_II.html#suma-i-średnia-z-powtórzeniem",
-    "href": "lab_II/lab_II.html#suma-i-średnia-z-powtórzeniem",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "3 Suma i średnia z powtórzeniem",
-    "text": "3 Suma i średnia z powtórzeniem\nNapisz program, który pobiera od użytkownika ciąg liczb całkowitych rozdzielonych spacjami i wyświetla ich sumę oraz średnią arytmetyczną. Program powinien:\n\nwymuszać wprowadzenie danych w poprawnym formacie — po podaniu niepoprawnych danych ponownie żąda ich wprowadzenia,\ndawać użytkownikowi trzy szanse na podanie prawidłowych danych; po wyczerpaniu szans program kończy działanie stosownym komunikatem,\nkorzystać z bloku else, który wykonuje się wyłącznie wtedy, gdy nie wystąpił wyjątek.\n\nZastanów się: ile wynosi średnia arytmetyczna ciągu pustego?\nPrzykład:\nLiczby (próba 1/3): 4 3 abc\nBłąd: nieprawidłowe dane.\nLiczby (próba 2/3): 4 3 2 1 5\nSuma: 15, Średnia: 3.0",
+    "objectID": "lab_III/lab_III.html#przesunięcie-cykliczne",
+    "href": "lab_III/lab_III.html#przesunięcie-cykliczne",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "4 Przesunięcie cykliczne",
+    "text": "4 Przesunięcie cykliczne\nNapisz moduł rotate_seq.py zawierający funkcje:\n\nrotate(seq, n) — zwraca sekwencję seq przesuniętą cyklicznie o n miejsc; jeśli n jest ujemne, to przesunięcie jest w lewo, w przeciwnym razie w prawo,\nrotate_left(seq, n) — zwraca sekwencję seq przesuniętą cyklicznie o n miejsc w lewo; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem n musi być liczbą nieujemną,\nrotate_right(seq, n) — zwraca sekwencję seq przesuniętą cyklicznie o n miejsc w prawo; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem n musi być liczbą nieujemną.\n\nPrzeczytaj testy w pliku test_rotate_seq.py uważnie — zawierają wymagania, które nie są wprost opisane w treści zadania.\n\n\n\n\n\n\nTipWskazówka\n\n\n\nWykorzystaj konkatenację (operację +) wycinków sekwencji. Dzięki temu nie musisz się martwić o typ sekwencji i nie musisz wykonywać jawnych iteracji.\nPrzykład:\n&gt;&gt;&gt; s = 'abcde'\n&gt;&gt;&gt; s[2:] + s[:2]\n'cdeab'\n&gt;&gt;&gt; lst = [1, 2, 3, 4, 5]\n&gt;&gt;&gt; lst[2:] + lst[:2]\n[3, 4, 5, 1, 2]",
     "crumbs": [
       "Laboratoria",
-      "Lab II: Błędy i wyjątki"
+      "Lab III: Testy jednostkowe"
     ]
   },
   {
-    "objectID": "lab_II/lab_II.html#symulacja-połączenia-sieciowego",
-    "href": "lab_II/lab_II.html#symulacja-połączenia-sieciowego",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "4 Symulacja połączenia sieciowego",
-    "text": "4 Symulacja połączenia sieciowego\nBlok finally jest wykonywany zawsze — niezależnie od tego, czy wyjątek wystąpił, czy nie, a nawet gdy wyjątek nie jest obsługiwany w tej samej funkcji, lecz propaguje się do wywołującego.\nNapisz funkcję connect(addr), która symuluje nawiązywanie połączenia sieciowego:\n\nwypisuje Łączenie z &lt;addr&gt;...,\nwywołuje time.sleep(t), gdzie t to losowa liczba rzeczywista z przedziału \\([0, 1)\\),\njeśli t przekracza próg 0.6, zgłasza RuntimeError(\"Przekroczono limit czasu\"),\nw przeciwnym razie wypisuje Połączono z &lt;addr&gt;.,\nw bloku finally wypisuje Zamknięto połączenie z &lt;addr&gt;.\n\nNapisz program, który w pętli wywołuje connect() dla dziesięciu adresów 192.168.0.0, …, 192.168.0.9, obsługując RuntimeError stosownym komunikatem.\nPrzykład:\nŁączenie z 192.168.0.0...\nZamknięto połączenie z 192.168.0.0\nBłąd: Przekroczono limit czasu\n------------------------------\nŁączenie z 192.168.0.1...\nPołączono z 192.168.0.1\nZamknięto połączenie z 192.168.0.1\n------------------------------\nŁączenie z 192.168.0.2...\nZamknięto połączenie z 192.168.0.2\nBłąd: Przekroczono limit czasu\n------------------------------\nŁączenie z 192.168.0.3...\nPołączono z 192.168.0.3\nZamknięto połączenie z 192.168.0.3\n------------------------------\nŁączenie z 192.168.0.4...\nPołączono z 192.168.0.4\nZamknięto połączenie z 192.168.0.4\n------------------------------\nŁączenie z 192.168.0.5...\nPołączono z 192.168.0.5\nZamknięto połączenie z 192.168.0.5\n------------------------------\nŁączenie z 192.168.0.6...\nPołączono z 192.168.0.6\nZamknięto połączenie z 192.168.0.6\n------------------------------\nŁączenie z 192.168.0.7...\nPołączono z 192.168.0.7\nZamknięto połączenie z 192.168.0.7\n------------------------------\nŁączenie z 192.168.0.8...\nPołączono z 192.168.0.8\nZamknięto połączenie z 192.168.0.8\n------------------------------\nŁączenie z 192.168.0.9...\nPołączono z 192.168.0.9\nZamknięto połączenie z 192.168.0.9\n------------------------------\nW jakiej kolejności pojawiają się komunikaty gdy połączenie się nie powiedzie?",
+    "objectID": "lab_III/lab_III.html#szyfr-rot13",
+    "href": "lab_III/lab_III.html#szyfr-rot13",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "5 Szyfr ROT13",
+    "text": "5 Szyfr ROT13\nNapisz moduł rot13.py zawierający funkcje:\n\nis_ascii(s) — zwraca True, jeśli łańcuch s składa się wyłącznie ze znaków ASCII, w przeciwnym razie False,\nrot13(s, use_ascii_only=False) — zwraca łańcuch zaszyfrowany szyfrem ROT13,\nrot47(s, use_ascii_only=False) — zwraca łańcuch zaszyfrowany szyfrem ROT47.\n\nJeśli use_ascii_only jest True i łańcuch s zawiera znaki spoza zakresu ASCII, to funkcje rot13() i rot47() zgłaszają wyjątek ValueError z komunikatem znaleziono znak spoza zakresu ASCII.\nROT13 to szyfr, w którym każdy znak alfabetu łacińskiego jest zamieniany na znak przesunięty o 13 miejsc w prawo. Jeśli przesunięcie powoduje wyjście poza alfabet, to liczymy od początku. Znaki niebędące literami alfabetu łacińskiego pozostają bez zmian.\nROT47 to szyfr, w którym każdy znak ASCII z zakresu od 33 do 126 (włącznie) jest zamieniany na znak z tego samego zakresu, przesunięty o 47 miejsc w prawo. Jeśli przesunięcie powoduje wyjście poza zakres, to liczymy od początku. Znaki spoza zakresu pozostają bez zmian.\nTesty modułu rot13.py znajdują się w pliku test_rot13.py.",
     "crumbs": [
       "Laboratoria",
-      "Lab II: Błędy i wyjątki"
+      "Lab III: Testy jednostkowe"
     ]
   },
   {
-    "objectID": "lab_II/lab_II.html#moduł-funkcji-numerycznych",
-    "href": "lab_II/lab_II.html#moduł-funkcji-numerycznych",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "5 Moduł funkcji numerycznych",
-    "text": "5 Moduł funkcji numerycznych\nCelem tego zadania jest napisanie prostego modułu z funkcjami numerycznymi oraz programu, który z tego modułu korzysta. Zadanie ilustruje obsługę błędów na różnych poziomach programu.\n\n5.1 Moduł numerics.py\nNapisz moduł numerics.py zawierający trzy funkcje:\nparse_number(text) — przyjmuje łańcuch znaków i zwraca liczbę w najwęższym pasującym typie:\n\njeśli text reprezentuje liczbę całkowitą (np. \"5\", \"-3\"), zwraca int;\njeśli text reprezentuje liczbę zmiennoprzecinkową o wartości całkowitej (np. \"3.0\", \"-7.0\"), zwraca int;\njeśli text reprezentuje liczbę zmiennoprzecinkową (np. \"3.5\"), zwraca float;\nw przeciwnym razie zgłasza ValueError.\n\n\n\n\n\n\n\nTipWskazówka\n\n\n\nMetoda float.is_integer() zwraca True, gdy wartość zmiennoprzecinkowa jest liczbą całkowitą, np. (3.0).is_integer() daje True.\n\n\nsilnia(n) — oblicza \\(n!\\) dla nieujemnych liczb całkowitych. Zgłasza:\n\nTypeError — jeśli n nie jest liczbą całkowitą (isinstance(n, int)),\nValueError — jeśli n jest ujemna.\n\nsymbol_newtona(n, k) — oblicza \\[\\binom{n}{k} = \\frac{n!}{k!(n-k)!}\\] korzystając z funkcji silnia. Zgłasza:\n\nTypeError — jeśli n lub k nie jest liczbą całkowitą,\nValueError — jeśli \\(n &lt; 0\\), \\(k &lt; 0\\) lub \\(k &gt; n\\).\n\n\n\n\n\n\n\nImportantUwaga\n\n\n\nObliczanie symbolu Newtona przez trzy wywołania silni nie jest efektywne. Nie chodzi nam tu jednak o efektywność — funkcje te są jedynie ilustracją mechanizmu obsługi błędów.\n\n\nKażda funkcja w module powinna samodzielnie walidować swoje argumenty, nawet jeśli w danym programie walidacja ta wydaje się zbędna — funkcja nie wie, kto i jak ją wywoła w przyszłości.\n\n\n5.2 Program sprawdzający\nW tym samym pliku numerics.py, w bloku if __name__ == \"__main__\":, napisz program, który:\n\npobiera od użytkownika wartości n i k (jako tekst),\nprzetwarza je za pomocą parse_number,\nwywołuje symbol_newtona(n, k),\nwyświetla wynik lub stosowny komunikat o błędzie.\n\nZwróć uwagę, że ValueError może pochodzić z dwóch różnych miejsc: z parse_number (wejście nie jest liczbą) lub z symbol_newtona (argumenty poza dziedziną).\nPrzykłady:\nn: 5\nk: 2\nC(5, 2) = 10\nn: 5\nk: 2.5\nBłąd: argument musi być liczbą całkowitą.\nn: abc\nk: 2\nBłąd: 'abc' nie jest liczbą.\nn: 3\nk: 5\nBłąd: wymagane 0 &lt;= k &lt;= n, otrzymano n=3, k=5.\nn: -4\nk: 2\nBłąd: wymagane n &gt;= 0, otrzymano n=-4.\nn: 5.0\nk: 3\nC(5, 3) = 10\n\n\n\n\n\n\nTipDo przemyślenia\n\n\n\nKtóre wyjątki zgłaszane przez silnia() są w tym programie faktycznie osiągalne? Prześledź możliwe ścieżki wykonania: jeśli parse_number zwróci float, to który wyjątek zostanie zgłoszony pierwszy — z silnia() czy z symbol_newtona()? Czy to oznacza, że walidacja w silnia() jest niepotrzebna?",
+    "objectID": "lab_III/lab_III.html#pierwiastki-całkowite",
+    "href": "lab_III/lab_III.html#pierwiastki-całkowite",
+    "title": "Lab III: Testy jednostkowe",
+    "section": "6 Pierwiastki całkowite",
+    "text": "6 Pierwiastki całkowite\nNapisz moduł simple_integer_roots.py zawierający funkcje:\n\ninteger_square_root(n) — zwraca największą liczbę całkowitą m taką, że m**2 &lt;= n; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem argument musi być nieujemny,\ninteger_cubic_root(n) — zwraca największą liczbę całkowitą m taką, że m**3 &lt;= n; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem argument musi być nieujemny,\nis_perfect_square(n) — zwraca True, jeśli n jest kwadratem liczby całkowitej, w przeciwnym razie False,\nis_perfect_cube(n) — zwraca True, jeśli n jest sześcianem liczby całkowitej, w przeciwnym razie False. Zwróć uwagę, że liczby ujemne również mogą być sześcianami liczb całkowitych.\n\nTesty modułu simple_integer_roots.py znajdują się w pliku test_simple_integer_roots.py.\n\n\n\n\n\n\nWarningUwaga\n\n\n\nTesty sprawdzają poprawność dla bardzo dużych liczb, które nie mieszczą się w zakresie typu float. Nie wystarczy więc skorzystać z math.sqrt() i potęgowania zmiennoprzecinkowego — potrzebne jest wyszukiwanie binarne na liczbach całkowitych.",
     "crumbs": [
       "Laboratoria",
-      "Lab II: Błędy i wyjątki"
+      "Lab III: Testy jednostkowe"
     ]
   },
   {
-    "objectID": "lab_II/lab_II.html#statystyki-pliku-tekstowego",
-    "href": "lab_II/lab_II.html#statystyki-pliku-tekstowego",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "6 Statystyki pliku tekstowego",
-    "text": "6 Statystyki pliku tekstowego\nNapisz program, który wczytuje ścieżkę do pliku tekstowego podaną przez użytkownika i wyświetla:\n\nliczbę wierszy,\nliczbę słów (słowo to dowolna sekwencja znaków oddzielona białymi znakami, np. \"Hello, world!\" zawiera dwa słowa: \"Hello,\" i \"world!\"),\nliczbę znaków.\n\nUżyj menedżera kontekstu (with) i jawnie określ kodowanie encoding='utf-8'. Program powinien obsługiwać:\n\nFileNotFoundError — komunikatem Brak pliku: &lt;nazwa_pliku&gt;,\nOSError — komunikatem Błąd odczytu pliku: &lt;treść błędu&gt;.\n\nPrzykład:\nPodaj ścieżkę do pliku: wiersz.txt\nWiersze: 4\nSłowa:   26\nZnaki:   142",
+    "objectID": "lab_I/lab_I.html",
+    "href": "lab_I/lab_I.html",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "",
+    "text": "Te ćwiczenia poprzedzają pierwszy wykład. Ich celem jest odświeżenie niektórych elementów programowania w Pythonie znanych z pierwszego semestru.",
     "crumbs": [
       "Laboratoria",
-      "Lab II: Błędy i wyjątki"
+      "Lab I: Zadania na rozgrzewkę"
     ]
   },
   {
-    "objectID": "lab_II/lab_II.html#inspekcja-pliku-binarnego",
-    "href": "lab_II/lab_II.html#inspekcja-pliku-binarnego",
-    "title": "Lab II: Błędy i wyjątki",
-    "section": "7 Inspekcja pliku binarnego",
-    "text": "7 Inspekcja pliku binarnego\nNapisz program, który wczytuje ścieżkę do pliku binarnego i wyświetla:\n\nrozmiar pliku w bajtach,\npierwszych 16 bajtów w reprezentacji szesnastkowej (hex),\nczy plik jest plikiem PNG — plik PNG zaczyna się od sygnatury b'\\x89PNG\\r\\n\\x1a\\n' (8 bajtów).\n\nUżyj trybu 'rb' w funkcji open() i menedżera kontekstu. Program powinien obsługiwać:\n\nFileNotFoundError — komunikatem Brak pliku: &lt;nazwa_pliku&gt;,\nOSError — komunikatem Błąd odczytu pliku: &lt;treść błędu&gt;.\n\n\n\n\n\n\n\nTipWskazówka\n\n\n\nAby wyświetlić bajty w formacie szesnastkowym, możesz użyć metody hex() obiektu bytes lub funkcji binascii.hexlify().\n\n\nPrzykład dla pliku PNG:\nPodaj ścieżkę do pliku: obrazek.png\nRozmiar: 24831 bajtów\nPierwsze 16 bajtów: 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52\nSygnatura PNG: TAK\nPrzykład dla innego pliku:\nPodaj ścieżkę do pliku: dane.bin\nRozmiar: 512 bajtów\nPierwsze 16 bajtów: 4d 5a 90 00 03 00 00 00 04 00 00 00 ff ff 00 00\nSygnatura PNG: NIE",
+    "objectID": "lab_I/lab_I.html#przeliczanie-sekund",
+    "href": "lab_I/lab_I.html#przeliczanie-sekund",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "1 Przeliczanie sekund",
+    "text": "1 Przeliczanie sekund\nNapisz program, który wczytuje od użytkownika liczbę sekund (dodatnią liczbę całkowitą) i przelicza ją na dni, godziny, minuty i sekundy.\nPrzykłady:\nPodaj liczbę sekund: 123456\n1 d, 10 h, 17 min, 36 s\nPodaj liczbę sekund: 3661\n0 d, 1 h, 1 min, 1 s\nPodaj liczbę sekund: 86400\n1 d, 0 h, 0 min, 0 s",
     "crumbs": [
       "Laboratoria",
-      "Lab II: Błędy i wyjątki"
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#tabliczka-mnożenia",
+    "href": "lab_I/lab_I.html#tabliczka-mnożenia",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "2 Tabliczka mnożenia",
+    "text": "2 Tabliczka mnożenia\nNapisz program wyświetlający tabliczkę mnożenia dla zadanej wartości \\(1\\leqslant n\\leqslant 15\\). Liczbę \\(n\\) wprowadza użytkownik.\nPrzykład:\nPodaj n: 9\n\n1   2   3   4   5   6   7   8   9   \n2   4   6   8   10  12  14  16  18  \n3   6   9   12  15  18  21  24  27  \n4   8   12  16  20  24  28  32  36  \n5   10  15  20  25  30  35  40  45  \n6   12  18  24  30  36  42  48  54  \n7   14  21  28  35  42  49  56  63  \n8   16  24  32  40  48  56  64  72  \n9   18  27  36  45  54  63  72  81\nW programie wykorzystaj formatowanie łańcuchów (metoda str.format() lub f-strings).",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#fizzbuzz",
+    "href": "lab_I/lab_I.html#fizzbuzz",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "3 FizzBuzz",
+    "text": "3 FizzBuzz\nNapisz program, który pobiera od użytkownika dodatnią liczbę całkowitą n. Następnie dla liczb od 1 do n program wyświetla:\n\nFizzBuzz, jeśli liczba jest podzielna przez 3 i 5;\nFizz, jeśli liczba jest podzielna przez 3;\nBuzz, jeśli liczba jest podzielna przez 5;\nliczbę, jeśli liczba nie jest podzielna przez 3 ani przez 5.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#proste-statystyki",
+    "href": "lab_I/lab_I.html#proste-statystyki",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "4 Proste statystyki",
+    "text": "4 Proste statystyki\nNapisz funkcję statystyki(dane), która przyjmuje niepustą listę liczb i zwraca krotkę (minimum, maksimum, średnia). W ciele funkcji nie korzystaj z wbudowanych min(), max(), sum().\nNapisz program, który wczytuje od użytkownika ciąg liczb (po jednej w wierszu; wczytywanie kończy się po podaniu pustego wiersza), zapisuje je na liście, a następnie wyświetla wynik działania funkcji statystyki.\nPrzykład:\nPodaj liczbę (Enter aby zakończyć): 4\nPodaj liczbę (Enter aby zakończyć): -2\nPodaj liczbę (Enter aby zakończyć): 7\nPodaj liczbę (Enter aby zakończyć): 1\nPodaj liczbę (Enter aby zakończyć): \nMinimum: -2, Maksimum: 7, Średnia: 2.5",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#szereg-harmoniczny",
+    "href": "lab_I/lab_I.html#szereg-harmoniczny",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "5 Szereg harmoniczny",
+    "text": "5 Szereg harmoniczny\nNapisz program, który wyświetli najmniejszą liczbę \\(n\\), dla której\n\\[\n1+\\frac{1}{2}+\\frac{1}{3}+\\cdots+\\frac{1}{n}\\geqslant 10\n\\]\nTaka liczba w ogóle istnieje? Zobacz szereg harmoniczny.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#częstości-liter",
+    "href": "lab_I/lab_I.html#częstości-liter",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "6 Częstości liter",
+    "text": "6 Częstości liter\nNapisz funkcję f_count(text), która przyjmuje napis i zwraca słownik, w którym kluczami są litery (małe), a wartościami — liczby ich wystąpień w tekście. Znaki niebędące literami pomiń.\nNapisz program, który wczytuje od użytkownika wiersz tekstu, a następnie wyświetla rozkład częstości liter posortowany alfabetycznie.\nPrzykład:\nPodaj tekst: Ala ma kota\na: 4\nk: 1\nl: 1\nm: 1\no: 1\nt: 1",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#równanie-sześcienne",
+    "href": "lab_I/lab_I.html#równanie-sześcienne",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "7 Równanie sześcienne",
+    "text": "7 Równanie sześcienne\nNiech \\(p\\), \\(q\\) będą dodatnimi liczbami całkowitymi. Napisz program, który wyznaczy liczbę całkowitą \\(x\\) spełniającą równość\n\\[\nx^3+px=q\n\\]\nlub stwierdzi, że takiej liczby nie ma.\nPrzykłady:\n\n\\(p=1\\), \\(q=10\\) ==&gt; \\(x=2\\);\n\\(p=123456789\\), \\(q=963418328815428240221153430\\) ==&gt; \\(x=987654321\\);\n\\(p=2\\) lub \\(p=3\\), \\(q=10\\) ==&gt; brak rozwiązania;\n\\(p=123\\), \\(q=56798\\) ==&gt; brak rozwiązania.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
+    ]
+  },
+  {
+    "objectID": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
+    "href": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
+    "title": "Lab I: Zadania na rozgrzewkę",
+    "section": "8 Symulacja dryfu genetycznego",
+    "text": "8 Symulacja dryfu genetycznego\nDryf genetyczny to zjawisko polegające na losowej zmianie częstości allelu w populacji. Jest to ważny przykład procesu prowadzącego do ewolucji nieadaptatywnej.\nCelem tego ćwiczenia jest stworzenie symulacji ilustrującej działanie dryfu genetycznego.\nNiech A, a będą dwoma allelami (wariantami) jednego genu. Zakładamy, że: * Dana jest populacja osobników, w której każdy osobnik ma dwie kopie genu w dowolnych wariantach (czyli są to osobniki diploidalne). * Zmiana jednego allelu na drugi nie ma żadnego znaczenia adaptacyjnego. * W populacji pokolenia nie zachodzą na siebie, kojarzenie jest płciowe i całkowicie losowe a każda para organizmów rodzicielskich ma dwa organizmy potomne. * W organizmie potomnym warianty genu dobierane są losowo, z równym prawdopodobieństwem, po jednym od każdego z organizmów rodzicielskich. Przykład: dla organizmów rodzicielskich o genotypach aA, AA, mamy cztery możliwe genotypy potomne aA, aA, AA, AA odpowiadające wylosowaniu pozycji (1, 1), (1, 2), (2, 1), (2, 2).\nNapisz program, który losowo utworzy populację o ustalonej z góry liczbie osobników (najlepiej parzystej) a następnie wykona dla tej populacji symulację pewnej liczby cykli życiowych.\nZaobserwuj:\n\nJak zmienia się częstość alleli w populacji?\nJak zmiana ta zależy od początkowej liczby osobników? Jak od liczby pokoleń?\n\nZobacz link Time to fixation or loss. Sprawdź jak zawarte tam przewidywania mają się do rezultatów Twojej symulacji.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab I: Zadania na rozgrzewkę"
     ]
   },
   {
@@ -497,7 +618,7 @@
     "href": "index.html#wykłady",
     "title": "Podstawy programowania (AD) 2",
     "section": "2 Wykłady",
-    "text": "2 Wykłady\n\nWykład I: Błędy i wyjątki\nWykład II: Testy jednostkowe\nWykład III: Zmienne. Instrukcja przypisania\nWykład IV: Wypakowywanie obiektów iterowalnych. Parametry i argumenty\nWykład V: Przestrzenie nazw i moduły\nWykład VI: Funkcje jako obiekty. Domknięcia",
+    "text": "2 Wykłady\n\nWykład I: Błędy i wyjątki\nWykład II: Testy jednostkowe\nWykład III: Zmienne. Instrukcja przypisania\nWykład IV: Wypakowywanie obiektów iterowalnych. Parametry i argumenty\nWykład V: Przestrzenie nazw i moduły\nWykład VI: Funkcje jako obiekty. Domknięcia\nWykład VII: Dekoratory",
     "crumbs": [
       "Strona główna"
     ]
@@ -507,7 +628,7 @@
     "href": "index.html#laboratoria",
     "title": "Podstawy programowania (AD) 2",
     "section": "3 Laboratoria",
-    "text": "3 Laboratoria\n\nLaboratorium 1: Zadania na rozgrzewkę\nLaboratorium 2: Błędy i wyjątki\nLaboratorium 3: Testy jednostkowe\nLaboratorium 4: Zmienne, aliasy, kopie\nLaboratorium 5: Wypakowywanie i parametry funkcji\nLaboratorium 6: Geometria żółwia",
+    "text": "3 Laboratoria\n\nLaboratorium 1: Zadania na rozgrzewkę\nLaboratorium 2: Błędy i wyjątki\nLaboratorium 3: Testy jednostkowe\nLaboratorium 4: Zmienne, aliasy, kopie\nLaboratorium 5: Wypakowywanie i parametry funkcji\nLaboratorium 6: Geometria żółwia\nLaboratorium 7: Funkcje wyższego rzędu. Domknięcia",
     "crumbs": [
       "Strona główna"
     ]
@@ -808,256 +929,333 @@
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html",
-    "href": "lab_I/lab_I.html",
-    "title": "Lab I: Zadania na rozgrzewkę",
+    "objectID": "wyklad_VII.html",
+    "href": "wyklad_VII.html",
+    "title": "Dekoratory",
     "section": "",
-    "text": "Te ćwiczenia poprzedzają pierwszy wykład. Ich celem jest odświeżenie niektórych elementów programowania w Pythonie znanych z pierwszego semestru.",
+    "text": "Dekorator to dowolny obiekt wywoływalny, np. funkcja, którego zadaniem jest zmodyfikowanie (wzbogacenie funkcjonalności) innej funkcji lub metody. Dekorator bezparametrowy akceptuje jeden argument – dekorowaną funkcję, którą następnie modyfikuje i zwraca, albo też zwraca zupełnie inny obiekt wywoływalny. Dekorator z parametrami wywołany na argumentach zwraca funkcję będącą dekoratorem bezparametrowym.\n\n\nZałóżmy, że mamy dany bezparametrowy dekorator o nazwie deco. Wtedy deco jest obiektem wywoływalnym, jednoargumentowym, akceptującym funkcje i inne obiekty wywoływalne. Jeżeli piszemy funkcję f() i chcielibyśmy ją udekorować dekoratorem deco(), to robimy to za pomocą składni:\n@deco\ndef f(&lt;parametry&gt;):\n    &lt;kod funkcji&gt;\n\n\n\n\n\n\nImportantSkładnia dekoratora bezparametrowego\n\n\n\nPowyższy kod jest równoważny z:\ndef f(&lt;parametry&gt;):\n    &lt;kod funkcji&gt;\n\nf = deco(f)\nSkładnia @deco jest zatem lukrem składniowym (syntactic sugar).\n\n\nPrzetestujmy to na jakimś banalnym przykładzie:\n&gt;&gt;&gt; def deco(f):\n...     def xyz():\n...         print('Jestem funkcją xyz().')\n...     return xyz\n&gt;&gt;&gt;\n&gt;&gt;&gt; @deco\n... def abc():\n...     print('Jestem funkcją abc().')\n...\n&gt;&gt;&gt; abc()\nJestem funkcją xyz().\nTeraz to samo, gdybyśmy zrezygnowali ze składni dekoratora. Sprawdźmy, że rzeczywiście efekt jest identyczny:\n&gt;&gt;&gt; def deco(f):\n...     def xyz():\n...         print('Jestem funkcją xyz().')\n...     return xyz\n&gt;&gt;&gt; def abc():\n...     print('Jestem funkcją abc().')\n...\n&gt;&gt;&gt; abc = deco(abc)\n&gt;&gt;&gt; abc()\nJestem funkcją xyz().\nW obu komórkach powyżej dzieje się to samo: zmienna abc zostaje przeniesiona z funkcji abc() na funkcję xyz() zwracaną przez deco() – funkcja xyz() po prostu zastępuje abc() niezależnie od tego, jak abc() zostałaby zdefiniowana.\n\n\n\nTypowy wzorzec przy konstrukcji dekoratora wygląda następująco:\n\npobierz wszystkie argumenty przekazane do dekorowanej funkcji;\nwywołaj dekorowaną funkcję na tych argumentach i przechowaj zwracaną wartość;\nwykonaj jakieś ekstra działania.\n\nPunkt drugi musi zostać wykonany po pierwszym, ale punkt trzeci może być wykonywany w dowolnym momencie.\nZilustrujemy ten wzorzec (znów banalnym) przykładem. Napiszemy dekorator, który zmienia zachowanie dekorowanej funkcji tylko w jednym: udekorowana funkcja podczas wywołania wyświetla napis Ziemia jest płaska!.\n&gt;&gt;&gt; def ekstra_napis(f):\n...     '''Sprawia, że udekorowana funkcja wyświetla podczas\n...     wywołania napis \"Ziemia jest płaska!\"'''\n...     def wrapper(*args, **kwargs):\n...         print('Ziemia jest płaska!')\n...         wynik = f(*args, **kwargs)\n...         return wynik\n...     return wrapper\nZwróć uwagę jak przekazywane są argumenty. Udekorowana funkcja f() w rzeczywistości będzie funkcją wrapper(), a zatem użytkownik wywołując f() będzie w rzeczywistości wywoływał wrapper(). Funkcja wrapper() otrzyma w takim razie argumenty przeznaczone dla f(). Ponieważ nic nie wiemy o parametrach f(), więc korzystamy z modyfikatorów * i ** w definicji wrapper(), aby każdy układ argumentów mógł zostać zaakceptowany. Te przekazane przez pozycję znajdą się w krotce args, te przekazane przez nazwę znajdą się w słowniku kwargs. W wierszu\nwynik = f(*args, **kwargs)\nfunkcja wrapper() wywołuje funkcję f() i następnie zwraca wynik. Z zachowania funkcji f() nic nie zostaje stracone.\nPokażemy jak ekstra_napis() dekoruje prostą funkcję obliczającą potęgę liczby:\n&gt;&gt;&gt; @ekstra_napis\n... def potęga(podstawa, wykładnik=2):\n...     '''Zwraca podstawa ** wykładnik.\n...     Domyślnie wykładnik ma wartość 2.'''\n...     return podstawa ** wykładnik\n&gt;&gt;&gt; potęga(7)\nZiemia jest płaska!\n49\n\n\n\nDekorator przyjmujący parametry wywoływany jest nieco inaczej. Załóżmy, że deco() jest takim dekoratorem. Wówczas dekorując nim funkcję f() piszemy tak:\n@deco(&lt;parametry deco&gt;)\ndef f(&lt;parametry f&gt;):\n    &lt;kod funkcji f&gt;\nTym razem składnia ta jest równoważna z:\ndef f(&lt;parametry f&gt;):\n    &lt;kod funkcji f&gt;\n\nf = deco(&lt;parametry deco&gt;)(f)\nJeśli parametry deco() są opcjonalne i odpowiadają nam ich domyślne wartości to możemy napisać tak:\n@deco()\ndef f(&lt;parametry f&gt;):\n    &lt;kod funkcji f&gt;\nNie możemy jednak napisać:\n@deco\ndef f(&lt;parametry f&gt;):\n    &lt;kod funkcji f&gt;\nTa składnia (bez nawiasów po nazwie dekoratora) zarezerwowana jest dla dekoratorów bezparametrowych.\nPisanie dekoratora z parametrami wymaga w istocie napisania fabryki dekoratorów. Działa to tak. Powiedzmy, że chcemy napisać dekorator deco() z paramerem p. Wtedy wywołanie deco(p) na konkretnym p zwraca funkcję (różną dla różnych p) i dopiero ta funkcja jest dekoratorem bezparametrowym funkcji f. Zauważ, że schemat deco(p)(f) — funkcja zwracająca funkcję zwracającą funkcję — to zastosowanie techniki curryingu, którą poznaliśmy na poprzednim wykładzie.\nZróbmy przykład:\n&gt;&gt;&gt; def ekstra_napis(s='Ziemia jest płaska!'):\n...     '''s jest łańcuchem wyświetlanym przez dekorowaną\n...     funkcję podczas wywołania.\n...     Domyślnie \"Ziemia jest płaska!\"'''\n...     def dekorator(f):\n...         def wrapper(*args, **kwargs):\n...             print(s)\n...             wynik = f(*args, **kwargs)\n...             return wynik\n...         return wrapper\n...     return dekorator\n...\n&gt;&gt;&gt; @ekstra_napis('Świat Dysku podpierają cztery słonie!')\n... def średnia(a, *b, typ='arytmetyczna'):\n...     '''Zwraca średnią (domyślnie arytmetyczną).'''\n...     if typ == 'arytmetyczna':\n...         return (a + sum(b)) / (1 + len(b))\n...     else:\n...         iloczyn = a\n...         for x in b:\n...             iloczyn *= x\n...         return iloczyn ** (1 / (1 + len(b)))\n&gt;&gt;&gt; średnia(1, 2, 3, 4)\nŚwiat Dysku podpierają cztery słonie!\n2.5\nOto użycie dekoratora ekstra_napis() bez składni ze znakiem @:\n&gt;&gt;&gt; def potęga(podstawa, wykładnik=2):\n...     '''Zwraca podstawa ** wykładnik.\n...     Domyślnie wykładnik ma wartość 2.'''\n...     return podstawa ** wykładnik\n&gt;&gt;&gt; potęga = ekstra_napis('Ala ma kota')(potęga)\n&gt;&gt;&gt; potęga(7)\nAla ma kota\n49",
     "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
+      "Wykłady",
+      "Dekoratory"
     ]
   },
   {
-    "objectID": "lab_I/lab_I.html#przeliczanie-sekund",
-    "href": "lab_I/lab_I.html#przeliczanie-sekund",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "1 Przeliczanie sekund",
-    "text": "1 Przeliczanie sekund\nNapisz program, który wczytuje od użytkownika liczbę sekund (dodatnią liczbę całkowitą) i przelicza ją na dni, godziny, minuty i sekundy.\nPrzykłady:\nPodaj liczbę sekund: 123456\n1 d, 10 h, 17 min, 36 s\nPodaj liczbę sekund: 3661\n0 d, 1 h, 1 min, 1 s\nPodaj liczbę sekund: 86400\n1 d, 0 h, 0 min, 0 s",
-    "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
-    ]
-  },
-  {
-    "objectID": "lab_I/lab_I.html#tabliczka-mnożenia",
-    "href": "lab_I/lab_I.html#tabliczka-mnożenia",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "2 Tabliczka mnożenia",
-    "text": "2 Tabliczka mnożenia\nNapisz program wyświetlający tabliczkę mnożenia dla zadanej wartości \\(1\\leqslant n\\leqslant 15\\). Liczbę \\(n\\) wprowadza użytkownik.\nPrzykład:\nPodaj n: 9\n\n1   2   3   4   5   6   7   8   9   \n2   4   6   8   10  12  14  16  18  \n3   6   9   12  15  18  21  24  27  \n4   8   12  16  20  24  28  32  36  \n5   10  15  20  25  30  35  40  45  \n6   12  18  24  30  36  42  48  54  \n7   14  21  28  35  42  49  56  63  \n8   16  24  32  40  48  56  64  72  \n9   18  27  36  45  54  63  72  81\nW programie wykorzystaj formatowanie łańcuchów (metoda str.format() lub f-strings).",
-    "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
-    ]
-  },
-  {
-    "objectID": "lab_I/lab_I.html#fizzbuzz",
-    "href": "lab_I/lab_I.html#fizzbuzz",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "3 FizzBuzz",
-    "text": "3 FizzBuzz\nNapisz program, który pobiera od użytkownika dodatnią liczbę całkowitą n. Następnie dla liczb od 1 do n program wyświetla:\n\nFizzBuzz, jeśli liczba jest podzielna przez 3 i 5;\nFizz, jeśli liczba jest podzielna przez 3;\nBuzz, jeśli liczba jest podzielna przez 5;\nliczbę, jeśli liczba nie jest podzielna przez 3 ani przez 5.",
-    "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
-    ]
-  },
-  {
-    "objectID": "lab_I/lab_I.html#proste-statystyki",
-    "href": "lab_I/lab_I.html#proste-statystyki",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "4 Proste statystyki",
-    "text": "4 Proste statystyki\nNapisz funkcję statystyki(dane), która przyjmuje niepustą listę liczb i zwraca krotkę (minimum, maksimum, średnia). W ciele funkcji nie korzystaj z wbudowanych min(), max(), sum().\nNapisz program, który wczytuje od użytkownika ciąg liczb (po jednej w wierszu; wczytywanie kończy się po podaniu pustego wiersza), zapisuje je na liście, a następnie wyświetla wynik działania funkcji statystyki.\nPrzykład:\nPodaj liczbę (Enter aby zakończyć): 4\nPodaj liczbę (Enter aby zakończyć): -2\nPodaj liczbę (Enter aby zakończyć): 7\nPodaj liczbę (Enter aby zakończyć): 1\nPodaj liczbę (Enter aby zakończyć): \nMinimum: -2, Maksimum: 7, Średnia: 2.5",
-    "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
-    ]
-  },
-  {
-    "objectID": "lab_I/lab_I.html#szereg-harmoniczny",
-    "href": "lab_I/lab_I.html#szereg-harmoniczny",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "5 Szereg harmoniczny",
-    "text": "5 Szereg harmoniczny\nNapisz program, który wyświetli najmniejszą liczbę \\(n\\), dla której\n\\[\n1+\\frac{1}{2}+\\frac{1}{3}+\\cdots+\\frac{1}{n}\\geqslant 10\n\\]\nTaka liczba w ogóle istnieje? Zobacz szereg harmoniczny.",
-    "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
-    ]
-  },
-  {
-    "objectID": "lab_I/lab_I.html#częstości-liter",
-    "href": "lab_I/lab_I.html#częstości-liter",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "6 Częstości liter",
-    "text": "6 Częstości liter\nNapisz funkcję f_count(text), która przyjmuje napis i zwraca słownik, w którym kluczami są litery (małe), a wartościami — liczby ich wystąpień w tekście. Znaki niebędące literami pomiń.\nNapisz program, który wczytuje od użytkownika wiersz tekstu, a następnie wyświetla rozkład częstości liter posortowany alfabetycznie.\nPrzykład:\nPodaj tekst: Ala ma kota\na: 4\nk: 1\nl: 1\nm: 1\no: 1\nt: 1",
-    "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
-    ]
-  },
-  {
-    "objectID": "lab_I/lab_I.html#równanie-sześcienne",
-    "href": "lab_I/lab_I.html#równanie-sześcienne",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "7 Równanie sześcienne",
-    "text": "7 Równanie sześcienne\nNiech \\(p\\), \\(q\\) będą dodatnimi liczbami całkowitymi. Napisz program, który wyznaczy liczbę całkowitą \\(x\\) spełniającą równość\n\\[\nx^3+px=q\n\\]\nlub stwierdzi, że takiej liczby nie ma.\nPrzykłady:\n\n\\(p=1\\), \\(q=10\\) ==&gt; \\(x=2\\);\n\\(p=123456789\\), \\(q=963418328815428240221153430\\) ==&gt; \\(x=987654321\\);\n\\(p=2\\) lub \\(p=3\\), \\(q=10\\) ==&gt; brak rozwiązania;\n\\(p=123\\), \\(q=56798\\) ==&gt; brak rozwiązania.",
-    "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
-    ]
-  },
-  {
-    "objectID": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
-    "href": "lab_I/lab_I.html#symulacja-dryfu-genetycznego",
-    "title": "Lab I: Zadania na rozgrzewkę",
-    "section": "8 Symulacja dryfu genetycznego",
-    "text": "8 Symulacja dryfu genetycznego\nDryf genetyczny to zjawisko polegające na losowej zmianie częstości allelu w populacji. Jest to ważny przykład procesu prowadzącego do ewolucji nieadaptatywnej.\nCelem tego ćwiczenia jest stworzenie symulacji ilustrującej działanie dryfu genetycznego.\nNiech A, a będą dwoma allelami (wariantami) jednego genu. Zakładamy, że: * Dana jest populacja osobników, w której każdy osobnik ma dwie kopie genu w dowolnych wariantach (czyli są to osobniki diploidalne). * Zmiana jednego allelu na drugi nie ma żadnego znaczenia adaptacyjnego. * W populacji pokolenia nie zachodzą na siebie, kojarzenie jest płciowe i całkowicie losowe a każda para organizmów rodzicielskich ma dwa organizmy potomne. * W organizmie potomnym warianty genu dobierane są losowo, z równym prawdopodobieństwem, po jednym od każdego z organizmów rodzicielskich. Przykład: dla organizmów rodzicielskich o genotypach aA, AA, mamy cztery możliwe genotypy potomne aA, aA, AA, AA odpowiadające wylosowaniu pozycji (1, 1), (1, 2), (2, 1), (2, 2).\nNapisz program, który losowo utworzy populację o ustalonej z góry liczbie osobników (najlepiej parzystej) a następnie wykona dla tej populacji symulację pewnej liczby cykli życiowych.\nZaobserwuj:\n\nJak zmienia się częstość alleli w populacji?\nJak zmiana ta zależy od początkowej liczby osobników? Jak od liczby pokoleń?\n\nZobacz link Time to fixation or loss. Sprawdź jak zawarte tam przewidywania mają się do rezultatów Twojej symulacji.",
-    "crumbs": [
-      "Laboratoria",
-      "Lab I: Zadania na rozgrzewkę"
-    ]
-  },
-  {
-    "objectID": "lab_III/lab_III.html",
-    "href": "lab_III/lab_III.html",
-    "title": "Lab III: Testy jednostkowe",
+    "objectID": "wyklad_VII.html#składnia",
+    "href": "wyklad_VII.html#składnia",
+    "title": "Dekoratory",
     "section": "",
-    "text": "Na tym laboratorium zaczynamy pracę z testami automatycznymi. Począwszy od tego laba wiele zadań będzie polegać na napisaniu modułu, który spełnia wymagania zawarte w gotowym pliku z testami. Schemat pracy jest następujący:\nTesty uruchamiaj z wiersza poleceń. Opcja -v wyświetla szczegółowe wyniki:\nPamiętaj o pozostałych opcjach modułu unittest opisanych na wykładzie.",
+    "text": "Dekorator to dowolny obiekt wywoływalny, np. funkcja, którego zadaniem jest zmodyfikowanie (wzbogacenie funkcjonalności) innej funkcji lub metody. Dekorator bezparametrowy akceptuje jeden argument – dekorowaną funkcję, którą następnie modyfikuje i zwraca, albo też zwraca zupełnie inny obiekt wywoływalny. Dekorator z parametrami wywołany na argumentach zwraca funkcję będącą dekoratorem bezparametrowym.\n\n\nZałóżmy, że mamy dany bezparametrowy dekorator o nazwie deco. Wtedy deco jest obiektem wywoływalnym, jednoargumentowym, akceptującym funkcje i inne obiekty wywoływalne. Jeżeli piszemy funkcję f() i chcielibyśmy ją udekorować dekoratorem deco(), to robimy to za pomocą składni:\n@deco\ndef f(&lt;parametry&gt;):\n    &lt;kod funkcji&gt;\n\n\n\n\n\n\nImportantSkładnia dekoratora bezparametrowego\n\n\n\nPowyższy kod jest równoważny z:\ndef f(&lt;parametry&gt;):\n    &lt;kod funkcji&gt;\n\nf = deco(f)\nSkładnia @deco jest zatem lukrem składniowym (syntactic sugar).\n\n\nPrzetestujmy to na jakimś banalnym przykładzie:\n&gt;&gt;&gt; def deco(f):\n...     def xyz():\n...         print('Jestem funkcją xyz().')\n...     return xyz\n&gt;&gt;&gt;\n&gt;&gt;&gt; @deco\n... def abc():\n...     print('Jestem funkcją abc().')\n...\n&gt;&gt;&gt; abc()\nJestem funkcją xyz().\nTeraz to samo, gdybyśmy zrezygnowali ze składni dekoratora. Sprawdźmy, że rzeczywiście efekt jest identyczny:\n&gt;&gt;&gt; def deco(f):\n...     def xyz():\n...         print('Jestem funkcją xyz().')\n...     return xyz\n&gt;&gt;&gt; def abc():\n...     print('Jestem funkcją abc().')\n...\n&gt;&gt;&gt; abc = deco(abc)\n&gt;&gt;&gt; abc()\nJestem funkcją xyz().\nW obu komórkach powyżej dzieje się to samo: zmienna abc zostaje przeniesiona z funkcji abc() na funkcję xyz() zwracaną przez deco() – funkcja xyz() po prostu zastępuje abc() niezależnie od tego, jak abc() zostałaby zdefiniowana.\n\n\n\nTypowy wzorzec przy konstrukcji dekoratora wygląda następująco:\n\npobierz wszystkie argumenty przekazane do dekorowanej funkcji;\nwywołaj dekorowaną funkcję na tych argumentach i przechowaj zwracaną wartość;\nwykonaj jakieś ekstra działania.\n\nPunkt drugi musi zostać wykonany po pierwszym, ale punkt trzeci może być wykonywany w dowolnym momencie.\nZilustrujemy ten wzorzec (znów banalnym) przykładem. Napiszemy dekorator, który zmienia zachowanie dekorowanej funkcji tylko w jednym: udekorowana funkcja podczas wywołania wyświetla napis Ziemia jest płaska!.\n&gt;&gt;&gt; def ekstra_napis(f):\n...     '''Sprawia, że udekorowana funkcja wyświetla podczas\n...     wywołania napis \"Ziemia jest płaska!\"'''\n...     def wrapper(*args, **kwargs):\n...         print('Ziemia jest płaska!')\n...         wynik = f(*args, **kwargs)\n...         return wynik\n...     return wrapper\nZwróć uwagę jak przekazywane są argumenty. Udekorowana funkcja f() w rzeczywistości będzie funkcją wrapper(), a zatem użytkownik wywołując f() będzie w rzeczywistości wywoływał wrapper(). Funkcja wrapper() otrzyma w takim razie argumenty przeznaczone dla f(). Ponieważ nic nie wiemy o parametrach f(), więc korzystamy z modyfikatorów * i ** w definicji wrapper(), aby każdy układ argumentów mógł zostać zaakceptowany. Te przekazane przez pozycję znajdą się w krotce args, te przekazane przez nazwę znajdą się w słowniku kwargs. W wierszu\nwynik = f(*args, **kwargs)\nfunkcja wrapper() wywołuje funkcję f() i następnie zwraca wynik. Z zachowania funkcji f() nic nie zostaje stracone.\nPokażemy jak ekstra_napis() dekoruje prostą funkcję obliczającą potęgę liczby:\n&gt;&gt;&gt; @ekstra_napis\n... def potęga(podstawa, wykładnik=2):\n...     '''Zwraca podstawa ** wykładnik.\n...     Domyślnie wykładnik ma wartość 2.'''\n...     return podstawa ** wykładnik\n&gt;&gt;&gt; potęga(7)\nZiemia jest płaska!\n49\n\n\n\nDekorator przyjmujący parametry wywoływany jest nieco inaczej. Załóżmy, że deco() jest takim dekoratorem. Wówczas dekorując nim funkcję f() piszemy tak:\n@deco(&lt;parametry deco&gt;)\ndef f(&lt;parametry f&gt;):\n    &lt;kod funkcji f&gt;\nTym razem składnia ta jest równoważna z:\ndef f(&lt;parametry f&gt;):\n    &lt;kod funkcji f&gt;\n\nf = deco(&lt;parametry deco&gt;)(f)\nJeśli parametry deco() są opcjonalne i odpowiadają nam ich domyślne wartości to możemy napisać tak:\n@deco()\ndef f(&lt;parametry f&gt;):\n    &lt;kod funkcji f&gt;\nNie możemy jednak napisać:\n@deco\ndef f(&lt;parametry f&gt;):\n    &lt;kod funkcji f&gt;\nTa składnia (bez nawiasów po nazwie dekoratora) zarezerwowana jest dla dekoratorów bezparametrowych.\nPisanie dekoratora z parametrami wymaga w istocie napisania fabryki dekoratorów. Działa to tak. Powiedzmy, że chcemy napisać dekorator deco() z paramerem p. Wtedy wywołanie deco(p) na konkretnym p zwraca funkcję (różną dla różnych p) i dopiero ta funkcja jest dekoratorem bezparametrowym funkcji f. Zauważ, że schemat deco(p)(f) — funkcja zwracająca funkcję zwracającą funkcję — to zastosowanie techniki curryingu, którą poznaliśmy na poprzednim wykładzie.\nZróbmy przykład:\n&gt;&gt;&gt; def ekstra_napis(s='Ziemia jest płaska!'):\n...     '''s jest łańcuchem wyświetlanym przez dekorowaną\n...     funkcję podczas wywołania.\n...     Domyślnie \"Ziemia jest płaska!\"'''\n...     def dekorator(f):\n...         def wrapper(*args, **kwargs):\n...             print(s)\n...             wynik = f(*args, **kwargs)\n...             return wynik\n...         return wrapper\n...     return dekorator\n...\n&gt;&gt;&gt; @ekstra_napis('Świat Dysku podpierają cztery słonie!')\n... def średnia(a, *b, typ='arytmetyczna'):\n...     '''Zwraca średnią (domyślnie arytmetyczną).'''\n...     if typ == 'arytmetyczna':\n...         return (a + sum(b)) / (1 + len(b))\n...     else:\n...         iloczyn = a\n...         for x in b:\n...             iloczyn *= x\n...         return iloczyn ** (1 / (1 + len(b)))\n&gt;&gt;&gt; średnia(1, 2, 3, 4)\nŚwiat Dysku podpierają cztery słonie!\n2.5\nOto użycie dekoratora ekstra_napis() bez składni ze znakiem @:\n&gt;&gt;&gt; def potęga(podstawa, wykładnik=2):\n...     '''Zwraca podstawa ** wykładnik.\n...     Domyślnie wykładnik ma wartość 2.'''\n...     return podstawa ** wykładnik\n&gt;&gt;&gt; potęga = ekstra_napis('Ala ma kota')(potęga)\n&gt;&gt;&gt; potęga(7)\nAla ma kota\n49",
     "crumbs": [
-      "Laboratoria",
-      "Lab III: Testy jednostkowe"
+      "Wykłady",
+      "Dekoratory"
     ]
   },
   {
-    "objectID": "lab_III/lab_III.html#niezmiennik-pętli",
-    "href": "lab_III/lab_III.html#niezmiennik-pętli",
-    "title": "Lab III: Testy jednostkowe",
-    "section": "1 Niezmiennik pętli",
-    "text": "1 Niezmiennik pętli\nW pętli:\nn = 10\ni, j = 0, n\n\nwhile i &lt; n:\n    i += 1\n    j -= 1\nzidentyfikuj niezmiennik pętli i zaimplementuj go za pomocą instrukcji assert.",
+    "objectID": "wyklad_VII.html#dekorator-wraps",
+    "href": "wyklad_VII.html#dekorator-wraps",
+    "title": "Dekoratory",
+    "section": "2 Dekorator wraps()",
+    "text": "2 Dekorator wraps()\nWróćmy do przykładu z bezparametrowym dekoratorem ekstra_napis():\n&gt;&gt;&gt; def ekstra_napis(f):\n...     '''Sprawia, że udekorowana funkcja wyświetla podczas\n...     wywołania napis \"Ziemia jest płaska!\"'''\n...     def wrapper(*args, **kwargs):\n...         print('Ziemia jest płaska!')\n...         wynik = f(*args, **kwargs)\n...         return wynik\n...     return wrapper\nStosujemy go do funkcji potęga():\n&gt;&gt;&gt; @ekstra_napis\n... def potęga(podstawa, wykładnik=2):\n...     '''Zwraca podstawa ** wykładnik.\n...     Domyślnie wykładnik ma wartość 2.'''\n...     return podstawa ** wykładnik\n&gt;&gt;&gt; potęga(7)\nZiemia jest płaska!\n49\nPamiętamy, że sposób działania funkcji potęga() pozostaje zachowane – funkcja nadal oblicza i zwraca potęgę. Efekt dekoratora sprowadza się do wyświetlenia napisu (którego normalnie, bez dekoracji, by nie było). Niestety, po drodze zgubiliśmy metadane funkcji.\nNazwę i docstring:\n&gt;&gt;&gt; potęga.__name__\n'wrapper'\n&gt;&gt;&gt; potęga.__doc__\n&gt;&gt;&gt; potęga.__code__.co_name\n'wrapper'\n&gt;&gt;&gt; help(potęga)\nHelp on function wrapper in module __main__:\nwrapper(*args, **kwargs)\nAby zachować metadane funkcji w definicji dekoratora należy użyć… dekoratora wraps() z modulu functools! Dekorator ten wstawiamy przed definicją funkcji podmieniającą funkcję dekorowaną. Obowiązkowym parametrem w tym dekoratorze jest dekorowana funkcja. Zwróć uwagę na różne role występujących funkcji: dla ekstra_napis() argument f jest funkcją dekorowaną, dla wraps() dekorowaną funkcją jest wrapper() a f jest parametrem.\n&gt;&gt;&gt; from functools import wraps\n&gt;&gt;&gt; def ekstra_napis(f):\n...     '''Sprawia, że udekorowana funkcja wyświetla podczas\n...     wywołania napis \"Ziemia jest płaska!\"'''\n...     @wraps(f)\n...     def wrapper(*args, **kwargs):\n...         print('Ziemia jest płaska!')\n...         wynik = f(*args, **kwargs)\n...         return wynik\n...     return wrapper\n&gt;&gt;&gt; @ekstra_napis\n... def potęga(podstawa, wykładnik=2):\n...     '''Zwraca podstawa ** wykładnik.\n...     Domyślnie wykładnik ma wartość 2.'''\n...     return podstawa ** wykładnik\n&gt;&gt;&gt; potęga(5, 3)\nZiemia jest płaska!\n125\n&gt;&gt;&gt; potęga.__name__\n'potęga'\n&gt;&gt;&gt; potęga.__code__.co_name\n'wrapper'\n&gt;&gt;&gt; help(potęga)\nHelp on function potęga in module __main__:\n\npotęga(podstawa, wykładnik=2)\n    Zwraca podstawa ** wykładnik.\n    Domyślnie wykładnik ma wartość 2.\n\n\n\n\n\n\nNote__code__.co_name\n\n\n\nAtrybut .__code__.co_name nie został zmieniony, gdyż jest tylko do odczytu. Dekorator wraps() kopiuje natomiast .__name__, .__doc__ i kilka innych atrybutów, dzięki czemu metadane funkcji są zachowane.\n\n\nAnalogiczna modyfikacja dla dekoratora z parametrami (import wraps obowiązuje z komórki powyżej):\n&gt;&gt;&gt; def ekstra_napis(s='Ziemia jest płaska!'):\n...     '''s jest łańcuchem wyświetlanym przez dekorowaną\n...     funkcję podczas wywołania.\n...     Domyślnie \"Ziemia jest płaska!\"'''\n...     def dekorator(f):\n...         @wraps(f)\n...         def wrapper(*args, **kwargs):\n...             print(s)\n...             wynik = f(*args, **kwargs)\n...             return wynik\n...         return wrapper\n...     return dekorator\nPrzykłady użycia:\n&gt;&gt;&gt; @ekstra_napis('Świat Dysku podpierają cztery słonie!')\n... def średnia(a, *b, typ='arytmetyczna'):\n...     '''Zwraca średnią (domyślnie arytmetyczną).'''\n...     if typ == 'arytmetyczna':\n...         return (a + sum(b)) / (1 + len(b))\n...     else:\n...         iloczyn = a\n...         for x in b:\n...             iloczyn *= x\n...         return iloczyn ** (1 / (1 + len(b)))\n&gt;&gt;&gt; średnia(1, 2, 3, 4, 5)\nŚwiat Dysku podpierają cztery słonie!\n3.0\n&gt;&gt;&gt; średnia.__name__\n'średnia'\n&gt;&gt;&gt; help(średnia)\nHelp on function średnia in module __main__:\nśrednia(a, *b, typ='arytmetyczna')\n    Zwraca średnią (domyślnie arytmetyczną).",
     "crumbs": [
-      "Laboratoria",
-      "Lab III: Testy jednostkowe"
+      "Wykłady",
+      "Dekoratory"
     ]
   },
   {
-    "objectID": "lab_III/lab_III.html#ciąg-arytmetyczny",
-    "href": "lab_III/lab_III.html#ciąg-arytmetyczny",
-    "title": "Lab III: Testy jednostkowe",
-    "section": "2 Ciąg arytmetyczny",
-    "text": "2 Ciąg arytmetyczny\nDokończ definicję funkcji:\ndef is_arithmetic(seq):\n    \"\"\"Zwraca True, jeśli seq jest ciągiem arytmetycznym; w przeciwnym razie zwraca False.\n\n    Parametry:\n    seq -- ciąg liczb\n    \n    Przykłady:\n    &gt;&gt;&gt; is_arithmetic([])\n    True\n    &gt;&gt;&gt; is_arithmetic([2])\n    True\n    &gt;&gt;&gt; is_arithmetic([5, -1])\n    True\n    &gt;&gt;&gt; is_arithmetic([1, 2, 3])\n    True\n    &gt;&gt;&gt; is_arithmetic(range(100, -1000, -7))\n    True\n    &gt;&gt;&gt; is_arithmetic((2, 5, 8, 10, 13))\n    False\n    \"\"\"\n    pass\nSprawdź poprawność implementacji na przykładach podanych w docstringu. Wykorzystaj funkcję doctest.testmod().",
+    "objectID": "wyklad_VII.html#składanie-dekoratorów",
+    "href": "wyklad_VII.html#składanie-dekoratorów",
+    "title": "Dekoratory",
+    "section": "3 Składanie dekoratorów",
+    "text": "3 Składanie dekoratorów\n\n\n\n\n\n\nImportantSkładanie dekoratorów\n\n\n\nSkładnia:\n@deco1\n@deco2\ndef f(&lt;parametry&gt;):\n    &lt;kod funkcji&gt;\njest równoważna z:\nf = deco1(deco2(f))\nDekoratory stosowane są od dołu do góry: najpierw deco2, potem deco1.\n\n\nZilustrujmy to przykładem. Zdefiniujemy dwa proste dekoratory — oba wyświetlają linię przed wywołaniem funkcji, ale każdy inną:\n&gt;&gt;&gt; from functools import wraps\n&gt;&gt;&gt; def gwiazdki(f):\n...     @wraps(f)\n...     def wrapper(*args, **kwargs):\n...         print('***')\n...         return f(*args, **kwargs)\n...     return wrapper\n&gt;&gt;&gt; def minusy(f):\n...     @wraps(f)\n...     def wrapper(*args, **kwargs):\n...         print('---')\n...         return f(*args, **kwargs)\n...     return wrapper\n&gt;&gt;&gt; @gwiazdki\n... @minusy\n... def powitanie(imię):\n...     print(f'Cześć, {imię}!')\n&gt;&gt;&gt; powitanie('Anna')\n***\n---\nCześć, Anna!\nKolejność ma znaczenie. Zamiana dekoratorów miejscami zmienia kolejność wyświetlanych linii:\n&gt;&gt;&gt; @minusy\n... @gwiazdki\n... def powitanie(imię):\n...     print(f'Cześć, {imię}!')\n&gt;&gt;&gt; powitanie('Anna')\n---\n***\nCześć, Anna!",
     "crumbs": [
-      "Laboratoria",
-      "Lab III: Testy jednostkowe"
+      "Wykłady",
+      "Dekoratory"
     ]
   },
   {
-    "objectID": "lab_III/lab_III.html#test-pierwszości",
-    "href": "lab_III/lab_III.html#test-pierwszości",
-    "title": "Lab III: Testy jednostkowe",
-    "section": "3 Test pierwszości",
-    "text": "3 Test pierwszości\nNapisz moduł is_prime.py zawierający funkcję is_prime(n), która zwraca True, jeśli n jest liczbą pierwszą, w przeciwnym razie False. Dla n ujemnego funkcja zgłasza wyjątek ValueError z komunikatem argument musi być nieujemny.\nTesty modułu is_prime.py znajdują się w pliku test_is_prime.py. Uruchom testy i upewnij się, że wszystkie przechodzą.",
+    "objectID": "wyklad_VII.html#przykład-mierzenie-czasu-wykonania-funkcji",
+    "href": "wyklad_VII.html#przykład-mierzenie-czasu-wykonania-funkcji",
+    "title": "Dekoratory",
+    "section": "4 Przykład: Mierzenie czasu wykonania funkcji",
+    "text": "4 Przykład: Mierzenie czasu wykonania funkcji\nFunkcja perf_counter() z modułu time pozwala mierzyć czas wykonania fragmentu kodu. Wywołanie perf_counter() zwraca czas w sekundach od jakiegoś punktu odniesienia, określonego w dokumentacji jako undefined:\n&gt;&gt;&gt; from time import perf_counter\n&gt;&gt;&gt; perf_counter()\n203691.495784303\nSensowną wartość daje dopiero różnica wartości zwrócona przez dwa wywołania perf_counter(). Zmierzmy ile czasu będzie trwało odliczanie od miliona do zera:\n&gt;&gt;&gt; def odliczanie(n):\n...     '''Odlicza od n do 0.'''\n...     while n &gt; 0:\n...         n -= 1\n...\n&gt;&gt;&gt; from time import perf_counter\n&gt;&gt;&gt; n = 10**8\n&gt;&gt;&gt; start = perf_counter(); odliczanie(n); end = perf_counter()\n&gt;&gt;&gt; print('Czas: {} sekund.'.format(end - start))\nCzas: 1.9494607530068606 sekund.\nCiekawszy przykład: wiemy, że dodawanie wartości do listy metodą .append() jest znacznie bardziej wydajne niż wstawianie jej metodą .insert(). Sprawdźmy to eksperymentalnie. Piszemy dwie funkcje: dodaj_na_końcu() wykorzystuje .append(), wstaw_na_początku() wykorzystuje .insert() do wstawiania na pozycji 0.\n&gt;&gt;&gt; import random\n&gt;&gt;&gt; def dodaj_na_końcu(lst, liczba_wartości):\n...     for _ in range(liczba_wartości):\n...         lst.append(random.random())\n&gt;&gt;&gt; def wstaw_na_początku(lst, liczba_wartości):\n...     for _ in range(liczba_wartości):\n...         lst.insert(0, random.random())\nProwadzimy dwa eksperymenty. Dodajemy losowe wartość do pustej początkowo listy:\n&gt;&gt;&gt; lst = []\n&gt;&gt;&gt; start = perf_counter()\n&gt;&gt;&gt; dodaj_na_końcu(lst, liczba_wartości=10**5)\n&gt;&gt;&gt; end = perf_counter()\n&gt;&gt;&gt; r1 = end - start\n&gt;&gt;&gt; print('Czas: {} sekund.'.format(r1))\nCzas: 0.005579272023169324 sekund.\n&gt;&gt;&gt; lst = []\n&gt;&gt;&gt; start = perf_counter()\n&gt;&gt;&gt; wstaw_na_początku(lst, liczba_wartości=10**5)\n&gt;&gt;&gt; end = perf_counter()\n&gt;&gt;&gt; r2 = end - start\n&gt;&gt;&gt; print('Czas: {} sekund.'.format(r2))\nCzas: 0.811013244005153 sekund.\n&gt;&gt;&gt; r2 / r1\n145.3618394366178\nWidać, że trzeba mieć naprawdę dobre powody, aby używać .insert() zamiast .append()!\nJaki związek mają te testy z dekoratorami? Otóż można napisać dekorator dokładający funkcjonalność mierzenia czasu. W dekoratorze zamkniemy wzorzec mierzenia czasu zaprezentowany wyżej, w efekcie zniknie konieczność wielokrotnego pisania tego samego kodu.\n\n\n\n\n\n\nTipĆwiczenie\n\n\n\nZatrzymaj się i spróbuj napisać taki dekorator sam. Dekorator dokładający napisy do funkcji już podaliśmy — teraz wystarczy, aby ten napis był czasem wykonania dekorowanej funkcji.\n\n\nPodam tutaj ten dekorator w (prawie) takiej formie, w jakiej występuje w książce Python Receptury:\n&gt;&gt;&gt; from time import perf_counter\n&gt;&gt;&gt; from functools import wraps\n&gt;&gt;&gt; def timethis(f):\n...     @wraps(f)\n...     def wrapper(*args, **kwargs):\n...         start = perf_counter()\n...         wynik = f(*args, **kwargs)\n...         end = perf_counter()\n...         print('{}: {} sekund.'.format(f.__name__, end - start))\n...         return wynik\n...     return wrapper\nJako zastosowanie sprawdzimy wydajność różnych funkcji obliczających sumę wartości w sekwencji:\n&gt;&gt;&gt; from functools import reduce\n&gt;&gt;&gt; @timethis\n... def suma_pętlą_for(seq):\n...     suma = 0\n...     for w in seq:\n...         suma += w\n...     return suma\n&gt;&gt;&gt; @timethis\n... def suma_pętlą_while(seq):\n...     i, suma = 0, 0\n...     while i &lt; len(seq):\n...         suma += seq[i]\n...         i += 1\n...     return suma\n&gt;&gt;&gt; from operator import add\n&gt;&gt;&gt; @timethis\n... def suma_funkcją_reduce(seq):\n...     return reduce(add, seq, 0)\n&gt;&gt;&gt; @timethis\n... def suma_funkcją_sum(seq):\n...     return sum(seq)\n&gt;&gt;&gt; seq = range(10**6)\n&gt;&gt;&gt; suma_pętlą_for(seq)\nsuma_pętlą_for: 0.028646794002270326 sekund.\n499999500000\n&gt;&gt;&gt; suma_pętlą_while(seq)\nsuma_pętlą_while: 0.08484931400744244 sekund.\n499999500000\n&gt;&gt;&gt; suma_funkcją_reduce(seq)\nsuma_funkcją_reduce: 0.02702571201371029 sekund.\n499999500000\n&gt;&gt;&gt; suma_funkcją_sum(seq)\nsuma_funkcją_sum: 0.01586138500715606 sekund.\n499999500000\nPowyższe testy warto wykonać kilka razy i w różnej kolejności. Jeśli akurat w danej chwili system jest obciążony innymi zadaniami, to fakt ten wpłynie na wynik. Do bardziej profesjonalnych zastosowań wykorzystuje się moduł timeit.\nNa moim komputerze wygrywa sumowanie wbudowaną funkcją sum(), najgorzej wypada pętla while.",
     "crumbs": [
-      "Laboratoria",
-      "Lab III: Testy jednostkowe"
+      "Wykłady",
+      "Dekoratory"
     ]
   },
   {
-    "objectID": "lab_III/lab_III.html#przesunięcie-cykliczne",
-    "href": "lab_III/lab_III.html#przesunięcie-cykliczne",
-    "title": "Lab III: Testy jednostkowe",
-    "section": "4 Przesunięcie cykliczne",
-    "text": "4 Przesunięcie cykliczne\nNapisz moduł rotate_seq.py zawierający funkcje:\n\nrotate(seq, n) — zwraca sekwencję seq przesuniętą cyklicznie o n miejsc; jeśli n jest ujemne, to przesunięcie jest w lewo, w przeciwnym razie w prawo,\nrotate_left(seq, n) — zwraca sekwencję seq przesuniętą cyklicznie o n miejsc w lewo; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem n musi być liczbą nieujemną,\nrotate_right(seq, n) — zwraca sekwencję seq przesuniętą cyklicznie o n miejsc w prawo; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem n musi być liczbą nieujemną.\n\nPrzeczytaj testy w pliku test_rotate_seq.py uważnie — zawierają wymagania, które nie są wprost opisane w treści zadania.\n\n\n\n\n\n\nTipWskazówka\n\n\n\nWykorzystaj konkatenację (operację +) wycinków sekwencji. Dzięki temu nie musisz się martwić o typ sekwencji i nie musisz wykonywać jawnych iteracji.\nPrzykład:\n&gt;&gt;&gt; s = 'abcde'\n&gt;&gt;&gt; s[2:] + s[:2]\n'cdeab'\n&gt;&gt;&gt; lst = [1, 2, 3, 4, 5]\n&gt;&gt;&gt; lst[2:] + lst[:2]\n[3, 4, 5, 1, 2]",
+    "objectID": "wyklad_VII.html#podsumowanie",
+    "href": "wyklad_VII.html#podsumowanie",
+    "title": "Dekoratory",
+    "section": "5 Podsumowanie",
+    "text": "5 Podsumowanie\nNa tym wykładzie zobaczyliśmy, że:\n\nDekorator to obiekt wywoływalny, który przyjmuje funkcję i zwraca zmodyfikowaną wersję tej funkcji (lub zupełnie inny obiekt wywoływalny). Składnia @deco jest lukrem składniowym dla f = deco(f).\nTypowy dekorator definiuje wewnętrzną funkcję wrapper(*args, **kwargs), która wywołuje dekorowaną funkcję i dodaje ekstra funkcjonalność — jest to bezpośrednie zastosowanie domknięć i funkcji wyższego rzędu poznanych na poprzednim wykładzie.\nDekorator z parametrami to w istocie fabryka dekoratorów — funkcja, która zwraca dekorator bezparametrowy.\nDekorator wraps() z modułu functools zachowuje metadane dekorowanej funkcji (__name__, docstring).\nDekoratory można składać: @deco1 @deco2 def f oznacza f = deco1(deco2(f)), przy czym dekoratory stosowane są od dołu do góry.",
     "crumbs": [
-      "Laboratoria",
-      "Lab III: Testy jednostkowe"
+      "Wykłady",
+      "Dekoratory"
     ]
   },
   {
-    "objectID": "lab_III/lab_III.html#szyfr-rot13",
-    "href": "lab_III/lab_III.html#szyfr-rot13",
-    "title": "Lab III: Testy jednostkowe",
-    "section": "5 Szyfr ROT13",
-    "text": "5 Szyfr ROT13\nNapisz moduł rot13.py zawierający funkcje:\n\nis_ascii(s) — zwraca True, jeśli łańcuch s składa się wyłącznie ze znaków ASCII, w przeciwnym razie False,\nrot13(s, use_ascii_only=False) — zwraca łańcuch zaszyfrowany szyfrem ROT13,\nrot47(s, use_ascii_only=False) — zwraca łańcuch zaszyfrowany szyfrem ROT47.\n\nJeśli use_ascii_only jest True i łańcuch s zawiera znaki spoza zakresu ASCII, to funkcje rot13() i rot47() zgłaszają wyjątek ValueError z komunikatem znaleziono znak spoza zakresu ASCII.\nROT13 to szyfr, w którym każdy znak alfabetu łacińskiego jest zamieniany na znak przesunięty o 13 miejsc w prawo. Jeśli przesunięcie powoduje wyjście poza alfabet, to liczymy od początku. Znaki niebędące literami alfabetu łacińskiego pozostają bez zmian.\nROT47 to szyfr, w którym każdy znak ASCII z zakresu od 33 do 126 (włącznie) jest zamieniany na znak z tego samego zakresu, przesunięty o 47 miejsc w prawo. Jeśli przesunięcie powoduje wyjście poza zakres, to liczymy od początku. Znaki spoza zakresu pozostają bez zmian.\nTesty modułu rot13.py znajdują się w pliku test_rot13.py.",
+    "objectID": "lab_II/lab_II.html#iloraz-liczb-całkowitych",
+    "href": "lab_II/lab_II.html#iloraz-liczb-całkowitych",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "1 Iloraz liczb całkowitych",
+    "text": "1 Iloraz liczb całkowitych\nNapisz program, który pobiera od użytkownika dwie liczby całkowite i oblicza ich iloraz. Program powinien obsługiwać dwa rodzaje wyjątków:\n\nValueError — jeśli użytkownik wprowadzi tekst zamiast liczby całkowitej,\nZeroDivisionError — jeśli użytkownik wprowadzi jako dzielnik liczbę 0.\n\nProgram powinien wyświetlać komunikat o błędzie odpowiedni do typu wyjątku.\nPrzykłady:\na: 10\nb: 0\nBłąd: dzielenie przez zero.\na: 10\nb: abc\nBłąd: nieprawidłowa wartość.\na: 10\nb: 4\n10 / 4 = 2.5",
     "crumbs": [
       "Laboratoria",
-      "Lab III: Testy jednostkowe"
+      "Lab II: Błędy i wyjątki"
     ]
   },
   {
-    "objectID": "lab_III/lab_III.html#pierwiastki-całkowite",
-    "href": "lab_III/lab_III.html#pierwiastki-całkowite",
-    "title": "Lab III: Testy jednostkowe",
-    "section": "6 Pierwiastki całkowite",
-    "text": "6 Pierwiastki całkowite\nNapisz moduł simple_integer_roots.py zawierający funkcje:\n\ninteger_square_root(n) — zwraca największą liczbę całkowitą m taką, że m**2 &lt;= n; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem argument musi być nieujemny,\ninteger_cubic_root(n) — zwraca największą liczbę całkowitą m taką, że m**3 &lt;= n; jeśli n jest ujemne, to zgłasza wyjątek ValueError z komunikatem argument musi być nieujemny,\nis_perfect_square(n) — zwraca True, jeśli n jest kwadratem liczby całkowitej, w przeciwnym razie False,\nis_perfect_cube(n) — zwraca True, jeśli n jest sześcianem liczby całkowitej, w przeciwnym razie False. Zwróć uwagę, że liczby ujemne również mogą być sześcianami liczb całkowitych.\n\nTesty modułu simple_integer_roots.py znajdują się w pliku test_simple_integer_roots.py.\n\n\n\n\n\n\nWarningUwaga\n\n\n\nTesty sprawdzają poprawność dla bardzo dużych liczb, które nie mieszczą się w zakresie typu float. Nie wystarczy więc skorzystać z math.sqrt() i potęgowania zmiennoprzecinkowego — potrzebne jest wyszukiwanie binarne na liczbach całkowitych.",
+    "objectID": "lab_II/lab_II.html#hierarchia-wyjątków-arytmetycznych",
+    "href": "lab_II/lab_II.html#hierarchia-wyjątków-arytmetycznych",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "2 Hierarchia wyjątków arytmetycznych",
+    "text": "2 Hierarchia wyjątków arytmetycznych\nZapoznaj się z fragmentem hierarchii wyjątków arytmetycznych w Pythonie:\nBaseException\n  └── Exception\n        └── ArithmeticError\n              ├── ZeroDivisionError\n              ├── OverflowError\n              └── FloatingPointError\nNapisz program, który oblicza wyrażenie 2.0 ** x / (x - 3) dla liczby x podanej przez użytkownika. Obsłuż wyjątek ArithmeticError jednym blokiem except. Przetestuj program dla:\n\nx = 3 (dzielenie przez zero — ZeroDivisionError),\nx = 1024 (przepełnienie — OverflowError, bo 2.0 ** 1024 przekracza maksymalną wartość float),\nx = 5 (poprawne dane).\n\nPrzykłady:\nPodaj x: 3\nBłąd arytmetyczny: float division by zero\nPodaj x: 1024\nBłąd arytmetyczny: (34, 'Numerical result out of range')\nPodaj x: 5\n2.0 ** 5 / (5 - 3) = 16.0",
     "crumbs": [
       "Laboratoria",
-      "Lab III: Testy jednostkowe"
+      "Lab II: Błędy i wyjątki"
     ]
   },
   {
-    "objectID": "lab_V/lab_V.html",
-    "href": "lab_V/lab_V.html",
-    "title": "Lab V: Wypakowywanie i parametry funkcji",
+    "objectID": "lab_II/lab_II.html#suma-i-średnia-z-powtórzeniem",
+    "href": "lab_II/lab_II.html#suma-i-średnia-z-powtórzeniem",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "3 Suma i średnia z powtórzeniem",
+    "text": "3 Suma i średnia z powtórzeniem\nNapisz program, który pobiera od użytkownika ciąg liczb całkowitych rozdzielonych spacjami i wyświetla ich sumę oraz średnią arytmetyczną. Program powinien:\n\nwymuszać wprowadzenie danych w poprawnym formacie — po podaniu niepoprawnych danych ponownie żąda ich wprowadzenia,\ndawać użytkownikowi trzy szanse na podanie prawidłowych danych; po wyczerpaniu szans program kończy działanie stosownym komunikatem,\nkorzystać z bloku else, który wykonuje się wyłącznie wtedy, gdy nie wystąpił wyjątek.\n\nZastanów się: ile wynosi średnia arytmetyczna ciągu pustego?\nPrzykład:\nLiczby (próba 1/3): 4 3 abc\nBłąd: nieprawidłowe dane.\nLiczby (próba 2/3): 4 3 2 1 5\nSuma: 15, Średnia: 3.0",
+    "crumbs": [
+      "Laboratoria",
+      "Lab II: Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "lab_II/lab_II.html#symulacja-połączenia-sieciowego",
+    "href": "lab_II/lab_II.html#symulacja-połączenia-sieciowego",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "4 Symulacja połączenia sieciowego",
+    "text": "4 Symulacja połączenia sieciowego\nBlok finally jest wykonywany zawsze — niezależnie od tego, czy wyjątek wystąpił, czy nie, a nawet gdy wyjątek nie jest obsługiwany w tej samej funkcji, lecz propaguje się do wywołującego.\nNapisz funkcję connect(addr), która symuluje nawiązywanie połączenia sieciowego:\n\nwypisuje Łączenie z &lt;addr&gt;...,\nwywołuje time.sleep(t), gdzie t to losowa liczba rzeczywista z przedziału \\([0, 1)\\),\njeśli t przekracza próg 0.6, zgłasza RuntimeError(\"Przekroczono limit czasu\"),\nw przeciwnym razie wypisuje Połączono z &lt;addr&gt;.,\nw bloku finally wypisuje Zamknięto połączenie z &lt;addr&gt;.\n\nNapisz program, który w pętli wywołuje connect() dla dziesięciu adresów 192.168.0.0, …, 192.168.0.9, obsługując RuntimeError stosownym komunikatem.\nPrzykład:\nŁączenie z 192.168.0.0...\nZamknięto połączenie z 192.168.0.0\nBłąd: Przekroczono limit czasu\n------------------------------\nŁączenie z 192.168.0.1...\nPołączono z 192.168.0.1\nZamknięto połączenie z 192.168.0.1\n------------------------------\nŁączenie z 192.168.0.2...\nZamknięto połączenie z 192.168.0.2\nBłąd: Przekroczono limit czasu\n------------------------------\nŁączenie z 192.168.0.3...\nPołączono z 192.168.0.3\nZamknięto połączenie z 192.168.0.3\n------------------------------\nŁączenie z 192.168.0.4...\nPołączono z 192.168.0.4\nZamknięto połączenie z 192.168.0.4\n------------------------------\nŁączenie z 192.168.0.5...\nPołączono z 192.168.0.5\nZamknięto połączenie z 192.168.0.5\n------------------------------\nŁączenie z 192.168.0.6...\nPołączono z 192.168.0.6\nZamknięto połączenie z 192.168.0.6\n------------------------------\nŁączenie z 192.168.0.7...\nPołączono z 192.168.0.7\nZamknięto połączenie z 192.168.0.7\n------------------------------\nŁączenie z 192.168.0.8...\nPołączono z 192.168.0.8\nZamknięto połączenie z 192.168.0.8\n------------------------------\nŁączenie z 192.168.0.9...\nPołączono z 192.168.0.9\nZamknięto połączenie z 192.168.0.9\n------------------------------\nW jakiej kolejności pojawiają się komunikaty gdy połączenie się nie powiedzie?",
+    "crumbs": [
+      "Laboratoria",
+      "Lab II: Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "lab_II/lab_II.html#moduł-funkcji-numerycznych",
+    "href": "lab_II/lab_II.html#moduł-funkcji-numerycznych",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "5 Moduł funkcji numerycznych",
+    "text": "5 Moduł funkcji numerycznych\nCelem tego zadania jest napisanie prostego modułu z funkcjami numerycznymi oraz programu, który z tego modułu korzysta. Zadanie ilustruje obsługę błędów na różnych poziomach programu.\n\n5.1 Moduł numerics.py\nNapisz moduł numerics.py zawierający trzy funkcje:\nparse_number(text) — przyjmuje łańcuch znaków i zwraca liczbę w najwęższym pasującym typie:\n\njeśli text reprezentuje liczbę całkowitą (np. \"5\", \"-3\"), zwraca int;\njeśli text reprezentuje liczbę zmiennoprzecinkową o wartości całkowitej (np. \"3.0\", \"-7.0\"), zwraca int;\njeśli text reprezentuje liczbę zmiennoprzecinkową (np. \"3.5\"), zwraca float;\nw przeciwnym razie zgłasza ValueError.\n\n\n\n\n\n\n\nTipWskazówka\n\n\n\nMetoda float.is_integer() zwraca True, gdy wartość zmiennoprzecinkowa jest liczbą całkowitą, np. (3.0).is_integer() daje True.\n\n\nsilnia(n) — oblicza \\(n!\\) dla nieujemnych liczb całkowitych. Zgłasza:\n\nTypeError — jeśli n nie jest liczbą całkowitą (isinstance(n, int)),\nValueError — jeśli n jest ujemna.\n\nsymbol_newtona(n, k) — oblicza \\[\\binom{n}{k} = \\frac{n!}{k!(n-k)!}\\] korzystając z funkcji silnia. Zgłasza:\n\nTypeError — jeśli n lub k nie jest liczbą całkowitą,\nValueError — jeśli \\(n &lt; 0\\), \\(k &lt; 0\\) lub \\(k &gt; n\\).\n\n\n\n\n\n\n\nImportantUwaga\n\n\n\nObliczanie symbolu Newtona przez trzy wywołania silni nie jest efektywne. Nie chodzi nam tu jednak o efektywność — funkcje te są jedynie ilustracją mechanizmu obsługi błędów.\n\n\nKażda funkcja w module powinna samodzielnie walidować swoje argumenty, nawet jeśli w danym programie walidacja ta wydaje się zbędna — funkcja nie wie, kto i jak ją wywoła w przyszłości.\n\n\n5.2 Program sprawdzający\nW tym samym pliku numerics.py, w bloku if __name__ == \"__main__\":, napisz program, który:\n\npobiera od użytkownika wartości n i k (jako tekst),\nprzetwarza je za pomocą parse_number,\nwywołuje symbol_newtona(n, k),\nwyświetla wynik lub stosowny komunikat o błędzie.\n\nZwróć uwagę, że ValueError może pochodzić z dwóch różnych miejsc: z parse_number (wejście nie jest liczbą) lub z symbol_newtona (argumenty poza dziedziną).\nPrzykłady:\nn: 5\nk: 2\nC(5, 2) = 10\nn: 5\nk: 2.5\nBłąd: argument musi być liczbą całkowitą.\nn: abc\nk: 2\nBłąd: 'abc' nie jest liczbą.\nn: 3\nk: 5\nBłąd: wymagane 0 &lt;= k &lt;= n, otrzymano n=3, k=5.\nn: -4\nk: 2\nBłąd: wymagane n &gt;= 0, otrzymano n=-4.\nn: 5.0\nk: 3\nC(5, 3) = 10\n\n\n\n\n\n\nTipDo przemyślenia\n\n\n\nKtóre wyjątki zgłaszane przez silnia() są w tym programie faktycznie osiągalne? Prześledź możliwe ścieżki wykonania: jeśli parse_number zwróci float, to który wyjątek zostanie zgłoszony pierwszy — z silnia() czy z symbol_newtona()? Czy to oznacza, że walidacja w silnia() jest niepotrzebna?",
+    "crumbs": [
+      "Laboratoria",
+      "Lab II: Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "lab_II/lab_II.html#statystyki-pliku-tekstowego",
+    "href": "lab_II/lab_II.html#statystyki-pliku-tekstowego",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "6 Statystyki pliku tekstowego",
+    "text": "6 Statystyki pliku tekstowego\nNapisz program, który wczytuje ścieżkę do pliku tekstowego podaną przez użytkownika i wyświetla:\n\nliczbę wierszy,\nliczbę słów (słowo to dowolna sekwencja znaków oddzielona białymi znakami, np. \"Hello, world!\" zawiera dwa słowa: \"Hello,\" i \"world!\"),\nliczbę znaków.\n\nUżyj menedżera kontekstu (with) i jawnie określ kodowanie encoding='utf-8'. Program powinien obsługiwać:\n\nFileNotFoundError — komunikatem Brak pliku: &lt;nazwa_pliku&gt;,\nOSError — komunikatem Błąd odczytu pliku: &lt;treść błędu&gt;.\n\nPrzykład:\nPodaj ścieżkę do pliku: wiersz.txt\nWiersze: 4\nSłowa:   26\nZnaki:   142",
+    "crumbs": [
+      "Laboratoria",
+      "Lab II: Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "lab_II/lab_II.html#inspekcja-pliku-binarnego",
+    "href": "lab_II/lab_II.html#inspekcja-pliku-binarnego",
+    "title": "Lab II: Błędy i wyjątki",
+    "section": "7 Inspekcja pliku binarnego",
+    "text": "7 Inspekcja pliku binarnego\nNapisz program, który wczytuje ścieżkę do pliku binarnego i wyświetla:\n\nrozmiar pliku w bajtach,\npierwszych 16 bajtów w reprezentacji szesnastkowej (hex),\nczy plik jest plikiem PNG — plik PNG zaczyna się od sygnatury b'\\x89PNG\\r\\n\\x1a\\n' (8 bajtów).\n\nUżyj trybu 'rb' w funkcji open() i menedżera kontekstu. Program powinien obsługiwać:\n\nFileNotFoundError — komunikatem Brak pliku: &lt;nazwa_pliku&gt;,\nOSError — komunikatem Błąd odczytu pliku: &lt;treść błędu&gt;.\n\n\n\n\n\n\n\nTipWskazówka\n\n\n\nAby wyświetlić bajty w formacie szesnastkowym, możesz użyć metody hex() obiektu bytes lub funkcji binascii.hexlify().\n\n\nPrzykład dla pliku PNG:\nPodaj ścieżkę do pliku: obrazek.png\nRozmiar: 24831 bajtów\nPierwsze 16 bajtów: 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52\nSygnatura PNG: TAK\nPrzykład dla innego pliku:\nPodaj ścieżkę do pliku: dane.bin\nRozmiar: 512 bajtów\nPierwsze 16 bajtów: 4d 5a 90 00 03 00 00 00 04 00 00 00 ff ff 00 00\nSygnatura PNG: NIE",
+    "crumbs": [
+      "Laboratoria",
+      "Lab II: Błędy i wyjątki"
+    ]
+  },
+  {
+    "objectID": "lab_IV/lab_IV.html",
+    "href": "lab_IV/lab_IV.html",
+    "title": "Lab IV: Zmienne, aliasy, kopie",
     "section": "",
-    "text": "Te ćwiczenia nawiązują do materiału z wykładu o wypakowywaniu obiektów iterowalnych oraz o parametrach i argumentach funkcji.",
+    "text": "Tematem tego laboratorium są zmienne w Pythonie: mechanizm etykiet (referencji), aliasy, obiekty zmienne i niezmienne, kopie płytkie i głębokie. Wiele zadań dotyczy list i list zagnieżdżonych — struktur, w których pułapki związane z aliasowaniem ujawniają się najwyraźniej. Poprawność rozwiązań weryfikuj za pomocą doctest.testmod() lub python -m doctest plik.py -v.",
     "crumbs": [
       "Laboratoria",
-      "Lab V: Wypakowywanie i parametry funkcji"
+      "Lab IV: Zmienne, aliasy, kopie"
     ]
   },
   {
-    "objectID": "lab_V/lab_V.html#rozgrzewka-wypakowywanie",
-    "href": "lab_V/lab_V.html#rozgrzewka-wypakowywanie",
-    "title": "Lab V: Wypakowywanie i parametry funkcji",
-    "section": "1 Rozgrzewka: wypakowywanie",
-    "text": "1 Rozgrzewka: wypakowywanie\nDla każdego z poniższych fragmentów kodu podaj wartości zmiennych po wykonaniu przypisania. Odpowiedz bez uruchamiania kodu, a następnie sprawdź odpowiedź w konsoli interaktywnej.\n1.\na, b, c = range(3)\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość 0, b ma wartość 1, c ma wartość 2.\n\n\n\n2.\na, (b, c) = 'X', [10, 20]\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość 'X', b ma wartość 10, c ma wartość 20.\n\n\n\n3.\nfirst, *rest = 'Python'\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\nfirst ma wartość 'P', rest ma wartość ['y', 't', 'h', 'o', 'n'].\n\n\n\n4.\na, *b, c = [10, 20, 30, 40, 50]\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość 10, b ma wartość [20, 30, 40], c ma wartość 50.\n\n\n\n5.\na = [*range(3), *'ab']\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość [0, 1, 2, 'a', 'b'].\n\n\n\n6.\na, (*b, c) = 1, 'xyz'\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość 1, b ma wartość ['x', 'y'], c ma wartość 'z'.\n\n\n\n7.\ndef f(x, y):\n    return x - y\n\nd = {'y': 3, 'x': 10}\nf(**d)\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\nWywołanie zwróci 7.\n\n\n\n8.\n(a, b), *c = 'XY', 1, 2, 3\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\na ma wartość 'X', b ma wartość 'Y', c ma wartość [1, 2, 3].",
+    "objectID": "lab_IV/lab_IV.html#aliasy-i-kopie-przewidywanie-wyników",
+    "href": "lab_IV/lab_IV.html#aliasy-i-kopie-przewidywanie-wyników",
+    "title": "Lab IV: Zmienne, aliasy, kopie",
+    "section": "1 Aliasy i kopie — przewidywanie wyników",
+    "text": "1 Aliasy i kopie — przewidywanie wyników\nDla każdego z poniższych fragmentów kodu najpierw przewidź wynik, a następnie sprawdź swoją odpowiedź w interpreterze lub na stronie pythontutor.com. Zwróć uwagę na to, kiedy dwie zmienne wskazują na ten sam obiekt, a kiedy na różne obiekty o tej samej wartości.\nFragment 1:\na = [1, 2, 3]\nb = a\na.append(4)\nprint(b)\nFragment 2:\na = [1, 2, 3]\nb = a[:]\na.append(4)\nprint(b)\nFragment 3:\na = [1, 2, 3]\nb = a\na = a + [4]\nprint(a, b, a is b)\nFragment 4:\na = [1, 2, 3]\nb = a\na += [4]\nprint(a, b, a is b)\nFragment 5:\na = [[1, 2], [3, 4]]\nb = a.copy()\na[0][0] = 99\nprint(b)\nFragment 6:\nimport copy\na = [[1, 2], [3, 4]]\nb = copy.deepcopy(a)\na[0][0] = 99\nprint(b)\n\n\n\n\n\n\nTipWskazówka\n\n\n\nKluczowe rozróżnienia: przypisanie b = a tworzy alias (tę samą etykietę na ten sam obiekt); a = a + [4] tworzy nowy obiekt i przesuwa etykietę a; a += [4] modyfikuje istniejący obiekt w miejscu; a.copy() tworzy kopię płytką — wewnętrzne listy nadal są współdzielone.",
     "crumbs": [
       "Laboratoria",
-      "Lab V: Wypakowywanie i parametry funkcji"
+      "Lab IV: Zmienne, aliasy, kopie"
     ]
   },
   {
-    "objectID": "lab_V/lab_V.html#przetwarzanie-rekordów",
-    "href": "lab_V/lab_V.html#przetwarzanie-rekordów",
-    "title": "Lab V: Wypakowywanie i parametry funkcji",
-    "section": "2 Przetwarzanie rekordów",
-    "text": "2 Przetwarzanie rekordów\nDana jest lista zawierająca dane o transakcjach giełdowych. Każdy rekord ma postać krotki (data, (ticker, cena), liczba_akcji), gdzie liczba_akcji jest dodatnia dla kupna i ujemna dla sprzedaży.\ntransakcje = [\n    (\"2025-01-15\", (\"AAPL\", 150.25), 10),\n    (\"2025-01-20\", (\"GOOGL\", 178.50), 5),\n    (\"2025-02-10\", (\"AAPL\", 155.00), -3),\n    (\"2025-02-15\", (\"MSFT\", 420.75), 8),\n    (\"2025-03-01\", (\"GOOGL\", 182.30), -5),\n    (\"2025-03-10\", (\"MSFT\", 415.50), 4),\n]\nNapisz program, który korzystając z wypakowywania zagnieżdżonego w pętli for:\n\nwypisze sformatowaną tabelę transakcji w postaci:\n2025-01-15  AAPL    150.25  x  10  =   1502.50  KUPNO\n2025-01-20  GOOGL   178.50  x   5  =    892.50  KUPNO\n2025-02-10  AAPL    155.00  x  -3  =   -465.00  SPRZEDAŻ\n2025-02-15  MSFT    420.75  x   8  =   3366.00  KUPNO\n2025-03-01  GOOGL   182.30  x  -5  =   -911.50  SPRZEDAŻ\n2025-03-10  MSFT    415.50  x   4  =   1662.00  KUPNO\nobliczy i wypisze łączną wartość kupna i łączną wartość sprzedaży.",
+    "objectID": "lab_IV/lab_IV.html#tworzenie-siatki",
+    "href": "lab_IV/lab_IV.html#tworzenie-siatki",
+    "title": "Lab IV: Zmienne, aliasy, kopie",
+    "section": "2 Tworzenie siatki",
+    "text": "2 Tworzenie siatki\nDokończ definicje funkcji:\ndef create_grid(rows, cols, value=0):\n    \"\"\"Tworzy siatkę (listę list) o zadanych wymiarach wypełnioną wartością value.\n\n    Każdy wiersz musi być niezależnym obiektem.\n\n    &gt;&gt;&gt; create_grid(2, 3)\n    [[0, 0, 0], [0, 0, 0]]\n    &gt;&gt;&gt; create_grid(3, 2, 'x')\n    [['x', 'x'], ['x', 'x'], ['x', 'x']]\n    &gt;&gt;&gt; g = create_grid(3, 3)\n    &gt;&gt;&gt; g[0][0] = 1\n    &gt;&gt;&gt; g\n    [[1, 0, 0], [0, 0, 0], [0, 0, 0]]\n    &gt;&gt;&gt; g = create_grid(3, 3)\n    &gt;&gt;&gt; g[0] is g[1]\n    False\n    \"\"\"\n    pass\n\n\ndef identity_matrix(n):\n    \"\"\"Tworzy macierz jednostkową n x n.\n\n    &gt;&gt;&gt; identity_matrix(1)\n    [[1]]\n    &gt;&gt;&gt; identity_matrix(3)\n    [[1, 0, 0], [0, 1, 0], [0, 0, 1]]\n    &gt;&gt;&gt; m = identity_matrix(2)\n    &gt;&gt;&gt; m[0] is m[1]\n    False\n    \"\"\"\n    pass\nZwróć uwagę na testy z operatorem is — wykrywają one aliasowanie wierszy. Przypomnij sobie fragment z wykładu, w którym macierz = [wiersz, wiersz, wiersz] dawał niespodziewany efekt.",
     "crumbs": [
       "Laboratoria",
-      "Lab V: Wypakowywanie i parametry funkcji"
+      "Lab IV: Zmienne, aliasy, kopie"
     ]
   },
   {
-    "objectID": "lab_V/lab_V.html#ciągi-uogólnione",
-    "href": "lab_V/lab_V.html#ciągi-uogólnione",
-    "title": "Lab V: Wypakowywanie i parametry funkcji",
-    "section": "3 Ciągi uogólnione",
-    "text": "3 Ciągi uogólnione\nCiągiem \\(k\\)-Fibonacciego rzędu \\(k \\geqslant 2\\) z warunkami początkowymi \\(a_0, a_1, \\ldots, a_{k-1}\\) nazywamy ciąg zdefiniowany rekurencyjnie:\n\\[\nf_n = a_n \\quad \\text{dla } 0 \\leqslant n &lt; k,\\qquad\nf_n = f_{n-k} + f_{n-k+1} + \\cdots + f_{n-1} \\quad \\text{dla } n \\geqslant k.\n\\]\nPrzypadki szczególne:\n\n\\(k = 2\\): ciąg Fibonacciego (klasycznie \\(a_0 = 0\\), \\(a_1 = 1\\)),\n\\(k = 3\\): ciąg Tribonacciego (klasycznie \\(a_0 = 0\\), \\(a_1 = 0\\), \\(a_2 = 1\\)),\n\\(k = 4\\): ciąg Tetranacciego (klasycznie \\(a_0 = 0\\), \\(a_1 = 0\\), \\(a_2 = 0\\), \\(a_3 = 1\\)).\n\nNapisz moduł fib.py zawierający funkcje:\n\nfib(n, a=0, b=1) — zwraca wyraz \\(f_n\\) ciągu Fibonacciego,\ntrib(n, a=0, b=0, c=1) — zwraca wyraz \\(f_n\\) ciągu Tribonacciego,\ntetra(n, a=0, b=0, c=0, d=1) — zwraca wyraz \\(f_n\\) ciągu Tetranacciego,\nfib_general(n, a, b, *args) — zwraca wyraz \\(f_n\\) ciągu \\(k\\)-Fibonacciego, gdzie \\(k = 2 + \\text{len(args)}\\), a warunki początkowe to a, b, *args.\n\nArgument n jest indeksem wyrazu ciągu. Jeśli n jest ujemne, to funkcje zgłaszają wyjątek NotImplementedError z komunikatem Brak implementacji dla indeksów ujemnych.\nTesty modułu fib.py znajdują się w pliku test_fib.py.\n\n\n\n\n\n\nTipWskazówka\n\n\n\nWykorzystaj przypisanie wielokrotne. Obliczenie kolejnego wyrazu ciągu Fibonacciego sprowadza się do jednej linii:\na, b = b, a + b\nAnalogicznie dla wyższych rzędów. W fib_general warunki początkowe wygodnie przechowywać w liście i aktualizować go w każdej iteracji.",
+    "objectID": "lab_IV/lab_IV.html#spłaszczanie-i-zmiana-kształtu",
+    "href": "lab_IV/lab_IV.html#spłaszczanie-i-zmiana-kształtu",
+    "title": "Lab IV: Zmienne, aliasy, kopie",
+    "section": "3 Spłaszczanie i zmiana kształtu",
+    "text": "3 Spłaszczanie i zmiana kształtu\nFunkcje flatten i reshape są inspirowane analogicznymi operacjami z biblioteki NumPy. W NumPy tablice wielowymiarowe mogą dzielić pamięć z tablicą źródłową (tzw. widoki). Tu pracujemy ze zwykłymi listami Pythona i wymagamy pełnej niezależności wynikowej struktury od wejściowej.\nDokończ definicje funkcji:\ndef flatten(matrix):\n    \"\"\"Spłaszcza macierz (listę list) do jednej listy.\n\n    &gt;&gt;&gt; flatten([[1, 2, 3], [4, 5, 6]])\n    [1, 2, 3, 4, 5, 6]\n    &gt;&gt;&gt; flatten([[1], [2], [3]])\n    [1, 2, 3]\n    &gt;&gt;&gt; flatten([[], [1, 2], []])\n    [1, 2]\n    &gt;&gt;&gt; flatten([])\n    []\n    \"\"\"\n    pass\n\n\ndef reshape(flat_list, rows, cols):\n    \"\"\"Przekształca płaską listę w macierz o zadanej liczbie wierszy i kolumn.\n\n    Jeśli rows * cols != len(flat_list), zgłasza ValueError.\n    Wiersze wynikowej macierzy są niezależne od flat_list.\n\n    &gt;&gt;&gt; reshape([1, 2, 3, 4, 5, 6], 2, 3)\n    [[1, 2, 3], [4, 5, 6]]\n    &gt;&gt;&gt; reshape([1, 2, 3, 4], 2, 2)\n    [[1, 2], [3, 4]]\n    &gt;&gt;&gt; reshape([], 0, 0)\n    []\n    &gt;&gt;&gt; flat = [1, 2, 3, 4, 5, 6]\n    &gt;&gt;&gt; m = reshape(flat, 2, 3)\n    &gt;&gt;&gt; m[0][0] = 99\n    &gt;&gt;&gt; flat\n    [1, 2, 3, 4, 5, 6]\n    &gt;&gt;&gt; reshape([1, 2, 3], 2, 2)\n    Traceback (most recent call last):\n        ...\n    ValueError: nie można przekształcić listy o długości 3 w macierz 2 x 2\n    \"\"\"\n    pass",
     "crumbs": [
       "Laboratoria",
-      "Lab V: Wypakowywanie i parametry funkcji"
+      "Lab IV: Zmienne, aliasy, kopie"
     ]
   },
   {
-    "objectID": "lab_V/lab_V.html#przekazywanie-argumentów",
-    "href": "lab_V/lab_V.html#przekazywanie-argumentów",
-    "title": "Lab V: Wypakowywanie i parametry funkcji",
-    "section": "4 Przekazywanie argumentów",
-    "text": "4 Przekazywanie argumentów\n\n4.1 Logowanie wywołań\nNapisz funkcję:\ndef call_and_log(f, *args, verbose=False, **kwargs):\n    \"\"\"Wywołuje f(*args, **kwargs) i zwraca wynik.\n\n    Jeśli verbose jest True, wypisuje informację o wywołaniu\n    i wyniku w formacie: nazwa(argumenty) -&gt; wynik.\n\n    &gt;&gt;&gt; def add(a, b):\n    ...     return a + b\n    &gt;&gt;&gt; call_and_log(add, 2, 3)\n    5\n    &gt;&gt;&gt; call_and_log(add, 2, 3, verbose=True)\n    add(2, 3) -&gt; 5\n    5\n    &gt;&gt;&gt; call_and_log(pow, 2, 10, verbose=True)\n    pow(2, 10) -&gt; 1024\n    1024\n    &gt;&gt;&gt; call_and_log(add, a=2, b=3, verbose=True)\n    add(a=2, b=3) -&gt; 5\n    5\n    \"\"\"\n    pass\nZwróć uwagę na pozycję parametru verbose w sygnaturze funkcji. Stoi on za *args, co czyni go parametrem jedynie nazwy. Dzięki temu wywołanie call_and_log(add, 2, 3, True) przekaże True jako argument do f, a nie jako wartość verbose.\n\n\n\n\n\n\nTipWskazówka\n\n\n\nNazwę funkcji f uzyskasz przez f.__name__. Do formatowania argumentów przydadzą się repr() oraz str.join().\n\n\n\n\n4.2 Wielokrotne zastosowanie\nNapisz funkcję:\ndef apply_n(f, n, x):\n    \"\"\"Zwraca wynik n-krotnego zastosowania f do x.\n\n    apply_n(f, 0, x) zwraca x.\n    apply_n(f, n, x) zwraca f(f(...f(x)...)), gdzie f występuje n razy.\n\n    &gt;&gt;&gt; apply_n(abs, 0, -5)\n    -5\n    &gt;&gt;&gt; apply_n(abs, 1, -5)\n    5\n    &gt;&gt;&gt; from math import sqrt\n    &gt;&gt;&gt; apply_n(sqrt, 0, 16)\n    16\n    &gt;&gt;&gt; apply_n(sqrt, 1, 16)\n    4.0\n    &gt;&gt;&gt; apply_n(sqrt, 2, 16)\n    2.0\n    \"\"\"\n    pass\nSprawdź poprawność implementacji obu funkcji za pomocą doctest.testmod().",
+    "objectID": "lab_IV/lab_IV.html#operacje-na-macierzach-w-miejscu-i-przez-kopię",
+    "href": "lab_IV/lab_IV.html#operacje-na-macierzach-w-miejscu-i-przez-kopię",
+    "title": "Lab IV: Zmienne, aliasy, kopie",
+    "section": "4 Operacje na macierzach: w miejscu i przez kopię",
+    "text": "4 Operacje na macierzach: w miejscu i przez kopię\nW NumPy wyrażenie A + 10 tworzy nową tablicę, a A += 10 modyfikuje tablicę w miejscu. Poniższe funkcje realizują analogiczne operacje na listach list.\nDokończ definicje funkcji:\ndef add_scalar(matrix, scalar):\n    \"\"\"Zwraca nową macierz, w której każdy element jest zwiększony o scalar.\n\n    Nie modyfikuje macierzy wejściowej.\n\n    &gt;&gt;&gt; m = [[1, 2], [3, 4]]\n    &gt;&gt;&gt; add_scalar(m, 10)\n    [[11, 12], [13, 14]]\n    &gt;&gt;&gt; m\n    [[1, 2], [3, 4]]\n    \"\"\"\n    pass\n\n\ndef add_scalar_in_place(matrix, scalar):\n    \"\"\"Zwiększa każdy element macierzy o scalar, modyfikując ją w miejscu.\n\n    Zwraca None.\n\n    &gt;&gt;&gt; m = [[1, 2], [3, 4]]\n    &gt;&gt;&gt; add_scalar_in_place(m, 10)\n    &gt;&gt;&gt; m\n    [[11, 12], [13, 14]]\n    \"\"\"\n    pass\n\n\ndef transpose(matrix):\n    \"\"\"Zwraca transponowaną macierz (listę list).\n\n    &gt;&gt;&gt; transpose([[1, 2, 3], [4, 5, 6]])\n    [[1, 4], [2, 5], [3, 6]]\n    &gt;&gt;&gt; transpose([[1]])\n    [[1]]\n    &gt;&gt;&gt; transpose([[1, 2], [3, 4], [5, 6]])\n    [[1, 3, 5], [2, 4, 6]]\n    \"\"\"\n    pass",
     "crumbs": [
       "Laboratoria",
-      "Lab V: Wypakowywanie i parametry funkcji"
+      "Lab IV: Zmienne, aliasy, kopie"
     ]
   },
   {
-    "objectID": "lab_V/lab_V.html#losowanie-z-urny",
-    "href": "lab_V/lab_V.html#losowanie-z-urny",
-    "title": "Lab V: Wypakowywanie i parametry funkcji",
-    "section": "5 Losowanie z urny",
-    "text": "5 Losowanie z urny\nNapisz moduł fprob.py zawierający funkcję draw_from_urn() symulującą losowanie z urny zawierającej kule w różnych kolorach.\nSygnatura funkcji: draw_from_urn(number_of_draws=1, with_replacement=True, **balls)\nFunkcja przyjmuje następujące argumenty:\n\nnumber_of_draws — liczba losowań z urny (domyślnie 1),\nwith_replacement — flaga określająca, czy po wylosowaniu kuli wraca ona do urny (domyślnie True),\n**balls — argumenty nazwane, gdzie klucz to kolor kuli, a wartość to liczba kul danego koloru w urnie.\n\nFunkcja zwraca listę kolejno wylosowanych kul. Jeśli losowanie jest bez zwracania i number_of_draws przewyższa liczbę kul w urnie, to funkcja zgłasza wyjątek ValueError z komunikatem Liczba losowań bez zwracania przekracza liczbę kul w urnie.\nTesty modułu fprob.py znajdują się w pliku test_fprob.py.",
+    "objectID": "lab_IV/lab_IV.html#usuwanie-wartości-z-listy-nowa-kopia",
+    "href": "lab_IV/lab_IV.html#usuwanie-wartości-z-listy-nowa-kopia",
+    "title": "Lab IV: Zmienne, aliasy, kopie",
+    "section": "5 Usuwanie wartości z listy — nowa kopia",
+    "text": "5 Usuwanie wartości z listy — nowa kopia\nDokończ definicję funkcji:\ndef remove_all(lst, value):\n    \"\"\"Zwraca nową listę bez żadnych wystąpień value.\n\n    Nie modyfikuje listy wejściowej.\n    Zgłasza ValueError, jeśli value nie występuje w lst.\n\n    &gt;&gt;&gt; remove_all([1, 3, 2, 3, 4], 3)\n    [1, 2, 4]\n    &gt;&gt;&gt; remove_all([2, 2, 2], 2)\n    []\n    &gt;&gt;&gt; remove_all([1, 2, 3], 4)\n    Traceback (most recent call last):\n        ...\n    ValueError: 4 not in lst\n    &gt;&gt;&gt; original = [1, 3, 2, 3, 4]\n    &gt;&gt;&gt; remove_all(original, 3)\n    [1, 2, 4]\n    &gt;&gt;&gt; original\n    [1, 3, 2, 3, 4]\n    \"\"\"\n    pass\nZwróć uwagę na ostatni doctest — weryfikuje on, że lista wejściowa nie została zmodyfikowana.",
     "crumbs": [
       "Laboratoria",
-      "Lab V: Wypakowywanie i parametry funkcji"
+      "Lab IV: Zmienne, aliasy, kopie"
     ]
   },
   {
-    "objectID": "lab_V/lab_V.html#zastosowania-losowania-z-urny",
-    "href": "lab_V/lab_V.html#zastosowania-losowania-z-urny",
-    "title": "Lab V: Wypakowywanie i parametry funkcji",
-    "section": "6 Zastosowania losowania z urny",
-    "text": "6 Zastosowania losowania z urny\nInterpretacja częstościowa prawdopodobieństwa. Dane jest doświadczenie losowe. Chcemy wyznaczyć prawdopodobieństwo zajścia pewnego wyniku tego doświadczenia losowego. W interpretacji częstościowej wykonujemy to doświadczenie wielokrotnie i zliczamy, ile razy otrzymaliśmy interesujący nas wynik. Jeśli doświadczenie powtórzyliśmy \\(N\\) razy, wynik wypadł \\(k\\) razy i powtórzenia były niezależne, to prawdopodobieństwo badanego wyniku szacujemy na \\(k/N\\).\nPodane niżej zadania rozwiąż stosując częstościową interpretację prawdopodobieństwa. Wyniki potwierdź rozwiązaniem analitycznym.\n\n6.1 Kule białe\nW urnie jest 5 kul białych i 2 czarne. Losujemy bez zwracania 3 kule. Jakie jest prawdopodobieństwo, że wszystkie będą białe?\nRozwiąż to zadanie na “kartce” i numerycznie. Do rozwiązania numerycznego użyj funkcji draw_from_urn(). Wykonaj losowanie dużą liczbę razy — powiedzmy 1000 lub 10000 powtórzeń — zlicz ile razy wypadły trzy kule białe, następnie oblicz częstość.\n\n\n6.2 Wybór urny\nDane są dwie urny: w pierwszej znajdują się dwie kule czarne i jedna biała, w drugiej — trzy białe. Losujemy urnę (z prawdopodobieństwem 1/2) a następnie losujemy jedną kulę. Jakie jest prawdopodobieństwo tego, że losowaliśmy z pierwszej urny, jeżeli wiadomo, że wylosowana kula jest biała?\nRozwiąż zadanie dwoma sposobami: tradycyjnie wykorzystując teorię prawdopodobieństwa i numerycznie. W rozwiązaniu numerycznym skorzystaj z funkcji draw_from_urn().\n\n\n6.3 Rozkład łączny\nRozpatrujemy doświadczenie losowe jak w poprzednim podpunkcie. Niech \\(U\\) będzie zmienną losową oznaczającą wylosowaną urnę, a \\(K\\) zmienną losową oznaczającą wylosowaną kulę. Napisz program, który korzystając z częstościowej interpretacji prawdopodobieństwa wyznaczy przybliżoną tabelę rozkładu łącznego wektora losowego \\((U, K)\\). Wykorzystaj wyznaczoną tabelę do ponownego rozwiązania poprzedniego zadania.",
+    "objectID": "lab_IV/lab_IV.html#usuwanie-wartości-z-listy-modyfikacja-w-miejscu",
+    "href": "lab_IV/lab_IV.html#usuwanie-wartości-z-listy-modyfikacja-w-miejscu",
+    "title": "Lab IV: Zmienne, aliasy, kopie",
+    "section": "6 Usuwanie wartości z listy — modyfikacja w miejscu",
+    "text": "6 Usuwanie wartości z listy — modyfikacja w miejscu\nDokończ definicję funkcji:\ndef remove_all_in_place(lst, value):\n    \"\"\"Usuwa wszystkie wystąpienia value z lst, modyfikując ją w miejscu.\n\n    Zgłasza ValueError, jeśli value nie występuje w lst.\n    Zwraca None.\n\n    &gt;&gt;&gt; lst = [1, 3, 2, 3, 4]\n    &gt;&gt;&gt; remove_all_in_place(lst, 3)\n    &gt;&gt;&gt; lst\n    [1, 2, 4]\n    &gt;&gt;&gt; lst = list(\"hello\")\n    &gt;&gt;&gt; remove_all_in_place(lst, \"l\")\n    &gt;&gt;&gt; lst\n    ['h', 'e', 'o']\n    &gt;&gt;&gt; lst = [2, 2, 2]\n    &gt;&gt;&gt; remove_all_in_place(lst, 2)\n    &gt;&gt;&gt; lst\n    []\n    &gt;&gt;&gt; lst = [1, 2, 3]\n    &gt;&gt;&gt; remove_all_in_place(lst, 4)\n    Traceback (most recent call last):\n        ...\n    ValueError: 4 not in lst\n    &gt;&gt;&gt; lst = 1_000_000 * [1]\n    &gt;&gt;&gt; remove_all_in_place(lst, 1)\n    &gt;&gt;&gt; lst\n    []\n    \"\"\"\n    pass\n\n\n\n\n\n\nWarningUwaga: wydajność\n\n\n\nTest z milionem elementów weryfikuje, czy Twoje rozwiązanie jest wystarczająco szybkie. Naiwne podejście polegające na wielokrotnym wywołaniu lst.remove(value) lub del lst[i] z przodu listy ma złożoność \\(O(n^2)\\) i nie przejdzie testu wydajnościowego. Rozważ podejście z dwoma indeksami: jeden indeks czyta kolejne elementy, drugi wskazuje pozycję, na którą należy zapisać element, który nie jest usuwany.",
     "crumbs": [
       "Laboratoria",
-      "Lab V: Wypakowywanie i parametry funkcji"
+      "Lab IV: Zmienne, aliasy, kopie"
+    ]
+  },
+  {
+    "objectID": "lab_IV/lab_IV.html#arytmetyka-elementarna",
+    "href": "lab_IV/lab_IV.html#arytmetyka-elementarna",
+    "title": "Lab IV: Zmienne, aliasy, kopie",
+    "section": "7 Arytmetyka elementarna",
+    "text": "7 Arytmetyka elementarna\nUzupełnij moduł basic_arithmetic_ops.py:\n\"\"\"Moduł zawiera funkcje realizujące podstawowe operacje arytmetyczne.\n\nFunkcje:\n    increment(x) - zwraca wartość x zwiększoną o 1\n    decrement(x) - zwraca wartość x zmniejszoną o 1\n    change_sign(x) - zwraca wartość x ze zmienionym znakiem\n    add(x, y) - zwraca sumę x i y\n    sub(x, y) - zwraca różnicę x i y\n    mul(x, y) - zwraca iloczyn x i y\n    int_div(x, y) - zwraca wynik dzielenia całkowitego x przez y\n\nFunkcje add(), sub(), mul() i int_div() działają jedynie za pośrednictwem\nfunkcji increment(), decrement() i change_sign() (bezpośrednio lub pośrednio).\nNie korzystają z operatorów +, -, * i //.\n\"\"\"\n\n\ndef increment(x):\n    \"\"\"Zwiększa wartość x o 1.\"\"\"\n    return x + 1\n\n\ndef decrement(x):\n    \"\"\"Zmniejsza wartość x o 1.\"\"\"\n    return x - 1\n\n\ndef change_sign(x):\n    \"\"\"Zmienia znak liczby x na przeciwny.\"\"\"\n    return -x\n\nZapoznaj się z komentarzami w kodzie basic_arithmetic_ops.py, aby zrozumieć ograniczenia nałożone na implementację.\nFunkcje add(), sub(), mul() i int_div() nie mogą korzystać z operatorów +, -, * i //. Dozwolone są jedynie operacje za pośrednictwem increment(), decrement() i change_sign().\nDokonaj implementacji brakujących funkcji.\n\nTesty: test_basic_arithmetic_ops.py\n\n\n\n\n\n\nTipWskazówka: mnożenie\n\n\n\nNaiwne podejście — y razy wywołaj increment — nie wystarczy dla dużych wartości. Rozważ algorytm: jeśli y jest parzyste, to \\(x \\cdot y = (x + x) \\cdot (y / 2)\\).",
+    "crumbs": [
+      "Laboratoria",
+      "Lab IV: Zmienne, aliasy, kopie"
+    ]
+  },
+  {
+    "objectID": "lab_IV/lab_IV.html#ułamki-łańcuchowe",
+    "href": "lab_IV/lab_IV.html#ułamki-łańcuchowe",
+    "title": "Lab IV: Zmienne, aliasy, kopie",
+    "section": "8 Ułamki łańcuchowe",
+    "text": "8 Ułamki łańcuchowe\nCelem zadania jest napisanie modułu zawierającego kilka funkcji związanych z algorytmem Euklidesa.\nAlgorytm Euklidesa w wersji dla liczb całkowitych jest zdefiniowany rekurencyjnie w następujący sposób. Niech \\(r_1\\) i \\(r_2\\) będą liczbami całkowitymi, przy czym \\(r_2 &gt; 0\\). Dzielimy \\(r_1\\) przez \\(r_2\\) z resztą uzyskując \\[\nr_1 = q_1 r_2 + r_3,\n\\] gdzie \\(q_1\\) jest liczbą całkowitą, a \\(r_3\\in\\{0,1,\\ldots,r_2-1\\}\\). Jeśli \\(r_3 \\neq 0\\), to znów wykonujemy dzielenie z resztą, tym razem \\(r_2\\) przez \\(r_3\\), uzyskując \\[\nr_2 = q_2 r_3 + r_4,\n\\] gdzie \\(q_2\\) jest liczbą całkowitą, a \\(r_4\\in\\{0,1,\\ldots,r_3-1\\}\\). Jeśli \\(r_4 \\neq 0\\), to dzielimy \\(r_3\\) przez \\(r_4\\), itd. Ponieważ ciąg reszt \\(r_2, r_3, r_4, \\ldots\\) jest ściśle malejący i ma wartości nieujemne, to w pewnym momencie musi się zakończyć wartością 0.\nDwa główne zastosowania algorytmu Euklidesa, znane już w starożytności, to obliczanie największego wspólnego dzielnika (NWD) dwóch liczb całkowitych oraz obliczanie ułamka łańcuchowego dla danej liczby wymiernej.\nNajwiększy wspólny dzielnik (NWD, w j. ang. GCD) dwóch liczb całkowitych \\(a\\) i \\(b\\) to największa liczba całkowita, która dzieli obie liczby \\(a\\) i \\(b\\). NWD jest zawsze nieujemny, przy czym \\(\\text{NWD}(0,0)\\) jest zdefiniowany jako 0. Jeśli \\(r_2, r_3, r_4, \\ldots\\) jest ciągiem reszt uzyskanych w podanym wyżej algorytmie Euklidesa, to \\(\\text{NWD}(r_1,r_2)\\) jest równy ostatniej niezerowej reszcie.\nUłamek łańcuchowy to ułamek postaci \\[\na_0 + \\cfrac{1}{a_1 + \\cfrac{1}{a_2 + \\cfrac{1}{a_3 + \\cfrac{1}{\\ddots}}}}\n\\] gdzie \\(a_0\\) jest liczbą całkowitą, a \\(a_1, a_2, a_3, \\ldots\\) są liczbami całkowitymi dodatnimi. Ułamek łańcuchowy jest skończony, jeśli ciąg \\(a_1, a_2, a_3, \\ldots\\) jest skończony. Każdą liczbę wymierną \\(p/q\\) można jednoznacznie przedstawić w postaci skończonego ułamka łańcuchowego \\[\n\\frac{p}{q} = a_0 + \\cfrac{1}{a_1 + \\cfrac{1}{a_2 + \\cfrac{1}{\\ddots + \\cfrac{1}{a_n}}}}\\tag{1}\n\\] gdzie \\(a_0\\) jest częścią całkowitą ułamka, \\(a_1, a_2, a_3, \\ldots, a_n&gt;0\\) oraz \\(a_n\\neq 1\\). Liczby \\(a_0, a_1, a_2, a_3, \\ldots, a_n\\) to ilorazy kolejnych dzieleń z resztą w algorytmie Euklidesa dla liczb \\(p\\) i \\(q\\).\nNotacja: Ułamek łańcuchowy (1) zapisujemy jako \\([a_0; a_1, a_2, a_3, \\ldots, a_n]\\).\n\n8.1 Przykład\nDla \\(p=22\\) i \\(q=7\\) mamy \\[\n22 = 3\\cdot 7 + 1, \\quad 7 = 7\\cdot 1 + 0,\n\\] stąd \\[\n\\frac{22}{7} = 3 + \\cfrac{1}{7}= [3;7].\n\\] Dla \\(p=22\\) i \\(q=8\\) mamy \\[\n22 = 2\\cdot 8 + 6, \\quad 8 = 1\\cdot 6 + 2, \\quad 6 = 3\\cdot 2 + 0,\n\\] stąd \\[\n\\frac{22}{8} = 2 + \\cfrac{1}{1 + \\cfrac{1}{3}}= [2;1,3].\n\\]\nUłamek łańcuchowy postaci (1) reprezentujemy jako listę [a_0, a_1, a_2, a_3, ..., a_n]. Ponieważ \\(a_0\\) jest częścią całkowitą ułamka, lista nie może być pusta. Jest jednoelementowa dokładnie wtedy, gdy ułamek jest liczbą całkowitą.\nNapisz moduł continued_fractions.py zawierający podane niżej funkcje:\n\neuclid(a, b) — zgłasza wyjątek ValueError z komunikatem argument b musi być dodatni w przypadku, gdy \\(b\\leq 0\\). W przeciwnym przypadku zwraca krotkę zawierającą: listę reszt \\(r_1, r_2, r_3, \\ldots\\) wraz z końcowym zerem oraz listę ilorazów \\(q_1, q_2, q_3, \\ldots\\) uzyskanych w algorytmie Euklidesa.\ngcd(a, b) — zwraca największy wspólny dzielnik liczb \\(a\\) i \\(b\\).\nto_float(seq) — zwraca wartość ułamka łańcuchowego o współczynnikach w sekwencji seq jako liczbę zmiennoprzecinkową. Zgłasza ValueError z komunikatem sekwencja współczynników nie może być pusta, gdy seq jest pusta.\nto_fraction(seq) — zwraca wartość ułamka łańcuchowego o współczynnikach w sekwencji seq jako krotkę (licznik, mianownik). Zgłasza ValueError z komunikatem sekwencja współczynników nie może być pusta, gdy seq jest pusta.\ncontinued_fraction(a, b) — zwraca ułamek łańcuchowy dla liczby wymiernej \\(a/b\\) jako listę współczynników. Zgłasza ZeroDivisionError z komunikatem mianownik nie może być równy 0, gdy \\(b=0\\).\n\nNapisz program, który importuje moduł continued_fractions i znajduje ułamek \\(p/q\\), \\(1\\leq p\\leq 1000\\), \\(1\\leq q\\leq 1000\\), który ma najdłuższe rozwinięcie w postaci ułamka łańcuchowego. Graficzną postać ułamka możesz podejrzeć na stronie Wolfram Alpha.\nTesty: test_continued_fractions.py.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab IV: Zmienne, aliasy, kopie"
+    ]
+  },
+  {
+    "objectID": "lab_VI/lab_VI.html",
+    "href": "lab_VI/lab_VI.html",
+    "title": "Lab VI: Geometria żółwia",
+    "section": "",
+    "text": "Te ćwiczenia nawiązują do materiału z wykładu o przestrzeniach nazw, zmiennych globalnych i modułach. Głównym tematem jest implementacja żółwia — stworzenia znanego z języka LOGO, które przemieszcza się po ekranie zgodnie z poleceniami forward, right, left. Poprawność rozwiązań zadań 4 i 5 weryfikuj za pomocą dołączonych plików z testami.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VI: Geometria żółwia"
+    ]
+  },
+  {
+    "objectID": "lab_VI/lab_VI.html#wprowadzenie",
+    "href": "lab_VI/lab_VI.html#wprowadzenie",
+    "title": "Lab VI: Geometria żółwia",
+    "section": "1 Wprowadzenie",
+    "text": "1 Wprowadzenie\nŻółw to punkt przemieszczający się po płaszczyźnie z układem współrzędnych. W danej chwili żółw znajduje się w pewnym położeniu i patrzy w pewnym kierunku. Trzy polecenia sterują żółwiem:\n\nforward r — żółw przesuwa się o dystans r w kierunku, w którym patrzy,\nright a — żółw obraca się w prawo (zgodnie z ruchem wskazówek zegara) o kąt a,\nleft a — żółw obraca się w lewo o kąt a.\n\nStan żółwia opisują trzy liczby: współrzędna x, współrzędna y oraz azymut — kąt (w stopniach) między aktualnym kierunkiem żółwia a dodatnią osią x (wschodem). Znając te trzy wartości, żółw jest w stanie wykonać każde z poleceń.\nPolecenia left a i right a zmieniają wyłącznie azymut:\nazimuth += a   # left\nazimuth -= a   # right\nPolecenie forward r zmienia współrzędne:\nx += r * cos(azimuth)\ny += r * sin(azimuth)\nAzymut nie ulega zmianie — żółw patrzy nadal w tym samym kierunku.\n\n\n\n\n\n\nImportantRadiany\n\n\n\nFunkcje math.cos() i math.sin() przyjmują kąt w radianach. Azymut przechowujemy w stopniach, więc przed użyciem tych funkcji konieczna jest konwersja: math.radians(azimuth).\n\n\nStan żółwia będziemy przechowywać w słowniku i przekazywać go do funkcji jako argument. Jest to podejście pośrednie między zmiennymi globalnymi (które nie skalują się do wielu żółwi) a programowaniem obiektowym (które poznamy w przyszłości). Motywację do takiego projektu dostarczą rozgrzewka i zadanie 3.\n\n\n\n\n\n\nWarningZastrzeżenie\n\n\n\nBiblioteka standardowa zawiera moduł turtle z gotową implementacją żółwia. W praktycznych zastosowaniach należy korzystać z takich profesjonalnych rozwiązań — nasza implementacja ma charakter dydaktyczny.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VI: Geometria żółwia"
+    ]
+  },
+  {
+    "objectID": "lab_VI/lab_VI.html#rozgrzewka-przestrzenie-nazw",
+    "href": "lab_VI/lab_VI.html#rozgrzewka-przestrzenie-nazw",
+    "title": "Lab VI: Geometria żółwia",
+    "section": "2 Rozgrzewka: przestrzenie nazw",
+    "text": "2 Rozgrzewka: przestrzenie nazw\nPrzewidź jaki będzie efekt uruchomienia każdego z poniższych programów.\n1.\nx = 10\n\ndef f():\n    x = 20\n    return x\n\nprint(f())\nprint(x)\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n20\n10\nPrzypisanie x = 20 w ciele f tworzy zmienną lokalną x. Zmienna globalna x pozostaje bez zmian.\n\n\n\n2.\nn = 0\n\ndef increment():\n    n += 1\n\nincrement()\nprint(n)\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\nUnboundLocalError: local variable 'n' referenced before assignment.\nPrzypisanie n += 1 (równoważne n = n + 1) powoduje, że n jest traktowana jako lokalna. Ponieważ nie została wcześniej przypisana w ciele funkcji, odwołanie do niej po prawej stronie += kończy się wyjątkiem.\n\n\n\n3.\nn = 0\n\ndef increment():\n    global n\n    n += 1\n\nincrement()\nincrement()\nprint(n)\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n2\nDeklaracja global n sprawia, że n w ciele increment odnosi się do zmiennej globalnej. Każde wywołanie zwiększa tę samą zmienną.\n\n\n\n4.\ndane = {\"n\": 0}\n\ndef increment(d):\n    d[\"n\"] += 1\n\nincrement(dane)\nincrement(dane)\nprint(dane[\"n\"])\n\n\n\n\n\n\nNoteOdpowiedź\n\n\n\n\n\n2\nSłownik jest obiektem zmiennym (mutable). Funkcja increment otrzymuje referencję do tego samego słownika i modyfikuje go w miejscu — deklaracja global nie jest potrzebna. To podejście zastosujemy w implementacji żółwia.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VI: Geometria żółwia"
+    ]
+  },
+  {
+    "objectID": "lab_VI/lab_VI.html#od-zmiennych-globalnych-do-słownika",
+    "href": "lab_VI/lab_VI.html#od-zmiennych-globalnych-do-słownika",
+    "title": "Lab VI: Geometria żółwia",
+    "section": "3 Od zmiennych globalnych do słownika",
+    "text": "3 Od zmiennych globalnych do słownika\nDany jest moduł counter.py implementujący prosty licznik za pomocą zmiennej globalnej:\n# counter.py\ncount = 0\n\ndef increment():\n    global count\n    count += 1\n\ndef reset():\n    global count\n    count = 0\n\ndef get_count():\n    return count\nModuł działa poprawnie dla jednego licznika, ale nie pozwala na prowadzenie dwóch niezależnych liczników jednocześnie — zmienna count jest jedna.\nPrzepisz moduł tak, aby stan licznika był przechowywany w słowniku przekazywanym do funkcji jako argument. Dodaj funkcję create_counter(start=0) tworzącą nowy licznik. Przykład użycia:\nc1 = create_counter()\nc2 = create_counter(10)\nincrement(c1)\nincrement(c1)\nincrement(c2)\nprint(get_count(c1))  # 2\nprint(get_count(c2))  # 11",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VI: Geometria żółwia"
+    ]
+  },
+  {
+    "objectID": "lab_VI/lab_VI.html#moduł-żółwia",
+    "href": "lab_VI/lab_VI.html#moduł-żółwia",
+    "title": "Lab VI: Geometria żółwia",
+    "section": "4 Moduł żółwia",
+    "text": "4 Moduł żółwia\nNapisz moduł logo_turtle.py z implementacją żółwia według wytycznych z wprowadzenia. Moduł powinien zawierać funkcje:\n\ncreate_turtle(x=0, y=0, azimuth=0, name=\"\") — tworzy żółwia w położeniu (x, y) patrzącego w kierunku azimuth stopni od wschodu, o nazwie name. Funkcja zwraca słownik o kluczach:\n\nposition — lista [(x, y)] zawierająca na ostatniej pozycji krotkę ze współrzędnymi aktualnego położenia żółwia. Gdy żółw jest tworzony, lista zawiera jedną krotkę z położeniem początkowym; po każdym wykonaniu polecenia forward lista jest rozszerzana o nowe położenie.\nazimuth — azymut żółwia w stopniach.\nname — nazwa żółwia.\n\nforward(turtle, r) — przesuwa żółwia turtle o dystans r w kierunku, w którym żółw patrzy. Przesunięcie polega na dodaniu do listy position nowego położenia obliczonego na podstawie ostatniego położenia, azymutu i dystansu r.\nright(turtle, a) — obraca żółwia turtle o kąt a w prawo. Obrót zmienia wartość azimuth o -a.\nleft(turtle, a) — obraca żółwia turtle o kąt a w lewo. Obrót zmienia wartość azimuth o a.\nto_csv(*turtles, filename) — zapisuje historię położeń żółwi turtles do pliku CSV o nazwie filename. Plik CSV zawiera nagłówek z nazwami kolumn: x, y, name. Wiersze odpowiadają kolejnym położeniom żółwi — najpierw wszystkie położenia pierwszego żółwia, potem drugiego itd.\n\nTesty modułu logo_turtle.py znajdują się w pliku test_logo_turtle.py.\n\n\n\n\n\n\nTipModuł csv\n\n\n\nModuł csv z biblioteki standardowej ułatwia zapis danych do plików CSV:\nimport csv\n\nwith open(\"output.csv\", \"w\", newline=\"\") as f:\n    writer = csv.writer(f)\n    writer.writerow([\"x\", \"y\", \"name\"])    # nagłówek\n    writer.writerow([1.5, 2.3, \"Tolek\"])   # wiersz danych\nParametr newline=\"\" w open() jest wymagany przez moduł csv — zapobiega wstawianiu pustych wierszy w pliku wynikowym.\n\n\nTrasę żółwia zapisaną w pliku CSV możesz zwizualizować:\n\nw notatniku Jupyter, korzystając z bibliotek pandas i matplotlib,\nw arkuszu kalkulacyjnym, np. programie Excel,\nw narzędziu online, np. csvplot.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VI: Geometria żółwia"
+    ]
+  },
+  {
+    "objectID": "lab_VI/lab_VI.html#wielokąty-żółwiowe",
+    "href": "lab_VI/lab_VI.html#wielokąty-żółwiowe",
+    "title": "Lab VI: Geometria żółwia",
+    "section": "5 Wielokąty żółwiowe",
+    "text": "5 Wielokąty żółwiowe\nJedna z najprostszych procedur w geometrii żółwia wygląda tak:\ndef polygon(turtle, a, r):\n    while True:\n        forward(turtle, r)\n        right(turtle, a)\nŻółw nieskończenie długo naprzemiennie wędruje naprzód o r i wykonuje obrót w prawo o a. Dystans i kąt obrotu są ustalone. Jeśli po pewnej niezerowej liczbie kroków położenie i azymut żółwia będą takie jak na starcie, żółw zacznie chodzić po swoich śladach — otrzymamy krzywą zamkniętą. Stanie się tak np. wtedy, gdy kąt a jest dzielnikiem 360 — ścieżka żółwia jest wówczas wielokątem foremnym. Ogólniej:\nTwierdzenie o zamknięciu wielokąta. Załóżmy, że kąt a nie jest całkowitą wielokrotnością 360. Wtedy polygon(turtle, a, r) przemieszcza żółwia po łamanej, która zamknie się dokładnie wtedy, gdy obrót całkowity żółwia będzie całkowitą wielokrotnością 360.\nTwierdzenie stosujemy tak: w pętli while funkcji polygon() zliczamy obrót całkowity żółwia. Gdy obrót całkowity osiągnie wielokrotność 360, krzywa żółwiowa właśnie się zamknęła i możemy zakończyć pętlę. Jeśli obrót całkowity nigdy nie stanie się wielokrotnością 360, krzywa nigdy się nie zamknie. Wynika stąd, że łamana rysowana przez polygon() jest zamknięta wtedy i tylko wtedy, gdy kąt a jest liczbą wymierną nie będącą wielokrotnością 360. W pozostałych przypadkach — gdy a jest niewymierny lub jest wielokrotnością 360 — krzywa jest nieskończona.\nPrzykłady:\n\ndla a = 144 trasa zamknie się po 5 krokach, gdyż \\(5 \\cdot 144 = 720 = 2 \\cdot 360\\),\ndla a = 72 trasa zamknie się po 5 krokach, gdyż \\(5 \\cdot 72 = 360 = 1 \\cdot 360\\),\ndla a = Fraction(360, 7) trasa zamknie się po 7 krokach, gdyż \\(7 \\cdot \\frac{360}{7} = 360 = 1 \\cdot 360\\).\n\nWięcej szczegółów, w tym dowód twierdzenia, znajdziesz tutaj i tutaj.\n\n\n\n\n\n\nTipModuł fractions\n\n\n\nModuł fractions z biblioteki standardowej udostępnia typ Fraction reprezentujący ułamki zwykłe z dokładną arytmetyką:\nfrom fractions import Fraction\n\na = Fraction(360, 7)   # 360/7\nprint(a * 7)           # 360\nprint(a % 360)         # Fraction(360, 7)\nprint(isinstance(a, (int, Fraction)))  # True\nOperator % działa dla obiektów Fraction, co ułatwia sprawdzenie warunku zamknięcia wielokąta.\n\n\nNapisz moduł polygons.py zawierający funkcje:\n\npolygon(turtle, a, r) — wersja funkcji polygon() z warunkiem stopu. Parametry:\n\nturtle — słownik reprezentujący żółwia z modułu logo_turtle.py,\na — kąt obrotu w stopniach, liczba typu int lub fractions.Fraction,\nr — długość boku.\n\nFunkcja zwraca liczbę boków wielokąta. Jeśli a nie jest typu int ani fractions.Fraction, funkcja zgłasza wyjątek TypeError z komunikatem kąt musi być liczbą całkowitą lub wymierną. Jeśli a jest prawidłowego typu, ale nie spełnia warunków twierdzenia o zamknięciu wielokąta, funkcja zgłasza wyjątek ValueError z komunikatem kąt musi być liczbą wymierną nie będącą wielokrotnością 360.\nregular_polygon(turtle, n, r) — rysuje n-kąt foremny o boku r. Parametry:\n\nturtle — słownik reprezentujący żółwia z modułu logo_turtle.py,\nn — liczba wierzchołków wielokąta,\nr — długość boku.\n\n\nTesty modułu polygons.py znajdują się w pliku test_polygons.py.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VI: Geometria żółwia"
+    ]
+  },
+  {
+    "objectID": "lab_VI/lab_VI.html#błądzenie-losowe",
+    "href": "lab_VI/lab_VI.html#błądzenie-losowe",
+    "title": "Lab VI: Geometria żółwia",
+    "section": "6 Błądzenie losowe",
+    "text": "6 Błądzenie losowe\nNapisz program realizujący błądzenie losowe (random walk) żółwia po kracie. Żółw zaczyna w punkcie (0, 0) i patrzy na wschód. W każdym kroku:\n\nlosuje jeden z czterech kierunków: północ, południe, wschód, zachód,\nustawia się w wybranym kierunku,\nprzesuwa się o jedną jednostkę.\n\nProgram wykonuje N = 1000 kroków (wartość zdefiniuj jako stałą), a następnie zapisuje historię położeń żółwia do pliku CSV za pomocą funkcji to_csv.\nRozszerzenie: uruchom jednocześnie kilku żółwi (np. trzech) wykonujących niezależne błądzenia losowe. Zapisz historie wszystkich żółwi do jednego pliku CSV i zwizualizuj ich trasy.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VI: Geometria żółwia"
+    ]
+  },
+  {
+    "objectID": "lab_VI/lab_VI.html#minilogia",
+    "href": "lab_VI/lab_VI.html#minilogia",
+    "title": "Lab VI: Geometria żółwia",
+    "section": "7 MiniLogia",
+    "text": "7 MiniLogia\nStrona MiniLogia zawiera wiele zadań związanych z geometrią żółwia. Wybierz jedno z zadań i rozwiąż je za pomocą modułu logo_turtle.py. Zaniedbaj kolory.",
+    "crumbs": [
+      "Laboratoria",
+      "Lab VI: Geometria żółwia"
     ]
   }
 ]

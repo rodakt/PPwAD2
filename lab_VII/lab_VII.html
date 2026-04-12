@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tomasz Rodak">
+
+<title>Lab VII: Funkcje wyższego rzędu. Domknięcia – Podstawy programowania (AD) 2</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a91fd2e505097536da9e8d380e199038.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_VII/lab_VII.html">Lab VII: Funkcje wyższego rzędu. Domknięcia</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Podstawy programowania (AD) 2</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Strona główna</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Wykłady</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Zmienne. Instrukcja przypisania</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wypakowywanie obiektów iterowalnych. Parametry i argumenty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Przestrzenie nazw i moduły</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Funkcje jako obiekty. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dekoratory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Laboratoria</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab I: Zadania na rozgrzewkę</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_II/lab_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab II: Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_III/lab_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab III: Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_IV/lab_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IV: Zmienne, aliasy, kopie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_V/lab_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab V: Wypakowywanie i parametry funkcji</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_VI/lab_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VI: Geometria żółwia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_VII/lab_VII.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Lab VII: Funkcje wyższego rzędu. Domknięcia</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Spis treści</h2>
+   
+  <ul>
+  <li><a href="#rozgrzewka-domknięcia" id="toc-rozgrzewka-domknięcia" class="nav-link active" data-scroll-target="#rozgrzewka-domknięcia"><span class="header-section-number">1</span> Rozgrzewka: domknięcia</a></li>
+  <li><a href="#licznik-jako-domknięcie" id="toc-licznik-jako-domknięcie" class="nav-link" data-scroll-target="#licznik-jako-domknięcie"><span class="header-section-number">2</span> Licznik jako domknięcie</a></li>
+  <li><a href="#złożenie-funkcji" id="toc-złożenie-funkcji" class="nav-link" data-scroll-target="#złożenie-funkcji"><span class="header-section-number">3</span> Złożenie funkcji</a></li>
+  <li><a href="#currying-kalkulatora" id="toc-currying-kalkulatora" class="nav-link" data-scroll-target="#currying-kalkulatora"><span class="header-section-number">4</span> Currying kalkulatora</a></li>
+  <li><a href="#predykaty-i-własności-ciągów" id="toc-predykaty-i-własności-ciągów" class="nav-link" data-scroll-target="#predykaty-i-własności-ciągów"><span class="header-section-number">5</span> Predykaty i własności ciągów</a></li>
+  <li><a href="#automat-losujący" id="toc-automat-losujący" class="nav-link" data-scroll-target="#automat-losujący"><span class="header-section-number">6</span> Automat losujący</a></li>
+  <li><a href="#szyfr-jako-domknięcie" id="toc-szyfr-jako-domknięcie" class="nav-link" data-scroll-target="#szyfr-jako-domknięcie"><span class="header-section-number">7</span> Szyfr jako domknięcie</a></li>
+  <li><a href="#sortowanie-z-lambda" id="toc-sortowanie-z-lambda" class="nav-link" data-scroll-target="#sortowanie-z-lambda"><span class="header-section-number">8</span> Sortowanie z <code>lambda</code></a></li>
+  <li><a href="#potok-funkcji" id="toc-potok-funkcji" class="nav-link" data-scroll-target="#potok-funkcji"><span class="header-section-number">9</span> Potok funkcji</a></li>
+  <li><a href="#zapamiętywanie-wyników" id="toc-zapamiętywanie-wyników" class="nav-link" data-scroll-target="#zapamiętywanie-wyników"><span class="header-section-number">10</span> Zapamiętywanie wyników</a></li>
+  <li><a href="#zamrażanie-argumentów" id="toc-zamrażanie-argumentów" class="nav-link" data-scroll-target="#zamrażanie-argumentów"><span class="header-section-number">11</span> Zamrażanie argumentów ★</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_VII/lab_VII.html">Lab VII: Funkcje wyższego rzędu. Domknięcia</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Lab VII: Funkcje wyższego rzędu. Domknięcia</h1>
+<p class="subtitle lead">Podstawy programowania (AD) 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tomasz Rodak </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Te ćwiczenia nawiązują do materiału z wykładu o funkcjach jako obiektach pierwszej klasy, funkcjach wyższego rzędu, domknięciach, curryingu i wyrażeniach <code>lambda</code>.</p>
+<section id="rozgrzewka-domknięcia" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="rozgrzewka-domknięcia"><span class="header-section-number">1</span> Rozgrzewka: domknięcia</h2>
+<p>Przewidź, jaki będzie efekt uruchomienia każdego z poniższych programów. Odpowiedz bez uruchamiania kodu, a następnie sprawdź odpowiedź w konsoli interaktywnej.</p>
+<p><strong>1.</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">def</span> make_greeter(name):</span>
+<span id="cb1-2"><a href="#cb1-2"></a>    <span class="kw">def</span> greet():</span>
+<span id="cb1-3"><a href="#cb1-3"></a>        <span class="cf">return</span> <span class="ss">f"Cześć, </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">!"</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>    <span class="cf">return</span> greet</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a>hello <span class="op">=</span> make_greeter(<span class="st">"Ala"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="bu">print</span>(hello())</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="bu">print</span>(hello.__code__.co_freevars)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre><code>Cześć, Ala!
+('name',)</code></pre>
+<p>Wywołanie <code>make_greeter("Ala")</code> zwraca funkcję <code>greet</code>, która zamyka zmienną <code>name</code> o wartości <code>"Ala"</code>. Atrybut <code>co_freevars</code> zawiera krotki nazw zmiennych swobodnych.</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">def</span> make_adder(x):</span>
+<span id="cb3-2"><a href="#cb3-2"></a>    <span class="cf">return</span> <span class="kw">lambda</span> y: x <span class="op">+</span> y</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a>add2 <span class="op">=</span> make_adder(<span class="dv">2</span>)</span>
+<span id="cb3-5"><a href="#cb3-5"></a>add5 <span class="op">=</span> make_adder(<span class="dv">5</span>)</span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="bu">print</span>(add2(<span class="dv">10</span>), add5(<span class="dv">10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre><code>12 15</code></pre>
+<p>Każde wywołanie <code>make_adder</code> tworzy nowe domknięcie z własną wartością <code>x</code>. Domknięcia <code>add2</code> i <code>add5</code> są niezależne.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">def</span> counter():</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    n <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>    <span class="kw">def</span> increment():</span>
+<span id="cb5-4"><a href="#cb5-4"></a>        <span class="kw">nonlocal</span> n</span>
+<span id="cb5-5"><a href="#cb5-5"></a>        n <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>        <span class="cf">return</span> n</span>
+<span id="cb5-7"><a href="#cb5-7"></a>    <span class="cf">return</span> increment</span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a>c <span class="op">=</span> counter()</span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="bu">print</span>(c(), c(), c())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre><code>1 2 3</code></pre>
+<p>Deklaracja <code>nonlocal n</code> pozwala funkcji <code>increment</code> modyfikować zmienną <code>n</code> z przestrzeni nazw funkcji <code>counter</code>. Każde wywołanie <code>c()</code> zwiększa tę samą zmienną <code>n</code>.</p>
+</div>
+</div>
+</div>
+<p><strong>4.</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">def</span> make_history():</span>
+<span id="cb7-2"><a href="#cb7-2"></a>    events <span class="op">=</span> []</span>
+<span id="cb7-3"><a href="#cb7-3"></a>    <span class="kw">def</span> add(event):</span>
+<span id="cb7-4"><a href="#cb7-4"></a>        events.append(event)</span>
+<span id="cb7-5"><a href="#cb7-5"></a>        <span class="cf">return</span> events</span>
+<span id="cb7-6"><a href="#cb7-6"></a>    <span class="cf">return</span> add</span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a>log <span class="op">=</span> make_history()</span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="bu">print</span>(log(<span class="st">"start"</span>))</span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="bu">print</span>(log(<span class="st">"stop"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre><code>['start']
+['start', 'stop']</code></pre>
+<p>Lista <code>events</code> jest obiektem zmiennym (<em>mutable</em>). Wywołanie <code>.append()</code> modyfikuje istniejący obiekt, ale nie przypisuje nowej wartości do nazwy <code>events</code> — dlatego instrukcja <code>nonlocal</code> nie jest tu potrzebna. Porównaj z przykładem <code>moving_average()</code> z wykładu, gdzie <code>values.append(value)</code> działało bez <code>nonlocal</code>, ale <code>total += value</code> wymagało deklaracji <code>nonlocal</code>.</p>
+</div>
+</div>
+</div>
+<p><strong>5.</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a>functions <span class="op">=</span> []</span>
+<span id="cb9-2"><a href="#cb9-2"></a>i <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>functions.append(<span class="kw">lambda</span>: i)</span>
+<span id="cb9-4"><a href="#cb9-4"></a>i <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>functions.append(<span class="kw">lambda</span>: i)</span>
+<span id="cb9-6"><a href="#cb9-6"></a>i <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a>functions.append(<span class="kw">lambda</span>: i)</span>
+<span id="cb9-8"><a href="#cb9-8"></a></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="bu">print</span>([f() <span class="cf">for</span> f <span class="kw">in</span> functions])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre><code>[2, 2, 2]</code></pre>
+<p>Wynik <strong>nie</strong> jest <code>[0, 1, 2]</code>. Wszystkie trzy lambdy odwołują się do <strong>tej samej</strong> zmiennej <code>i</code>. Żadna z nich nie zapamiętuje wartości <code>i</code> z momentu, w którym została utworzona — zamiast tego każda wyszukuje bieżącą wartość <code>i</code> dopiero w momencie <strong>wywołania</strong>. Gdy wykonujemy <code>[f() for f in functions]</code>, zmienna <code>i</code> ma wartość <code>2</code> (ostatnią przypisaną), więc każda lambda zwraca <code>2</code>.</p>
+<p>Mechanizm ten nazywamy <strong>późnym wiązaniem</strong> (<em>late binding</em>): wartość zmiennej nielokalnej jest odczytywana w momencie wywołania funkcji, a nie w momencie jej definicji. Python nie kopiuje wartości zmiennej do lambdy — lambda przechowuje jedynie <em>odniesienie</em> do nazwy.</p>
+<p>Zauważ, że w tym przykładzie <code>i</code> jest zmienną globalną, więc nie mamy tu do czynienia z domknięciem. Lambdy odwołują się do <code>i</code> przez globalną przestrzeń nazw. Późne wiązanie dotyczy jednak również zmiennych swobodnych w domknięciach — zobaczymy to w przykładzie 7.</p>
+</div>
+</div>
+</div>
+<p><strong>6.</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a>functions <span class="op">=</span> []</span>
+<span id="cb11-2"><a href="#cb11-2"></a>i <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>functions.append(<span class="kw">lambda</span> i<span class="op">=</span>i: i)</span>
+<span id="cb11-4"><a href="#cb11-4"></a>i <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>functions.append(<span class="kw">lambda</span> i<span class="op">=</span>i: i)</span>
+<span id="cb11-6"><a href="#cb11-6"></a>i <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a>functions.append(<span class="kw">lambda</span> i<span class="op">=</span>i: i)</span>
+<span id="cb11-8"><a href="#cb11-8"></a></span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="bu">print</span>([f() <span class="cf">for</span> f <span class="kw">in</span> functions])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre><code>[0, 1, 2]</code></pre>
+<p>Zapis <code>lambda i=i: i</code> definiuje parametr <code>i</code> z wartością domyślną. Kluczowa zasada: <strong>wartości domyślne parametrów są obliczane w momencie definicji funkcji</strong>, nie w momencie wywołania. Dlatego <code>lambda i=i: i</code> uchwytuje bieżącą wartość zmiennej globalnej <code>i</code> jako wartość domyślną parametru. Każda lambda otrzymuje inną wartość domyślną: <code>0</code>, <code>1</code>, <code>2</code>.</p>
+<p>Parametr <code>i</code> wewnątrz lambdy jest teraz zmienną <strong>lokalną</strong> (nie odnosi się do globalnego <code>i</code>), więc późne wiązanie nie wchodzi w grę.</p>
+</div>
+</div>
+</div>
+<p><strong>7.</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">def</span> make_functions():</span>
+<span id="cb13-2"><a href="#cb13-2"></a>    functions <span class="op">=</span> []</span>
+<span id="cb13-3"><a href="#cb13-3"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
+<span id="cb13-4"><a href="#cb13-4"></a>        functions.append(<span class="kw">lambda</span>: i)</span>
+<span id="cb13-5"><a href="#cb13-5"></a>    <span class="cf">return</span> functions</span>
+<span id="cb13-6"><a href="#cb13-6"></a></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="bu">print</span>([f() <span class="cf">for</span> f <span class="kw">in</span> make_functions()])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre><code>[2, 2, 2]</code></pre>
+<p>Ten sam efekt co w przykładzie 5, ale teraz <code>i</code> <strong>jest</strong> zmienną swobodną — lambdy tworzą domknięcia zamykające zmienną <code>i</code> z przestrzeni nazw funkcji <code>make_functions</code>. Późne wiązanie działa identycznie: wszystkie lambdy współdzielą tę samą zmienną <code>i</code>, a jej wartość w momencie wywołania to <code>2</code>. Poprawkę zastosowalibyśmy tak samo jak w przykładzie 6: <code>lambda i=i: i</code>.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="licznik-jako-domknięcie" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="licznik-jako-domknięcie"><span class="header-section-number">2</span> Licznik jako domknięcie</h2>
+<p>Dokończ implementację funkcji <code>make_counter(start=0, step=1)</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">def</span> make_counter(start<span class="op">=</span><span class="dv">0</span>, step<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb15-2"><a href="#cb15-2"></a>    <span class="co">"""</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="co">    Zwraca funkcję, która jest licznikiem. Funkcja ta, po każdym wywołaniu,</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="co">    zwraca kolejną liczbę, zaczynając od `start` z odstępem `step`.</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a></span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="co">    Parametry:</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a><span class="co">    start -- liczba, od której zaczynamy zliczać</span></span>
+<span id="cb15-8"><a href="#cb15-8"></a><span class="co">    step -- liczba, o którą zmieniamy licznik po każdym wywołaniu</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a></span>
+<span id="cb15-10"><a href="#cb15-10"></a><span class="co">    Zwraca:</span></span>
+<span id="cb15-11"><a href="#cb15-11"></a><span class="co">    funkcję, która zlicza od start do nieskończoności</span></span>
+<span id="cb15-12"><a href="#cb15-12"></a></span>
+<span id="cb15-13"><a href="#cb15-13"></a><span class="co">    Przykłady:</span></span>
+<span id="cb15-14"><a href="#cb15-14"></a><span class="co">    &gt;&gt;&gt; counter = make_counter()</span></span>
+<span id="cb15-15"><a href="#cb15-15"></a><span class="co">    &gt;&gt;&gt; counter()</span></span>
+<span id="cb15-16"><a href="#cb15-16"></a><span class="co">    0</span></span>
+<span id="cb15-17"><a href="#cb15-17"></a><span class="co">    &gt;&gt;&gt; counter()</span></span>
+<span id="cb15-18"><a href="#cb15-18"></a><span class="co">    1</span></span>
+<span id="cb15-19"><a href="#cb15-19"></a><span class="co">    &gt;&gt;&gt; counter()</span></span>
+<span id="cb15-20"><a href="#cb15-20"></a><span class="co">    2</span></span>
+<span id="cb15-21"><a href="#cb15-21"></a><span class="co">    &gt;&gt;&gt; new_counter = make_counter(10)</span></span>
+<span id="cb15-22"><a href="#cb15-22"></a><span class="co">    &gt;&gt;&gt; new_counter()</span></span>
+<span id="cb15-23"><a href="#cb15-23"></a><span class="co">    10</span></span>
+<span id="cb15-24"><a href="#cb15-24"></a><span class="co">    &gt;&gt;&gt; new_counter()</span></span>
+<span id="cb15-25"><a href="#cb15-25"></a><span class="co">    11</span></span>
+<span id="cb15-26"><a href="#cb15-26"></a><span class="co">    &gt;&gt;&gt; yet_another_counter = make_counter(10, 2)</span></span>
+<span id="cb15-27"><a href="#cb15-27"></a><span class="co">    &gt;&gt;&gt; yet_another_counter()</span></span>
+<span id="cb15-28"><a href="#cb15-28"></a><span class="co">    10</span></span>
+<span id="cb15-29"><a href="#cb15-29"></a><span class="co">    &gt;&gt;&gt; yet_another_counter()</span></span>
+<span id="cb15-30"><a href="#cb15-30"></a><span class="co">    12</span></span>
+<span id="cb15-31"><a href="#cb15-31"></a><span class="co">    &gt;&gt;&gt; yet_another_counter()</span></span>
+<span id="cb15-32"><a href="#cb15-32"></a><span class="co">    14</span></span>
+<span id="cb15-33"><a href="#cb15-33"></a><span class="co">    &gt;&gt;&gt; counter()</span></span>
+<span id="cb15-34"><a href="#cb15-34"></a><span class="co">    3</span></span>
+<span id="cb15-35"><a href="#cb15-35"></a><span class="co">    &gt;&gt;&gt; new_counter()</span></span>
+<span id="cb15-36"><a href="#cb15-36"></a><span class="co">    12</span></span>
+<span id="cb15-37"><a href="#cb15-37"></a><span class="co">    &gt;&gt;&gt; float_counter = make_counter(0.5, -0.5)</span></span>
+<span id="cb15-38"><a href="#cb15-38"></a><span class="co">    &gt;&gt;&gt; float_counter()</span></span>
+<span id="cb15-39"><a href="#cb15-39"></a><span class="co">    0.5</span></span>
+<span id="cb15-40"><a href="#cb15-40"></a><span class="co">    &gt;&gt;&gt; float_counter()</span></span>
+<span id="cb15-41"><a href="#cb15-41"></a><span class="co">    0.0</span></span>
+<span id="cb15-42"><a href="#cb15-42"></a><span class="co">    &gt;&gt;&gt; float_counter()</span></span>
+<span id="cb15-43"><a href="#cb15-43"></a><span class="co">    -0.5</span></span>
+<span id="cb15-44"><a href="#cb15-44"></a><span class="co">    """</span></span>
+<span id="cb15-45"><a href="#cb15-45"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Porównanie z lab VI
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>W lab VI implementowałeś licznik za pomocą słownika przekazywanego do funkcji jako argument. Teraz stan licznika przechowywany jest w domknięciu — porównaj oba podejścia. Które jest wygodniejsze w użyciu?</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="złożenie-funkcji" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="złożenie-funkcji"><span class="header-section-number">3</span> Złożenie funkcji</h2>
+<p>Dokończ implementację funkcji <code>compose(f, g)</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">def</span> compose(f, g):</span>
+<span id="cb16-2"><a href="#cb16-2"></a>    <span class="co">"""</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="co">    Zwraca funkcję, która jest złożeniem funkcji f i g. Funkcja f jest</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="co">    wywoływana na wyniku funkcji g. Zwrócona funkcja przyjmuje takie same</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a><span class="co">    argumenty jak g.</span></span>
+<span id="cb16-6"><a href="#cb16-6"></a></span>
+<span id="cb16-7"><a href="#cb16-7"></a><span class="co">    Parametry:</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a><span class="co">    f -- funkcja, która ma być wywołana na wyniku funkcji g</span></span>
+<span id="cb16-9"><a href="#cb16-9"></a><span class="co">    g -- funkcja, która ma być wywołana jako pierwsza</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a></span>
+<span id="cb16-11"><a href="#cb16-11"></a><span class="co">    Zwraca:</span></span>
+<span id="cb16-12"><a href="#cb16-12"></a><span class="co">    funkcję, która jest złożeniem f i g</span></span>
+<span id="cb16-13"><a href="#cb16-13"></a></span>
+<span id="cb16-14"><a href="#cb16-14"></a><span class="co">    Przykłady:</span></span>
+<span id="cb16-15"><a href="#cb16-15"></a><span class="co">    &gt;&gt;&gt; def add_one(x):</span></span>
+<span id="cb16-16"><a href="#cb16-16"></a><span class="co">    ...     return x + 1</span></span>
+<span id="cb16-17"><a href="#cb16-17"></a><span class="co">    &gt;&gt;&gt; def square(x):</span></span>
+<span id="cb16-18"><a href="#cb16-18"></a><span class="co">    ...     return x * x</span></span>
+<span id="cb16-19"><a href="#cb16-19"></a><span class="co">    &gt;&gt;&gt; add_one_square = compose(add_one, square)</span></span>
+<span id="cb16-20"><a href="#cb16-20"></a><span class="co">    &gt;&gt;&gt; add_one_square(2)</span></span>
+<span id="cb16-21"><a href="#cb16-21"></a><span class="co">    5</span></span>
+<span id="cb16-22"><a href="#cb16-22"></a><span class="co">    &gt;&gt;&gt; square_add_one = compose(square, add_one)</span></span>
+<span id="cb16-23"><a href="#cb16-23"></a><span class="co">    &gt;&gt;&gt; square_add_one(2)</span></span>
+<span id="cb16-24"><a href="#cb16-24"></a><span class="co">    9</span></span>
+<span id="cb16-25"><a href="#cb16-25"></a><span class="co">    &gt;&gt;&gt; compose(str, pow)(2, 10)</span></span>
+<span id="cb16-26"><a href="#cb16-26"></a><span class="co">    '1024'</span></span>
+<span id="cb16-27"><a href="#cb16-27"></a><span class="co">    """</span></span>
+<span id="cb16-28"><a href="#cb16-28"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+<section id="currying-kalkulatora" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="currying-kalkulatora"><span class="header-section-number">4</span> Currying kalkulatora</h2>
+<p>Dana jest funkcja:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">def</span> calculator(x, y, operation):</span>
+<span id="cb17-2"><a href="#cb17-2"></a>    <span class="cf">if</span> operation <span class="op">==</span> <span class="st">'+'</span>:</span>
+<span id="cb17-3"><a href="#cb17-3"></a>        <span class="cf">return</span> x <span class="op">+</span> y</span>
+<span id="cb17-4"><a href="#cb17-4"></a>    <span class="cf">elif</span> operation <span class="op">==</span> <span class="st">'-'</span>:</span>
+<span id="cb17-5"><a href="#cb17-5"></a>        <span class="cf">return</span> x <span class="op">-</span> y</span>
+<span id="cb17-6"><a href="#cb17-6"></a>    <span class="cf">elif</span> operation <span class="op">==</span> <span class="st">'*'</span>:</span>
+<span id="cb17-7"><a href="#cb17-7"></a>        <span class="cf">return</span> x <span class="op">*</span> y</span>
+<span id="cb17-8"><a href="#cb17-8"></a>    <span class="cf">elif</span> operation <span class="op">==</span> <span class="st">'/'</span>:</span>
+<span id="cb17-9"><a href="#cb17-9"></a>        <span class="cf">if</span> y <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb17-10"><a href="#cb17-10"></a>            <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Dzielenie przez zero"</span>)</span>
+<span id="cb17-11"><a href="#cb17-11"></a>        <span class="cf">return</span> x <span class="op">/</span> y</span>
+<span id="cb17-12"><a href="#cb17-12"></a>    <span class="cf">else</span>:</span>
+<span id="cb17-13"><a href="#cb17-13"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Nieznana operacja"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Napisz funkcję <code>make_calculator()</code> stanowiącą równoważny wariant funkcji <code>calculator()</code> w postaci złożenia trzech jednoparametrowych funkcji:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a>calculator(x, y, operation) <span class="op">==</span> make_calculator(operation)(x)(y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Currying
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Technikę polegającą na zapisywaniu funkcji wieloparametrowych jako złożenia funkcji jednoparametrowych nazywamy <a href="https://en.wikipedia.org/wiki/Currying"><em>curryingiem</em></a>. Na wykładzie poznałeś funkcję <code>curry2(f)</code> zamieniającą <code>f(a, b)</code> na <code>g(a)(b)</code>. Tutaj curryfikujesz ręcznie funkcję trójargumentową.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="predykaty-i-własności-ciągów" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="predykaty-i-własności-ciągów"><span class="header-section-number">5</span> Predykaty i własności ciągów</h2>
+<p>Napisz moduł <code>seq_info.py</code>, zawierający funkcje:</p>
+<ol type="1">
+<li><code>check_adjacent(seq, pred)</code> — zwraca <code>True</code>, jeśli dla każdej pary <strong>sąsiednich</strong> elementów <code>x</code>, <code>y</code> sekwencji <code>seq</code> zachodzi <code>pred(x, y)</code> (gdzie <code>pred</code> jest funkcją dwuargumentową), w przeciwnym razie zwraca <code>False</code>.</li>
+<li><code>is_ascending(seq)</code> — zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest niemalejąca.</li>
+<li><code>is_strictly_ascending(seq)</code> — zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest ściśle rosnąca.</li>
+<li><code>is_descending(seq)</code> — zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest nierosnąca.</li>
+<li><code>is_strictly_descending(seq)</code> — zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest ściśle malejąca.</li>
+<li><code>is_monotonic(seq)</code> — zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest monotoniczna.</li>
+<li><code>is_strictly_monotonic(seq)</code> — zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest ściśle monotoniczna.</li>
+<li><code>is_constant(seq)</code> — zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest stała.</li>
+<li><code>is_alternating(seq)</code> — zwraca <code>True</code>, jeśli sekwencja <code>seq</code> jest naprzemienna. Zakładamy, że <code>seq</code> jest sekwencją wartości liczbowych. Ciąg liczbowy nazwiemy naprzemiennym, jeśli dla każdej pary sąsiednich elementów <span class="math inline">\(a\)</span>, <span class="math inline">\(b\)</span> zachodzi <span class="math inline">\(a \cdot b &lt; 0\)</span>.</li>
+<li><code>is_arithmetic(seq, r=None)</code> — <code>seq</code> jest sekwencją liczb całkowitych. Jeśli <code>r</code> jest <code>None</code>, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem arytmetycznym, w przeciwnym razie zwraca <code>False</code>. Jeśli <code>r</code> jest podane, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem arytmetycznym o różnicy <code>r</code>, w przeciwnym razie zwraca <code>False</code>.</li>
+<li><code>is_geometric(seq, q=None)</code> — <code>seq</code> jest sekwencją liczb całkowitych. Zakładamy, że ciąg geometryczny nie zawiera zer. Jeśli <code>q</code> jest <code>None</code>, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem geometrycznym o całkowitym ilorazie, w przeciwnym razie zwraca <code>False</code>. Jeśli całkowite <code>q</code> jest podane, to funkcja zwraca <code>True</code>, jeśli <code>seq</code> jest ciągiem geometrycznym o ilorazie <code>q</code>, w przeciwnym razie zwraca <code>False</code>. <em>Sekwencja, w której iloraz sąsiednich wyrazów nie jest liczbą całkowitą (np. <code>[8, 12, 18, 27]</code> z <code>q=3/2</code>), nie jest uznawana za ciąg geometryczny w rozumieniu tej funkcji.</em></li>
+</ol>
+<p><strong>Wszystkie funkcje powinny korzystać z funkcji <code>check_adjacent()</code> dla odpowiednich predykatów.</strong> Testy modułu <code>seq_info.py</code> znajdują się w pliku <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VII/test_seq_info.py">test_seq_info.py</a>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Wskazówka
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Funkcje <code>is_ascending</code> — <code>is_constant</code> sprowadzają się do wywołania <code>check_adjacent</code> z odpowiednią lambdą. Funkcje <code>is_arithmetic</code> i <code>is_geometric</code> z parametrem <code>r</code>/<code>q</code> równym <code>None</code> wymagają dodatkowego kroku: wyznacz różnicę (iloraz) z dwóch pierwszych elementów, a następnie użyj <code>check_adjacent</code>.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="automat-losujący" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="automat-losujący"><span class="header-section-number">6</span> Automat losujący</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Powiązanie z lab V
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>W lab V pisałeś funkcję <code>draw_from_urn()</code>, która przyjmowała parametry losowania (liczbę losowań, tryb zwracania, kolory kul) i zwracała wynik. Teraz napiszesz wariant oparty na domknięciu: funkcja <code>random_ball_machine()</code> zwraca <em>automat</em> — bezparametrową funkcję, która pamięta stan urny między wywołaniami.</p>
+</div>
+</div>
+<p>Napisz moduł <code>ball_machine.py</code>, zawierający funkcję <code>random_ball_machine(return_balls, **balls)</code>. Funkcja zwraca bezparametrową funkcję <code>machine()</code>, która symuluje losowanie kul z urny. Opis parametrów:</p>
+<ul>
+<li><code>return_balls</code> — <code>True</code> lub <code>False</code>, domyślnie <code>True</code>. Decyduje o tym, czy losowania są prowadzone ze zwracaniem (domyślnie tak).</li>
+<li><code>balls</code> — przyjmuje argumenty postaci <code>color=quantity</code>, gdzie:
+<ul>
+<li><code>color</code> — łańcuch znaków oznaczający kolor kuli,</li>
+<li><code>quantity</code> — liczba całkowita nieujemna określająca liczbę kul danego koloru w urnie.</li>
+</ul></li>
+</ul>
+<p>Każde wywołanie funkcji <code>machine()</code> zwraca kulę wylosowaną z urny. Jeśli <code>return_balls</code> jest ustawione na <code>True</code>, to kulę losuje się ze zwracaniem, w przeciwnym razie bez zwracania. Jeśli urna jest pusta, <code>machine()</code> powinien zgłaszać wyjątek <code>LookupError</code> z komunikatem <code>'urna jest pusta.'</code>.</p>
+<p>Testy: <a href="https://githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VII/test_ball_machine.py"><code>test_ball_machine.py</code></a></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Wskazówka
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Stan urny (listę kul) zbuduj wewnątrz <code>random_ball_machine()</code> przed definicją <code>machine()</code> — lista ta znajdzie się w domknięciu. Przy losowaniu bez zwracania usuwaj wylosowaną kulę z listy.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="szyfr-jako-domknięcie" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="szyfr-jako-domknięcie"><span class="header-section-number">7</span> Szyfr jako domknięcie</h2>
+<p>Celem tego zadania jest napisanie nowej wersji programu szyfrującego z zadania II.4.</p>
+<p>Przypomnijmy zasadę szyfrowania. <em>Używając klucza <code>ma-li-no-we-bu-ty</code> można zaszyfrować wiadomość wymieniając znaki leżące wewnątrz tych samych sylab klucza: <code>m --&gt; a</code>, <code>a --&gt; m</code>, <code>l --&gt; i</code>, <code>i --&gt; l</code>, itd. Znaki, których nie ma w kluczu, pozostawia się bez zmian. Przykładowo tekst <code>ziemia jest płaska</code> wymaga wymienienia 9 znaków i po zaszyfrowaniu ma postać <code>zlwalm jwsy płmskm</code>. Powtórne zaszyfrowanie przywraca pierwotną postać tekstu.</em></p>
+<p>Napisz moduł <code>malinowebuty.py</code> zawierający funkcje:</p>
+<ol type="1">
+<li><p><code>create_key(s)</code> — parametr <code>s</code> jest łańcuchem znaków. Funkcja zwraca słownik par <code>k: v</code>, gdzie:</p>
+<ul>
+<li><code>k</code> — znak łańcucha <code>s</code>,</li>
+<li><code>v</code> — znak, na który <code>k</code> jest wymieniany.</li>
+</ul>
+<p>Prawidłowy klucz, to taki niepusty łańcuch znaków, który jest różnowartościowy i ma parzystą długość. W przypadku wykrycia nieprawidłowego klucza funkcja ma zgłaszać wyjątek <code>ValueError</code> z komunikatem: <code>nieprawidłowy klucz.</code>.</p></li>
+<li><p><code>create_encryptor(s)</code> — parametr <code>s</code> jest łańcuchem domyślnie ustawionym na <code>'malinowebuty'</code>. Funkcja zwraca <strong>funkcję</strong> <code>encryptor(text)</code>. Parametr <code>text</code> jest łańcuchem znaków. Funkcja <code>encryptor()</code> zwraca zaszyfrowany tekst zgodnie z kluczem <code>s</code>. Do szyfrowania funkcja <code>encryptor()</code> powinna korzystać z klucza <code>s</code> w postaci słownika wymiany znaków zwróconego przez <code>create_key()</code>. Słownik ten powinien być obliczany <strong>przed</strong> definicją funkcji <code>encryptor()</code>, a zatem ma znajdować się w jej <strong>domknięciu</strong>.</p></li>
+</ol>
+<p>Testy: <a href="https://githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VII/test_malinowebuty.py"><code>test_malinowebuty.py</code></a></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Struktura rozwiązania
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Schemat funkcji <code>create_encryptor</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">def</span> create_encryptor(s<span class="op">=</span><span class="st">'malinowebuty'</span>):</span>
+<span id="cb19-2"><a href="#cb19-2"></a>    key <span class="op">=</span> create_key(s)       <span class="co"># słownik obliczony raz</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a>    <span class="kw">def</span> encryptor(text):</span>
+<span id="cb19-4"><a href="#cb19-4"></a>        ...                   <span class="co"># key jest zmienną swobodną</span></span>
+<span id="cb19-5"><a href="#cb19-5"></a>    <span class="cf">return</span> encryptor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Słownik <code>key</code> jest obliczany przy wywołaniu <code>create_encryptor()</code> i zamykany w domknięciu funkcji <code>encryptor()</code>.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="sortowanie-z-lambda" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="sortowanie-z-lambda"><span class="header-section-number">8</span> Sortowanie z <code>lambda</code></h2>
+<p>Rozwiąż poniższe zadania za pomocą wyrażeń <code>lambda</code>. Sprawdź poprawność za pomocą <code>doctest.testmod()</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">def</span> sort_by_second(pairs):</span>
+<span id="cb20-2"><a href="#cb20-2"></a>    <span class="co">"""Sortuje listę krotek rosnąco po drugim elemencie.</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a></span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="co">    &gt;&gt;&gt; sort_by_second([(1, 3), (2, 1), (3, 2)])</span></span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="co">    [(2, 1), (3, 2), (1, 3)]</span></span>
+<span id="cb20-6"><a href="#cb20-6"></a><span class="co">    &gt;&gt;&gt; sort_by_second([('a', 5), ('b', 2), ('c', 8)])</span></span>
+<span id="cb20-7"><a href="#cb20-7"></a><span class="co">    [('b', 2), ('a', 5), ('c', 8)]</span></span>
+<span id="cb20-8"><a href="#cb20-8"></a><span class="co">    """</span></span>
+<span id="cb20-9"><a href="#cb20-9"></a>    <span class="cf">pass</span></span>
+<span id="cb20-10"><a href="#cb20-10"></a></span>
+<span id="cb20-11"><a href="#cb20-11"></a></span>
+<span id="cb20-12"><a href="#cb20-12"></a><span class="kw">def</span> sort_words_by_last_char(words):</span>
+<span id="cb20-13"><a href="#cb20-13"></a>    <span class="co">"""Sortuje listę słów alfabetycznie po ostatnim znaku.</span></span>
+<span id="cb20-14"><a href="#cb20-14"></a></span>
+<span id="cb20-15"><a href="#cb20-15"></a><span class="co">    &gt;&gt;&gt; sort_words_by_last_char(['python', 'java', 'rust', 'go'])</span></span>
+<span id="cb20-16"><a href="#cb20-16"></a><span class="co">    ['java', 'go', 'python', 'rust']</span></span>
+<span id="cb20-17"><a href="#cb20-17"></a><span class="co">    """</span></span>
+<span id="cb20-18"><a href="#cb20-18"></a>    <span class="cf">pass</span></span>
+<span id="cb20-19"><a href="#cb20-19"></a></span>
+<span id="cb20-20"><a href="#cb20-20"></a></span>
+<span id="cb20-21"><a href="#cb20-21"></a><span class="kw">def</span> filter_long_words(words, min_length):</span>
+<span id="cb20-22"><a href="#cb20-22"></a>    <span class="co">"""Zwraca listę słów o długości co najmniej min_length.</span></span>
+<span id="cb20-23"><a href="#cb20-23"></a></span>
+<span id="cb20-24"><a href="#cb20-24"></a><span class="co">    &gt;&gt;&gt; filter_long_words(['ala', 'ma', 'kota', 'i', 'psa'], 3)</span></span>
+<span id="cb20-25"><a href="#cb20-25"></a><span class="co">    ['ala', 'kota', 'psa']</span></span>
+<span id="cb20-26"><a href="#cb20-26"></a><span class="co">    &gt;&gt;&gt; filter_long_words(['x', 'yy', 'zzz'], 4)</span></span>
+<span id="cb20-27"><a href="#cb20-27"></a><span class="co">    []</span></span>
+<span id="cb20-28"><a href="#cb20-28"></a><span class="co">    """</span></span>
+<span id="cb20-29"><a href="#cb20-29"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+<section id="potok-funkcji" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="potok-funkcji"><span class="header-section-number">9</span> Potok funkcji</h2>
+<p>Napisz funkcję <code>pipeline(*functions)</code>, która uogólnia <code>compose</code> na dowolną liczbę funkcji. Funkcje są stosowane od lewej do prawej — pierwsza funkcja na liście jest wywoływana jako pierwsza.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">def</span> pipeline(<span class="op">*</span>functions):</span>
+<span id="cb21-2"><a href="#cb21-2"></a>    <span class="co">"""Zwraca złożenie funkcji stosowanych od lewej do prawej.</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a></span>
+<span id="cb21-4"><a href="#cb21-4"></a><span class="co">    pipeline()(x) zwraca x.</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="co">    pipeline(f)(x) zwraca f(x).</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a><span class="co">    pipeline(f, g)(x) zwraca g(f(x)).</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="co">    pipeline(f, g, h)(x) zwraca h(g(f(x))).</span></span>
+<span id="cb21-8"><a href="#cb21-8"></a></span>
+<span id="cb21-9"><a href="#cb21-9"></a><span class="co">    &gt;&gt;&gt; pipeline()(5)</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a><span class="co">    5</span></span>
+<span id="cb21-11"><a href="#cb21-11"></a><span class="co">    &gt;&gt;&gt; pipeline(abs)(-3)</span></span>
+<span id="cb21-12"><a href="#cb21-12"></a><span class="co">    3</span></span>
+<span id="cb21-13"><a href="#cb21-13"></a><span class="co">    &gt;&gt;&gt; def double(x):</span></span>
+<span id="cb21-14"><a href="#cb21-14"></a><span class="co">    ...     return 2 * x</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a><span class="co">    &gt;&gt;&gt; def add_one(x):</span></span>
+<span id="cb21-16"><a href="#cb21-16"></a><span class="co">    ...     return x + 1</span></span>
+<span id="cb21-17"><a href="#cb21-17"></a><span class="co">    &gt;&gt;&gt; pipeline(abs, double, add_one)(-3)</span></span>
+<span id="cb21-18"><a href="#cb21-18"></a><span class="co">    7</span></span>
+<span id="cb21-19"><a href="#cb21-19"></a><span class="co">    &gt;&gt;&gt; pipeline(add_one, double)(-3)</span></span>
+<span id="cb21-20"><a href="#cb21-20"></a><span class="co">    -4</span></span>
+<span id="cb21-21"><a href="#cb21-21"></a><span class="co">    &gt;&gt;&gt; pipeline(double, add_one)(-3)</span></span>
+<span id="cb21-22"><a href="#cb21-22"></a><span class="co">    -5</span></span>
+<span id="cb21-23"><a href="#cb21-23"></a><span class="co">    """</span></span>
+<span id="cb21-24"><a href="#cb21-24"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+<section id="zapamiętywanie-wyników" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="zapamiętywanie-wyników"><span class="header-section-number">10</span> Zapamiętywanie wyników</h2>
+<p>Napisz funkcję <code>make_memoized(f)</code>, która przyjmuje jednoargumentową funkcję <code>f</code> i zwraca jej wersję zapamiętującą wyniki. Przy pierwszym wywołaniu z danym argumentem wynik jest obliczany i zapamiętywany; przy kolejnych wywołaniach z tym samym argumentem zwracany jest zapamiętany wynik bez powtórnego obliczania.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">def</span> make_memoized(f):</span>
+<span id="cb22-2"><a href="#cb22-2"></a>    <span class="co">"""Zwraca wersję f zapamiętującą wyniki wcześniejszych wywołań.</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a></span>
+<span id="cb22-4"><a href="#cb22-4"></a><span class="co">    &gt;&gt;&gt; call_count = 0</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="co">    &gt;&gt;&gt; def slow_square(x):</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a><span class="co">    ...     global call_count</span></span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="co">    ...     call_count += 1</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a><span class="co">    ...     return x * x</span></span>
+<span id="cb22-9"><a href="#cb22-9"></a><span class="co">    &gt;&gt;&gt; memo_square = make_memoized(slow_square)</span></span>
+<span id="cb22-10"><a href="#cb22-10"></a><span class="co">    &gt;&gt;&gt; memo_square(4)</span></span>
+<span id="cb22-11"><a href="#cb22-11"></a><span class="co">    16</span></span>
+<span id="cb22-12"><a href="#cb22-12"></a><span class="co">    &gt;&gt;&gt; memo_square(4)</span></span>
+<span id="cb22-13"><a href="#cb22-13"></a><span class="co">    16</span></span>
+<span id="cb22-14"><a href="#cb22-14"></a><span class="co">    &gt;&gt;&gt; memo_square(5)</span></span>
+<span id="cb22-15"><a href="#cb22-15"></a><span class="co">    25</span></span>
+<span id="cb22-16"><a href="#cb22-16"></a><span class="co">    &gt;&gt;&gt; call_count</span></span>
+<span id="cb22-17"><a href="#cb22-17"></a><span class="co">    2</span></span>
+<span id="cb22-18"><a href="#cb22-18"></a><span class="co">    """</span></span>
+<span id="cb22-19"><a href="#cb22-19"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Pomost do dekoratorów
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Wzorzec „funkcja przyjmująca funkcję i zwracająca jej ulepszoną wersję” to serce <strong>dekoratorów</strong> — tematu następnego wykładu. Funkcja <code>make_memoized</code> jest właśnie takim dekoratorem, tyle że stosowanym ręcznie: <code>memo_square = make_memoized(slow_square)</code>. Na kolejnym wykładzie poznasz składnię <code>@</code>, która automatyzuje ten zapis.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="zamrażanie-argumentów" class="level2" data-number="11">
+<h2 data-number="11" class="anchored" data-anchor-id="zamrażanie-argumentów"><span class="header-section-number">11</span> Zamrażanie argumentów ★</h2>
+<p>Napisz moduł <code>freeze_args.py</code>, zawierający funkcję <code>freeze_args(f, *args, **kwargs)</code>. Parametr <code>f</code> jest dowolnym obiektem wywoływalnym. Funkcja zwraca nową funkcję zachowującą się jak <code>f</code>, ale z ustalonymi (<em>zamrożonymi</em>) argumentami pozycyjnymi <code>args</code> i nazwanymi <code>kwargs</code>. Do wywołania zwróconej funkcji mogą zostać przekazane dodatkowe argumenty pozycyjne (dopisywane za <code>args</code>) oraz nazwane (dołączane do <code>kwargs</code>).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">def</span> freeze_args(f, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb23-2"><a href="#cb23-2"></a>    <span class="co">"""Zwraca funkcję zachowującą się jak f z zamrożonymi argumentami.</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="co">    &gt;&gt;&gt; def add(a, b):</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a><span class="co">    ...     return a + b</span></span>
+<span id="cb23-6"><a href="#cb23-6"></a><span class="co">    &gt;&gt;&gt; add5 = freeze_args(add, 5)</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="co">    &gt;&gt;&gt; add5(3)</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a><span class="co">    8</span></span>
+<span id="cb23-9"><a href="#cb23-9"></a><span class="co">    &gt;&gt;&gt; add5(10)</span></span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="co">    15</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a><span class="co">    &gt;&gt;&gt; power_of_2 = freeze_args(pow, 2)</span></span>
+<span id="cb23-12"><a href="#cb23-12"></a><span class="co">    &gt;&gt;&gt; power_of_2(10)</span></span>
+<span id="cb23-13"><a href="#cb23-13"></a><span class="co">    1024</span></span>
+<span id="cb23-14"><a href="#cb23-14"></a><span class="co">    &gt;&gt;&gt; power_of_2(8)</span></span>
+<span id="cb23-15"><a href="#cb23-15"></a><span class="co">    256</span></span>
+<span id="cb23-16"><a href="#cb23-16"></a><span class="co">    &gt;&gt;&gt; say_hello = freeze_args(print, "Hello", sep=", ")</span></span>
+<span id="cb23-17"><a href="#cb23-17"></a><span class="co">    &gt;&gt;&gt; say_hello("World")</span></span>
+<span id="cb23-18"><a href="#cb23-18"></a><span class="co">    Hello, World</span></span>
+<span id="cb23-19"><a href="#cb23-19"></a><span class="co">    &gt;&gt;&gt; say_hello("Python")</span></span>
+<span id="cb23-20"><a href="#cb23-20"></a><span class="co">    Hello, Python</span></span>
+<span id="cb23-21"><a href="#cb23-21"></a><span class="co">    """</span></span>
+<span id="cb23-22"><a href="#cb23-22"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Testy: <a href="https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_freeze_args.py"><code>test_freeze_args.py</code></a></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span><code>functools.partial</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Biblioteka standardowa zawiera funkcję <a href="https://docs.python.org/3/library/functools.html#functools.partial"><code>functools.partial</code></a>, która realizuje dokładnie ten sam wzorzec. Po napisaniu własnej wersji porównaj swoje rozwiązanie z <code>functools.partial</code>.</p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/rodakt\.github\.io\/PPwAD2\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<hr><center><small>Ostatnia aktualizacja: last-modified</small></center>
+
+
+
+
+</body></html>

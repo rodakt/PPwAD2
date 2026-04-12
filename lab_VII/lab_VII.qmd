@@ -345,7 +345,7 @@ Napisz moduł `ball_machine.py`, zawierający funkcję `random_ball_machine(retu
 
 Każde wywołanie funkcji `machine()` zwraca kulę wylosowaną z urny. Jeśli `return_balls` jest ustawione na `True`, to kulę losuje się ze zwracaniem, w przeciwnym razie bez zwracania. Jeśli urna jest pusta, `machine()` powinien zgłaszać wyjątek `LookupError` z komunikatem `'urna jest pusta.'`.
 
-Testy: [`test_ball_machine.py`](https://githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VII/test_ball_machine.py)
+Testy: [`test_ball_machine.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VII/test_ball_machine.py)
 
 ::: {.callout-tip}
 ## Wskazówka
@@ -371,7 +371,7 @@ Napisz moduł `malinowebuty.py` zawierający funkcje:
 
 2. `create_encryptor(s)` — parametr `s` jest łańcuchem domyślnie ustawionym na `'malinowebuty'`. Funkcja zwraca **funkcję** `encryptor(text)`. Parametr `text` jest łańcuchem znaków. Funkcja `encryptor()` zwraca zaszyfrowany tekst zgodnie z kluczem `s`. Do szyfrowania funkcja `encryptor()` powinna korzystać z klucza `s` w postaci słownika wymiany znaków zwróconego przez `create_key()`. Słownik ten powinien być obliczany **przed** definicją funkcji `encryptor()`, a zatem ma znajdować się w jej **domknięciu**.
 
-Testy: [`test_malinowebuty.py`](https://githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VII/test_malinowebuty.py)
+Testy: [`test_malinowebuty.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VII/test_malinowebuty.py)
 
 ::: {.callout-tip}
 ## Struktura rozwiązania
@@ -523,7 +523,7 @@ def freeze_args(f, *args, **kwargs):
     pass
 ```
 
-Testy: [`test_freeze_args.py`](https://github.com/rodakt/PPwAD2/blob/main/lab_VII/test_freeze_args.py)
+Testy: [`test_freeze_args.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VII/test_freeze_args.py)
 
 ::: {.callout-note}
 ## `functools.partial`

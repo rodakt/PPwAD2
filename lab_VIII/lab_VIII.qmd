@@ -1,0 +1,367 @@
+---
+title: "Lab VIII: Dekoratory"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+Te ćwiczenia nawiązują do materiału z wykładu o dekoratorach. Dekorator to funkcja wyższego rzędu wykorzystująca domknięcie wewnętrznej funkcji `wrapper()` — jest zatem bezpośrednim zastosowaniem pojęć poznanych na poprzednim wykładzie. W labie zbudujemy cztery dekoratory o rosnącej złożoności, a na końcu wrócimy do wzorca DSU (*Decorate-Sort-Undecorate*) — klasycznej techniki leżącej u podstaw parametru `key=` w funkcjach `sorted()`, `min()` i `max()`. Poprawność rozwiązań weryfikuj za pomocą dołączonych plików z testami.
+
+## Rozgrzewka: dekoratory
+
+Przewidź wynik uruchomienia każdego z poniższych fragmentów. Odpowiedz bez uruchamiania kodu, a następnie sprawdź odpowiedź w konsoli.
+
+**1.**
+
+```python
+def hello(f):
+    def wrapper():
+        print('Hello!')
+        f()
+    return wrapper
+
+def greet():
+    print('Witaj!')
+
+greet = hello(greet)
+greet()
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+Hello!
+Witaj!
+```
+Przypisanie `greet = hello(greet)` to dokładnie to, co robi dekorator `@hello`. Składnia `@deco` jest [lukrem składniowym](https://pl.wikipedia.org/wiki/Lukier_sk%C5%82adniowy) dla `f = deco(f)`.
+:::
+
+**2.**
+
+```python
+def deco(f):
+    def wrapper(*args, **kwargs):
+        return f(*args, **kwargs)
+    return wrapper
+
+@deco
+def square(x):
+    '''Zwraca kwadrat x.'''
+    return x * x
+
+print(square.__name__)
+print(square.__doc__)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+wrapper
+None
+```
+Dekoracja podmieniła `square` na `wrapper` — zniknęły metadane oryginalnej funkcji. Nazwa i docstring zostały utracone.
+:::
+
+**3.**
+
+```python
+from functools import wraps
+
+def deco(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        return f(*args, **kwargs)
+    return wrapper
+
+@deco
+def square(x):
+    '''Zwraca kwadrat x.'''
+    return x * x
+
+print(square.__name__)
+print(square.__doc__)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+square
+Zwraca kwadrat x.
+```
+Dekorator `wraps` z modułu `functools` kopiuje metadane z dekorowanej funkcji do wrappera. Od tej pory `square` wygląda dla narzędzi introspekcji (`help`, debugger, dokumentatory) jak oryginalna funkcja.
+:::
+
+**4.**
+
+```python
+def gwiazdki(f):
+    def wrapper(*args, **kwargs):
+        print('***')
+        return f(*args, **kwargs)
+    return wrapper
+
+def minusy(f):
+    def wrapper(*args, **kwargs):
+        print('---')
+        return f(*args, **kwargs)
+    return wrapper
+
+@gwiazdki
+@minusy
+def powitanie():
+    print('Cześć!')
+
+powitanie()
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+```
+***
+---
+Cześć!
+```
+Zapis `@gwiazdki @minusy` jest równoważny z `powitanie = gwiazdki(minusy(powitanie))`. Dekoratory stosowane są od dołu do góry, ale podczas wywołania wrapper zewnętrzny (`gwiazdki`) wykonuje się pierwszy — stąd najpierw `***`, potem `---`.
+:::
+
+***
+
+## Rejestr funkcji
+
+Napisz moduł `registry.py`, w którym znajdą się dekoratory rejestrujące funkcje w słowniku:
+
+- `register(f)` — dekorator bezparametrowy. Dodaje `f` do globalnego słownika `REGISTRY` zdefiniowanego w module pod kluczem równym nazwie funkcji (`f.__name__`). Zwraca `f` bez modyfikacji.
+- `register_in(dictionary)` — dekorator z parametrem. Wywołany na słowniku `dictionary` zwraca dekorator, który dodaje dekorowaną funkcję do tego słownika pod kluczem równym jej nazwie. Zwraca dekorowaną funkcję bez modyfikacji.
+
+Przykład użycia:
+
+```python
+from registry import register, register_in, REGISTRY
+
+@register
+def foo():
+    return 'foo'
+
+@register
+def bar():
+    return 'bar'
+
+print(REGISTRY)
+# {'foo': <function foo at ...>, 'bar': <function bar at ...>}
+
+moje_funkcje = {}
+
+@register_in(moje_funkcje)
+def baz():
+    return 'baz'
+
+print(moje_funkcje)
+# {'baz': <function baz at ...>}
+```
+
+::: {.callout-note}
+## Kiedy `wraps` nie jest potrzebne
+`register` i `register_in` zwracają funkcję `f` bez żadnego opakowania — nie powstaje wewnętrzny `wrapper`, więc metadane `f` nie są tracone i nie ma czego „naprawiać" dekoratorem `wraps`. Zachowanie metadanych będzie wymogiem dopiero w kolejnych zadaniach, gdzie dekoratory definiują wrapper.
+:::
+
+Testy: [test_registry.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VIII/test_registry.py).
+
+***
+
+## Kontrakty: warunki wstępne i końcowe
+
+Uzupełnij moduł `contracts.py` o dwa dekoratory parametryzowane, które dokładają do funkcji sprawdzanie warunków:
+
+- `pre_test(pred)` — dekorator sprawdzający warunek przed wywołaniem funkcji. Predykat `pred` jest funkcją asercyjną: otrzymuje dokładnie te argumenty, które przekazano do dekorowanej funkcji (`pred(*args, **kwargs)`) i albo zgłasza `AssertionError`, albo nic nie robi. Dekorator wywołuje `pred` przed wywołaniem funkcji; jeśli asercja przejdzie, wywołuje funkcję i zwraca jej wynik.
+- `post_test(pred)` — dekorator sprawdzający warunek na wartości zwracanej. Predykat `pred` otrzymuje jako jedyny argument wartość zwróconą przez funkcję (`pred(result)`). Dekorator wywołuje funkcję, następnie `pred(wynik)`; jeśli asercja przejdzie, zwraca wynik funkcji.
+
+W obu dekoratorach użyj `@wraps(f)`, aby zachować metadane dekorowanej funkcji.
+
+Przykład użycia:
+
+```python
+from contracts import pre_test, post_test
+
+def argumenty_dodatnie(*args, **kwargs):
+    assert all(a > 0 for a in args), 'wszystkie argumenty muszą być dodatnie'
+
+def wynik_dodatni(wynik):
+    assert wynik > 0, 'wynik musi być dodatni'
+
+@pre_test(argumenty_dodatnie)
+def pole_prostokąta(w, h):
+    return w * h
+
+@post_test(wynik_dodatni)
+def różnica(a, b):
+    return a - b
+
+pole_prostokąta(3, 4)    # 12
+pole_prostokąta(-1, 4)   # AssertionError
+
+różnica(5, 3)            # 2
+różnica(3, 5)            # AssertionError
+```
+
+Testy: [test_contracts.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VIII/test_contracts.py).
+
+***
+
+## Mierzenie czasu wykonania
+
+Na wykładzie poznaliśmy dekorator `timethis` wypisujący czas pojedynczego wywołania dekorowanej funkcji. Pojedynczy pomiar jest jednak mało wiarygodny — wynik zależy od chwilowego obciążenia systemu. Zamiast tego chcemy mierzyć czas wielokrotnie i raportować statystyki.
+
+Napisz moduł `timed.py` zawierający parametryzowany dekorator `timed(repeat=5)`, który:
+
+1. Uruchamia dekorowaną funkcję `repeat` razy z tymi samymi argumentami.
+2. Mierzy czas każdego wywołania za pomocą `time.perf_counter`.
+3. Po ostatnim wywołaniu wypisuje średni czas i odchylenie standardowe w formacie:
+   ```
+   <nazwa_funkcji> (repeat=<N>): mean=<M> s, stdev=<S> s
+   ```
+   gdzie `<M>` i `<S>` są zaokrąglone do czterech miejsc po przecinku (użyj formatowania z f-stringiem: `f'{M:.4f}'`).
+4. Zwraca wartość ostatniego wywołania dekorowanej funkcji.
+
+Użyj `statistics.mean` i `statistics.stdev` do obliczenia statystyk. Zachowaj metadane dekorowanej funkcji za pomocą `@wraps`.
+
+::: {.callout-note}
+## `stdev` dla jednej próbki
+`statistics.stdev` wymaga co najmniej dwóch wartości — dla `repeat=1` zgłasza `StatisticsError`. Domyślna wartość `repeat=5` zapewnia poprawność; użytkownik dekoratora jest odpowiedzialny za podanie `repeat >= 2`.
+:::
+
+Przykład użycia (wyniki będą zależeć od komputera):
+
+```python
+from timed import timed
+
+@timed()
+def suma_pętlą_for(seq):
+    s = 0
+    for x in seq:
+        s += x
+    return s
+
+@timed(repeat=10)
+def suma_sum(seq):
+    return sum(seq)
+
+seq = range(10**6)
+suma_pętlą_for(seq)
+# suma_pętlą_for (repeat=5): mean=0.0287 s, stdev=0.0021 s
+# 499999500000
+suma_sum(seq)
+# suma_sum (repeat=10): mean=0.0162 s, stdev=0.0008 s
+# 499999500000
+```
+
+Testy: [test_timed.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VIII/test_timed.py).
+
+***
+
+## Wzorzec DSU
+
+::: {.callout-important}
+## DSU (*Decorate-Sort-Undecorate*)
+Klasyczny wzorzec pozwalający użyć operacji porządkowej (minimum, maksimum, sortowanie) względem klucza, który nie jest bezpośrednio porównywalny. Realizuje się go w trzech krokach:
+
+1. **Decorate** — zamień każdy element `x` sekwencji na krotkę `(klucz(x), indeks, x)`.
+2. **Sort** — zastosuj standardową operację (min/max/sort) do zdekorowanej listy. Krotki porównywane są leksykograficznie, więc najpierw decyduje klucz.
+3. **Undecorate** — z wynikowej krotki (lub listy krotek) wyłuskaj ostatnią pozycję, odzyskując oryginalny element.
+:::
+
+Dlaczego w krotce dekorującej jest indeks? Dwa powody:
+
+- **stabilność** — gdy dwa elementy mają ten sam klucz, o kolejności decyduje indeks (mniejszy wygrywa), więc oryginalna kolejność elementów o równych kluczach zostaje zachowana;
+- **bezpieczeństwo typów** — gdyby klucze były równe, Python próbowałby porównać oryginalne elementy. Jeśli są nieporównywalne (np. słowniki), wystąpiłby `TypeError`. Indeks rozstrzyga remis zanim dojdzie do porównania oryginałów.
+
+::: {.callout-note}
+## DSU a parametr `key=`
+W nowoczesnym Pythonie wzorca DSU stosuje się rzadko bezpośrednio — wbudowane funkcje `sorted()`, `min()` i `max()` akceptują parametr `key=`, a interpreter sam wykonuje DSU pod maską. Implementacja dekoratorów z tego zadania jest ćwiczeniem rekonstruującym mechanizm, który na co dzień jest ukryty. Więcej w [Sorting HOW TO](https://docs.python.org/3/howto/sorting.html).
+:::
+
+Przykład — szukanie najdroższego owocu w liście krotek `(nazwa, cena)`. Funkcja `maksimum()` poniżej porównuje elementy sekwencji bezpośrednio:
+
+```python
+def maksimum(seq):
+    if not seq:
+        raise ValueError('argument seq musi być niepusty.')
+    mx = seq[0]
+    for a in seq[1:]:
+        if a > mx:
+            mx = a
+    return mx
+
+owoce = [('jabłko', 1), ('arbuz', 10), ('banan', 4), ('gruszka', 6)]
+```
+
+Aby znaleźć owoc o największej cenie, stosujemy DSU:
+
+1. Dekorujemy: `[(1, 0, ('jabłko', 1)), (10, 1, ('arbuz', 10)), (4, 2, ('banan', 4)), (6, 3, ('gruszka', 6))]`.
+2. Wywołujemy `maksimum()` na zdekorowanej liście — zwraca `(10, 1, ('arbuz', 10))`.
+3. Wyłuskujemy ostatnią pozycję: `('arbuz', 10)`.
+
+Napisz moduł `dsu.py` zawierający dekoratory:
+
+- `key_minmax(key=None)` — dekorator parametryzowany. Dekoruje jednoargumentowe funkcje przyjmujące sekwencję i zwracające jej minimum lub maksimum (ten sam dekorator działa dla obu operacji). Jeżeli `key` ma wartość `None`, dekorowana funkcja jest zwracana bez zmian. Jeśli `key` jest funkcją, dekorator realizuje DSU: dekoruje sekwencję krotkami `(key(x), indeks, x)`, wywołuje na niej dekorowaną funkcję, z wynikowej krotki zwraca element oryginalny.
+- `key_sort(key=None)` — dekorator parametryzowany. Dekoruje jednoargumentowe funkcje przyjmujące iterowalną kolekcję i zwracające jej posortowaną listę. Dla `key=None` funkcja jest zwracana bez zmian. W przeciwnym razie dekorator realizuje DSU: dekoruje kolekcję, wywołuje funkcję sortującą na zdekorowanej liście, z każdej krotki w wyniku wyłuskuje element oryginalny i zwraca listę tych elementów.
+
+W wariancie z niepustym `key` użyj `@wraps(f)`, aby zachować metadane funkcji.
+
+Testy: [test_dsu.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_VIII/test_dsu.py).
+
+***
+
+## Dekoratory DSU w akcji
+
+Dostarczamy trzy gotowe implementacje — własne wersje `min`, `max` i sortowania (przez wybieranie). Wklej je do programu `dsu_demo.py`:
+
+```python
+def my_max(seq):
+    '''Zwraca największy element sekwencji seq.'''
+    if not seq:
+        raise ValueError('argument seq musi być niepusty.')
+    mx = seq[0]
+    for a in seq[1:]:
+        if a > mx:
+            mx = a
+    return mx
+
+def my_min(seq):
+    '''Zwraca najmniejszy element sekwencji seq.'''
+    if not seq:
+        raise ValueError('argument seq musi być niepusty.')
+    mn = seq[0]
+    for a in seq[1:]:
+        if a < mn:
+            mn = a
+    return mn
+
+def selection_sort(seq):
+    '''Zwraca posortowaną rosnąco listę elementów seq (sortowanie przez wybieranie).'''
+    result = list(seq)
+    n = len(result)
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            if result[j] < result[min_idx]:
+                min_idx = j
+        result[i], result[min_idx] = result[min_idx], result[i]
+    return result
+```
+
+Funkcje te działają poprawnie, gdy elementy sekwencji są bezpośrednio porównywalne (liczby, napisy). Zadanie polega na rozszerzeniu ich za pomocą dekoratorów z modułu `dsu.py` tak, aby porównywały elementy według wybranego klucza.
+
+**Zadanie.** Zdefiniuj listę słowników reprezentujących pracowników:
+
+```python
+pracownicy = [
+    {'imię': 'Ala',    'pensja': 5000},
+    {'imię': 'Bartek', 'pensja': 7000},
+    {'imię': 'Cela',   'pensja': 6500},
+    {'imię': 'Darek',  'pensja': 5500},
+]
+```
+
+Wywołanie `my_max(pracownicy)` zgłosiłoby `TypeError` — słowniki są nieporównywalne operatorem `<`. Udekoruj `my_max` i `my_min` za pomocą `@key_minmax(key=...)` z kluczem wybierającym pensję i wyznacz pracownika o największej i najmniejszej pensji. Użyj `@key_sort(key=...)` do uporządkowania listy pracowników rosnąco według pensji i wypisz wynik.
+

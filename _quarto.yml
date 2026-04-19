@@ -29,6 +29,7 @@ website:
           - file: wyklad_V.qmd
           - file: wyklad_VI.qmd
           - file: wyklad_VII.qmd
+          - file: wyklad_VIII.qmd
 
           
 
@@ -42,6 +43,7 @@ website:
           - file: lab_V/lab_V.qmd
           - file: lab_VI/lab_VI.qmd
           - file: lab_VII/lab_VII.qmd
+          - file: lab_VIII/lab_VIII.qmd
 
 format:
   html:

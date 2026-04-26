@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tomasz Rodak">
+
+<title>Lab IX: Rekurencja – Podstawy programowania (AD) 2</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a91fd2e505097536da9e8d380e199038.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_IX/lab_IX.html">Lab IX: Rekurencja</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Podstawy programowania (AD) 2</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Strona główna</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Wykłady</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Zmienne. Instrukcja przypisania</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wypakowywanie obiektów iterowalnych. Parametry i argumenty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Przestrzenie nazw i moduły</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Funkcje jako obiekty. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rekurencja</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Laboratoria</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab I: Zadania na rozgrzewkę</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_II/lab_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab II: Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_III/lab_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab III: Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_IV/lab_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IV: Zmienne, aliasy, kopie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_V/lab_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab V: Wypakowywanie i parametry funkcji</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_VI/lab_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VI: Geometria żółwia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_VII/lab_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VII: Funkcje wyższego rzędu. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_VIII/lab_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VIII: Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_IX/lab_IX.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Lab IX: Rekurencja</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Spis treści</h2>
+   
+  <ul>
+  <li><a href="#rozgrzewka-czytanie-rekurencji" id="toc-rozgrzewka-czytanie-rekurencji" class="nav-link active" data-scroll-target="#rozgrzewka-czytanie-rekurencji"><span class="header-section-number">1</span> Rozgrzewka: czytanie rekurencji</a></li>
+  <li><a href="#maksimum-rekurencyjnie" id="toc-maksimum-rekurencyjnie" class="nav-link" data-scroll-target="#maksimum-rekurencyjnie"><span class="header-section-number">2</span> Maksimum rekurencyjnie</a></li>
+  <li><a href="#fibonacci-ogonowo" id="toc-fibonacci-ogonowo" class="nav-link" data-scroll-target="#fibonacci-ogonowo"><span class="header-section-number">3</span> Fibonacci ogonowo</a></li>
+  <li><a href="#wydawanie-reszty" id="toc-wydawanie-reszty" class="nav-link" data-scroll-target="#wydawanie-reszty"><span class="header-section-number">4</span> Wydawanie reszty</a></li>
+  <li><a href="#świnia" id="toc-świnia" class="nav-link" data-scroll-target="#świnia"><span class="header-section-number">5</span> Świnia</a></li>
+  <li><a href="#sortowanie-szybkie" id="toc-sortowanie-szybkie" class="nav-link" data-scroll-target="#sortowanie-szybkie"><span class="header-section-number">6</span> Sortowanie szybkie</a></li>
+  <li><a href="#zgadnij-liczbę" id="toc-zgadnij-liczbę" class="nav-link" data-scroll-target="#zgadnij-liczbę"><span class="header-section-number">7</span> Zgadnij liczbę</a></li>
+  <li><a href="#wyszukiwanie-binarne-w-sekwencji" id="toc-wyszukiwanie-binarne-w-sekwencji" class="nav-link" data-scroll-target="#wyszukiwanie-binarne-w-sekwencji"><span class="header-section-number">8</span> Wyszukiwanie binarne w sekwencji</a></li>
+  <li><a href="#bisekcja" id="toc-bisekcja" class="nav-link" data-scroll-target="#bisekcja"><span class="header-section-number">9</span> Bisekcja</a></li>
+  <li><a href="#sortowanie-przez-scalanie" id="toc-sortowanie-przez-scalanie" class="nav-link" data-scroll-target="#sortowanie-przez-scalanie"><span class="header-section-number">10</span> Sortowanie przez scalanie</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_IX/lab_IX.html">Lab IX: Rekurencja</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Lab IX: Rekurencja</h1>
+<p class="subtitle lead">Podstawy programowania (AD) 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tomasz Rodak </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Te ćwiczenia nawiązują do materiału z wykładu o rekurencji. Główne motywy to: proces rekurencyjny vs iteracyjny, rekurencja ogonowa, memoizacja i idiom dziel-i-zwyciężaj. Końcowe zadanie — sortowanie przez scalanie — jest nieco trudniejsze od pozostałych; można je potraktować jako materiał dla chętnych. Poprawność rozwiązań weryfikuj za pomocą dołączonych plików z testami albo doctestów.</p>
+<section id="rozgrzewka-czytanie-rekurencji" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="rozgrzewka-czytanie-rekurencji"><span class="header-section-number">1</span> Rozgrzewka: czytanie rekurencji</h2>
+<p>Dla każdego z poniższych pytań najpierw udziel odpowiedzi samodzielnie, a następnie sprawdź ją w interpreterze.</p>
+<p><strong>1.</strong> Co wypisze poniższy kod? Czy wywołanie <code>f(4)</code> generuje proces rekurencyjny, czy iteracyjny?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">def</span> f(n):</span>
+<span id="cb1-2"><a href="#cb1-2"></a>    <span class="cf">if</span> n <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb1-3"><a href="#cb1-3"></a>        <span class="cf">return</span> <span class="dv">1</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>    <span class="cf">return</span> n <span class="op">*</span> f(n <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="bu">print</span>(f(<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Wypisze <code>24</code>. To proces <strong>rekurencyjny</strong> — każde wywołanie odkłada operację mnożenia przez <code>n</code>, a wszystkie odłożone mnożenia są wykonywane dopiero wtedy, gdy zwróci się <code>f(0)</code>.</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> Co wypisze poniższy kod? Czy wywołanie <code>g(4)</code> generuje proces rekurencyjny, czy iteracyjny?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">def</span> g(n, acc<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    <span class="cf">if</span> n <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-3"><a href="#cb2-3"></a>        <span class="cf">return</span> acc</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    <span class="cf">return</span> g(n <span class="op">-</span> <span class="dv">1</span>, n <span class="op">*</span> acc)</span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="bu">print</span>(g(<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Wypisze <code>24</code>. To proces <strong>iteracyjny</strong> — wszystkie potrzebne dane (bieżące <code>n</code> i bieżący iloczyn <code>acc</code>) są przekazywane w argumentach, nie ma odkładanych operacji. Funkcja <code>g</code> jest rekurencją ogonową.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> W każdym z poniższych fragmentów wskaż, czy wywołanie rekurencyjne jest w pozycji ogonowej.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># (a)</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="cf">return</span> n <span class="op">*</span> silnia(n <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co"># (b)</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="cf">return</span> silnia(n <span class="op">-</span> <span class="dv">1</span>, n <span class="op">*</span> acc)</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co"># (c)</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="bu">print</span>(n)</span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="cf">return</span> licz(n <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb3-10"><a href="#cb3-10"></a></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="co"># (d)</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="cf">return</span> fib(n <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> fib(n <span class="op">-</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><ol type="a">
+<li><strong>nie</strong> — po powrocie z wywołania zostaje jeszcze mnożenie przez <code>n</code>.</li>
+</ol></li>
+<li><ol start="2" type="a">
+<li><strong>tak</strong> — wartość wywołania jest wprost zwracana.</li>
+</ol></li>
+<li><ol start="3" type="a">
+<li><strong>tak</strong> — <code>print</code> wykonuje się przed wywołaniem, po wywołaniu nic już nie czeka.</li>
+</ol></li>
+<li><ol start="4" type="a">
+<li><strong>nie</strong> — żadne z dwóch wywołań nie jest w pozycji ogonowej, bo na ich wyniki czeka jeszcze dodawanie. To zresztą charakterystyczna własność rekurencji drzewiastej.</li>
+</ol></li>
+</ul>
+</div>
+</div>
+</div>
+<p><strong>4.</strong> Co stanie się po uruchomieniu poniższego kodu?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">def</span> f(n):</span>
+<span id="cb4-2"><a href="#cb4-2"></a>    <span class="cf">return</span> n <span class="op">+</span> f(n <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a>f(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>RecursionError: maximum recursion depth exceeded</code>. Funkcja nie ma przypadku bazowego, więc wywołuje samą siebie w nieskończoność, aż przekroczy systemowy limit głębokości rekurencji.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="maksimum-rekurencyjnie" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="maksimum-rekurencyjnie"><span class="header-section-number">2</span> Maksimum rekurencyjnie</h2>
+<p>Napisz moduł <code>simple_recurrence.py</code> zawierający funkcje:</p>
+<ul>
+<li><p><code>maximum_rec(seq)</code> — zwraca największy element sekwencji <code>seq</code>. Jeśli <code>seq</code> jest pusta, funkcja zgłasza wyjątek <code>ValueError</code> z komunikatem <code>sekwencja nie może być pusta</code>. Implementacja ma być rekurencyjna i ma generować <strong>proces rekurencyjny</strong> (bez akumulatora, z pozycją nieogonową).</p></li>
+<li><p><code>maximum_tail(seq, max_val=None)</code> — to samo zadanie, ale rozwiązane <strong>rekurencją ogonową</strong> z akumulatorem. Pusta <code>seq</code> przy zewnętrznym wywołaniu (gdy <code>max_val is None</code>) ma zgłaszać <code>ValueError</code> z tym samym komunikatem.</p></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Dwa znaczenia <code>max_val=None</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>W <code>maximum_tail</code> wartość <code>None</code> parametru <code>max_val</code> pełni dwie role: jest sygnałem „to jest wywołanie zewnętrzne, nie ma jeszcze żadnego kandydata na maksimum” oraz wartością domyślną dla wywołania od użytkownika. Przy wywołaniu wewnętrznym (po zjedzeniu części sekwencji) <code>max_val</code> jest już ustawione i — gdy <code>seq</code> zrobi się pusta — należy je zwrócić, nie zgłaszać wyjątku.</p>
+</div>
+</div>
+<p>Testy: <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IX/test_maximum.py"><code>test_maximum.py</code></a>.</p>
+<hr>
+</section>
+<section id="fibonacci-ogonowo" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="fibonacci-ogonowo"><span class="header-section-number">3</span> Fibonacci ogonowo</h2>
+<p>Dopisz do modułu <code>simple_recurrence.py</code> funkcję:</p>
+<ul>
+<li><code>fib_tail(n, a=0, b=1)</code> — zwraca <span class="math inline">\(F_n\)</span>, <span class="math inline">\(n\)</span>-ty wyraz ciągu Fibonacciego, zaimplementowana rekurencją ogonową z dwoma akumulatorami <code>a</code>, <code>b</code>.</li>
+</ul>
+<p>To zadanie łączy dwa wątki wykładu: rekurencję ogonową (omówioną na przykładzie <code>sumuj</code> i <code>odlicz</code>) z definicją Fibonacciego (omówioną w wariancie naiwnym i z memoizacją). W przeciwieństwie do naiwnej rekurencji <code>fib(n)</code> z wykładu, <code>fib_tail(n)</code> wykonuje liczbę wywołań liniową względem <code>n</code>.</p>
+<p>Testy: <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IX/test_fib_tail.py"><code>test_fib_tail.py</code></a>.</p>
+<hr>
+</section>
+<section id="wydawanie-reszty" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="wydawanie-reszty"><span class="header-section-number">4</span> Wydawanie reszty</h2>
+<p>Na ile sposobów można wydać resztę 10 mając do dyspozycji monety o nominałach 1, 2 i 5? Oto proste rozwiązanie rekurencyjne z <a href="https://web.mit.edu/6.001/6.037/sicp.pdf">SICP</a> §1.2.2.</p>
+<p>Niech <code>count_change(amount, coins)</code> zwraca liczbę sposobów wydania reszty <code>amount</code> mając do dyspozycji monety o nominałach <code>coins</code>. Strukturę rekurencyjną opisuje obserwacja:</p>
+<blockquote class="blockquote">
+<p>Liczba sposobów wydania reszty <code>amount</code> mając do dyspozycji <code>coins</code> jest sumą:</p>
+<ul>
+<li>liczby sposobów wydania <code>amount</code> mając do dyspozycji wszystkie monety <strong>poza pierwszą</strong> (czyli bez używania pierwszej monety w ogóle), oraz</li>
+<li>liczby sposobów wydania <code>amount - d</code> mając do dyspozycji <strong>wszystkie</strong> monety, gdzie <code>d</code> to nominał pierwszej monety (czyli z użyciem co najmniej jednej sztuki pierwszej monety).</li>
+</ul>
+</blockquote>
+<p>Pozostają przypadki bazowe:</p>
+<ul>
+<li>jeśli <code>amount == 0</code>, jest dokładnie jeden sposób (zbiór pusty); funkcja zwraca <code>1</code>,</li>
+<li>jeśli <code>amount &lt; 0</code>, nie ma żadnego sposobu; funkcja zwraca <code>0</code>,</li>
+<li>jeśli <code>amount &gt; 0</code> i <code>coins</code> jest puste, też nie ma żadnego sposobu; funkcja zwraca <code>0</code>.</li>
+</ul>
+<p>Dokończ definicję funkcji <code>count_change(amount, coins)</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">def</span> count_change(amount, coins):</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    <span class="co">"""Zwraca liczbę sposobów wydania reszty amount mając do dyspozycji monety o nominałach coins.</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">    &gt;&gt;&gt; count_change(0, [])</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co">    1</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="co">    &gt;&gt;&gt; count_change(0, [1, 2, 3])</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co">    1</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="co">    &gt;&gt;&gt; count_change(-1, [])</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co">    0</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="co">    &gt;&gt;&gt; count_change(-1, [1, 2, 3])</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="co">    0</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="co">    &gt;&gt;&gt; count_change(5, [7, 9])</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="co">    0</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a><span class="co">    &gt;&gt;&gt; count_change(5, [1])</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a><span class="co">    1</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a><span class="co">    &gt;&gt;&gt; count_change(5, [1, 2])</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a><span class="co">    3</span></span>
+<span id="cb5-18"><a href="#cb5-18"></a><span class="co">    &gt;&gt;&gt; count_change(100, [1, 5, 10, 25, 50])  # SICP, Ćw. 2.19</span></span>
+<span id="cb5-19"><a href="#cb5-19"></a><span class="co">    292</span></span>
+<span id="cb5-20"><a href="#cb5-20"></a><span class="co">    """</span></span>
+<span id="cb5-21"><a href="#cb5-21"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Memoizacja
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Sprawdź, jak zmieni się czas wykonania, gdy do funkcji dopniesz <code>@cache</code> z modułu <code>functools</code>. Aby to było możliwe, argumenty muszą być niezmienne — <code>coins</code> przekaż jako krotkę, nie listę.</p>
+<p>Porównaj liczbę wywołań rekurencyjnych dla:</p>
+<ul>
+<li><code>count_change(200, (1, 2, 5, 10, 20, 50))</code>,</li>
+<li><code>count_change(200, (1, 2, 5))</code>,</li>
+</ul>
+<p>w wariancie bez memoizacji i z memoizacją. W którym wariancie redukcja jest większa? Spróbuj uzasadnić odpowiedź, patrząc na strukturę drzewa wywołań. Do zliczania wywołań możesz użyć dekoratora <code>licz_wywołania</code> z wykładu.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="świnia" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="świnia"><span class="header-section-number">5</span> Świnia</h2>
+<p>W grze w świnię biorą udział dwie osoby; jedynym potrzebnym rekwizytem są dwie zwykłe kości do gry. Gracz w swojej kolejce rzuca obiema kośćmi naraz i sumuje wyniki. Rzuty wykonuje aż do decyzji o wstrzymaniu kolejki albo do momentu, gdy na <strong>którejkolwiek</strong> z kości wypadnie jedynka. Po wstrzymaniu kolejki suma uzyskanych w niej oczek dodawana jest do konta gracza. Jeśli wypadnie jedynka, kolejka kończy się natychmiast bez przyznania punktów. Gracze grają na przemian. Wygrywa ten, kto pierwszy uzyska 100 lub więcej punktów.</p>
+<p>Alicja i Piotr prowadzą grę w świnię. Alicja zaczyna. Strategia Alicji: dążyć do dwóch rzutów (i wstrzymać się po drugim) — ale jeśli na którymkolwiek rzucie wypadnie jedynka, kolejka kończy się przed osiągnięciem dwóch rzutów z wynikiem zerowym. Strategia Piotra jest analogiczna, z trzema rzutami zamiast dwóch.</p>
+<p>Napisz wywołujące się nawzajem funkcje <code>alicja(konto_alicji, konto_piotra)</code> i <code>piotr(konto_piotra, konto_alicji)</code> symulujące przebieg rozgrywki. Argumenty zawierają stan kont obojga graczy w momencie wywołania.</p>
+<p>Wywołanie <code>alicja(konto_alicji, konto_piotra)</code> odpowiada początkowi tury Alicji i wykonuje:</p>
+<ol type="1">
+<li>sprawdza stan konta Piotra (który właśnie zakończył swoją turę); jeśli <code>konto_piotra &gt;= 100</code>, Piotr wygrał — funkcja drukuje stosowny komunikat i kończy się bez wywołania kolejnej tury,</li>
+<li>w przeciwnym przypadku wykonuje serię rzutów Alicji według jej strategii i aktualizuje <code>konto_alicji</code>,</li>
+<li>wywołuje <code>piotr(konto_piotra, konto_alicji)</code>.</li>
+</ol>
+<p>Wywołanie <code>piotr</code> ma analogiczny przebieg z zamienionymi rolami.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Po co tu rekurencja?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Najnaturalniejszą implementacją tej gry byłaby pętla z naprzemiennie wybieranym graczem. Celem tego zadania jest jednak ćwiczenie <strong>rekurencji wzajemnej</strong>: dwie funkcje wywołujące się nawzajem są równoważne pojedynczej pętli, ale ujawniają strukturę gry w inny sposób — każda funkcja widzi tylko jedną turę i deleguje resztę partnerowi.</p>
+</div>
+</div>
+<p>Zaimplementuj symulację, uruchom kilka rozgrywek i odpowiedz: czyja strategia jest lepsza? Spróbuj zaproponować i przetestować inne strategie (np. „dążę do 20 punktów w turze”, „rzucam tym dłużej, im bardziej przegrywam”).</p>
+<hr>
+</section>
+<section id="sortowanie-szybkie" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="sortowanie-szybkie"><span class="header-section-number">6</span> Sortowanie szybkie</h2>
+<p><a href="https://pl.wikipedia.org/wiki/Sortowanie_szybkie">Sortowanie szybkie</a> jest klasycznym przykładem rekurencyjnego algorytmu działającego według zasady <strong>dziel i zwyciężaj</strong>. Wersja uproszczona, korzystająca z dodatkowej pamięci i nie działająca w miejscu, wygląda tak:</p>
+<pre><code>qsort(A):
+    zwróć A jeśli długość A jest &lt;= 1
+
+    pivot &lt;-- ostatni element A
+    X &lt;-- elementy z A, które są &lt; pivot
+    Y &lt;-- elementy z A, które są == pivot
+    Z &lt;-- elementy z A, które są &gt; pivot
+    zwróć konkatenację qsort(X), Y, qsort(Z)</code></pre>
+<p>Algorytm polega na:</p>
+<ul>
+<li>wybraniu pivota (powyżej: ostatniego elementu),</li>
+<li>podziale na trzy części względem pivota,</li>
+<li>rekurencyjnym posortowaniu skrajnych części,</li>
+<li>złączeniu wyników.</li>
+</ul>
+<p>Napisz moduł <code>qsort.py</code> zawierający funkcję <code>qsort(seq)</code>. Parametr <code>seq</code> jest sekwencją; funkcja zwraca <strong>nową listę</strong> wartości z <code>seq</code> posortowaną niemalejąco.</p>
+<p>Testy: <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IX/test_qsort.py"><code>test_qsort.py</code></a>.</p>
+<hr>
+</section>
+<section id="zgadnij-liczbę" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="zgadnij-liczbę"><span class="header-section-number">7</span> Zgadnij liczbę</h2>
+<p>Załóżmy, że dana jest wartość <code>x</code> i tablica <code>A[0], A[1], ..., A[n-1]</code>. Problem polega na sprawdzeniu, czy <code>x</code> jest wartością w tablicy <code>A</code>. Proste rozwiązanie typu <a href="https://en.wikipedia.org/wiki/Brute-force_search"><em>brute force</em></a> to pętla po całej tablicy. Ten algorytm można jednak znacznie poprawić, jeśli wiemy, że wartości w tablicy są <strong>posortowane</strong>. W tym przypadku stosujemy <a href="https://pl.wikipedia.org/wiki/Wyszukiwanie_binarne"><strong>wyszukiwanie binarne</strong></a>.</p>
+<p>Działa to tak. Wyobraź sobie, że Asia i Kasia grają w grę polegającą na tym, że jedna osoba zapisuje liczbę, a druga ma ją odgadnąć, zadając jak najmniejszą liczbę pytań pomocniczych. Pytania mają mieć charakter taki, że możliwa jest jedynie odpowiedź tak lub nie. Jeśli Asia zapisze liczbę z umówionego zakresu 1–100, to Kasia powinna zapytać: czy liczba jest większa od 50? Jeśli odpowiedź brzmi tak, kolejne pytanie dotyczy 75; w przeciwnym razie 25, i tak dalej.</p>
+<p>Ten sposób wyszukiwania jest niezwykle szybki nawet dla bardzo szerokich zakresów. Dla zakresu <span class="math inline">\(1\)</span>–<span class="math inline">\(10^{100}\)</span> wystarczy najwyżej około <span class="math inline">\(333\)</span> pytań — zauważ, że pętla po wszystkich wartościach z tego zakresu byłaby fizycznie nieosiągalna.</p>
+<p>Napisz <strong>rekurencyjną</strong> funkcję <code>guess_number(a, b)</code> w module <code>guess_number.py</code>. Parametry <code>a</code>, <code>b</code> to granice zakresu, w którym szukana jest liczba zapisana przez użytkownika. Funkcja prowadzi dialog w terminalu: pyta o połówkę przedziału i zwęża zakres na podstawie odpowiedzi. Umowa: pusta odpowiedź (sam Enter) oznacza tak, odpowiedź <code>n</code> oznacza nie.</p>
+<p>Przykładowy przebieg <code>guess_number(1, 1000)</code>:</p>
+<pre><code>Czy Twoja liczba jest większa od 500 (T/n)? 
+Czy Twoja liczba jest większa od 750 (T/n)? n
+Czy Twoja liczba jest większa od 625 (T/n)? n
+Czy Twoja liczba jest większa od 563 (T/n)? n
+Czy Twoja liczba jest większa od 532 (T/n)? n
+Czy Twoja liczba jest większa od 516 (T/n)? 
+Czy Twoja liczba jest większa od 524 (T/n)? n
+Czy Twoja liczba jest większa od 520 (T/n)? n
+Czy Twoja liczba jest większa od 518 (T/n)? 
+Czy Twoja liczba jest większa od 519 (T/n)? 
+Zapisałeś liczbę 520.</code></pre>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Test ręczny
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Funkcja używa <code>input()</code>, więc nie da się jej sensownie testować doctestem ani <code>unittest</code>. Sprawdź ją uruchamiając w terminalu na kilku zakresach (<code>(1, 100)</code>, <code>(1, 1000)</code>, <code>(-50, 50)</code>).</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="wyszukiwanie-binarne-w-sekwencji" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="wyszukiwanie-binarne-w-sekwencji"><span class="header-section-number">8</span> Wyszukiwanie binarne w sekwencji</h2>
+<p>Zaimplementuj wyszukiwanie binarne dla uporządkowanej sekwencji. Dokończ definicję funkcji <code>binary_search(x, seq)</code> w module <code>binary_search.py</code>. Wykonaj testy zawarte w docstringu (<code>python -m doctest binary_search.py -v</code>).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">def</span> binary_search(x, seq):</span>
+<span id="cb8-2"><a href="#cb8-2"></a>    <span class="co">"""</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co">    Wykonuje rekurencyjne wyszukiwanie binarne w uporządkowanej sekwencji.</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co">    Args:</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">        x (any): wartość do znalezienia.</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">        seq: uporządkowana sekwencja, w której szukamy.</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="co">    Returns:</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="co">        bool: True gdy x znajduje się w seq, False w przeciwnym przypadku.</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="co">    Przykłady:</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">        &gt;&gt;&gt; binary_search(1, [])</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="co">        False</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="co">        &gt;&gt;&gt; binary_search(1, [1])</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co">        True</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a></span>
+<span id="cb8-19"><a href="#cb8-19"></a><span class="co">        &gt;&gt;&gt; LICZBY = [1, 2]</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a><span class="co">        &gt;&gt;&gt; all(binary_search(liczba, LICZBY) for liczba in LICZBY)</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a><span class="co">        True</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a></span>
+<span id="cb8-23"><a href="#cb8-23"></a><span class="co">        &gt;&gt;&gt; any(binary_search(liczba, LICZBY) for liczba in [0, 3])</span></span>
+<span id="cb8-24"><a href="#cb8-24"></a><span class="co">        False</span></span>
+<span id="cb8-25"><a href="#cb8-25"></a></span>
+<span id="cb8-26"><a href="#cb8-26"></a><span class="co">        &gt;&gt;&gt; LICZBY = [5, 7, 11]</span></span>
+<span id="cb8-27"><a href="#cb8-27"></a><span class="co">        &gt;&gt;&gt; all(binary_search(liczba, LICZBY) for liczba in LICZBY)</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a><span class="co">        True</span></span>
+<span id="cb8-29"><a href="#cb8-29"></a></span>
+<span id="cb8-30"><a href="#cb8-30"></a><span class="co">        &gt;&gt;&gt; any(binary_search(liczba, LICZBY) for liczba in [1, 6, 10, 12])</span></span>
+<span id="cb8-31"><a href="#cb8-31"></a><span class="co">        False</span></span>
+<span id="cb8-32"><a href="#cb8-32"></a></span>
+<span id="cb8-33"><a href="#cb8-33"></a><span class="co">        &gt;&gt;&gt; LITERY = "abcdefghijklmnopqrstuvwxyz"</span></span>
+<span id="cb8-34"><a href="#cb8-34"></a><span class="co">        &gt;&gt;&gt; all(binary_search(litera, LITERY) for litera in LITERY)</span></span>
+<span id="cb8-35"><a href="#cb8-35"></a><span class="co">        True</span></span>
+<span id="cb8-36"><a href="#cb8-36"></a></span>
+<span id="cb8-37"><a href="#cb8-37"></a><span class="co">        &gt;&gt;&gt; any(binary_search(znak, LITERY) for znak in "123%&amp;")</span></span>
+<span id="cb8-38"><a href="#cb8-38"></a><span class="co">        False</span></span>
+<span id="cb8-39"><a href="#cb8-39"></a><span class="co">    """</span></span>
+<span id="cb8-40"><a href="#cb8-40"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Krojenie czy indeksy?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Najprostsza rekurencyjna implementacja kroi sekwencję: w każdej rekurencji bierze połówkę przez <code>seq[m:]</code> lub <code>seq[:m]</code>. To podejście jest czytelne, ale wolne — krojenie listy jest operacją liniową, więc tracimy obiecaną przez wyszukiwanie binarne złożoność. Wersją wydajną jest funkcja pomocnicza <code>binary_search_range(x, seq, lo, hi)</code>, która zamiast kroić operuje na granicach przedziału. Wybierz wariant — pierwszy jako rozgrzewkę, drugi jako ćwiczenie z indeksów.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="bisekcja" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="bisekcja"><span class="header-section-number">9</span> Bisekcja</h2>
+<p>Algorytm wyszukiwania binarnego pozwala także na bardzo szybkie wyznaczanie miejsc zerowych funkcji. Załóżmy, że dana jest funkcja ciągła <span class="math inline">\(y=f(x)\)</span> określona na przedziale <span class="math inline">\([a,b]\)</span>, która na krańcach przedziału przyjmuje wartości różnych znaków. Ponieważ funkcja jest ciągła, jej wykres jest ciągłą krzywą łączącą punkty <span class="math inline">\((a,f(a))\)</span> i <span class="math inline">\((b,f(b))\)</span>. Skoro jeden z tych punktów leży pod osią OX, a drugi nad, krzywa musi tę oś gdzieś przeciąć — w przedziale <span class="math inline">\((a,b)\)</span> znajduje się więc miejsce zerowe.</p>
+<p>Weźmy punkt <span class="math inline">\(c\)</span> leżący dokładnie w połowie przedziału:</p>
+<p><span class="math display">\[
+c = \frac{a + b}{2}.
+\]</span></p>
+<p>Mamy dwie możliwości:</p>
+<ol type="1">
+<li><span class="math inline">\(f(c) = 0\)</span> — znaleźliśmy miejsce zerowe, wyszukiwanie zakończone.</li>
+<li><span class="math inline">\(f(c) \neq 0\)</span> — wtedy albo <span class="math inline">\(f(a) \cdot f(c) &lt; 0\)</span> (miejsce zerowe leży w <span class="math inline">\([a, c]\)</span>), albo <span class="math inline">\(f(b) \cdot f(c) &lt; 0\)</span> (miejsce zerowe leży w <span class="math inline">\([c, b]\)</span>). Dla <span class="math inline">\(f(c) \neq 0\)</span> jeden z tych przypadków musi zachodzić.</li>
+</ol>
+<p>W przypadku 2. powtarzamy procedurę dla odpowiedniej połówki. Postępujemy tak długo, aż albo trafimy na miejsce zerowe w środku przedziału (mało prawdopodobne), albo długość przedziału zrobi się mniejsza niż ustalona z góry tolerancja <code>abs_tol</code>.</p>
+<p>Dokończ definicję funkcji <code>find_root(f, a, b, abs_tol=1e-6)</code> w module <code>find_root.py</code>. Wykonaj testy zawarte w docstringu.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">def</span> find_root(f, a, b, abs_tol<span class="op">=</span><span class="fl">1e-6</span>):</span>
+<span id="cb9-2"><a href="#cb9-2"></a>    <span class="co">"""</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="co">    Znajduje miejsce zerowe funkcji w zadanym przedziale metodą bisekcji.</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co">    Parametry:</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="co">    f : funkcja, dla której szukamy miejsca zerowego.</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="co">    a : float, dolne ograniczenie przedziału.</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="co">    b : float, górne ograniczenie przedziału.</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="co">    abs_tol : float, opcjonalnie, tolerancja bezwzględna. Domyślnie 1e-6.</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="co">    Zwraca:</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="co">    float: przybliżone miejsce zerowe funkcji w zadanym przedziale.</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a></span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="co">    Zgłasza:</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a><span class="co">    ValueError: gdy f(a) i f(b) mają ten sam znak.</span></span>
+<span id="cb9-16"><a href="#cb9-16"></a></span>
+<span id="cb9-17"><a href="#cb9-17"></a><span class="co">    Przykłady:</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a><span class="co">    &gt;&gt;&gt; from math import cos, pi, isclose</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a><span class="co">    &gt;&gt;&gt; abs_tol = 1e-6</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a></span>
+<span id="cb9-21"><a href="#cb9-21"></a><span class="co">    &gt;&gt;&gt; z = find_root(lambda x: x, -100, 200)</span></span>
+<span id="cb9-22"><a href="#cb9-22"></a><span class="co">    &gt;&gt;&gt; isclose(z, 0, abs_tol=abs_tol)</span></span>
+<span id="cb9-23"><a href="#cb9-23"></a><span class="co">    True</span></span>
+<span id="cb9-24"><a href="#cb9-24"></a></span>
+<span id="cb9-25"><a href="#cb9-25"></a><span class="co">    &gt;&gt;&gt; z = find_root(cos, 0, pi)</span></span>
+<span id="cb9-26"><a href="#cb9-26"></a><span class="co">    &gt;&gt;&gt; isclose(z, pi / 2, abs_tol=abs_tol)</span></span>
+<span id="cb9-27"><a href="#cb9-27"></a><span class="co">    True</span></span>
+<span id="cb9-28"><a href="#cb9-28"></a></span>
+<span id="cb9-29"><a href="#cb9-29"></a><span class="co">    &gt;&gt;&gt; z = find_root(lambda x: x**3 - x - 2, 0, 2, abs_tol=1e-11)</span></span>
+<span id="cb9-30"><a href="#cb9-30"></a><span class="co">    &gt;&gt;&gt; isclose(z, 1.52137970680457, abs_tol=1e-11)</span></span>
+<span id="cb9-31"><a href="#cb9-31"></a><span class="co">    True</span></span>
+<span id="cb9-32"><a href="#cb9-32"></a></span>
+<span id="cb9-33"><a href="#cb9-33"></a><span class="co">    &gt;&gt;&gt; find_root(lambda x: 1 + x**2, 1, 100)</span></span>
+<span id="cb9-34"><a href="#cb9-34"></a><span class="co">    Traceback (most recent call last):</span></span>
+<span id="cb9-35"><a href="#cb9-35"></a><span class="co">        ...</span></span>
+<span id="cb9-36"><a href="#cb9-36"></a><span class="co">    ValueError: f(a) i f(b) mają ten sam znak — nie można zagwarantować miejsca zerowego w przedziale.</span></span>
+<span id="cb9-37"><a href="#cb9-37"></a><span class="co">    """</span></span>
+<span id="cb9-38"><a href="#cb9-38"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+<section id="sortowanie-przez-scalanie" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="sortowanie-przez-scalanie"><span class="header-section-number">10</span> Sortowanie przez scalanie</h2>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Zadanie zaawansowane
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://pl.wikipedia.org/wiki/Sortowanie_przez_scalanie">Sortowanie przez scalanie</a> jest najtrudniejszym zadaniem w tym labie. Łączy rekurencję, indeksowanie podtablic i operowanie na liście „w miejscu”.</p>
+</div>
+</div>
+<p>Sortowanie przez scalanie też realizuje schemat dziel-i-zwyciężaj. Dzieli listę na połówki, sortuje każdą z osobna, a następnie scala obie posortowane połówki w wynik:</p>
+<pre><code>mergesort(A, p, r)
+    # A: lista do posortowania
+    # p: indeks początkowy podtablicy (włącznie)
+    # r: indeks końcowy podtablicy (wyłącznie)
+
+    jeśli r jest None:
+        zdefiniuj r jako długość A
+
+    jeśli p &lt; r - 1:                       # podtablica ma co najmniej 2 elementy
+        q = (p + r) // 2                   # indeks środkowy
+
+        mergesort(A, p, q)                 # posortuj lewą połówkę
+        mergesort(A, q, r)                 # posortuj prawą połówkę
+
+        merge(A, p, q, r)                  # scal obie posortowane połówki</code></pre>
+<p>Funkcja scalająca <code>merge(A, p, q, r)</code> modyfikuje listę <code>A</code> w przedziale <code>[p, r)</code>, zakładając, że dwa kawałki <code>A[p:q]</code> i <code>A[q:r]</code> są już posortowane:</p>
+<pre><code>merge(A, p, q, r)
+    # A: lista
+    # p: początek (włącznie)
+    # q: początek drugiej połówki (włącznie)
+    # r: koniec (wyłącznie)
+
+    # opcjonalnie: kontrola indeksów
+    jeśli NIE (0 &lt;= p &lt;= q &lt;= r &lt;= długość(A)):
+        zgłoś błąd "Incorrect indices"
+
+    L = A[p:q]                  # kopia lewej połówki
+    R = A[q:r]                  # kopia prawej połówki
+
+    # dopisz wartownika (dodatnią nieskończoność) do każdej kopii
+    L.append(+∞)
+    R.append(+∞)
+
+    i = 0                       # indeks w L
+    j = 0                       # indeks w R
+    k = p                       # indeks w A
+
+    dopóki k &lt; r:
+        jeśli L[i] &lt;= R[j]:
+            A[k] = L[i]
+            i = i + 1
+        w przeciwnym przypadku:
+            A[k] = R[j]
+            j = j + 1
+        k = k + 1</code></pre>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Wartownik a typy w Pythonie
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Wartownik (ang. <em>sentinel</em>) to sztucznie dopisany na koniec element gwarantujący, że żadna ze stron nigdy się „nie skończy”. Bez wartownika musielibyśmy w każdej iteracji sprawdzać, czy <code>i</code> i <code>j</code> nie wyszły poza koniec swojej połówki — wartownik tę kontrolę wyłącza, bo <code>+∞</code> jest większe od każdej rzeczywistej wartości w <code>A</code>.</p>
+<p>W pseudokodzie <code>+∞</code> to po prostu wartość większa od każdej innej. Pythonowym odpowiednikiem wydaje się <code>float('inf')</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">float</span>(<span class="st">'inf'</span>) <span class="op">&gt;</span> <span class="dv">5</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="va">True</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">float</span>(<span class="st">'inf'</span>) <span class="op">&gt;</span> <span class="st">'a'</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a>Traceback (most recent call last):</span>
+<span id="cb12-5"><a href="#cb12-5"></a>    ...</span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="pp">TypeError</span>: <span class="st">'&gt;'</span> <span class="kw">not</span> supported between instances of <span class="st">'float'</span> <span class="kw">and</span> <span class="st">'str'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Tymczasem testy do tego zadania sortują też napisy. To pierwsza z trudności tego zadania: pseudokod opisuje <strong>ideę</strong>, a Twoim zadaniem jest przełożyć ją na kod, który zachowa polimorfizm sortowania. Zastanów się, <em>po co</em> wartownik tu jest i czy nie da się tej samej idei zrealizować inaczej.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>„W miejscu” — uwaga porządkowa
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Funkcje <code>merge</code> i <code>mergesort</code> modyfikują listę <code>A</code> przekazaną jako argument — wynik trafia bezpośrednio do <code>A</code>, bez zwracanej nowej listy. Niemniej <code>merge</code> alokuje pomocnicze listy <code>L</code> i <code>R</code>, więc całe sortowanie używa pamięci pomocniczej rozmiaru <span class="math inline">\(O(n)\)</span>. Sortowanie przez scalanie <em>bez</em> takiej pamięci pomocniczej jest możliwe, ale znacznie trudniejsze i nie jest tematem tego zadania.</p>
+</div>
+</div>
+<p>Napisz moduł <code>mergesort.py</code> zawierający funkcje:</p>
+<ul>
+<li><code>merge(A, p, q, r)</code> — scala posortowane fragmenty <code>A[p:q]</code> i <code>A[q:r]</code> w posortowany fragment <code>A[p:r]</code>. Zakładamy <code>0 &lt;= p &lt;= q &lt;= r &lt;= len(A)</code>.</li>
+<li><code>mergesort(A, p=0, r=None)</code> — sortuje <code>A[p:r]</code> w miejscu. Wywołanie <code>mergesort(A)</code> powinno posortować całą listę.</li>
+</ul>
+<p>Testy: <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IX/test_mergesort.py"><code>test_mergesort.py</code></a>.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/rodakt\.github\.io\/PPwAD2\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<hr><center><small>Ostatnia aktualizacja: last-modified</small></center>
+
+
+
+
+</body></html>

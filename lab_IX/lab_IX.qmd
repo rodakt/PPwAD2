@@ -1,0 +1,465 @@
+---
+title: "Lab IX: Rekurencja"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+Te ćwiczenia nawiązują do materiału z wykładu o rekurencji. Główne motywy to: proces rekurencyjny vs iteracyjny, rekurencja ogonowa, memoizacja i idiom dziel-i-zwyciężaj. Końcowe zadanie — sortowanie przez scalanie — jest nieco trudniejsze od pozostałych; można je potraktować jako materiał dla chętnych. Poprawność rozwiązań weryfikuj za pomocą dołączonych plików z testami albo doctestów.
+
+## Rozgrzewka: czytanie rekurencji
+
+Dla każdego z poniższych pytań najpierw udziel odpowiedzi samodzielnie, a następnie sprawdź ją w interpreterze.
+
+**1.** Co wypisze poniższy kod? Czy wywołanie `f(4)` generuje proces rekurencyjny, czy iteracyjny?
+
+```python
+def f(n):
+    if n == 0:
+        return 1
+    return n * f(n - 1)
+
+print(f(4))
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Wypisze `24`. To proces **rekurencyjny** — każde wywołanie odkłada operację mnożenia przez `n`, a wszystkie odłożone mnożenia są wykonywane dopiero wtedy, gdy zwróci się `f(0)`.
+:::
+
+**2.** Co wypisze poniższy kod? Czy wywołanie `g(4)` generuje proces rekurencyjny, czy iteracyjny?
+
+```python
+def g(n, acc=1):
+    if n == 0:
+        return acc
+    return g(n - 1, n * acc)
+
+print(g(4))
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Wypisze `24`. To proces **iteracyjny** — wszystkie potrzebne dane (bieżące `n` i bieżący iloczyn `acc`) są przekazywane w argumentach, nie ma odkładanych operacji. Funkcja `g` jest rekurencją ogonową.
+:::
+
+**3.** W każdym z poniższych fragmentów wskaż, czy wywołanie rekurencyjne jest w pozycji ogonowej.
+
+```python
+# (a)
+return n * silnia(n - 1)
+
+# (b)
+return silnia(n - 1, n * acc)
+
+# (c)
+print(n)
+return licz(n - 1)
+
+# (d)
+return fib(n - 1) + fib(n - 2)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+- (a) **nie** — po powrocie z wywołania zostaje jeszcze mnożenie przez `n`.
+- (b) **tak** — wartość wywołania jest wprost zwracana.
+- (c) **tak** — `print` wykonuje się przed wywołaniem, po wywołaniu nic już nie czeka.
+- (d) **nie** — żadne z dwóch wywołań nie jest w pozycji ogonowej, bo na ich wyniki czeka jeszcze dodawanie. To zresztą charakterystyczna własność rekurencji drzewiastej.
+:::
+
+**4.** Co stanie się po uruchomieniu poniższego kodu?
+
+```python
+def f(n):
+    return n + f(n - 1)
+
+f(5)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`RecursionError: maximum recursion depth exceeded`. Funkcja nie ma przypadku bazowego, więc wywołuje samą siebie w nieskończoność, aż przekroczy systemowy limit głębokości rekurencji.
+:::
+
+***
+
+## Maksimum rekurencyjnie
+
+Napisz moduł `simple_recurrence.py` zawierający funkcje:
+
+- `maximum_rec(seq)` — zwraca największy element sekwencji `seq`. Jeśli `seq` jest pusta, funkcja zgłasza wyjątek `ValueError` z komunikatem `sekwencja nie może być pusta`. Implementacja ma być rekurencyjna i ma generować **proces rekurencyjny** (bez akumulatora, z pozycją nieogonową).
+
+- `maximum_tail(seq, max_val=None)` — to samo zadanie, ale rozwiązane **rekurencją ogonową** z akumulatorem. Pusta `seq` przy zewnętrznym wywołaniu (gdy `max_val is None`) ma zgłaszać `ValueError` z tym samym komunikatem.
+
+::: {.callout-tip}
+## Dwa znaczenia `max_val=None`
+W `maximum_tail` wartość `None` parametru `max_val` pełni dwie role: jest sygnałem „to jest wywołanie zewnętrzne, nie ma jeszcze żadnego kandydata na maksimum" oraz wartością domyślną dla wywołania od użytkownika. Przy wywołaniu wewnętrznym (po zjedzeniu części sekwencji) `max_val` jest już ustawione i — gdy `seq` zrobi się pusta — należy je zwrócić, nie zgłaszać wyjątku.
+:::
+
+Testy: [`test_maximum.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IX/test_maximum.py).
+
+***
+
+## Fibonacci ogonowo
+
+Dopisz do modułu `simple_recurrence.py` funkcję:
+
+- `fib_tail(n, a=0, b=1)` — zwraca $F_n$, $n$-ty wyraz ciągu Fibonacciego, zaimplementowana rekurencją ogonową z dwoma akumulatorami `a`, `b`.
+
+To zadanie łączy dwa wątki wykładu: rekurencję ogonową (omówioną na przykładzie `sumuj` i `odlicz`) z definicją Fibonacciego (omówioną w wariancie naiwnym i z memoizacją). W przeciwieństwie do naiwnej rekurencji `fib(n)` z wykładu, `fib_tail(n)` wykonuje liczbę wywołań liniową względem `n`.
+
+Testy: [`test_fib_tail.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IX/test_fib_tail.py).
+
+***
+
+## Wydawanie reszty
+
+Na ile sposobów można wydać resztę 10 mając do dyspozycji monety o nominałach 1, 2 i 5? Oto proste rozwiązanie rekurencyjne z [SICP](https://web.mit.edu/6.001/6.037/sicp.pdf) §1.2.2.
+
+Niech `count_change(amount, coins)` zwraca liczbę sposobów wydania reszty `amount` mając do dyspozycji monety o nominałach `coins`. Strukturę rekurencyjną opisuje obserwacja:
+
+> Liczba sposobów wydania reszty `amount` mając do dyspozycji `coins` jest sumą:
+>
+> - liczby sposobów wydania `amount` mając do dyspozycji wszystkie monety **poza pierwszą** (czyli bez używania pierwszej monety w ogóle), oraz
+> - liczby sposobów wydania `amount - d` mając do dyspozycji **wszystkie** monety, gdzie `d` to nominał pierwszej monety (czyli z użyciem co najmniej jednej sztuki pierwszej monety).
+
+Pozostają przypadki bazowe:
+
+- jeśli `amount == 0`, jest dokładnie jeden sposób (zbiór pusty); funkcja zwraca `1`,
+- jeśli `amount < 0`, nie ma żadnego sposobu; funkcja zwraca `0`,
+- jeśli `amount > 0` i `coins` jest puste, też nie ma żadnego sposobu; funkcja zwraca `0`.
+
+Dokończ definicję funkcji `count_change(amount, coins)`:
+
+```python
+def count_change(amount, coins):
+    """Zwraca liczbę sposobów wydania reszty amount mając do dyspozycji monety o nominałach coins.
+
+    >>> count_change(0, [])
+    1
+    >>> count_change(0, [1, 2, 3])
+    1
+    >>> count_change(-1, [])
+    0
+    >>> count_change(-1, [1, 2, 3])
+    0
+    >>> count_change(5, [7, 9])
+    0
+    >>> count_change(5, [1])
+    1
+    >>> count_change(5, [1, 2])
+    3
+    >>> count_change(100, [1, 5, 10, 25, 50])  # SICP, Ćw. 2.19
+    292
+    """
+    pass
+```
+
+::: {.callout-tip}
+## Memoizacja
+Sprawdź, jak zmieni się czas wykonania, gdy do funkcji dopniesz `@cache` z modułu `functools`. Aby to było możliwe, argumenty muszą być niezmienne — `coins` przekaż jako krotkę, nie listę.
+
+Porównaj liczbę wywołań rekurencyjnych dla:
+
+- `count_change(200, (1, 2, 5, 10, 20, 50))`,
+- `count_change(200, (1, 2, 5))`,
+
+w wariancie bez memoizacji i z memoizacją. W którym wariancie redukcja jest większa? Spróbuj uzasadnić odpowiedź, patrząc na strukturę drzewa wywołań. Do zliczania wywołań możesz użyć dekoratora `licz_wywołania` z wykładu.
+:::
+
+***
+
+## Świnia
+
+W grze w świnię biorą udział dwie osoby; jedynym potrzebnym rekwizytem są dwie zwykłe kości do gry. Gracz w swojej kolejce rzuca obiema kośćmi naraz i sumuje wyniki. Rzuty wykonuje aż do decyzji o wstrzymaniu kolejki albo do momentu, gdy na **którejkolwiek** z kości wypadnie jedynka. Po wstrzymaniu kolejki suma uzyskanych w niej oczek dodawana jest do konta gracza. Jeśli wypadnie jedynka, kolejka kończy się natychmiast bez przyznania punktów. Gracze grają na przemian. Wygrywa ten, kto pierwszy uzyska 100 lub więcej punktów.
+
+Alicja i Piotr prowadzą grę w świnię. Alicja zaczyna. Strategia Alicji: dążyć do dwóch rzutów (i wstrzymać się po drugim) — ale jeśli na którymkolwiek rzucie wypadnie jedynka, kolejka kończy się przed osiągnięciem dwóch rzutów z wynikiem zerowym. Strategia Piotra jest analogiczna, z trzema rzutami zamiast dwóch.
+
+Napisz wywołujące się nawzajem funkcje `alicja(konto_alicji, konto_piotra)` i `piotr(konto_piotra, konto_alicji)` symulujące przebieg rozgrywki. Argumenty zawierają stan kont obojga graczy w momencie wywołania.
+
+Wywołanie `alicja(konto_alicji, konto_piotra)` odpowiada początkowi tury Alicji i wykonuje:
+
+1. sprawdza stan konta Piotra (który właśnie zakończył swoją turę); jeśli `konto_piotra >= 100`, Piotr wygrał — funkcja drukuje stosowny komunikat i kończy się bez wywołania kolejnej tury,
+2. w przeciwnym przypadku wykonuje serię rzutów Alicji według jej strategii i aktualizuje `konto_alicji`,
+3. wywołuje `piotr(konto_piotra, konto_alicji)`.
+
+Wywołanie `piotr` ma analogiczny przebieg z zamienionymi rolami.
+
+::: {.callout-tip}
+## Po co tu rekurencja?
+Najnaturalniejszą implementacją tej gry byłaby pętla z naprzemiennie wybieranym graczem. Celem tego zadania jest jednak ćwiczenie **rekurencji wzajemnej**: dwie funkcje wywołujące się nawzajem są równoważne pojedynczej pętli, ale ujawniają strukturę gry w inny sposób — każda funkcja widzi tylko jedną turę i deleguje resztę partnerowi.
+:::
+
+Zaimplementuj symulację, uruchom kilka rozgrywek i odpowiedz: czyja strategia jest lepsza? Spróbuj zaproponować i przetestować inne strategie (np. „dążę do 20 punktów w turze", „rzucam tym dłużej, im bardziej przegrywam").
+
+***
+
+## Sortowanie szybkie
+
+[Sortowanie szybkie](https://pl.wikipedia.org/wiki/Sortowanie_szybkie) jest klasycznym przykładem rekurencyjnego algorytmu działającego według zasady **dziel i zwyciężaj**. Wersja uproszczona, korzystająca z dodatkowej pamięci i nie działająca w miejscu, wygląda tak:
+
+```
+qsort(A):
+    zwróć A jeśli długość A jest <= 1
+
+    pivot <-- ostatni element A
+    X <-- elementy z A, które są < pivot
+    Y <-- elementy z A, które są == pivot
+    Z <-- elementy z A, które są > pivot
+    zwróć konkatenację qsort(X), Y, qsort(Z)
+```
+
+Algorytm polega na:
+
+- wybraniu pivota (powyżej: ostatniego elementu),
+- podziale na trzy części względem pivota,
+- rekurencyjnym posortowaniu skrajnych części,
+- złączeniu wyników.
+
+Napisz moduł `qsort.py` zawierający funkcję `qsort(seq)`. Parametr `seq` jest sekwencją; funkcja zwraca **nową listę** wartości z `seq` posortowaną niemalejąco.
+
+Testy: [`test_qsort.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IX/test_qsort.py).
+
+***
+
+## Zgadnij liczbę
+
+Załóżmy, że dana jest wartość `x` i tablica `A[0], A[1], ..., A[n-1]`. Problem polega na sprawdzeniu, czy `x` jest wartością w tablicy `A`. Proste rozwiązanie typu [*brute force*](https://en.wikipedia.org/wiki/Brute-force_search) to pętla po całej tablicy. Ten algorytm można jednak znacznie poprawić, jeśli wiemy, że wartości w tablicy są **posortowane**. W tym przypadku stosujemy [**wyszukiwanie binarne**](https://pl.wikipedia.org/wiki/Wyszukiwanie_binarne).
+
+Działa to tak. Wyobraź sobie, że Asia i Kasia grają w grę polegającą na tym, że jedna osoba zapisuje liczbę, a druga ma ją odgadnąć, zadając jak najmniejszą liczbę pytań pomocniczych. Pytania mają mieć charakter taki, że możliwa jest jedynie odpowiedź tak lub nie. Jeśli Asia zapisze liczbę z umówionego zakresu 1–100, to Kasia powinna zapytać: czy liczba jest większa od 50? Jeśli odpowiedź brzmi tak, kolejne pytanie dotyczy 75; w przeciwnym razie 25, i tak dalej.
+
+Ten sposób wyszukiwania jest niezwykle szybki nawet dla bardzo szerokich zakresów. Dla zakresu $1$–$10^{100}$ wystarczy najwyżej około $333$ pytań — zauważ, że pętla po wszystkich wartościach z tego zakresu byłaby fizycznie nieosiągalna.
+
+Napisz **rekurencyjną** funkcję `guess_number(a, b)` w module `guess_number.py`. Parametry `a`, `b` to granice zakresu, w którym szukana jest liczba zapisana przez użytkownika. Funkcja prowadzi dialog w terminalu: pyta o połówkę przedziału i zwęża zakres na podstawie odpowiedzi. Umowa: pusta odpowiedź (sam Enter) oznacza tak, odpowiedź `n` oznacza nie.
+
+Przykładowy przebieg `guess_number(1, 1000)`:
+
+```
+Czy Twoja liczba jest większa od 500 (T/n)? 
+Czy Twoja liczba jest większa od 750 (T/n)? n
+Czy Twoja liczba jest większa od 625 (T/n)? n
+Czy Twoja liczba jest większa od 563 (T/n)? n
+Czy Twoja liczba jest większa od 532 (T/n)? n
+Czy Twoja liczba jest większa od 516 (T/n)? 
+Czy Twoja liczba jest większa od 524 (T/n)? n
+Czy Twoja liczba jest większa od 520 (T/n)? n
+Czy Twoja liczba jest większa od 518 (T/n)? 
+Czy Twoja liczba jest większa od 519 (T/n)? 
+Zapisałeś liczbę 520.
+```
+
+::: {.callout-tip}
+## Test ręczny
+Funkcja używa `input()`, więc nie da się jej sensownie testować doctestem ani `unittest`. Sprawdź ją uruchamiając w terminalu na kilku zakresach (`(1, 100)`, `(1, 1000)`, `(-50, 50)`).
+:::
+
+***
+
+## Wyszukiwanie binarne w sekwencji
+
+Zaimplementuj wyszukiwanie binarne dla uporządkowanej sekwencji. Dokończ definicję funkcji `binary_search(x, seq)` w module `binary_search.py`. Wykonaj testy zawarte w docstringu (`python -m doctest binary_search.py -v`).
+
+```python
+def binary_search(x, seq):
+    """
+    Wykonuje rekurencyjne wyszukiwanie binarne w uporządkowanej sekwencji.
+
+    Args:
+        x (any): wartość do znalezienia.
+        seq: uporządkowana sekwencja, w której szukamy.
+
+    Returns:
+        bool: True gdy x znajduje się w seq, False w przeciwnym przypadku.
+
+    Przykłady:
+        >>> binary_search(1, [])
+        False
+
+        >>> binary_search(1, [1])
+        True
+
+        >>> LICZBY = [1, 2]
+        >>> all(binary_search(liczba, LICZBY) for liczba in LICZBY)
+        True
+
+        >>> any(binary_search(liczba, LICZBY) for liczba in [0, 3])
+        False
+
+        >>> LICZBY = [5, 7, 11]
+        >>> all(binary_search(liczba, LICZBY) for liczba in LICZBY)
+        True
+
+        >>> any(binary_search(liczba, LICZBY) for liczba in [1, 6, 10, 12])
+        False
+
+        >>> LITERY = "abcdefghijklmnopqrstuvwxyz"
+        >>> all(binary_search(litera, LITERY) for litera in LITERY)
+        True
+
+        >>> any(binary_search(znak, LITERY) for znak in "123%&")
+        False
+    """
+    pass
+```
+
+::: {.callout-tip}
+## Krojenie czy indeksy?
+Najprostsza rekurencyjna implementacja kroi sekwencję: w każdej rekurencji bierze połówkę przez `seq[m:]` lub `seq[:m]`. To podejście jest czytelne, ale wolne — krojenie listy jest operacją liniową, więc tracimy obiecaną przez wyszukiwanie binarne złożoność. Wersją wydajną jest funkcja pomocnicza `binary_search_range(x, seq, lo, hi)`, która zamiast kroić operuje na granicach przedziału. Wybierz wariant — pierwszy jako rozgrzewkę, drugi jako ćwiczenie z indeksów.
+:::
+
+***
+
+## Bisekcja
+
+Algorytm wyszukiwania binarnego pozwala także na bardzo szybkie wyznaczanie miejsc zerowych funkcji. Załóżmy, że dana jest funkcja ciągła $y=f(x)$ określona na przedziale $[a,b]$, która na krańcach przedziału przyjmuje wartości różnych znaków. Ponieważ funkcja jest ciągła, jej wykres jest ciągłą krzywą łączącą punkty $(a,f(a))$ i $(b,f(b))$. Skoro jeden z tych punktów leży pod osią OX, a drugi nad, krzywa musi tę oś gdzieś przeciąć — w przedziale $(a,b)$ znajduje się więc miejsce zerowe.
+
+Weźmy punkt $c$ leżący dokładnie w połowie przedziału:
+
+$$
+c = \frac{a + b}{2}.
+$$
+
+Mamy dwie możliwości:
+
+1. $f(c) = 0$ — znaleźliśmy miejsce zerowe, wyszukiwanie zakończone.
+2. $f(c) \neq 0$ — wtedy albo $f(a) \cdot f(c) < 0$ (miejsce zerowe leży w $[a, c]$), albo $f(b) \cdot f(c) < 0$ (miejsce zerowe leży w $[c, b]$). Dla $f(c) \neq 0$ jeden z tych przypadków musi zachodzić.
+
+W przypadku 2. powtarzamy procedurę dla odpowiedniej połówki. Postępujemy tak długo, aż albo trafimy na miejsce zerowe w środku przedziału (mało prawdopodobne), albo długość przedziału zrobi się mniejsza niż ustalona z góry tolerancja `abs_tol`.
+
+Dokończ definicję funkcji `find_root(f, a, b, abs_tol=1e-6)` w module `find_root.py`. Wykonaj testy zawarte w docstringu.
+
+```python
+def find_root(f, a, b, abs_tol=1e-6):
+    """
+    Znajduje miejsce zerowe funkcji w zadanym przedziale metodą bisekcji.
+
+    Parametry:
+    f : funkcja, dla której szukamy miejsca zerowego.
+    a : float, dolne ograniczenie przedziału.
+    b : float, górne ograniczenie przedziału.
+    abs_tol : float, opcjonalnie, tolerancja bezwzględna. Domyślnie 1e-6.
+
+    Zwraca:
+    float: przybliżone miejsce zerowe funkcji w zadanym przedziale.
+
+    Zgłasza:
+    ValueError: gdy f(a) i f(b) mają ten sam znak.
+
+    Przykłady:
+    >>> from math import cos, pi, isclose
+    >>> abs_tol = 1e-6
+
+    >>> z = find_root(lambda x: x, -100, 200)
+    >>> isclose(z, 0, abs_tol=abs_tol)
+    True
+
+    >>> z = find_root(cos, 0, pi)
+    >>> isclose(z, pi / 2, abs_tol=abs_tol)
+    True
+
+    >>> z = find_root(lambda x: x**3 - x - 2, 0, 2, abs_tol=1e-11)
+    >>> isclose(z, 1.52137970680457, abs_tol=1e-11)
+    True
+
+    >>> find_root(lambda x: 1 + x**2, 1, 100)
+    Traceback (most recent call last):
+        ...
+    ValueError: f(a) i f(b) mają ten sam znak — nie można zagwarantować miejsca zerowego w przedziale.
+    """
+    pass
+```
+
+***
+
+## Sortowanie przez scalanie
+
+::: {.callout-warning}
+## Zadanie zaawansowane
+[Sortowanie przez scalanie](https://pl.wikipedia.org/wiki/Sortowanie_przez_scalanie) jest najtrudniejszym zadaniem w tym labie. Łączy rekurencję, indeksowanie podtablic i operowanie na liście „w miejscu". 
+:::
+
+Sortowanie przez scalanie też realizuje schemat dziel-i-zwyciężaj. Dzieli listę na połówki, sortuje każdą z osobna, a następnie scala obie posortowane połówki w wynik:
+
+```
+mergesort(A, p, r)
+    # A: lista do posortowania
+    # p: indeks początkowy podtablicy (włącznie)
+    # r: indeks końcowy podtablicy (wyłącznie)
+
+    jeśli r jest None:
+        zdefiniuj r jako długość A
+
+    jeśli p < r - 1:                       # podtablica ma co najmniej 2 elementy
+        q = (p + r) // 2                   # indeks środkowy
+
+        mergesort(A, p, q)                 # posortuj lewą połówkę
+        mergesort(A, q, r)                 # posortuj prawą połówkę
+
+        merge(A, p, q, r)                  # scal obie posortowane połówki
+```
+
+Funkcja scalająca `merge(A, p, q, r)` modyfikuje listę `A` w przedziale `[p, r)`, zakładając, że dwa kawałki `A[p:q]` i `A[q:r]` są już posortowane:
+
+```
+merge(A, p, q, r)
+    # A: lista
+    # p: początek (włącznie)
+    # q: początek drugiej połówki (włącznie)
+    # r: koniec (wyłącznie)
+
+    # opcjonalnie: kontrola indeksów
+    jeśli NIE (0 <= p <= q <= r <= długość(A)):
+        zgłoś błąd "Incorrect indices"
+
+    L = A[p:q]                  # kopia lewej połówki
+    R = A[q:r]                  # kopia prawej połówki
+
+    # dopisz wartownika (dodatnią nieskończoność) do każdej kopii
+    L.append(+∞)
+    R.append(+∞)
+
+    i = 0                       # indeks w L
+    j = 0                       # indeks w R
+    k = p                       # indeks w A
+
+    dopóki k < r:
+        jeśli L[i] <= R[j]:
+            A[k] = L[i]
+            i = i + 1
+        w przeciwnym przypadku:
+            A[k] = R[j]
+            j = j + 1
+        k = k + 1
+```
+
+::: {.callout-tip}
+## Wartownik a typy w Pythonie
+Wartownik (ang. *sentinel*) to sztucznie dopisany na koniec element gwarantujący, że żadna ze stron nigdy się „nie skończy". Bez wartownika musielibyśmy w każdej iteracji sprawdzać, czy `i` i `j` nie wyszły poza koniec swojej połówki — wartownik tę kontrolę wyłącza, bo `+∞` jest większe od każdej rzeczywistej wartości w `A`.
+
+W pseudokodzie `+∞` to po prostu wartość większa od każdej innej. Pythonowym odpowiednikiem wydaje się `float('inf')`:
+
+```python
+>>> float('inf') > 5
+True
+>>> float('inf') > 'a'
+Traceback (most recent call last):
+    ...
+TypeError: '>' not supported between instances of 'float' and 'str'
+```
+
+Tymczasem testy do tego zadania sortują też napisy. To pierwsza z trudności tego zadania: pseudokod opisuje **ideę**, a Twoim zadaniem jest przełożyć ją na kod, który zachowa polimorfizm sortowania. Zastanów się, *po co* wartownik tu jest i czy nie da się tej samej idei zrealizować inaczej.
+:::
+
+::: {.callout-note}
+## „W miejscu" — uwaga porządkowa
+Funkcje `merge` i `mergesort` modyfikują listę `A` przekazaną jako argument — wynik trafia bezpośrednio do `A`, bez zwracanej nowej listy. Niemniej `merge` alokuje pomocnicze listy `L` i `R`, więc całe sortowanie używa pamięci pomocniczej rozmiaru $O(n)$. Sortowanie przez scalanie *bez* takiej pamięci pomocniczej jest możliwe, ale znacznie trudniejsze i nie jest tematem tego zadania.
+:::
+
+Napisz moduł `mergesort.py` zawierający funkcje:
+
+- `merge(A, p, q, r)` — scala posortowane fragmenty `A[p:q]` i `A[q:r]` w posortowany fragment `A[p:r]`. Zakładamy `0 <= p <= q <= r <= len(A)`.
+- `mergesort(A, p=0, r=None)` — sortuje `A[p:r]` w miejscu. Wywołanie `mergesort(A)` powinno posortować całą listę.
+
+Testy: [`test_mergesort.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IX/test_mergesort.py).

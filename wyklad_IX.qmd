@@ -1,0 +1,456 @@
+---
+title: "Klasy i obiekty"
+subtitle: "Podstawy programowania (AD) 2"
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+## Wprowadzenie
+
+W laboratorium VI zaimplementowaliśmy żółwia LOGO. Stan żółwia był słownikiem o kluczach `position`, `azimuth`, `name`, a operacje były funkcjami przyjmującymi taki słownik jako pierwszy argument:
+
+```python
+forward(turtle, r)
+left(turtle, a)
+right(turtle, a)
+to_csv(*turtles, filename="...")
+```
+
+Takie podejście działa, ale ma kilka słabych stron, które będziemy chcieli wyeliminować w tym wykładzie.
+
+Po pierwsze, słownik nie wymusza, żeby przekazany do funkcji obiekt rzeczywiście był żółwiem. Każdy słownik z odpowiednimi kluczami przejdzie. Funkcja `forward` nie sprawdza, czy `turtle["position"]` jest niepustą listą; jeżeli ktoś poda słownik bez tego klucza, dostanie `KeyError` z głębi funkcji. Niezmienniki (zawsze niepuste `position`, `azimuth` jako liczba, itd.) trzeba pamiętać samemu.
+
+Po drugie, dane i operacje są rozdzielone. Żółw to słownik, a `forward` to funkcja gdzieś osobno. Jeżeli chcesz przekazać żółwia do innej części programu, musisz oddzielnie zatroszczyć się o to, żeby tam była dostępna funkcja `forward`. Lista w Pythonie tak nie działa — kiedy dostajesz listę, dostajesz razem z nią `.append`, `.pop`, `.sort`. Nie da się dostać listy bez tych operacji.
+
+Po trzecie, typ żółwia nie jest jawnie reprezentowany. Z punktu widzenia Pythona każdy żółw jest po prostu słownikiem; nie ma sposobu, żeby zapytać „czy ten obiekt jest żółwiem?" inaczej niż przez sprawdzanie obecności kluczy.
+
+Programowanie obiektowe rozwiązuje wszystkie trzy problemy naraz. Definiujemy nowy typ — w Pythonie nazywamy go **klasą** — który opisuje równocześnie strukturę danych żółwia i operacje, jakie można na żółwiu wykonać. Z tej klasy będziemy następnie produkować żółwie, mając gwarancję, że każdy z nich od razu po utworzeniu jest poprawnie zainicjalizowany i ma dostęp do wszystkich operacji przez notację z kropką: `t.forward(r)` zamiast `forward(t, r)`.
+
+Pokażemy teraz składnię klas w Pythonie, używając do tego celu żółwia z laboratorium VI.
+
+***
+
+## Żółw nieobiektowy — przypomnienie
+
+Kod z laboratorium VI w skrócie:
+
+```python
+from math import cos, sin, radians
+
+
+def create_turtle(x=0, y=0, azimuth=0, name=""):
+    return {
+        "position": [(x, y)],
+        "azimuth": azimuth,
+        "name": name,
+    }
+
+
+def left(turtle, a):
+    turtle["azimuth"] += a
+
+
+def right(turtle, a):
+    turtle["azimuth"] -= a
+
+
+def forward(turtle, r):
+    x, y = turtle["position"][-1]
+    rad = radians(turtle["azimuth"])
+    turtle["position"].append((x + r * cos(rad), y + r * sin(rad)))
+```
+
+Tworzenie żółwia i wykonanie kilku ruchów:
+
+```python
+>>> tolek = create_turtle(name="Tolek")
+>>> for _ in range(5):
+...     forward(tolek, 1)
+...     left(tolek, 144)
+>>> tolek["position"][-1]
+(0.0, 3.3306690738754696e-16)
+```
+
+Po pięciu krokach pentagramu Tolek wraca do punktu wyjścia (z dokładnością do błędu numerycznego). Stan żółwia jest słownikiem, operacje są funkcjami, dane i zachowania są rozdzielone. Tę implementację będziemy teraz przekładać na klasę.
+
+***
+
+## Klasy: składnia i puste obiekty
+
+Definicja klasy ma składnię analogiczną do definicji funkcji, tyle że zaczyna się od słowa `class` zamiast `def`. Najprostsza możliwa klasa nie zawiera żadnego kodu:
+
+```python
+class Turtle:
+    pass
+```
+
+Po nazwie klasy jest dwukropek, a kod ciała klasy musi mieć wcięcie. Słowo `pass` to instrukcja pusta — używamy jej tutaj, bo Python wymaga, żeby blok klasy nie był pusty syntaktycznie.
+
+::: {.callout-important}
+## Klasa
+**Klasa** to szablon do produkcji obiektów. Klasa opisuje, jakie atrybuty (dane) i jakie metody (operacje) będą miały utworzone z niej obiekty. Klasa sama z siebie nic nie liczy — jedyne co potrafi, to utworzyć nowy obiekt zwany **instancją** klasy.
+:::
+
+Klasa tworzy instancję, gdy zastosujemy do niej operator wywołania, czyli nawiasy okrągłe:
+
+```python
+>>> tolek = Turtle()
+>>> franklin = Turtle()
+>>> tolek
+<__main__.Turtle object at 0x7f8a1c0d4e50>
+>>> franklin
+<__main__.Turtle object at 0x7f8a1c0d4f10>
+```
+
+Domyślny napis dla obiektu jest mało informacyjny — pokazuje nazwę klasy i adres w pamięci. W kolejnym wykładzie zobaczymy, jak go dostosować.
+
+::: {.callout-tip collapse="true"}
+## Sprawdź się: tożsamość instancji
+Co zwróci wyrażenie `tolek is franklin` po tym, jak utworzyliśmy obie instancje?
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`False`. `tolek` i `franklin` to dwa odrębne obiekty utworzone przez klasę, mają różne tożsamości — operator `is` to sprawdza.
+:::
+:::
+
+Pusta klasa `Turtle` jest naprawdę pusta. Jej instancje nie potrafią nic robić, bo nie zdefiniowaliśmy żadnych operacji. Można im jednak ręcznie dopinać atrybuty:
+
+```python
+>>> tolek.position = [(0, 0)]
+>>> tolek.azimuth = 0
+>>> tolek.name = "Tolek"
+>>> tolek.position
+[(0, 0)]
+```
+
+Atrybut to po prostu nazwa wewnątrz obiektu, do której można przypisać wartość. Składnia z kropką pełni tu rolę analogiczną do indeksowania słownika kluczem — z tą różnicą, że klucz słownika może być dowolnym obiektem hashowalnym, a atrybut musi być poprawnym identyfikatorem Pythona.
+
+Moglibyśmy teraz zmodyfikować funkcje `forward`, `left`, `right` z laboratorium VI tak, żeby zamiast `turtle["azimuth"]` używały `turtle.azimuth`. Byłaby to drobna kosmetyczna poprawka — dane i operacje nadal byłyby rozdzielone. Zamiast tego pójdziemy o krok dalej i wciągniemy operacje *do wnętrza klasy*.
+
+***
+
+## Pierwsza metoda i mechanizm `self`
+
+Funkcja zdefiniowana wewnątrz klasy nazywa się **metodą**. Składniowo metoda to po prostu funkcja zapisana w bloku `class`:
+
+```python
+class Turtle:
+
+    def left(self, a):
+        self.azimuth += a
+```
+
+Zwróć uwagę na pierwszy parametr metody. W wersji nieobiektowej pisaliśmy:
+
+```python
+def left(turtle, a):
+    turtle["azimuth"] += a
+```
+
+W wersji obiektowej pierwszy parametr nazywa się `self` i zamiast `turtle["azimuth"]` piszemy `self.azimuth`. Zaraz wyjaśnimy, skąd ta zmiana.
+
+Stwórzmy instancję i ręcznie ustawmy jej atrybut `azimuth`, żeby metoda `left` miała na czym pracować:
+
+```python
+>>> tolek = Turtle()
+>>> tolek.azimuth = 0
+>>> tolek.left(30)
+>>> tolek.azimuth
+30
+```
+
+Metoda zadziałała: `tolek.azimuth` zmienił się z `0` na `30`. Ale popatrzmy uważnie na wywołanie. Napisaliśmy `tolek.left(30)`, czyli przekazaliśmy *jeden* argument. Tymczasem definicja metody `left` ma *dwa* parametry: `self` i `a`. Co się stało z `self`?
+
+Odpowiedź: kiedy wywołujemy metodę przez instancję (notacja `instancja.metoda(...)`), Python automatycznie wstawia tę instancję jako pierwszy argument. Czyli `tolek.left(30)` jest wykonywane tak, jakbyśmy napisali:
+
+```python
+>>> Turtle.left(tolek, 30)
+>>> tolek.azimuth
+60
+```
+
+Oba zapisy są równoważne. Pierwszy — `tolek.left(30)` — to standardowy obiektowy styl wywołania. Drugi — `Turtle.left(tolek, 30)` — pokazuje, co Python robi pod spodem. To dlatego pierwszy parametr metody jest instancją: bo Python sam go tam wstawia.
+
+::: {.callout-note}
+## Konwencja `self`
+Pierwszy parametr metody zwyczajowo nazywa się `self`, bo wskazuje na „samego siebie" — instancję, na której metoda została wywołana. Nazwa nie jest wymuszona przez Pythona, ale konwencja jest tak silna, że odstąpienie od niej jest w zasadzie błędem stylu. W naszym kursie zawsze używamy `self`.
+:::
+
+Zobaczmy, co się stanie, jeśli zdefiniujemy w klasie funkcję bez `self`:
+
+```python
+class A:
+
+    def f(x):                # uwaga: bez konwencji `self` — celowo
+        return x ** 2
+```
+
+Wywołanie przez klasę działa — `f` jest tu zwykłą funkcją jednoargumentową:
+
+```python
+>>> A.f(12)
+144
+```
+
+Wywołanie przez instancję jednak nie:
+
+```python
+>>> a = A()
+>>> a.f(12)
+Traceback (most recent call last):
+  ...
+TypeError: f() takes 1 positional argument but 2 were given
+```
+
+Komunikat jest przewrotnie pouczający — Python twierdzi, że podaliśmy *dwa* argumenty, mimo że napisaliśmy tylko jeden. Drugim argumentem jest oczywiście `a` — instancja, którą Python sam wstawił jako pierwszy argument. Funkcja `f` przyjmuje tylko jeden parametr, więc to wywołanie się nie udaje.
+
+Wniosek jest taki, że metoda klasy musi mieć parametr na instancję — i ten parametr nazywamy `self`.
+
+***
+
+## Pełna klasa Turtle
+
+Wiemy już wszystko, czego potrzeba do przepisania całego żółwia z laboratorium VI na klasę. Wszystkie funkcje stają się metodami; każda dostaje `self` jako pierwszy parametr; `turtle["position"]` zamieniamy na `self.position`, `turtle["azimuth"]` na `self.azimuth` i tak dalej.
+
+Dodatkowo dodajemy metodę `set_position`, która ustawia stan początkowy żółwia. Po utworzeniu instancji przez `Turtle()` zawsze będziemy ją wywoływać, żeby pojawiły się atrybuty `position`, `azimuth`, `name`. (W kolejnej sekcji ten ręczny krok zlikwidujemy.)
+
+```python
+from math import cos, sin, radians
+
+
+class Turtle:
+
+    def set_position(self, x=0, y=0, azimuth=0, name=""):
+        self.position = [(x, y)]
+        self.azimuth = azimuth
+        self.name = name
+
+    def left(self, a):
+        self.azimuth += a
+
+    def right(self, a):
+        self.azimuth -= a
+
+    def forward(self, r):
+        x, y = self.position[-1]
+        rad = radians(self.azimuth)
+        self.position.append((x + r * cos(rad), y + r * sin(rad)))
+```
+
+Zatrzymaj się na chwilę i porównaj ten kod z wersją nieobiektową z laboratorium VI. Różnice są kosmetyczne: `def` w klasie zamiast na zewnątrz, `self` zamiast `turtle`, kropka zamiast indeksu słownikowego. Logika jest dokładnie ta sama.
+
+Sprawdźmy pentagram:
+
+```python
+>>> tolek = Turtle()
+>>> tolek.set_position(name="Tolek")
+>>> for _ in range(5):
+...     tolek.forward(1)
+...     tolek.left(144)
+>>> tolek.position[-1]
+(0.0, 3.3306690738754696e-16)
+```
+
+Identyczny wynik jak w wersji nieobiektowej, ale wywołania są krótsze i jaśniejsze: `tolek.forward(1)` zamiast `forward(tolek, 1)`. Dane i zachowania są ściśle związane: każdy `Turtle` ma od razu metody `forward`, `left`, `right`, `set_position`.
+
+::: {.callout-tip collapse="true"}
+## Sprawdź się: dlaczego niektóre operacje nie są metodami?
+Zdefiniujmy procedurę rysowania spirali:
+
+```python
+def spiral(turtle, side, angle, n_sides):
+    for _ in range(n_sides):
+        turtle.forward(side)
+        turtle.right(angle)
+        side += 1
+```
+
+`spiral` przyjmuje żółwia i operuje wyłącznie na nim. Dlaczego nie zrobiliśmy z `spiral` metody klasy `Turtle`?
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Granica między „operacjami żółwia" a „programami używającymi żółwia" jest umowna, ale praktyczna zasada jest taka: do klasy wciągamy operacje **pierwotne**, które definiują, *czym żółw jest* — `forward`, `left`, `right`. Programy zbudowane z tych pierwotnych operacji (spirale, wielokąty, błądzenie losowe) zostawiamy na zewnątrz, bo jest ich nieskończenie wiele i każdy ma swoje wymagania. Gdyby `spiral` była metodą, klasa szybko by spuchła i straciła czytelność.
+:::
+:::
+
+Procedura `spiral` w akcji:
+
+```python
+>>> franklin = Turtle()
+>>> franklin.set_position(name="Franklin")
+>>> spiral(franklin, side=1, angle=117, n_sides=100)
+>>> franklin.position[-1]
+(50.31223759702604, -31.252840195143236)
+```
+
+***
+
+## Metoda `__init__`
+
+Każde użycie klasy `Turtle` wymaga teraz dwóch kroków: `Turtle()` tworzy gołą instancję, a potem wywołanie `set_position` ustawia atrybuty. Jeśli użytkownik zapomni o drugim kroku, pierwsze wywołanie `forward` skończy się błędem `AttributeError: 'Turtle' object has no attribute 'position'`.
+
+Inicjalizacja jest tak częstym wzorcem, że Python ma na nią dedykowany mechanizm — **metodę specjalną** `__init__`.
+
+::: {.callout-important}
+## Metody specjalne
+**Metoda specjalna** to zwykła metoda, którą Python wywołuje *niejawnie* przy wystąpieniu określonej składni. Nazwy metod specjalnych są zawsze otoczone podwójnymi podkreślnikami: `__init__`, `__repr__`, `__eq__`, itd. — stąd potoczna nazwa **dunder methods** (od *double underscore*).
+:::
+
+Mechanizm jest taki: kiedy piszesz `Turtle(...)`, Python tworzy nową, gołą instancję, a następnie wywołuje na niej `__init__(...)` z argumentami przekazanymi w nawiasach. Jeśli klasa ma zdefiniowaną `__init__`, atrybuty pojawią się automatycznie zaraz po utworzeniu obiektu — bez osobnego wywołania `set_position`.
+
+Zastępujemy `set_position` przez `__init__`:
+
+```python
+from math import cos, sin, radians
+
+
+class Turtle:
+    """Żółw LOGO.
+
+    Atrybuty:
+        position : list[tuple[float, float]] — historia położeń, ostatni element to bieżące położenie.
+        azimuth  : float — kąt (w stopniach) między kierunkiem żółwia a dodatnią osią x.
+                          Dodatni obrót jest przeciwny do ruchu wskazówek zegara.
+        name     : str — nazwa żółwia.
+    """
+
+    def __init__(self, x=0, y=0, azimuth=0, name=""):
+        self.position = [(x, y)]
+        self.azimuth = azimuth
+        self.name = name
+
+    def left(self, a):
+        self.azimuth += a
+
+    def right(self, a):
+        self.azimuth -= a
+
+    def forward(self, r):
+        x, y = self.position[-1]
+        rad = radians(self.azimuth)
+        self.position.append((x + r * cos(rad), y + r * sin(rad)))
+```
+
+Argumenty z wywołania klasy trafiają wprost do `__init__`:
+
+```python
+>>> tolek = Turtle(name="Tolek")
+>>> tolek.position
+[(0, 0)]
+>>> tolek.azimuth
+0
+>>> tolek.name
+'Tolek'
+```
+
+Lub z innymi wartościami startowymi:
+
+```python
+>>> franklin = Turtle(x=5, y=2, azimuth=45, name="Franklin")
+>>> franklin.position
+[(5, 2)]
+>>> franklin.azimuth
+45
+```
+
+::: {.callout-note}
+## Sygnatura `__init__`
+* Pierwszym parametrem jest `self` — gola instancja, którą `__init__` ma zainicjalizować.
+* Pozostałe parametry pochodzą z wywołania klasy: `Turtle(x=5, y=2, ...)` przekłada się na `Turtle.__init__(self=nowa_instancja, x=5, y=2, ...)`.
+* `__init__` nie zwraca wartości innej niż `None`. Próba zwrócenia czegokolwiek innego skończy się `TypeError`.
+:::
+
+Spirala działa teraz w jednej linii inicjalizacji:
+
+```python
+>>> franklin = Turtle(name="Franklin")
+>>> spiral(franklin, side=1, angle=117, n_sides=100)
+>>> len(franklin.position)
+101
+```
+
+A do zwykłego kwadratu wystarczy:
+
+```python
+def square(turtle, side):
+    for _ in range(4):
+        turtle.forward(side)
+        turtle.right(90)
+```
+
+Pięć żółwi rysujących kwadraty z różnych pozycji startowych:
+
+```python
+>>> turtles = [Turtle(x=k, azimuth=45, name=f"T{k}") for k in range(1, 6)]
+>>> for t in turtles:
+...     square(t, side=1)
+>>> [t.position[-1] for t in turtles]
+[(0.9999999999999998, -1.1102230246251565e-16),
+ (1.9999999999999998, -1.1102230246251565e-16),
+ (3.0, -1.1102230246251565e-16),
+ (4.0, -1.1102230246251565e-16),
+ (5.0, -1.1102230246251565e-16)]
+```
+
+***
+
+## Eksport: funkcja `to_csv`
+
+Mamy pięciu żółwi i ich historie położeń. Żeby je obejrzeć w arkuszu kalkulacyjnym albo zwizualizować poza Pythonem, zapisujemy historie do pliku CSV — dokładnie tak, jak w laboratorium VI:
+
+```python
+import csv
+
+
+def to_csv(*turtles, filename):
+    """Zapisuje historie położeń żółwi do pliku CSV o kolumnach x, y, name."""
+    with open(filename, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["x", "y", "name"])
+        for t in turtles:
+            for x, y in t.position:
+                writer.writerow([x, y, t.name])
+```
+
+```python
+>>> to_csv(*turtles, filename="squares.csv")
+```
+
+`to_csv` celowo nie jest metodą klasy `Turtle`. Operuje na *wielu* żółwiach naraz, nie na jednym; nie ma więc naturalnego „self", do którego mogłaby należeć. Z tego samego powodu `spiral` i `square` zostawiliśmy poza klasą — kompozycje i operacje wieloargumentowe to programy *używające* żółwia, nie część jego definicji.
+
+Plik `squares.csv` możesz otworzyć w arkuszu kalkulacyjnym albo zwizualizować w notatniku Jupyter za pomocą `pandas` i `matplotlib`. Sposób został opisany w laboratorium VI.
+
+***
+
+## Podsumowanie
+
+Z tego wykładu wynosimy następujące pojęcia i zasady:
+
+* **Klasa** to szablon do produkcji obiektów. Definiujemy ją instrukcją złożoną `class`. Klasa opisuje, jakie atrybuty i jakie metody będą miały utworzone z niej obiekty.
+* **Instancja** klasy powstaje przez wywołanie klasy operatorem `()`. Każda instancja ma osobną tożsamość.
+* **Atrybut** to nazwa wewnątrz obiektu, do której można przypisać wartość. Dostęp przez kropkę: `tolek.azimuth`.
+* **Metoda** to funkcja zdefiniowana wewnątrz klasy. Pierwszym parametrem metody jest **`self`** — instancja, na której metoda została wywołana. Python wstawia ten argument automatycznie przy wywołaniach przez instancję: `tolek.left(30)` jest tłumaczone na `Turtle.left(tolek, 30)`.
+* **Metoda specjalna** to metoda, którą Python wywołuje niejawnie w odpowiedzi na określoną składnię. Jej nazwa zaczyna się i kończy podwójnym podkreślnikiem.
+* **`__init__`** to metoda specjalna inicjalizująca nowo utworzoną instancję. Wywołuje się ją niejawnie przez `Klasa(...)`. Argumenty z tego wywołania trafiają do `__init__` po `self`.
+
+Konwencje stylu:
+
+* Nazwy klas piszemy w `CamelCase` (`Turtle`, `BankAccount`), nazwy metod i atrybutów w `snake_case` (`set_position`, `azimuth`).
+* Pierwszy parametr metody zawsze nazywamy `self`.
+* Operacje, które w sposób naturalny zmieniają stan jednej instancji, są metodami klasy. Operacje wieloargumentowe i kompozycje (jak `spiral`, `square`, `to_csv`) zostają poza klasą.
+
+Główna myśl wykładu: w programowaniu obiektowym dane i zachowania są związane razem. Żeby dostarczyć komuś żółwia, nie trzeba osobno troszczyć się o to, czy w jego programie są dostępne funkcje `forward`, `left`, `right` — przychodzą one razem z obiektem.
+
+***
+
+## Co dalej
+
+Klasa `Turtle` w obecnej formie ma kilka braków, którymi zajmiemy się na następnym wykładzie:
+
+* Domyślny napis dla obiektu — `<__main__.Turtle object at 0x...>` — jest mało informatywny. Naprawimy to metodą specjalną `__repr__`.
+* Porównanie dwóch żółwi przez `==` sprowadza się do porównania ich tożsamości, nie zawartości. Sterowanie tym zachowaniem to metoda specjalna `__eq__`.
+* Czasem chcemy mieć żółwia z dodatkowymi możliwościami — na przykład rejestrującego prędkość albo rysującego w kolorze. Zamiast pisać nową klasę od zera, skorzystamy z **dziedziczenia**.
+
+Po drodze pokażemy więcej metod specjalnych (`__len__`, `__getitem__`, …) i porozmawiamy o tym, jak Python organizuje hierarchię klas.

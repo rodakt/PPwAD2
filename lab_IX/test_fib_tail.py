@@ -1,7 +1,7 @@
-"""Testy jednostkowe dla funkcji fib_tail z modułu simple_recurrence."""
+"""Testy jednostkowe dla funkcji fib_tail z modułu fib_tail."""
 
 import unittest
-from simple_recurrence import fib_tail
+from fib_tail import fib_tail
 
 
 class TestFibTail(unittest.TestCase):

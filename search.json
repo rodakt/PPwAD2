@@ -191,7 +191,7 @@
     "href": "lab_IX/lab_IX.html#maksimum-rekurencyjnie",
     "title": "Lab IX: Rekurencja",
     "section": "2 Maksimum rekurencyjnie",
-    "text": "2 Maksimum rekurencyjnie\nNapisz moduł simple_recurrence.py zawierający funkcje:\n\nmaximum_rec(seq) — zwraca największy element sekwencji seq. Jeśli seq jest pusta, funkcja zgłasza wyjątek ValueError z komunikatem sekwencja nie może być pusta. Implementacja ma być rekurencyjna i ma generować proces rekurencyjny (bez akumulatora, z pozycją nieogonową).\nmaximum_tail(seq, max_val=None) — to samo zadanie, ale rozwiązane rekurencją ogonową z akumulatorem. Pusta seq przy zewnętrznym wywołaniu (gdy max_val is None) ma zgłaszać ValueError z tym samym komunikatem.\n\n\n\n\n\n\n\nTipDwa znaczenia max_val=None\n\n\n\nW maximum_tail wartość None parametru max_val pełni dwie role: jest sygnałem „to jest wywołanie zewnętrzne, nie ma jeszcze żadnego kandydata na maksimum” oraz wartością domyślną dla wywołania od użytkownika. Przy wywołaniu wewnętrznym (po zjedzeniu części sekwencji) max_val jest już ustawione i — gdy seq zrobi się pusta — należy je zwrócić, nie zgłaszać wyjątku.\n\n\nTesty: test_maximum.py.",
+    "text": "2 Maksimum rekurencyjnie\nNapisz moduł maximum.py zawierający funkcje znajdujące największy element w sekwencji. Obie zgłaszają wyjątek ValueError z komunikatem sekwencja nie może być pusta, gdy zostaną wywołane na pustej sekwencji.\n\nmaximum_rec(seq) — implementacja rekurencyjna generująca proces rekurencyjny (bez akumulatora, z pozycją nieogonową: na wynik wywołania rekurencyjnego czeka jeszcze max(...) lub operacja porównania w instrukcji if).\nmaximum_tail(seq) — implementacja rekurencyjna generująca proces iteracyjny (rekurencja ogonowa z akumulatorem). Akumulator nie powinien wyciekać do publicznej sygnatury — maximum_tail przyjmuje wyłącznie seq, a właściwą pętlę rekurencyjną z akumulatorem zrealizuj w funkcji pomocniczej _maximum_tail(seq, max_val).\n\n\n\n\n\n\n\nTipAkumulator należy do implementacji\n\n\n\nMożna by się obejść bez funkcji pomocniczej, dodając max_val=None do sygnatury maximum_tail i sygnalizując nim brak kandydata na maksimum przy pierwszym wywołaniu. Takie rozwiązanie ma jednak dwie wady. Po pierwsze, parametr implementacyjny wycieka do publicznego interfejsu — użytkownik mógłby wywołać maximum_tail([1, 2, 3], 100) i dostać śmieci bez ostrzeżenia. Po drugie, warunek max_val is None byłby sprawdzany przy każdym wywołaniu rekurencyjnym, mimo że jest prawdziwy tylko raz, na samym początku.\nWariant z funkcją pomocniczą rozdziela te dwie sprawy: zewnętrzna maximum_tail(seq) sprawdza poprawność wejścia i inicjalizuje akumulator pierwszym elementem; wewnętrzna _maximum_tail(seq, max_val) jest czystą rekurencją ogonową bez warunkowych pułapek. To ten sam wzorzec, co suma_naturalnych/sumuj z wykładu.\n\n\nTesty: test_maximum.py.",
     "crumbs": [
       "Laboratoria",
       "Lab IX: Rekurencja"
@@ -202,7 +202,7 @@
     "href": "lab_IX/lab_IX.html#fibonacci-ogonowo",
     "title": "Lab IX: Rekurencja",
     "section": "3 Fibonacci ogonowo",
-    "text": "3 Fibonacci ogonowo\nDopisz do modułu simple_recurrence.py funkcję:\n\nfib_tail(n, a=0, b=1) — zwraca \\(F_n\\), \\(n\\)-ty wyraz ciągu Fibonacciego, zaimplementowana rekurencją ogonową z dwoma akumulatorami a, b.\n\nTo zadanie łączy dwa wątki wykładu: rekurencję ogonową (omówioną na przykładzie sumuj i odlicz) z definicją Fibonacciego (omówioną w wariancie naiwnym i z memoizacją). W przeciwieństwie do naiwnej rekurencji fib(n) z wykładu, fib_tail(n) wykonuje liczbę wywołań liniową względem n.\nTesty: test_fib_tail.py.",
+    "text": "3 Fibonacci ogonowo\nNapisz moduł fib_tail.py zawierający funkcję:\n\nfib_tail(n, a=0, b=1) — zwraca \\(F_n\\), \\(n\\)-ty wyraz ciągu Fibonacciego, zaimplementowana rekurencją ogonową z dwoma akumulatorami a, b.\n\nTo zadanie łączy dwa wątki wykładu: rekurencję ogonową (omówioną na przykładzie sumuj i odlicz) z definicją Fibonacciego (omówioną w wariancie naiwnym i z memoizacją). W przeciwieństwie do naiwnej rekurencji fib(n) z wykładu, fib_tail(n) wykonuje liczbę wywołań liniową względem n.\nTesty: test_fib_tail.py.",
     "crumbs": [
       "Laboratoria",
       "Lab IX: Rekurencja"
@@ -827,7 +827,7 @@
     "href": "index.html#wykłady",
     "title": "Podstawy programowania (AD) 2",
     "section": "2 Wykłady",
-    "text": "2 Wykłady\n\nWykład I: Błędy i wyjątki\nWykład II: Testy jednostkowe\nWykład III: Zmienne. Instrukcja przypisania\nWykład IV: Wypakowywanie obiektów iterowalnych. Parametry i argumenty\nWykład V: Przestrzenie nazw i moduły\nWykład VI: Funkcje jako obiekty. Domknięcia\nWykład VII: Dekoratory\nWykład VIII: Rekurencja",
+    "text": "2 Wykłady\n\nWykład I: Błędy i wyjątki\nWykład II: Testy jednostkowe\nWykład III: Zmienne. Instrukcja przypisania\nWykład IV: Wypakowywanie obiektów iterowalnych. Parametry i argumenty\nWykład V: Przestrzenie nazw i moduły\nWykład VI: Funkcje jako obiekty. Domknięcia\nWykład VII: Dekoratory\nWykład VIII: Rekurencja\nWykład IX: Klasy i obiekty",
     "crumbs": [
       "Strona główna"
     ]

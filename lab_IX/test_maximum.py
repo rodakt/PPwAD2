@@ -1,7 +1,7 @@
-"""Testy jednostkowe dla funkcji maximum_rec i maximum_tail z modułu simple_recurrence."""
+"""Testy jednostkowe dla funkcji maximum_rec i maximum_tail z modułu maximum."""
 
 import unittest
-from simple_recurrence import maximum_rec, maximum_tail
+from maximum import maximum_rec, maximum_tail
 
 
 class TestMaximum(unittest.TestCase):
@@ -38,15 +38,6 @@ class TestMaximum(unittest.TestCase):
         self.assertEqual(maximum_tail(seq), 1)
         with self.assertRaises(ValueError):
             maximum_tail([])
-
-    def test_maximum_tail_maxval(self):
-        """Test dla funkcji maximum_tail() z podanym max_val."""
-        seq = [1, 2, 3, 4, 5]
-        self.assertEqual(maximum_tail(seq, 0), 5)
-        seq = [5, 4, 3, 2, 1]
-        self.assertEqual(maximum_tail(seq, 0), 5)
-        seq = [1, 2, 3, 5, 4]
-        self.assertEqual(maximum_tail(seq, 100), 100)
 
     def test_maximum_tail_isrecursive(self):
         """Test czy funkcja maximum_tail() jest rekurencyjna."""

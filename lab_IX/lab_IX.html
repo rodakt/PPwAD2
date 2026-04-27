@@ -472,10 +472,10 @@ window.Quarto = {
 </section>
 <section id="maksimum-rekurencyjnie" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="maksimum-rekurencyjnie"><span class="header-section-number">2</span> Maksimum rekurencyjnie</h2>
-<p>Napisz moduł <code>simple_recurrence.py</code> zawierający funkcje:</p>
+<p>Napisz moduł <code>maximum.py</code> zawierający funkcje znajdujące największy element w sekwencji. Obie zgłaszają wyjątek <code>ValueError</code> z komunikatem <code>sekwencja nie może być pusta</code>, gdy zostaną wywołane na pustej sekwencji.</p>
 <ul>
-<li><p><code>maximum_rec(seq)</code> — zwraca największy element sekwencji <code>seq</code>. Jeśli <code>seq</code> jest pusta, funkcja zgłasza wyjątek <code>ValueError</code> z komunikatem <code>sekwencja nie może być pusta</code>. Implementacja ma być rekurencyjna i ma generować <strong>proces rekurencyjny</strong> (bez akumulatora, z pozycją nieogonową).</p></li>
-<li><p><code>maximum_tail(seq, max_val=None)</code> — to samo zadanie, ale rozwiązane <strong>rekurencją ogonową</strong> z akumulatorem. Pusta <code>seq</code> przy zewnętrznym wywołaniu (gdy <code>max_val is None</code>) ma zgłaszać <code>ValueError</code> z tym samym komunikatem.</p></li>
+<li><p><code>maximum_rec(seq)</code> — implementacja rekurencyjna generująca <strong>proces rekurencyjny</strong> (bez akumulatora, z pozycją nieogonową: na wynik wywołania rekurencyjnego czeka jeszcze <code>max(...)</code> lub operacja porównania w instrukcji <code>if</code>).</p></li>
+<li><p><code>maximum_tail(seq)</code> — implementacja rekurencyjna generująca <strong>proces iteracyjny</strong> (rekurencja ogonowa z akumulatorem). Akumulator nie powinien wyciekać do publicznej sygnatury — <code>maximum_tail</code> przyjmuje wyłącznie <code>seq</code>, a właściwą pętlę rekurencyjną z akumulatorem zrealizuj w funkcji pomocniczej <code>_maximum_tail(seq, max_val)</code>.</p></li>
 </ul>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -483,11 +483,12 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Dwa znaczenia <code>max_val=None</code>
+<span class="screen-reader-only">Tip</span>Akumulator należy do implementacji
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>W <code>maximum_tail</code> wartość <code>None</code> parametru <code>max_val</code> pełni dwie role: jest sygnałem „to jest wywołanie zewnętrzne, nie ma jeszcze żadnego kandydata na maksimum” oraz wartością domyślną dla wywołania od użytkownika. Przy wywołaniu wewnętrznym (po zjedzeniu części sekwencji) <code>max_val</code> jest już ustawione i — gdy <code>seq</code> zrobi się pusta — należy je zwrócić, nie zgłaszać wyjątku.</p>
+<p>Można by się obejść bez funkcji pomocniczej, dodając <code>max_val=None</code> do sygnatury <code>maximum_tail</code> i sygnalizując nim brak kandydata na maksimum przy pierwszym wywołaniu. Takie rozwiązanie ma jednak dwie wady. Po pierwsze, parametr implementacyjny wycieka do publicznego interfejsu — użytkownik mógłby wywołać <code>maximum_tail([1, 2, 3], 100)</code> i dostać śmieci bez ostrzeżenia. Po drugie, warunek <code>max_val is None</code> byłby sprawdzany przy <em>każdym</em> wywołaniu rekurencyjnym, mimo że jest prawdziwy tylko raz, na samym początku.</p>
+<p>Wariant z funkcją pomocniczą rozdziela te dwie sprawy: zewnętrzna <code>maximum_tail(seq)</code> sprawdza poprawność wejścia i inicjalizuje akumulator pierwszym elementem; wewnętrzna <code>_maximum_tail(seq, max_val)</code> jest czystą rekurencją ogonową bez warunkowych pułapek. To ten sam wzorzec, co <code>suma_naturalnych</code>/<code>sumuj</code> z wykładu.</p>
 </div>
 </div>
 <p>Testy: <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IX/test_maximum.py"><code>test_maximum.py</code></a>.</p>
@@ -495,7 +496,7 @@ window.Quarto = {
 </section>
 <section id="fibonacci-ogonowo" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="fibonacci-ogonowo"><span class="header-section-number">3</span> Fibonacci ogonowo</h2>
-<p>Dopisz do modułu <code>simple_recurrence.py</code> funkcję:</p>
+<p>Napisz moduł <code>fib_tail.py</code> zawierający funkcję:</p>
 <ul>
 <li><code>fib_tail(n, a=0, b=1)</code> — zwraca <span class="math inline">\(F_n\)</span>, <span class="math inline">\(n\)</span>-ty wyraz ciągu Fibonacciego, zaimplementowana rekurencją ogonową z dwoma akumulatorami <code>a</code>, <code>b</code>.</li>
 </ul>

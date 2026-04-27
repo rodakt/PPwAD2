@@ -24,6 +24,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 - [Wykład VI: Funkcje jako obiekty. Domknięcia](wyklad_VI.qmd)
 - [Wykład VII: Dekoratory](wyklad_VII.qmd)
 - [Wykład VIII: Rekurencja](wyklad_VIII.qmd)
+- [Wykład IX: Klasy i obiekty](wyklad_IX.qmd)
 
 ## Laboratoria
 

@@ -87,15 +87,17 @@ f(5)
 
 ## Maksimum rekurencyjnie
 
-Napisz moduł `simple_recurrence.py` zawierający funkcje:
+Napisz moduł `maximum.py` zawierający funkcje znajdujące największy element w sekwencji. Obie zgłaszają wyjątek `ValueError` z komunikatem `sekwencja nie może być pusta`, gdy zostaną wywołane na pustej sekwencji.
 
-- `maximum_rec(seq)` — zwraca największy element sekwencji `seq`. Jeśli `seq` jest pusta, funkcja zgłasza wyjątek `ValueError` z komunikatem `sekwencja nie może być pusta`. Implementacja ma być rekurencyjna i ma generować **proces rekurencyjny** (bez akumulatora, z pozycją nieogonową).
+- `maximum_rec(seq)` — implementacja rekurencyjna generująca **proces rekurencyjny** (bez akumulatora, z pozycją nieogonową: na wynik wywołania rekurencyjnego czeka jeszcze `max(...)` lub operacja porównania w instrukcji `if`).
 
-- `maximum_tail(seq, max_val=None)` — to samo zadanie, ale rozwiązane **rekurencją ogonową** z akumulatorem. Pusta `seq` przy zewnętrznym wywołaniu (gdy `max_val is None`) ma zgłaszać `ValueError` z tym samym komunikatem.
+- `maximum_tail(seq)` — implementacja rekurencyjna generująca **proces iteracyjny** (rekurencja ogonowa z akumulatorem). Akumulator nie powinien wyciekać do publicznej sygnatury — `maximum_tail` przyjmuje wyłącznie `seq`, a właściwą pętlę rekurencyjną z akumulatorem zrealizuj w funkcji pomocniczej `_maximum_tail(seq, max_val)`.
 
 ::: {.callout-tip}
-## Dwa znaczenia `max_val=None`
-W `maximum_tail` wartość `None` parametru `max_val` pełni dwie role: jest sygnałem „to jest wywołanie zewnętrzne, nie ma jeszcze żadnego kandydata na maksimum" oraz wartością domyślną dla wywołania od użytkownika. Przy wywołaniu wewnętrznym (po zjedzeniu części sekwencji) `max_val` jest już ustawione i — gdy `seq` zrobi się pusta — należy je zwrócić, nie zgłaszać wyjątku.
+## Akumulator należy do implementacji
+Można by się obejść bez funkcji pomocniczej, dodając `max_val=None` do sygnatury `maximum_tail` i sygnalizując nim brak kandydata na maksimum przy pierwszym wywołaniu. Takie rozwiązanie ma jednak dwie wady. Po pierwsze, parametr implementacyjny wycieka do publicznego interfejsu — użytkownik mógłby wywołać `maximum_tail([1, 2, 3], 100)` i dostać śmieci bez ostrzeżenia. Po drugie, warunek `max_val is None` byłby sprawdzany przy *każdym* wywołaniu rekurencyjnym, mimo że jest prawdziwy tylko raz, na samym początku.
+
+Wariant z funkcją pomocniczą rozdziela te dwie sprawy: zewnętrzna `maximum_tail(seq)` sprawdza poprawność wejścia i inicjalizuje akumulator pierwszym elementem; wewnętrzna `_maximum_tail(seq, max_val)` jest czystą rekurencją ogonową bez warunkowych pułapek. To ten sam wzorzec, co `suma_naturalnych`/`sumuj` z wykładu.
 :::
 
 Testy: [`test_maximum.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_IX/test_maximum.py).
@@ -104,7 +106,7 @@ Testy: [`test_maximum.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_a
 
 ## Fibonacci ogonowo
 
-Dopisz do modułu `simple_recurrence.py` funkcję:
+Napisz moduł `fib_tail.py` zawierający funkcję:
 
 - `fib_tail(n, a=0, b=1)` — zwraca $F_n$, $n$-ty wyraz ciągu Fibonacciego, zaimplementowana rekurencją ogonową z dwoma akumulatorami `a`, `b`.
 

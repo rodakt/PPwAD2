@@ -46,6 +46,7 @@ website:
           - file: lab_VII/lab_VII.qmd
           - file: lab_VIII/lab_VIII.qmd
           - file: lab_IX/lab_IX.qmd
+          - file: lab_X/lab_X.qmd
 
 format:
   html:

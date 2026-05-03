@@ -37,6 +37,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 - [Laboratorium 7: Funkcje wyższego rzędu. Domknięcia](lab_VII/lab_VII.qmd)
 - [Laboratorium 8: Dekoratory](lab_VIII/lab_VIII.qmd)
 - [Laboratorium 9: Rekurencja](lab_IX/lab_IX.qmd)
+- [Laboratorium 10: Klasy i obiekty](lab_X/lab_X.qmd)
 
 ## Zaliczenie
 

@@ -1,0 +1,440 @@
+---
+title: "Lab X: Klasy i obiekty"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+Te ćwiczenia nawiązują do wykładu o klasach i obiektach. Główne motywy to: definiowanie klasy, metoda `__init__`, atrybuty instancji oraz metody i mechanizm `self`. W dwóch zadaniach (`Wywoływalny Fibonacci`, `Termometr`) sięgniemy także po metody specjalne *poza* `__init__` — `__call__`, `__repr__`, `__str__` — oraz po atrybut klasy. Każde z tych pojęć jest opatrzone krótkim wprowadzeniem w treści zadania; szczegółowe omówienie nastąpi na kolejnym wykładzie. Końcowe zadanie — cztery hetmany — jest zauważalnie obszerniejsze od pozostałych; potraktuj je jako materiał dla chętnych. Poprawność rozwiązań weryfikuj za pomocą dołączonych plików z testami albo doctestów.
+
+## Rozgrzewka: czytanie klas
+
+Dla każdego z poniższych pytań najpierw udziel odpowiedzi samodzielnie, a następnie sprawdź ją w interpreterze.
+
+**1.** Co wypisze poniższy kod?
+
+```python
+class A:
+    pass
+
+x = A()
+y = A()
+print(x is y)
+print(x == y)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Wypisze dwukrotnie `False`. Każde wywołanie `A()` tworzy *nową* instancję, więc `x` i `y` są różnymi obiektami — `x is y` sprawdza tożsamość i daje `False`. Domyślne `==` dla klas zdefiniowanych przez użytkownika sprowadza się do `is`, więc również `x == y` daje `False`. Sterowanie zachowaniem `==` to oddzielny temat (metoda specjalna `__eq__`).
+:::
+
+**2.** Co zwrócą wywołania `A.f(12)` i `a.f(12)`?
+
+```python
+class A:
+    def f(x):
+        return x ** 2
+
+a = A()
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`A.f(12)` zwróci `144`. Wywołanie przez klasę traktuje `f` jak zwykłą jednoargumentową funkcję — `x` przyjmuje wartość `12`.
+
+`a.f(12)` zgłosi `TypeError`. Wywołanie przez instancję wstawia `a` jako pierwszy argument, więc `f` dostaje *dwa* argumenty (`a` i `12`), choć przyjmuje tylko jeden. To jest właśnie powód, dla którego pierwszy parametr metody konwencjonalnie nazywamy `self`.
+:::
+
+**3.** Co wypisze ten kod? Czy `c.value` zmieniło się po wywołaniu `c.bump()`?
+
+```python
+class Counter:
+    def __init__(self):
+        self.value = 0
+
+    def bump(self):
+        value = self.value + 1
+        return value
+
+c = Counter()
+print(c.bump())
+print(c.value)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Wypisze `1`, a potem `0`. Linijka `value = self.value + 1` tworzy *lokalną* zmienną `value` w metodzie `bump` — przypisanie do nazwy bez kropki nie modyfikuje atrybutu instancji. Żeby `c.value` faktycznie się zmieniło, należałoby napisać `self.value = self.value + 1`. To częsty błąd początkujących i dobry powód, by `self` widzieć w głowie zawsze, gdy mamy operować na atrybucie.
+:::
+
+**4.** Czy oba poniższe wyrażenia dają ten sam wynik?
+
+```python
+class Greeter:
+    def __init__(self, name):
+        self.name = name
+
+    def hello(self, who):
+        return f"{self.name} mówi: cześć, {who}!"
+
+g = Greeter("Tolek")
+
+g.hello("Franklin")
+Greeter.hello(g, "Franklin")
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Tak — oba dają `'Tolek mówi: cześć, Franklin!'`. To bezpośrednia ilustracja mechanizmu z wykładu: `g.hello("Franklin")` jest tłumaczone na `Greeter.hello(g, "Franklin")`. Kropka tylko *automatyzuje* przekazanie instancji jako pierwszego argumentu.
+:::
+
+***
+
+## Konto bankowe
+
+Napisz moduł `bank_account.py` zawierający klasę `BankAccount` reprezentującą proste konto bankowe:
+
+```python
+class BankAccount:
+    """Klasa reprezentująca proste konto bankowe.
+
+    >>> acc = BankAccount("Jan Kowalski", 100)
+    >>> acc.get_balance()
+    100
+    >>> acc.deposit(50)
+    >>> acc.get_balance()
+    150
+    >>> acc.withdraw(30)
+    >>> acc.get_balance()
+    120
+    >>> acc.withdraw(200)
+    Traceback (most recent call last):
+        ...
+    ValueError: Niewystarczające środki na koncie
+    >>> acc.deposit(-10)
+    Traceback (most recent call last):
+        ...
+    ValueError: Kwota wpłaty musi być nieujemna
+    >>> acc.withdraw(-5)
+    Traceback (most recent call last):
+        ...
+    ValueError: Kwota wypłaty musi być nieujemna
+    >>> acc.get_balance()
+    120
+    """
+    pass
+```
+
+
+Klasa powinna implementować:
+
+- `__init__(self, owner, balance=0)` — inicjalizuje atrybuty `owner` (właściciel konta) oraz `balance` (saldo początkowe, domyślnie zero).
+- `deposit(self, amount)` — wpłaca `amount` na konto. Jeśli `amount` jest ujemne, metoda zgłasza `ValueError` z komunikatem `Kwota wpłaty musi być nieujemna`.
+- `withdraw(self, amount)` — wypłaca `amount` z konta. Jeśli `amount` jest ujemne, metoda zgłasza `ValueError` z komunikatem `Kwota wypłaty musi być nieujemna`. Jeśli na koncie nie ma wystarczających środków, metoda zgłasza `ValueError` z komunikatem `Niewystarczające środki na koncie`. W przypadku obu błędów stan konta nie zmienia się.
+- `get_balance(self)` — zwraca aktualne saldo.
+
+
+::: {.callout-tip}
+## Sprawdzaj wejście, zanim zmienisz stan
+Metody `deposit` i `withdraw` modyfikują atrybut `self.balance`. Walidację argumentu wykonuj *przed* zmianą stanu — wtedy przy zgłoszeniu wyjątku saldo pozostaje nietknięte, co odpowiada doctestowi: po nieudanej wypłacie 200 saldo nadal wynosi 120.
+:::
+
+***
+
+## Średnia ruchoma
+
+Napisz moduł `moving_average.py` zawierający dwie klasy: `MovingAverage` i `AverageSpeed`.
+
+**`MovingAverage`** przechowuje i aktualizuje średnią arytmetyczną dodawanych wartości. Interfejs:
+
+- atrybuty `total` (suma dodanych wartości) i `count` (liczba dodanych wartości);
+- `__init__(self)` — inicjalizuje `total` i `count` na zero;
+- `add_value(self, value)` — dodaje `value` do bieżącej sumy, inkrementuje licznik i zwraca aktualną średnią.
+
+**`AverageSpeed`** przechowuje i aktualizuje prędkość średnią punktu na podstawie kolejnych odcinków drogi i zużytego na nie czasu. Interfejs:
+
+- atrybuty `distance` (sumaryczna przebyta droga), `time` (sumaryczny czas) i `average_speed` (bieżąca prędkość średnia);
+- `__init__(self)` — inicjalizuje `distance`, `time` i `average_speed` na zero;
+- `add_section(self, distance, time)` — dodaje nowy odcinek, aktualizuje atrybuty i przelicza `average_speed = self.distance / self.time`.
+
+::: {.callout-note}
+## Powtarzający się wzorzec
+Zauważ, że obie klasy są w zasadzie tą samą konstrukcją „prowadź dwie sumy bieżące i zwracaj ich iloraz". Na razie zapisujemy każdą z osobna, świadomie powtarzając schemat. Później wrócimy do tego przykładu i pokażemy, jak takie powtórzenie wyeliminować przez **dziedziczenie** lub **kompozycję**.
+:::
+
+Testy: [`test_moving_average.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_X/test_moving_average.py).
+
+***
+
+## Strumień kwadratów
+
+Napisz moduł `squares.py` zawierający klasę `Squares`. Obiekty tej klasy reprezentują nieskończony ciąg kwadratów kolejnych nieujemnych liczb całkowitych: `0, 1, 4, 9, 16, 25, …`.
+
+Interfejs:
+
+- `__init__(self)` — przygotowuje obiekt do generowania ciągu od początku;
+- `nxt(self)` — zwraca kolejny wyraz ciągu i przesuwa stan obiektu o jeden krok do przodu.
+
+Klasa może mieć dodatkowe atrybuty pomocnicze, jeśli ich potrzebujesz.
+
+```python
+class Squares:
+    """Klasa reprezentująca nieskończony ciąg kwadratów
+    kolejnych nieujemnych liczb całkowitych.
+
+    >>> s = Squares()
+    >>> s.nxt()
+    0
+    >>> s.nxt()
+    1
+    >>> [s.nxt() for _ in range(5)]
+    [4, 9, 16, 25, 36]
+    >>> t = Squares()
+    >>> t.nxt()
+    0
+    >>> s.nxt()
+    49
+    """
+    pass
+```
+
+Ostatnie dwa wywołania pokazują, że każda instancja prowadzi *własny* stan: nowo utworzony `t` zaczyna od zera, podczas gdy `s` kontynuuje swój ciąg.
+
+
+::: {.callout-note}
+## Po co `nxt`, skoro w Pythonie jest `next`?
+Wbudowane `next(it)` woła pod spodem metodę specjalną `__next__` swojego argumentu, a pętla `for x in obj:` korzysta dodatkowo z `__iter__`. Razem nazywamy to *protokołem iteratora*; zajmiemy się nim szczegółowo później. W tym zadaniu chcemy pokazać, że samo *zachowanie* — obiekt ze stanem, który przy każdym żądaniu wydaje kolejną wartość — nie wymaga żadnej magii. Wystarczy zwykła metoda z własną nazwą `nxt` (krótkie od *next*; pełnej nazwy nie używamy, bo `next` jest wbudowane). Pisząc taką klasę ręcznie, zobaczysz dokładnie to samo, co Python robi pod spodem dla swoich iteratorów.
+:::
+
+***
+
+## Wywoływalny Fibonacci
+
+Napisz moduł `fibonacci.py` zawierający klasę `Fib`. Obiekty tej klasy reprezentują nieskończony ciąg Fibonacciego o zadanych wartościach początkowych:
+
+$$
+F_0 = a, \qquad F_1 = b, \qquad F_n = F_{n-1} + F_{n-2} \text{ dla } n \geq 2.
+$$
+
+Interfejs:
+
+- `__init__(self, F0=0, F1=1)` — zapamiętuje wartości początkowe i przygotowuje wewnętrzną pamięć podręczną;
+- `__call__(self, n)` — zwraca $F_n$. Implementacja powinna używać rekurencji z memoizacją: każda raz obliczona wartość ma być zapamiętana w atrybucie instancji i zwracana z pamięci przy kolejnych wywołaniach.
+
+::: {.callout-note}
+## Co to znaczy „wywoływalny obiekt"?
+Operator wywołania `obj(...)` jest sterowany metodą specjalną `__call__` — tak samo jak `Klasa(...)` jest sterowane przez `__init__`. Jeśli w klasie zdefiniujesz `def __call__(self, n): ...`, to wyrażenie `fib(10)` Python tłumaczy na `Fib.__call__(fib, 10)`. To bezpośrednie zastosowanie zasady z wykładu: *metoda specjalna jest wywoływana niejawnie w odpowiedzi na określoną składnię*. Tu składnią są nawiasy okrągłe stosowane do instancji.
+
+Praktyczna zaleta: instancja klasy z `__call__` zachowuje się jak funkcja, ale ma trwały stan. Funkcja `fib` dostępna przez `from functools import lru_cache` też pamięta wyniki, ale na poziomie *jednej* funkcji w module. Tu możemy mieć wiele osobnych obiektów `Fib` — każdy ze swoją pamięcią i własnymi wartościami początkowymi.
+:::
+
+```python
+class Fib:
+    """Klasa reprezentująca nieskończony ciąg Fibonacciego o zadanych
+    wartościach początkowych.
+
+    >>> fib = Fib()
+    >>> fib(0)
+    0
+    >>> fib(1)
+    1
+    >>> fib(10)
+    55
+    >>> fib(50)
+    12586269025
+    >>> fib(100)
+    354224848179261915075
+    >>> fib = Fib()
+    >>> fib(5000) # test sprawdza, czy implementacja jest rekurencyjna
+    Traceback (most recent call last):
+        ...
+    RecursionError: maximum recursion depth exceeded
+    >>> lucas = Fib(F0=2, F1=1)
+    >>> [lucas(n) for n in range(8)]
+    [2, 1, 3, 4, 7, 11, 18, 29]
+    """
+    pass
+```
+
+Drugi przykład to liczby Lucasa — ten sam wzór rekurencyjny, inne wartości początkowe. Każdy `Fib` ma osobną pamięć podręczną, więc obliczenia jednej instancji nie wpływają na drugą.
+
+***
+
+## Termometr
+
+Napisz moduł `temperature.py` zawierający klasę `Temperature`. Instancja tej klasy reprezentuje temperaturę w jednej z trzech skal: Kelwina (`'K'`), Celsjusza (`'C'`) lub Fahrenheita (`'F'`).
+
+Interfejs:
+
+- `__init__(self, value=0, unit="K")` — inicjalizuje atrybuty `value` i `unit`.
+- `__repr__(self)` — zwraca napis postaci `Temperature(value, 'unit')`, taki, że jego wpisanie do interpretera odtwarza obiekt.
+- `__str__(self)` — zwraca napis informujący o temperaturze i jednostce w postaci `'t°C'`, `'t°F'` lub `'t K'` (zwróć uwagę: dla Kelwina jest spacja, dla pozostałych skal nie ma). Symbol `°` uzyskasz sekwencją ucieczkową `\xB0`, jak w `'36.6\xb0C'`.
+- `convert(self, unit)` — `unit` jest jednym z `'K'`, `'C'`, `'F'`. Metoda przelicza temperaturę na wskazaną skalę i aktualizuje atrybuty `self.value` oraz `self.unit`.
+
+W implementacji `convert` skorzystaj z **atrybutu klasy** `CONVERTERS` — słownika, który dwuliterowemu kluczowi `'AB'` przyporządkowuje funkcję przeliczającą temperaturę z jednostki `A` na jednostkę `B`:
+
+```python
+CONVERTERS = {
+    "KK": lambda t: t,
+    "KC": lambda t: t - 273.15,
+    "KF": lambda t: t * 9 / 5 - 459.67,
+    ...
+}
+```
+
+Słownik ma dziewięć kluczy (każda para skal, łącznie z parami trywialnymi `'KK'`, `'CC'`, `'FF'`).
+
+::: {.callout-note}
+## Atrybut klasy
+Atrybut zdefiniowany w bloku `class`, *poza* `__init__`, należy do klasy, nie do instancji. Jest jeden, wspólny dla wszystkich obiektów. `CONVERTERS` to typowy przypadek użycia: wszystkie instancje `Temperature` korzystają z tej samej tabeli konwersji, więc nie ma sensu, żeby każdy obiekt nosił jej własną kopię.
+
+Atrybut klasy odczytujesz tak samo, jak instancyjny — przez kropkę: w metodzie `convert` możesz sięgnąć do niego przez `self.CONVERTERS` albo `Temperature.CONVERTERS`. Oba zapisy dadzą ten sam słownik.
+:::
+
+::: {.callout-note}
+## `__repr__` i `__str__`
+To dwie różne reprezentacje tekstowe obiektu, służące dwóm różnym celom:
+
+* `__repr__(self)` zwraca napis „dla programisty" — najlepiej taki, który po wpisaniu do interpretera odtwarza obiekt. Wywoływany niejawnie przez `repr(obj)` i przy wyświetlaniu obiektu w REPL-u.
+* `__str__(self)` zwraca napis „dla użytkownika" — czytelny, zwięzły, sformatowany. Wywoływany niejawnie przez `str(obj)`, `print(obj)` i przy interpolacji f-stringów: `f"{obj}"`.
+
+Jeśli klasa definiuje tylko `__repr__`, to `str(obj)` używa `__repr__` jako fallbacku. Tu zdefiniujesz oba.
+:::
+
+Testy: [`test_temperature.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_X/test_temperature.py).
+
+***
+
+## Cztery hetmany
+
+::: {.callout-warning}
+## Zadanie zaawansowane
+To zadanie jest zauważalnie obszerniejsze od pozostałych w tym labie — ma siedem metod, parsowanie pól szachownicy, detekcję bicia po liniach, rzędach i obu przekątnych. Łączy materiał z całego labu (klasa, `__init__`, metody, mutacja stanu) z arytmetyką szachownicy. Potraktuj je jako wyzwanie tygodnia, nie jako obowiązkową część labu.
+
+:::
+
+Celem zadania jest napisanie klasy dającej narzędzia do badania [problemu czterech hetmanów](https://pl.wikipedia.org/wiki/Problem_czterech_hetman%C3%B3w). Poniższy kod zawiera nagłówek klasy i nagłówki metod. Łańcuch pod nagłówkiem klasy to *docstring* klasy. Przeczytaj go uważnie, a następnie na jego podstawie dokończ kod.
+
+```python
+class CzteryHetmany:
+    '''Klasa do badania problemu czterech hetmanów:
+
+    https://pl.wikipedia.org/wiki/Problem_czterech_hetman%C3%B3w
+
+    Przykłady:
+
+    Utworzenie obiektu:
+    >>> h4 = CzteryHetmany('a1 c7 e3 g5')
+
+    Wyświetlanie szachownicy:
+    >>> h4.pokaż_szachownicę()
+      ---+---+---+---+---+---+---+---
+    8    |   |   |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+    7    |   | H |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+    6    |   |   |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+    5    |   |   |   |   |   | H |
+      ---+---+---+---+---+---+---+---
+    4    |   |   |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+    3    |   |   |   | H |   |   |
+      ---+---+---+---+---+---+---+---
+    2    |   |   |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+    1  H |   |   |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+       a | b | c | d | e | f | g | h
+
+    Pokaż szachowane pola na szachownicy i zmień literę oznaczającą hetmana:
+    >>> h4.pokaż_szachownicę(szach='*', hetman='Q')
+      ---+---+---+---+---+---+---+---
+    8  * | * | * | * | * |   | * | *
+      ---+---+---+---+---+---+---+---
+    7  * | * | Q | * | * | * | * | *
+      ---+---+---+---+---+---+---+---
+    6  * | * | * | * | * | * | * | *
+      ---+---+---+---+---+---+---+---
+    5  * | * | * | * | * | * | Q | *
+      ---+---+---+---+---+---+---+---
+    4  * |   | * | * | * | * | * | *
+      ---+---+---+---+---+---+---+---
+    3  * | * | * | * | Q | * | * | *
+      ---+---+---+---+---+---+---+---
+    2  * | * | * | * | * | * | * | *
+      ---+---+---+---+---+---+---+---
+    1  Q | * | * | * | * | * | * | *
+      ---+---+---+---+---+---+---+---
+       a | b | c | d | e | f | g | h
+
+    >>> h4.ile_pod_szachem()
+    62
+    >>> h4.ile_poza_szachem()
+    2
+
+    Tu i niżej odpowiednie pola są wyświetlane w porządku rosnącym
+    w tabelce po 8 w rzędzie:
+    >>> h4.które_poza_szachem() # doctest: +NORMALIZE_WHITESPACE
+    b4 f8
+    >>> h4.które_pod_szachem() # doctest: +NORMALIZE_WHITESPACE
+    a1 a2 a3 a4 a5 a6 a7 a8
+    b1 b2 b3 b5 b6 b7 b8 c1
+    c2 c3 c4 c5 c6 c7 c8 d1
+    d2 d3 d4 d5 d6 d7 d8 e1
+    e2 e3 e4 e5 e6 e7 e8 f1
+    f2 f3 f4 f5 f6 f7 g1 g2
+    g3 g4 g5 g6 g7 g8 h1 h2
+    h3 h4 h5 h6 h7 h8
+
+    Przestaw hetmana z e3 na d4:
+    >>> h4.przestaw_hetmana('e3 d4')
+    >>> h4.pokaż_szachownicę()
+      ---+---+---+---+---+---+---+---
+    8    |   |   |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+    7    |   | H |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+    6    |   |   |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+    5    |   |   |   |   |   | H |
+      ---+---+---+---+---+---+---+---
+    4    |   |   | H |   |   |   |
+      ---+---+---+---+---+---+---+---
+    3    |   |   |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+    2    |   |   |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+    1  H |   |   |   |   |   |   |
+      ---+---+---+---+---+---+---+---
+       a | b | c | d | e | f | g | h
+    '''
+
+    def __init__(self, hetmany):
+        pass
+
+    def ile_pod_szachem(self):
+        pass
+
+    def ile_poza_szachem(self):
+        pass
+
+    def które_pod_szachem(self):
+        pass
+
+    def które_poza_szachem(self):
+        pass
+
+    def przestaw_hetmana(self, kod_przestawienia):
+        pass
+
+    def pokaż_szachownicę(self, hetman='H', szach=' '):
+        pass
+```
+
+::: {.callout-tip}
+## Wskazówki
+* Pole `'a1'` rozłóż na kolumnę i rząd: pierwszy znak (`'a'`–`'h'`) i drugi znak (`'1'`–`'8'`). Dla wewnętrznej reprezentacji pól wygodne są pary liczb całkowitych — np. `(0, 0)` dla `'a1'` i `(7, 7)` dla `'h8'`.
+* Hetman bije w czterech kierunkach: po wierszu, po kolumnie i po obu przekątnych. Pola pod szachem to **suma** czterech zbiorów dla każdego hetmana z osobna; pola poza szachem to dopełnienie sumy do całej szachownicy *minus* same hetmany.
+* `pokaż_szachownicę` można podzielić na kilka mniejszych metod pomocniczych (np. budowanie pojedynczego rzędu napisu) — nie wszystko musi być w jednej metodzie.
+:::

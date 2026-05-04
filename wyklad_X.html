@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tomasz Rodak">
+
+<title>Klasy i obiekty II: metody specjalne – Podstawy programowania (AD) 2</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-a91fd2e505097536da9e8d380e199038.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./wyklad_I.html">Wykłady</a></li><li class="breadcrumb-item"><a href="./wyklad_X.html">Klasy i obiekty II: metody specjalne</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Podstawy programowania (AD) 2</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Strona główna</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Wykłady</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Zmienne. Instrukcja przypisania</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wypakowywanie obiektów iterowalnych. Parametry i argumenty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Przestrzenie nazw i moduły</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Funkcje jako obiekty. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rekurencja</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_IX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Klasy i obiekty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_X.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Klasy i obiekty II: metody specjalne</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Laboratoria</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab I: Zadania na rozgrzewkę</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_II/lab_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab II: Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_III/lab_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab III: Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_IV/lab_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IV: Zmienne, aliasy, kopie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_V/lab_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab V: Wypakowywanie i parametry funkcji</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_VI/lab_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VI: Geometria żółwia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_VII/lab_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VII: Funkcje wyższego rzędu. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_VIII/lab_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VIII: Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_IX/lab_IX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IX: Rekurencja</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_X/lab_X.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab X: Klasy i obiekty</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Spis treści</h2>
+   
+  <ul>
+  <li><a href="#wprowadzenie" id="toc-wprowadzenie" class="nav-link active" data-scroll-target="#wprowadzenie"><span class="header-section-number">1</span> Wprowadzenie</a></li>
+  <li><a href="#rozgrzewka-domyślne-zachowania" id="toc-rozgrzewka-domyślne-zachowania" class="nav-link" data-scroll-target="#rozgrzewka-domyślne-zachowania"><span class="header-section-number">2</span> Rozgrzewka: domyślne zachowania</a></li>
+  <li><a href="#metody-specjalne" id="toc-metody-specjalne" class="nav-link" data-scroll-target="#metody-specjalne"><span class="header-section-number">3</span> Metody specjalne</a></li>
+  <li><a href="#repr__-i-__str__" id="toc-repr__-i-__str__" class="nav-link" data-scroll-target="#repr__-i-__str__"><span class="header-section-number">4</span> <code>__repr__</code> i <code>__str__</code></a></li>
+  <li><a href="#call__" id="toc-call__" class="nav-link" data-scroll-target="#call__"><span class="header-section-number">5</span> <code>__call__</code></a>
+  <ul class="collapse">
+  <li><a href="#przykład-różniczkowanie-numeryczne" id="toc-przykład-różniczkowanie-numeryczne" class="nav-link" data-scroll-target="#przykład-różniczkowanie-numeryczne"><span class="header-section-number">5.1</span> Przykład: różniczkowanie numeryczne</a></li>
+  <li><a href="#wartość-bezwzględna-w-zerze" id="toc-wartość-bezwzględna-w-zerze" class="nav-link" data-scroll-target="#wartość-bezwzględna-w-zerze"><span class="header-section-number">5.2</span> Wartość bezwzględna w zerze</a></li>
+  </ul></li>
+  <li><a href="#eq__" id="toc-eq__" class="nav-link" data-scroll-target="#eq__"><span class="header-section-number">6</span> <code>__eq__</code></a></li>
+  <li><a href="#operatory-arytmetyczne-wektor" id="toc-operatory-arytmetyczne-wektor" class="nav-link" data-scroll-target="#operatory-arytmetyczne-wektor"><span class="header-section-number">7</span> Operatory arytmetyczne — <code>Wektor</code></a></li>
+  <li><a href="#sekwencyjność-__len__-i-__getitem__" id="toc-sekwencyjność-__len__-i-__getitem__" class="nav-link" data-scroll-target="#sekwencyjność-__len__-i-__getitem__"><span class="header-section-number">8</span> Sekwencyjność: <code>__len__</code> i <code>__getitem__</code></a></li>
+  <li><a href="#dziedziczenie" id="toc-dziedziczenie" class="nav-link" data-scroll-target="#dziedziczenie"><span class="header-section-number">9</span> Dziedziczenie</a></li>
+  <li><a href="#podsumowanie" id="toc-podsumowanie" class="nav-link" data-scroll-target="#podsumowanie"><span class="header-section-number">10</span> Podsumowanie</a></li>
+  <li><a href="#co-dalej" id="toc-co-dalej" class="nav-link" data-scroll-target="#co-dalej"><span class="header-section-number">11</span> Co dalej</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./wyklad_I.html">Wykłady</a></li><li class="breadcrumb-item"><a href="./wyklad_X.html">Klasy i obiekty II: metody specjalne</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Klasy i obiekty II: metody specjalne</h1>
+<p class="subtitle lead">Podstawy programowania (AD) 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tomasz Rodak </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="wprowadzenie" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="wprowadzenie"><span class="header-section-number">1</span> Wprowadzenie</h2>
+<p>Klasa <code>Turtle</code> z poprzedniego wykładu działa, ale ma trzy widoczne braki:</p>
+<ul>
+<li>domyślny napis dla obiektu — <code>&lt;__main__.Turtle object at 0x...&gt;</code> — niczego nie mówi o stanie żółwia;</li>
+<li>dwa identycznie skonstruowane żółwie nie są równe przez <code>==</code>, mimo że mają te same dane;</li>
+<li>sama instancja nie jest wywoływalna, więc nie da się napisać <code>tolek(5)</code>, gdyby kiedyś okazało się to wygodne.</li>
+</ul>
+<p>Wszystkie trzy braki naprawimy tym samym mechanizmem — <strong>metodami specjalnymi</strong>. Przy okazji zobaczymy jeszcze kilka takich metod (<code>__call__</code>, <code>__add__</code>, <code>__len__</code>, <code>__getitem__</code>) na drugiej i trzeciej klasie przykładowej, a na końcu pokażemy minimalny przykład <strong>dziedziczenia</strong>.</p>
+<hr>
+</section>
+<section id="rozgrzewka-domyślne-zachowania" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="rozgrzewka-domyślne-zachowania"><span class="header-section-number">2</span> Rozgrzewka: domyślne zachowania</h2>
+<p>Dla każdego pytania najpierw odpowiedz samodzielnie, a następnie sprawdź odpowiedź w interpreterze. Zakładamy klasę <code>Turtle</code> z poprzedniego wykładu — z <code>__init__</code>, <code>left</code>, <code>right</code>, <code>forward</code> i bez żadnych metod specjalnych poza <code>__init__</code>.</p>
+<p><strong>1.</strong> Co wyświetli REPL po wpisaniu samej nazwy obiektu?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="op">&gt;&gt;&gt;</span> tolek <span class="op">=</span> Turtle(name<span class="op">=</span><span class="st">"Tolek"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="op">&gt;&gt;&gt;</span> tolek</span>
+<span id="cb1-3"><a href="#cb1-3"></a>???</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Coś w rodzaju <code>&lt;__main__.Turtle object at 0x7f8a1c0d4e50&gt;</code>. To domyślna reprezentacja, którą Python stosuje dla każdego obiektu, gdy klasa nie zdefiniowała innej. Pokazuje nazwę klasy i adres w pamięci — ani jedno, ani drugie nie jest informatywne.</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> Co zwróci to porównanie?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="op">&gt;&gt;&gt;</span> Turtle(name<span class="op">=</span><span class="st">"T"</span>) <span class="op">==</span> Turtle(name<span class="op">=</span><span class="st">"T"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>???</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>False</code>. Mimo że oba żółwie skonstruowano z tymi samymi argumentami, są to dwa różne obiekty o różnych tożsamościach. Domyślne <code>==</code> na obiektach niestandardowych sprowadza się do <code>is</code> — porównuje tożsamości, a nie zawartość.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> Co stanie się po wywołaniu <code>tolek(5)</code>?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">&gt;&gt;&gt;</span> tolek <span class="op">=</span> Turtle(name<span class="op">=</span><span class="st">"Tolek"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="op">&gt;&gt;&gt;</span> tolek(<span class="dv">5</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a>???</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>TypeError: 'Turtle' object is not callable</code>. Operator wywołania <code>()</code> nie wie, co miałby zrobić z instancją <code>Turtle</code>, bo klasa nie zadeklarowała tego zachowania.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="metody-specjalne" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="metody-specjalne"><span class="header-section-number">3</span> Metody specjalne</h2>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Metoda specjalna
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Metoda specjalna</strong> to metoda, której nazwa jest otoczona dwoma podkreślnikami — <code>__init__</code>, <code>__repr__</code>, <code>__eq__</code> i wiele innych. Dwie cechy odróżniają ją od zwykłej metody:</p>
+<ol type="1">
+<li>Python wywołuje ją <strong>niejawnie</strong> w odpowiedzi na określoną składnię (np. <code>repr(x)</code> szuka <code>x.__repr__()</code>, <code>x == y</code> szuka <code>x.__eq__(y)</code>).</li>
+<li>Konwencja precyzyjnie określa, <strong>za co</strong> każda taka metoda odpowiada.</li>
+</ol>
+</div>
+</div>
+<p>Potocznie mówi się o nich <strong>dunder methods</strong> (od <em>double underscore</em>). Pełną listę znajdziesz w dokumentacji Pythona: <a href="https://docs.python.org/3/reference/datamodel.html">Data model</a>.</p>
+<p>Poznaliśmy już jedną metodę specjalną — <code>__init__</code>, wywoływaną automatycznie przez <code>Klasa(...)</code>. W tym wykładzie zobaczymy następne.</p>
+<hr>
+</section>
+<section id="repr__-i-__str__" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="repr__-i-__str__"><span class="header-section-number">4</span> <code>__repr__</code> i <code>__str__</code></h2>
+<p>Pierwszy brak z wprowadzenia naprawimy dwoma metodami. Każda zwraca napis opisujący obiekt, ale w innym celu:</p>
+<ul>
+<li><code>__repr__(self)</code> — <strong>formalna</strong> reprezentacja obiektu, używana m.in. przez REPL i <code>repr(x)</code>. Konwencja: napis powinien być, o ile to możliwe, poprawnym wyrażeniem Pythona, które po wykonaniu odtworzyłoby obiekt.</li>
+<li><code>__str__(self)</code> — <strong>przyjazna</strong> reprezentacja, używana przez <code>print(x)</code> i <code>str(x)</code>. Powinna być wygodna dla człowieka.</li>
+</ul>
+<p>Obie metody nie biorą innych parametrów niż <code>self</code> i obie zwracają napis. Jeśli klasa definiuje tylko <code>__repr__</code>, to <code>print(x)</code> użyje go jako fallbacku.</p>
+<p>Dorzucamy obie metody do <code>Turtle</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="im">from</span> math <span class="im">import</span> cos, sin, radians</span>
+<span id="cb4-2"><a href="#cb4-2"></a></span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="kw">class</span> Turtle:</span>
+<span id="cb4-5"><a href="#cb4-5"></a>    <span class="co">"""Żółw LOGO.</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co">    Atrybuty:</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="co">        position : list[tuple[float, float]] — historia położeń, ostatni element to bieżące położenie.</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="co">        azimuth  : float — kąt (w stopniach) między kierunkiem żółwia a dodatnią osią x.</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="co">        name     : str — nazwa żółwia.</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="co">    """</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a></span>
+<span id="cb4-13"><a href="#cb4-13"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, x<span class="op">=</span><span class="dv">0</span>, y<span class="op">=</span><span class="dv">0</span>, azimuth<span class="op">=</span><span class="dv">0</span>, name<span class="op">=</span><span class="st">""</span>):</span>
+<span id="cb4-14"><a href="#cb4-14"></a>        <span class="va">self</span>.position <span class="op">=</span> [(x, y)]</span>
+<span id="cb4-15"><a href="#cb4-15"></a>        <span class="va">self</span>.azimuth <span class="op">=</span> azimuth</span>
+<span id="cb4-16"><a href="#cb4-16"></a>        <span class="va">self</span>.name <span class="op">=</span> name</span>
+<span id="cb4-17"><a href="#cb4-17"></a></span>
+<span id="cb4-18"><a href="#cb4-18"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):</span>
+<span id="cb4-19"><a href="#cb4-19"></a>        x, y <span class="op">=</span> <span class="va">self</span>.position[<span class="dv">0</span>]</span>
+<span id="cb4-20"><a href="#cb4-20"></a>        <span class="cf">return</span> <span class="ss">f"Turtle(x=</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">, y=</span><span class="sc">{</span>y<span class="sc">}</span><span class="ss">, azimuth=</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>azimuth<span class="sc">}</span><span class="ss">, name=</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>name<span class="sc">!r}</span><span class="ss">)"</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a></span>
+<span id="cb4-22"><a href="#cb4-22"></a>    <span class="kw">def</span> <span class="fu">__str__</span>(<span class="va">self</span>):</span>
+<span id="cb4-23"><a href="#cb4-23"></a>        x, y <span class="op">=</span> <span class="va">self</span>.position[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb4-24"><a href="#cb4-24"></a>        <span class="cf">return</span> <span class="ss">f"</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>name<span class="sc">}</span><span class="ss"> @ (</span><span class="sc">{</span>x<span class="sc">:.2f}</span><span class="ss">, </span><span class="sc">{</span>y<span class="sc">:.2f}</span><span class="ss">), azymut </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>azimuth<span class="sc">}</span><span class="ss">°"</span></span>
+<span id="cb4-25"><a href="#cb4-25"></a></span>
+<span id="cb4-26"><a href="#cb4-26"></a>    <span class="kw">def</span> left(<span class="va">self</span>, a):</span>
+<span id="cb4-27"><a href="#cb4-27"></a>        <span class="va">self</span>.azimuth <span class="op">+=</span> a</span>
+<span id="cb4-28"><a href="#cb4-28"></a></span>
+<span id="cb4-29"><a href="#cb4-29"></a>    <span class="kw">def</span> right(<span class="va">self</span>, a):</span>
+<span id="cb4-30"><a href="#cb4-30"></a>        <span class="va">self</span>.azimuth <span class="op">-=</span> a</span>
+<span id="cb4-31"><a href="#cb4-31"></a></span>
+<span id="cb4-32"><a href="#cb4-32"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, r):</span>
+<span id="cb4-33"><a href="#cb4-33"></a>        x, y <span class="op">=</span> <span class="va">self</span>.position[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb4-34"><a href="#cb4-34"></a>        rad <span class="op">=</span> radians(<span class="va">self</span>.azimuth)</span>
+<span id="cb4-35"><a href="#cb4-35"></a>        <span class="va">self</span>.position.append((x <span class="op">+</span> r <span class="op">*</span> cos(rad), y <span class="op">+</span> r <span class="op">*</span> sin(rad)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Teraz REPL pokazuje sensowny napis:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">&gt;&gt;&gt;</span> tolek <span class="op">=</span> Turtle(name<span class="op">=</span><span class="st">"Tolek"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="op">&gt;&gt;&gt;</span> tolek</span>
+<span id="cb5-3"><a href="#cb5-3"></a>Turtle(x<span class="op">=</span><span class="dv">0</span>, y<span class="op">=</span><span class="dv">0</span>, azimuth<span class="op">=</span><span class="dv">0</span>, name<span class="op">=</span><span class="st">'Tolek'</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(tolek)</span>
+<span id="cb5-5"><a href="#cb5-5"></a>Tolek <span class="op">@</span> (<span class="fl">0.00</span>, <span class="fl">0.00</span>), azymut <span class="dv">0</span>°</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Po kilku ruchach <code>__str__</code> pokazuje <em>bieżące</em> położenie, a <code>__repr__</code> — <strong>początkowe</strong>, takie, jakie zostało użyte do skonstruowania obiektu:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="op">&gt;&gt;&gt;</span> tolek.forward(<span class="dv">3</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="op">&gt;&gt;&gt;</span> tolek.left(<span class="dv">90</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="op">&gt;&gt;&gt;</span> tolek.forward(<span class="dv">4</span>)</span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="op">&gt;&gt;&gt;</span> tolek</span>
+<span id="cb6-5"><a href="#cb6-5"></a>Turtle(x<span class="op">=</span><span class="dv">0</span>, y<span class="op">=</span><span class="dv">0</span>, azimuth<span class="op">=</span><span class="dv">90</span>, name<span class="op">=</span><span class="st">'Tolek'</span>)</span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(tolek)</span>
+<span id="cb6-7"><a href="#cb6-7"></a>Tolek <span class="op">@</span> (<span class="fl">3.00</span>, <span class="fl">4.00</span>), azymut <span class="dv">90</span>°</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Podział pracy między tymi dwiema metodami staje się tu wyraźny. <code>__repr__</code> jest <em>zapisem konstrukcyjnym</em> — formą, z której da się odtworzyć obiekt; <code>__str__</code> jest <em>zapisem stanu</em> — formą wygodną do oglądania.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span><code>!r</code> w f-stringach
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Specyfikator <code>!r</code> w f-stringu wymusza użycie <code>repr</code> zamiast <code>str</code> — dlatego <code>name='Tolek'</code> w wyniku <code>__repr__</code> ma cudzysłowy. Bez <code>!r</code> zobaczylibyśmy <code>name=Tolek</code>, co nie byłoby już poprawnym wyrażeniem Pythona.</p>
+</div>
+</div>
+<p>Drugi przykład, prostszy. Funkcja liniowa <span class="math inline">\(y = ax + b\)</span>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">class</span> FunkcjaLiniowa:</span>
+<span id="cb7-2"><a href="#cb7-2"></a>    <span class="co">"""Funkcja liniowa y = a*x + b."""</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a></span>
+<span id="cb7-4"><a href="#cb7-4"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, a, b):</span>
+<span id="cb7-5"><a href="#cb7-5"></a>        <span class="va">self</span>.a <span class="op">=</span> a</span>
+<span id="cb7-6"><a href="#cb7-6"></a>        <span class="va">self</span>.b <span class="op">=</span> b</span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):</span>
+<span id="cb7-9"><a href="#cb7-9"></a>        <span class="cf">return</span> <span class="ss">f"FunkcjaLiniowa(</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>a<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>b<span class="sc">}</span><span class="ss">)"</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a>    <span class="kw">def</span> <span class="fu">__str__</span>(<span class="va">self</span>):</span>
+<span id="cb7-12"><a href="#cb7-12"></a>        <span class="cf">if</span> <span class="va">self</span>.b <span class="op">&gt;=</span> <span class="dv">0</span>:</span>
+<span id="cb7-13"><a href="#cb7-13"></a>            <span class="cf">return</span> <span class="ss">f"y = </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>a<span class="sc">}</span><span class="ss">*x + </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>b<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a>        <span class="cf">return</span> <span class="ss">f"y = </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>a<span class="sc">}</span><span class="ss">*x - </span><span class="sc">{</span><span class="op">-</span><span class="va">self</span><span class="sc">.</span>b<span class="sc">}</span><span class="ss">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">&gt;&gt;&gt;</span> f <span class="op">=</span> FunkcjaLiniowa(<span class="dv">2</span>, <span class="op">-</span><span class="dv">3</span>)</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="op">&gt;&gt;&gt;</span> f</span>
+<span id="cb8-3"><a href="#cb8-3"></a>FunkcjaLiniowa(<span class="dv">2</span>, <span class="op">-</span><span class="dv">3</span>)</span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(f)</span>
+<span id="cb8-5"><a href="#cb8-5"></a>y <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>x <span class="op">-</span> <span class="dv">3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Klasy biblioteczne stosują tę samą konwencję. Spójrz na obiekt daty:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> datetime</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="op">&gt;&gt;&gt;</span> dzisiaj <span class="op">=</span> datetime.date(<span class="dv">2026</span>, <span class="dv">5</span>, <span class="dv">3</span>)</span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="op">&gt;&gt;&gt;</span> dzisiaj</span>
+<span id="cb9-4"><a href="#cb9-4"></a>datetime.date(<span class="dv">2026</span>, <span class="dv">5</span>, <span class="dv">3</span>)</span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(dzisiaj)</span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="dv">2026</span><span class="op">-</span><span class="dv">0</span><span class="er">5</span><span class="op">-</span><span class="dv">0</span><span class="er">3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>repr</code> daje wyrażenie konstruujące obiekt; <code>str</code> daje formę przyjazną dla człowieka, zgodną z normą ISO 8601.</p>
+<hr>
+</section>
+<section id="call__" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="call__"><span class="header-section-number">5</span> <code>__call__</code></h2>
+<p>Trzeci brak z wprowadzenia — niewywoływalność instancji — naprawia metoda <code>__call__</code>. Operator wywołania <code>()</code> na obiekcie szuka tej metody i, jeśli ją znajdzie, wywołuje:</p>
+<pre><code>x(args)   &lt;=&gt;   x.__call__(args)</code></pre>
+<p>Dodajemy <code>__call__</code> do <code>FunkcjaLiniowa</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">class</span> FunkcjaLiniowa:</span>
+<span id="cb11-2"><a href="#cb11-2"></a>    <span class="co">"""Funkcja liniowa y = a*x + b."""</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a></span>
+<span id="cb11-4"><a href="#cb11-4"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, a, b):</span>
+<span id="cb11-5"><a href="#cb11-5"></a>        <span class="va">self</span>.a <span class="op">=</span> a</span>
+<span id="cb11-6"><a href="#cb11-6"></a>        <span class="va">self</span>.b <span class="op">=</span> b</span>
+<span id="cb11-7"><a href="#cb11-7"></a></span>
+<span id="cb11-8"><a href="#cb11-8"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):</span>
+<span id="cb11-9"><a href="#cb11-9"></a>        <span class="cf">return</span> <span class="ss">f"FunkcjaLiniowa(</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>a<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>b<span class="sc">}</span><span class="ss">)"</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a></span>
+<span id="cb11-11"><a href="#cb11-11"></a>    <span class="kw">def</span> <span class="fu">__str__</span>(<span class="va">self</span>):</span>
+<span id="cb11-12"><a href="#cb11-12"></a>        <span class="cf">if</span> <span class="va">self</span>.b <span class="op">&gt;=</span> <span class="dv">0</span>:</span>
+<span id="cb11-13"><a href="#cb11-13"></a>            <span class="cf">return</span> <span class="ss">f"y = </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>a<span class="sc">}</span><span class="ss">*x + </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>b<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb11-14"><a href="#cb11-14"></a>        <span class="cf">return</span> <span class="ss">f"y = </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>a<span class="sc">}</span><span class="ss">*x - </span><span class="sc">{</span><span class="op">-</span><span class="va">self</span><span class="sc">.</span>b<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb11-15"><a href="#cb11-15"></a></span>
+<span id="cb11-16"><a href="#cb11-16"></a>    <span class="kw">def</span> <span class="fu">__call__</span>(<span class="va">self</span>, x):</span>
+<span id="cb11-17"><a href="#cb11-17"></a>        <span class="cf">return</span> <span class="va">self</span>.a <span class="op">*</span> x <span class="op">+</span> <span class="va">self</span>.b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="op">&gt;&gt;&gt;</span> f <span class="op">=</span> FunkcjaLiniowa(<span class="dv">2</span>, <span class="op">-</span><span class="dv">3</span>)</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="op">&gt;&gt;&gt;</span> f(<span class="dv">5</span>)</span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="dv">7</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="op">&gt;&gt;&gt;</span> f(<span class="dv">0</span>)</span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="op">-</span><span class="dv">3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Funkcja <code>callable</code> (wbudowana) sprawdza, czy obiekt jest wywoływalny:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">callable</span>(f)</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="va">True</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">callable</span>(<span class="dv">42</span>)</span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="va">False</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Kategorie obiektów wywoływalnych
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Po dodaniu <code>__call__</code> do listy znamy już niemal wszystkie kategorie obiektów wywoływalnych w Pythonie:</p>
+<ul>
+<li>funkcje wbudowane, np. <code>len</code>;</li>
+<li>funkcje zdefiniowane przez użytkownika (<code>def</code>, <code>lambda</code>);</li>
+<li>metody wbudowane, np. <code>"abc".upper</code>;</li>
+<li>klasy (wywołanie klasy tworzy instancję);</li>
+<li>metody zdefiniowane przez użytkownika;</li>
+<li>obiekty posiadające metodę <code>__call__</code>.</li>
+</ul>
+</div>
+</div>
+<section id="przykład-różniczkowanie-numeryczne" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="przykład-różniczkowanie-numeryczne"><span class="header-section-number">5.1</span> Przykład: różniczkowanie numeryczne</h3>
+<p>Pochodna funkcji <span class="math inline">\(f\colon (a, b) \to \mathbb{R}\)</span> w punkcie <span class="math inline">\(x_0 \in (a, b)\)</span> to granica ilorazu różnicowego:</p>
+<p><span class="math display">\[
+f'(x_0) = \lim_{h \to 0} \frac{f(x_0 + h) - f(x_0)}{h}.
+\]</span></p>
+<p>Numerycznie zamiast obliczać granicę, bierzemy iloraz dla konkretnego, dostatecznie małego <code>h</code>. Klasa <code>Pochodna</code> produkuje obiekt wywoływalny, który dla zadanego <code>x</code> zwraca to przybliżenie:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">class</span> Pochodna:</span>
+<span id="cb14-2"><a href="#cb14-2"></a>    <span class="co">"""Numeryczne przybliżenie pochodnej funkcji f.</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="co">    Atrybuty:</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="co">        f : obiekt wywoływalny zwracający liczby — różniczkowana funkcja.</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="co">        h : float — krok ilorazu różnicowego, domyślnie 1e-7.</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="co">    """</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a></span>
+<span id="cb14-9"><a href="#cb14-9"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, f, h<span class="op">=</span><span class="fl">1e-7</span>):</span>
+<span id="cb14-10"><a href="#cb14-10"></a>        <span class="va">self</span>.f <span class="op">=</span> f</span>
+<span id="cb14-11"><a href="#cb14-11"></a>        <span class="va">self</span>.h <span class="op">=</span> h</span>
+<span id="cb14-12"><a href="#cb14-12"></a></span>
+<span id="cb14-13"><a href="#cb14-13"></a>    <span class="kw">def</span> <span class="fu">__call__</span>(<span class="va">self</span>, x):</span>
+<span id="cb14-14"><a href="#cb14-14"></a>        <span class="cf">return</span> (<span class="va">self</span>.f(x <span class="op">+</span> <span class="va">self</span>.h) <span class="op">-</span> <span class="va">self</span>.f(x)) <span class="op">/</span> <span class="va">self</span>.h</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Sprawdzamy na funkcji liniowej — pochodna <span class="math inline">\(f(x) = 2x + 3\)</span> powinna być stale równa 2:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a><span class="op">&gt;&gt;&gt;</span> f <span class="op">=</span> FunkcjaLiniowa(<span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="op">&gt;&gt;&gt;</span> df <span class="op">=</span> Pochodna(f)</span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">round</span>(df(<span class="dv">0</span>), <span class="dv">5</span>)</span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="fl">2.0</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">round</span>(df(<span class="dv">100</span>), <span class="dv">5</span>)</span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="fl">2.0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zauważ, że <code>Pochodna(f)</code> przyjmuje <code>f</code> — instancję <code>FunkcjaLiniowa</code> — i traktuje ją jak zwykłą funkcję. Można tak zrobić właśnie dlatego, że <code>FunkcjaLiniowa</code> ma <code>__call__</code>.</p>
+<p>Funkcja kwadratowa — pochodna <span class="math inline">\(x^2\)</span> to <span class="math inline">\(2x\)</span>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> kwadratowa(x):</span>
+<span id="cb16-2"><a href="#cb16-2"></a>...     <span class="cf">return</span> x <span class="op">*</span> x</span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="op">&gt;&gt;&gt;</span> dkwadratowa <span class="op">=</span> Pochodna(kwadratowa)</span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="op">-</span><span class="dv">3</span>, <span class="dv">4</span>):</span>
+<span id="cb16-5"><a href="#cb16-5"></a>...     <span class="bu">print</span>(<span class="ss">f"x = </span><span class="sc">{</span>x<span class="sc">:&gt;2}</span><span class="ss">, 2*x = </span><span class="sc">{</span><span class="dv">2</span><span class="op">*</span>x<span class="sc">:&gt;3}</span><span class="ss">, dkwadratowa(x) = </span><span class="sc">{</span><span class="bu">round</span>(dkwadratowa(x), <span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb16-6"><a href="#cb16-6"></a>x <span class="op">=</span> <span class="op">-</span><span class="dv">3</span>, <span class="dv">2</span><span class="op">*</span>x <span class="op">=</span>  <span class="op">-</span><span class="dv">6</span>, dkwadratowa(x) <span class="op">=</span> <span class="op">-</span><span class="fl">6.0</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a>x <span class="op">=</span> <span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span><span class="op">*</span>x <span class="op">=</span>  <span class="op">-</span><span class="dv">4</span>, dkwadratowa(x) <span class="op">=</span> <span class="op">-</span><span class="fl">4.0</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a>x <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span><span class="op">*</span>x <span class="op">=</span>  <span class="op">-</span><span class="dv">2</span>, dkwadratowa(x) <span class="op">=</span> <span class="op">-</span><span class="fl">2.0</span></span>
+<span id="cb16-9"><a href="#cb16-9"></a>x <span class="op">=</span>  <span class="dv">0</span>, <span class="dv">2</span><span class="op">*</span>x <span class="op">=</span>   <span class="dv">0</span>, dkwadratowa(x) <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a>x <span class="op">=</span>  <span class="dv">1</span>, <span class="dv">2</span><span class="op">*</span>x <span class="op">=</span>   <span class="dv">2</span>, dkwadratowa(x) <span class="op">=</span> <span class="fl">2.0</span></span>
+<span id="cb16-11"><a href="#cb16-11"></a>x <span class="op">=</span>  <span class="dv">2</span>, <span class="dv">2</span><span class="op">*</span>x <span class="op">=</span>   <span class="dv">4</span>, dkwadratowa(x) <span class="op">=</span> <span class="fl">4.0</span></span>
+<span id="cb16-12"><a href="#cb16-12"></a>x <span class="op">=</span>  <span class="dv">3</span>, <span class="dv">2</span><span class="op">*</span>x <span class="op">=</span>   <span class="dv">6</span>, dkwadratowa(x) <span class="op">=</span> <span class="fl">6.0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Funkcja sinus — pochodna <span class="math inline">\(\sin x\)</span> to <span class="math inline">\(\cos x\)</span>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> math <span class="im">import</span> sin, cos, pi</span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="op">&gt;&gt;&gt;</span> dsin <span class="op">=</span> Pochodna(sin)</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="cf">for</span> x <span class="kw">in</span> [<span class="dv">0</span>, pi<span class="op">/</span><span class="dv">2</span>, pi, <span class="dv">3</span><span class="op">*</span>pi<span class="op">/</span><span class="dv">2</span>]:</span>
+<span id="cb17-4"><a href="#cb17-4"></a>...     <span class="bu">print</span>(<span class="ss">f"x = </span><span class="sc">{</span>x<span class="sc">:.3f}</span><span class="ss">, cos(x) = </span><span class="sc">{</span>cos(x)<span class="sc">:&gt;6.3f}</span><span class="ss">, dsin(x) = </span><span class="sc">{</span><span class="bu">round</span>(dsin(x), <span class="dv">3</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb17-5"><a href="#cb17-5"></a>x <span class="op">=</span> <span class="fl">0.000</span>, cos(x) <span class="op">=</span>  <span class="fl">1.000</span>, dsin(x) <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a>x <span class="op">=</span> <span class="fl">1.571</span>, cos(x) <span class="op">=</span>  <span class="fl">0.000</span>, dsin(x) <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a>x <span class="op">=</span> <span class="fl">3.142</span>, cos(x) <span class="op">=</span> <span class="op">-</span><span class="fl">1.000</span>, dsin(x) <span class="op">=</span> <span class="op">-</span><span class="fl">1.0</span></span>
+<span id="cb17-8"><a href="#cb17-8"></a>x <span class="op">=</span> <span class="fl">4.712</span>, cos(x) <span class="op">=</span> <span class="op">-</span><span class="fl">0.000</span>, dsin(x) <span class="op">=</span> <span class="fl">0.0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>O wyborze <code>h</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Domyślne <code>h = 1e-7</code> to kompromis. Dla bardzo małych <code>h</code> rośnie <em>błąd zaokrągleń</em> — różnica <code>f(x+h) - f(x)</code> w liczniku traci znaczące cyfry, bo bliskie sobie liczby zmiennoprzecinkowe odejmowane są ze stratą precyzji. Dla większych <code>h</code> rośnie <em>błąd obcięcia</em> — iloraz różnicowy gorzej przybliża prawdziwą granicę. Sztuka dobierania <code>h</code> to temat analizy numerycznej, poza zakresem tego kursu.</p>
+</div>
+</div>
+</section>
+<section id="wartość-bezwzględna-w-zerze" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="wartość-bezwzględna-w-zerze"><span class="header-section-number">5.2</span> Wartość bezwzględna w zerze</h3>
+<p>Wiadomo, że <span class="math inline">\(y = |x|\)</span> nie jest różniczkowalna w punkcie <span class="math inline">\(x_0 = 0\)</span>. Klasa <code>Pochodna</code> pomaga zobaczyć dlaczego:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a><span class="op">&gt;&gt;&gt;</span> wartosc_bezwzgledna <span class="op">=</span> <span class="kw">lambda</span> x: <span class="bu">abs</span>(x)</span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="op">&gt;&gt;&gt;</span> d_abs <span class="op">=</span> Pochodna(wartosc_bezwzgledna)</span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="cf">for</span> x <span class="kw">in</span> [<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="fl">0.1</span>, <span class="op">-</span><span class="fl">0.01</span>, <span class="dv">0</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">2</span>]:</span>
+<span id="cb18-4"><a href="#cb18-4"></a>...     <span class="bu">print</span>(<span class="ss">f"x = </span><span class="sc">{</span>x<span class="sc">:&gt;6}</span><span class="ss">, d|x|/dx ≈ </span><span class="sc">{</span><span class="bu">round</span>(d_abs(x), <span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb18-5"><a href="#cb18-5"></a>x <span class="op">=</span>     <span class="op">-</span><span class="dv">2</span>, d<span class="op">|</span>x<span class="op">|/</span>dx ≈ <span class="op">-</span><span class="fl">1.0</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a>x <span class="op">=</span>     <span class="op">-</span><span class="dv">1</span>, d<span class="op">|</span>x<span class="op">|/</span>dx ≈ <span class="op">-</span><span class="fl">1.0</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a>x <span class="op">=</span>   <span class="op">-</span><span class="fl">0.1</span>, d<span class="op">|</span>x<span class="op">|/</span>dx ≈ <span class="op">-</span><span class="fl">1.0</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a>x <span class="op">=</span>  <span class="op">-</span><span class="fl">0.01</span>, d<span class="op">|</span>x<span class="op">|/</span>dx ≈ <span class="op">-</span><span class="fl">1.0</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a>x <span class="op">=</span>      <span class="dv">0</span>, d<span class="op">|</span>x<span class="op">|/</span>dx ≈ <span class="fl">1.0</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a>x <span class="op">=</span>   <span class="fl">0.01</span>, d<span class="op">|</span>x<span class="op">|/</span>dx ≈ <span class="fl">1.0</span></span>
+<span id="cb18-11"><a href="#cb18-11"></a>x <span class="op">=</span>    <span class="fl">0.1</span>, d<span class="op">|</span>x<span class="op">|/</span>dx ≈ <span class="fl">1.0</span></span>
+<span id="cb18-12"><a href="#cb18-12"></a>x <span class="op">=</span>      <span class="dv">1</span>, d<span class="op">|</span>x<span class="op">|/</span>dx ≈ <span class="fl">1.0</span></span>
+<span id="cb18-13"><a href="#cb18-13"></a>x <span class="op">=</span>      <span class="dv">2</span>, d<span class="op">|</span>x<span class="op">|/</span>dx ≈ <span class="fl">1.0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Pochodna skacze z <span class="math inline">\(-1\)</span> na <span class="math inline">\(+1\)</span> przy przejściu przez zero. Nie ma jednej wartości, do której zmierzałby iloraz różnicowy — granica nie istnieje. To właśnie znaczy „nie jest różniczkowalna w zerze”.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Kompozycja
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Klasa <code>Pochodna</code> nie <em>jest</em> funkcją liniową ani sinusem — <em>trzyma</em> funkcję jako atrybut i wywołuje ją w <code>__call__</code>. Ten wzorzec — klasa zawierająca obiekt innej klasy w roli składowej — nazywamy <strong>kompozycją</strong>. To bardzo częsta i bardzo praktyczna konstrukcja: znajdziesz ją w bibliotece <code>functools</code> (<code>partial</code> zawiera funkcję i część jej argumentów), w <code>scikit-learn</code> (<code>Pipeline</code> zawiera listę transformatorów i model), w <code>pandas</code> (<code>Series</code> zawiera <code>Index</code>). Wrócimy do tego pojęcia na końcu wykładu, w zestawieniu z dziedziczeniem.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="eq__" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="eq__"><span class="header-section-number">6</span> <code>__eq__</code></h2>
+<p>Drugi brak z wprowadzenia — <code>==</code> na żółwiach sprowadza się do tożsamości — naprawiamy metodą <code>__eq__</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">def</span> <span class="fu">__eq__</span>(<span class="va">self</span>, other):</span>
+<span id="cb19-2"><a href="#cb19-2"></a>    <span class="cf">return</span> (</span>
+<span id="cb19-3"><a href="#cb19-3"></a>        <span class="va">self</span>.position <span class="op">==</span> other.position</span>
+<span id="cb19-4"><a href="#cb19-4"></a>        <span class="kw">and</span> <span class="va">self</span>.azimuth <span class="op">==</span> other.azimuth</span>
+<span id="cb19-5"><a href="#cb19-5"></a>        <span class="kw">and</span> <span class="va">self</span>.name <span class="op">==</span> other.name</span>
+<span id="cb19-6"><a href="#cb19-6"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dorzucamy ją do klasy <code>Turtle</code>. Teraz dwa żółwie z tymi samymi danymi są równe:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a><span class="op">&gt;&gt;&gt;</span> a <span class="op">=</span> Turtle(name<span class="op">=</span><span class="st">"Tolek"</span>)</span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="op">&gt;&gt;&gt;</span> b <span class="op">=</span> Turtle(name<span class="op">=</span><span class="st">"Tolek"</span>)</span>
+<span id="cb20-3"><a href="#cb20-3"></a><span class="op">&gt;&gt;&gt;</span> a <span class="op">==</span> b</span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="va">True</span></span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="op">&gt;&gt;&gt;</span> a <span class="kw">is</span> b</span>
+<span id="cb20-6"><a href="#cb20-6"></a><span class="va">False</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>==</code> patrzy na zawartość, <code>is</code> patrzy na tożsamość — to dwa różne pytania.</p>
+<p>Po wykonaniu różnych ruchów żółwie się różnią:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a><span class="op">&gt;&gt;&gt;</span> a.forward(<span class="dv">1</span>)</span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="op">&gt;&gt;&gt;</span> a <span class="op">==</span> b</span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="va">False</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span><code>__ne__</code> jest darmowe
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Metoda <code>__eq__</code> przeciąża <code>==</code>. Jej dopełnieniem jest <code>__ne__</code> przeciążająca <code>!=</code>. Tej drugiej <strong>nie trzeba pisać</strong> — Python automatycznie tworzy <code>__ne__</code> jako logiczną negację <code>__eq__</code>. Wartością zwracaną z <code>__eq__</code> nie musi być <code>bool</code> — Python wywoła <code>bool(...)</code> na wyniku, jeśli to konieczne.</p>
+</div>
+</div>
+<p>Pełen zestaw metod porównujących, na wypadek gdyby kiedyś przydały się dla innej klasy:</p>
+<ul>
+<li><code>__eq__(self, other)</code> — <code>==</code></li>
+<li><code>__ne__(self, other)</code> — <code>!=</code></li>
+<li><code>__lt__(self, other)</code> — <code>&lt;</code></li>
+<li><code>__le__(self, other)</code> — <code>&lt;=</code></li>
+<li><code>__gt__(self, other)</code> — <code>&gt;</code></li>
+<li><code>__ge__(self, other)</code> — <code>&gt;=</code></li>
+</ul>
+<p>Dla żółwia mają sens tylko <code>==</code> i <code>!=</code> — porządek na żółwiach nie ma naturalnej definicji. Zaraz zobaczymy klasę, która ma jeszcze mniej powodów, żeby definiować ostre nierówności (<code>Wektor</code> w przestrzeni 3D nie jest „mniejszy” ani „większy” od innego), ale w której <code>==</code> jest oczywiste.</p>
+<hr>
+</section>
+<section id="operatory-arytmetyczne-wektor" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="operatory-arytmetyczne-wektor"><span class="header-section-number">7</span> Operatory arytmetyczne — <code>Wektor</code></h2>
+<p>Klasa <code>Wektor</code> reprezentuje wektory w przestrzeni euklidesowej dowolnego wymiaru. Pokażemy na niej mechanizm przeciążania operatorów arytmetycznych:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">class</span> Wektor:</span>
+<span id="cb22-2"><a href="#cb22-2"></a>    <span class="co">"""Wektor w przestrzeni euklidesowej dowolnego wymiaru.</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a></span>
+<span id="cb22-4"><a href="#cb22-4"></a><span class="co">    Atrybuty:</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="co">        wsp : tuple[float, ...] — krotka współrzędnych.</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a><span class="co">    """</span></span>
+<span id="cb22-7"><a href="#cb22-7"></a></span>
+<span id="cb22-8"><a href="#cb22-8"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, <span class="op">*</span>wsp):</span>
+<span id="cb22-9"><a href="#cb22-9"></a>        <span class="va">self</span>.wsp <span class="op">=</span> wsp</span>
+<span id="cb22-10"><a href="#cb22-10"></a></span>
+<span id="cb22-11"><a href="#cb22-11"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):</span>
+<span id="cb22-12"><a href="#cb22-12"></a>        wsp_str <span class="op">=</span> <span class="st">", "</span>.join(<span class="bu">str</span>(x) <span class="cf">for</span> x <span class="kw">in</span> <span class="va">self</span>.wsp)</span>
+<span id="cb22-13"><a href="#cb22-13"></a>        <span class="cf">return</span> <span class="ss">f"Wektor(</span><span class="sc">{</span>wsp_str<span class="sc">}</span><span class="ss">)"</span></span>
+<span id="cb22-14"><a href="#cb22-14"></a></span>
+<span id="cb22-15"><a href="#cb22-15"></a>    <span class="kw">def</span> <span class="fu">__add__</span>(<span class="va">self</span>, other):</span>
+<span id="cb22-16"><a href="#cb22-16"></a>        <span class="cf">if</span> <span class="bu">len</span>(<span class="va">self</span>.wsp) <span class="op">!=</span> <span class="bu">len</span>(other.wsp):</span>
+<span id="cb22-17"><a href="#cb22-17"></a>            <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"konflikt wymiarów"</span>)</span>
+<span id="cb22-18"><a href="#cb22-18"></a>        <span class="cf">return</span> Wektor(<span class="op">*</span>(x <span class="op">+</span> y <span class="cf">for</span> x, y <span class="kw">in</span> <span class="bu">zip</span>(<span class="va">self</span>.wsp, other.wsp)))</span>
+<span id="cb22-19"><a href="#cb22-19"></a></span>
+<span id="cb22-20"><a href="#cb22-20"></a>    <span class="kw">def</span> <span class="fu">__rmul__</span>(<span class="va">self</span>, skalar):</span>
+<span id="cb22-21"><a href="#cb22-21"></a>        <span class="cf">return</span> Wektor(<span class="op">*</span>(skalar <span class="op">*</span> x <span class="cf">for</span> x <span class="kw">in</span> <span class="va">self</span>.wsp))</span>
+<span id="cb22-22"><a href="#cb22-22"></a></span>
+<span id="cb22-23"><a href="#cb22-23"></a>    <span class="kw">def</span> <span class="fu">__neg__</span>(<span class="va">self</span>):</span>
+<span id="cb22-24"><a href="#cb22-24"></a>        <span class="cf">return</span> <span class="op">-</span><span class="dv">1</span> <span class="op">*</span> <span class="va">self</span></span>
+<span id="cb22-25"><a href="#cb22-25"></a></span>
+<span id="cb22-26"><a href="#cb22-26"></a>    <span class="kw">def</span> <span class="fu">__sub__</span>(<span class="va">self</span>, other):</span>
+<span id="cb22-27"><a href="#cb22-27"></a>        <span class="cf">return</span> <span class="va">self</span> <span class="op">+</span> <span class="op">-</span>other</span>
+<span id="cb22-28"><a href="#cb22-28"></a></span>
+<span id="cb22-29"><a href="#cb22-29"></a>    <span class="kw">def</span> <span class="fu">__eq__</span>(<span class="va">self</span>, other):</span>
+<span id="cb22-30"><a href="#cb22-30"></a>        <span class="cf">return</span> <span class="va">self</span>.wsp <span class="op">==</span> other.wsp</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dodawanie:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1"></a><span class="op">&gt;&gt;&gt;</span> w1 <span class="op">=</span> Wektor(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="op">&gt;&gt;&gt;</span> w2 <span class="op">=</span> Wektor(<span class="dv">4</span>, <span class="op">-</span><span class="dv">2</span>, <span class="dv">8</span>)</span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="op">&gt;&gt;&gt;</span> w1 <span class="op">+</span> w2</span>
+<span id="cb23-4"><a href="#cb23-4"></a>Wektor(<span class="dv">7</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Mnożenie wektora przez skalar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="dv">5</span> <span class="op">*</span> w1</span>
+<span id="cb24-2"><a href="#cb24-2"></a>Wektor(<span class="dv">15</span>, <span class="dv">5</span>, <span class="dv">10</span>)</span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="fl">0.5</span> <span class="op">*</span> w1</span>
+<span id="cb24-4"><a href="#cb24-4"></a>Wektor(<span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">1.0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Złożone wyrażenia:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="dv">2</span> <span class="op">*</span> w1 <span class="op">-</span> <span class="dv">3</span> <span class="op">*</span> w2</span>
+<span id="cb25-2"><a href="#cb25-2"></a>Wektor(<span class="op">-</span><span class="dv">6</span>, <span class="dv">8</span>, <span class="op">-</span><span class="dv">20</span>)</span>
+<span id="cb25-3"><a href="#cb25-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="op">-</span>w1</span>
+<span id="cb25-4"><a href="#cb25-4"></a>Wektor(<span class="op">-</span><span class="dv">3</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Porównanie:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1"></a><span class="op">&gt;&gt;&gt;</span> w1 <span class="op">==</span> Wektor(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="va">True</span></span>
+<span id="cb26-3"><a href="#cb26-3"></a><span class="op">&gt;&gt;&gt;</span> w1 <span class="op">==</span> w2</span>
+<span id="cb26-4"><a href="#cb26-4"></a><span class="va">False</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wszystko działa „naturalnie”, choć sami napisaliśmy tylko kilka metod specjalnych. Mechanizm jest taki: gdy interpreter widzi <code>x + y</code>, szuka <code>x.__add__(y)</code>. Jeśli tej metody nie ma lub jeśli zwraca specjalną wartość <code>NotImplemented</code>, próbuje <code>y.__radd__(x)</code>. Analogicznie dla pozostałych operatorów dwuargumentowych.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Sprawdź się: dlaczego <code>__rmul__</code> zamiast <code>__mul__</code>?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Klasa <code>Wektor</code> ma metodę <code>__rmul__</code> (od <em>right multiply</em>), ale nie ma <code>__mul__</code>. Wyrażenie <code>5 * w1</code> działa, ale <code>w1 * 5</code> zawiedzie z <code>TypeError</code>. Dlaczego tak zaprojektowano klasę i co właściwie się dzieje przy obu wywołaniach?</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>W algebrze liniowej skalar zwyczajowo stoi z lewej strony wektora, więc piszemy <span class="math inline">\(5\mathbf{w}\)</span>, a nie <span class="math inline">\(\mathbf{w}\cdot 5\)</span>. Klasa świadomie odzwierciedla tę konwencję.</p>
+<p>Mechanizm wywołań:</p>
+<ul>
+<li><code>5 * w1</code> — Python najpierw próbuje <code>(5).__mul__(w1)</code>. Metoda <code>int.__mul__</code> nie wie, jak pomnożyć liczbę przez <code>Wektor</code>, i zwraca <code>NotImplemented</code>. Wtedy Python szuka <code>__rmul__</code> w drugim argumencie, znajduje <code>w1.__rmul__(5)</code> i wywołuje ją. Działa.</li>
+<li><code>w1 * 5</code> — Python próbuje <code>w1.__mul__(5)</code>. Metody nie ma, więc Python szuka <code>__rmul__</code> w <code>5</code>. <code>int.__rmul__</code> też nie wie, jak pomnożyć liczbę przez <code>Wektor</code>. Wynik: <code>TypeError</code>.</li>
+</ul>
+<p>Gdyby chcieć symetrii, wystarczy dopisać:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">def</span> <span class="fu">__mul__</span>(<span class="va">self</span>, skalar):</span>
+<span id="cb27-2"><a href="#cb27-2"></a>    <span class="cf">return</span> skalar <span class="op">*</span> <span class="va">self</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To wywołanie odwoła się do <code>__rmul__</code> (przez <code>skalar * self</code>), więc nie trzeba powtarzać kodu mnożenia.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Pełna lista operatorów dwuargumentowych, jakie można przeciążać tym samym wzorcem:</p>
+<ul>
+<li><code>__add__</code> / <code>__radd__</code> — <code>+</code></li>
+<li><code>__sub__</code> / <code>__rsub__</code> — <code>-</code></li>
+<li><code>__mul__</code> / <code>__rmul__</code> — <code>*</code></li>
+<li><code>__truediv__</code> / <code>__rtruediv__</code> — <code>/</code></li>
+<li><code>__floordiv__</code> / <code>__rfloordiv__</code> — <code>//</code></li>
+<li><code>__mod__</code> / <code>__rmod__</code> — <code>%</code></li>
+<li><code>__pow__</code> / <code>__rpow__</code> — <code>**</code></li>
+<li><code>__matmul__</code> / <code>__rmatmul__</code> — <code>@</code> (mnożenie macierzowe)</li>
+</ul>
+<p>Plus operatory bitowe (<code>&amp;</code>, <code>|</code>, <code>^</code>, <code>&lt;&lt;</code>, <code>&gt;&gt;</code>) z analogicznymi parami <code>__and__/__rand__</code> itd. Operatory jednoargumentowe to m.in. <code>__neg__</code> (<code>-x</code>), <code>__pos__</code> (<code>+x</code>) i <code>__abs__</code> (<code>abs(x)</code>).</p>
+<hr>
+</section>
+<section id="sekwencyjność-__len__-i-__getitem__" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="sekwencyjność-__len__-i-__getitem__"><span class="header-section-number">8</span> Sekwencyjność: <code>__len__</code> i <code>__getitem__</code></h2>
+<p>Wektor ma określoną liczbę współrzędnych i każda współrzędna ma swój indeks — to wygląda jak sekwencja. Dwie metody specjalne pozwalają obiektowi udawać sekwencję:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1"></a><span class="kw">def</span> <span class="fu">__len__</span>(<span class="va">self</span>):</span>
+<span id="cb28-2"><a href="#cb28-2"></a>    <span class="cf">return</span> <span class="bu">len</span>(<span class="va">self</span>.wsp)</span>
+<span id="cb28-3"><a href="#cb28-3"></a></span>
+<span id="cb28-4"><a href="#cb28-4"></a><span class="kw">def</span> <span class="fu">__getitem__</span>(<span class="va">self</span>, i):</span>
+<span id="cb28-5"><a href="#cb28-5"></a>    <span class="cf">return</span> <span class="va">self</span>.wsp[i]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dorzucamy je do <code>Wektor</code>. Teraz działa <code>len</code> i indeksowanie:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1"></a><span class="op">&gt;&gt;&gt;</span> w <span class="op">=</span> Wektor(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">9</span>)</span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">len</span>(w)</span>
+<span id="cb29-3"><a href="#cb29-3"></a><span class="dv">6</span></span>
+<span id="cb29-4"><a href="#cb29-4"></a><span class="op">&gt;&gt;&gt;</span> w[<span class="dv">0</span>]</span>
+<span id="cb29-5"><a href="#cb29-5"></a><span class="dv">3</span></span>
+<span id="cb29-6"><a href="#cb29-6"></a><span class="op">&gt;&gt;&gt;</span> w[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb29-7"><a href="#cb29-7"></a><span class="dv">9</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>__getitem__</code> daje też <strong>iterację</strong> — i to za darmo, bez pisania <code>__iter__</code>. Gdy obiekt nie ma własnego iteratora, Python wywołuje <code>__getitem__</code> z kolejnymi indeksami <code>0, 1, 2, ...</code> aż do <code>IndexError</code>, który traktuje jako sygnał końca:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="cf">for</span> x <span class="kw">in</span> w:</span>
+<span id="cb30-2"><a href="#cb30-2"></a>...     <span class="bu">print</span>(x)</span>
+<span id="cb30-3"><a href="#cb30-3"></a><span class="dv">3</span></span>
+<span id="cb30-4"><a href="#cb30-4"></a><span class="dv">1</span></span>
+<span id="cb30-5"><a href="#cb30-5"></a><span class="dv">4</span></span>
+<span id="cb30-6"><a href="#cb30-6"></a><span class="dv">1</span></span>
+<span id="cb30-7"><a href="#cb30-7"></a><span class="dv">5</span></span>
+<span id="cb30-8"><a href="#cb30-8"></a><span class="dv">9</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Skoro iteracja działa, działają też wszystkie wyrażenia, które jej używają — rozpakowanie, funkcje wbudowane konsumujące iterowalne, listy składane:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1"></a><span class="op">&gt;&gt;&gt;</span> a, b, <span class="op">*</span>reszta <span class="op">=</span> w</span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="op">&gt;&gt;&gt;</span> a, b, reszta</span>
+<span id="cb31-3"><a href="#cb31-3"></a>(<span class="dv">3</span>, <span class="dv">1</span>, [<span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">9</span>])</span>
+<span id="cb31-4"><a href="#cb31-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">max</span>(w), <span class="bu">sum</span>(w), <span class="bu">list</span>(w)</span>
+<span id="cb31-5"><a href="#cb31-5"></a>(<span class="dv">9</span>, <span class="dv">23</span>, [<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">9</span>])</span>
+<span id="cb31-6"><a href="#cb31-6"></a><span class="op">&gt;&gt;&gt;</span> [x<span class="op">**</span><span class="dv">2</span> <span class="cf">for</span> x <span class="kw">in</span> w]</span>
+<span id="cb31-7"><a href="#cb31-7"></a>[<span class="dv">9</span>, <span class="dv">1</span>, <span class="dv">16</span>, <span class="dv">1</span>, <span class="dv">25</span>, <span class="dv">81</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Tym samym mechanizmem działają obiekty, których używają analitycy danych: <code>Series</code> i <code>DataFrame</code> z <code>pandas</code>, <code>ndarray</code> z <code>numpy</code>, <code>Tensor</code> z <code>pytorch</code>. Wszystkie one przeciążają <code>__len__</code>, <code>__getitem__</code>, operatory arytmetyczne i metody porównujące — to dlatego <code>s + 1</code>, <code>s[0]</code>, <code>len(s)</code>, <code>for x in s</code> „po prostu działają” tak, jak intuicja podpowiada.</p>
+<hr>
+</section>
+<section id="dziedziczenie" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="dziedziczenie"><span class="header-section-number">9</span> Dziedziczenie</h2>
+<p>Trzeci wątek zapowiedziany w poprzednim wykładzie: <strong>dziedziczenie</strong>. Załóżmy, że potrzebujemy żółwia z dodatkowym atrybutem — kolorem, w jakim rysuje. Moglibyśmy napisać klasę od zera, ale wtedy musielibyśmy powtórzyć całą zawartość <code>Turtle</code>: <code>__init__</code>, <code>forward</code>, <code>left</code>, <code>right</code>, <code>__repr__</code>, <code>__str__</code>, <code>__eq__</code>. Dziedziczenie pozwala uniknąć tego powtórzenia: nowa klasa „bierze wszystko” z istniejącej i tylko dorzuca lub zmienia, co potrzeba.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1"></a><span class="kw">class</span> ColoredTurtle(Turtle):</span>
+<span id="cb32-2"><a href="#cb32-2"></a>    <span class="co">"""Żółw z dodatkowym atrybutem color (kolor atramentu)."""</span></span>
+<span id="cb32-3"><a href="#cb32-3"></a></span>
+<span id="cb32-4"><a href="#cb32-4"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, x<span class="op">=</span><span class="dv">0</span>, y<span class="op">=</span><span class="dv">0</span>, azimuth<span class="op">=</span><span class="dv">0</span>, name<span class="op">=</span><span class="st">""</span>, color<span class="op">=</span><span class="st">"black"</span>):</span>
+<span id="cb32-5"><a href="#cb32-5"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(x<span class="op">=</span>x, y<span class="op">=</span>y, azimuth<span class="op">=</span>azimuth, name<span class="op">=</span>name)</span>
+<span id="cb32-6"><a href="#cb32-6"></a>        <span class="va">self</span>.color <span class="op">=</span> color</span>
+<span id="cb32-7"><a href="#cb32-7"></a></span>
+<span id="cb32-8"><a href="#cb32-8"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):</span>
+<span id="cb32-9"><a href="#cb32-9"></a>        x, y <span class="op">=</span> <span class="va">self</span>.position[<span class="dv">0</span>]</span>
+<span id="cb32-10"><a href="#cb32-10"></a>        <span class="cf">return</span> (</span>
+<span id="cb32-11"><a href="#cb32-11"></a>            <span class="ss">f"ColoredTurtle(x=</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">, y=</span><span class="sc">{</span>y<span class="sc">}</span><span class="ss">, azimuth=</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>azimuth<span class="sc">}</span><span class="ss">, "</span></span>
+<span id="cb32-12"><a href="#cb32-12"></a>            <span class="ss">f"name=</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>name<span class="sc">!r}</span><span class="ss">, color=</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>color<span class="sc">!r}</span><span class="ss">)"</span></span>
+<span id="cb32-13"><a href="#cb32-13"></a>        )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Składnia <code>class ColoredTurtle(Turtle):</code> mówi: <code>ColoredTurtle</code> <strong>dziedziczy</strong> po <code>Turtle</code>. <code>Turtle</code> to <strong>klasa bazowa</strong>, <code>ColoredTurtle</code> to <strong>klasa pochodna</strong>. Każda instancja <code>ColoredTurtle</code> ma wszystkie atrybuty i metody zdefiniowane w <code>Turtle</code> plus to, co dorzucimy w samej <code>ColoredTurtle</code>.</p>
+<p>W <code>__init__</code> widać dwie nowe rzeczy:</p>
+<ul>
+<li><strong><code>super().__init__(...)</code></strong> — <code>super()</code> daje dostęp do metod klasy bazowej. Wywołanie <code>super().__init__(x=x, y=y, azimuth=azimuth, name=name)</code> uruchamia <code>Turtle.__init__</code> na tej samej instancji, dzięki czemu nie musimy ręcznie wpisywać <code>self.position = [(x, y)]</code>, <code>self.azimuth = azimuth</code>, <code>self.name = name</code> — robi to za nas konstruktor bazy. Po powrocie z <code>super().__init__</code> dorzucamy własne <code>self.color = color</code>.</li>
+<li><strong>Override <code>__repr__</code></strong> — definiujemy w klasie pochodnej metodę o tej samej nazwie co w bazie. Dla instancji <code>ColoredTurtle</code> Python wybierze tę z klasy pochodnej; metoda z bazy zostanie przesłonięta (ale nadal jest dostępna przez <code>super().__repr__()</code>, gdybyśmy jej potrzebowali).</li>
+</ul>
+<p><code>__str__</code>, <code>__eq__</code>, <code>forward</code>, <code>left</code>, <code>right</code> nie są nadpisane — działają tak, jak w bazie, bez żadnego wysiłku z naszej strony:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1"></a><span class="op">&gt;&gt;&gt;</span> tolek <span class="op">=</span> ColoredTurtle(name<span class="op">=</span><span class="st">"Tolek"</span>, color<span class="op">=</span><span class="st">"red"</span>)</span>
+<span id="cb33-2"><a href="#cb33-2"></a><span class="op">&gt;&gt;&gt;</span> tolek</span>
+<span id="cb33-3"><a href="#cb33-3"></a>ColoredTurtle(x<span class="op">=</span><span class="dv">0</span>, y<span class="op">=</span><span class="dv">0</span>, azimuth<span class="op">=</span><span class="dv">0</span>, name<span class="op">=</span><span class="st">'Tolek'</span>, color<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb33-4"><a href="#cb33-4"></a><span class="op">&gt;&gt;&gt;</span> tolek.forward(<span class="dv">3</span>)</span>
+<span id="cb33-5"><a href="#cb33-5"></a><span class="op">&gt;&gt;&gt;</span> tolek.left(<span class="dv">90</span>)</span>
+<span id="cb33-6"><a href="#cb33-6"></a><span class="op">&gt;&gt;&gt;</span> tolek.forward(<span class="dv">4</span>)</span>
+<span id="cb33-7"><a href="#cb33-7"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(tolek)</span>
+<span id="cb33-8"><a href="#cb33-8"></a>Tolek <span class="op">@</span> (<span class="fl">3.00</span>, <span class="fl">4.00</span>), azymut <span class="dv">90</span>°</span>
+<span id="cb33-9"><a href="#cb33-9"></a><span class="op">&gt;&gt;&gt;</span> tolek.color</span>
+<span id="cb33-10"><a href="#cb33-10"></a><span class="co">'red'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Dziedziczenie a kompozycja
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Dziedziczenie i kompozycja to dwa sposoby na to, żeby jedna klasa „korzystała” z drugiej. Praktyczne kryterium wyboru:</p>
+<ul>
+<li><strong>Dziedziczenie</strong> — gdy klasa pochodna <em>jest rodzajem</em> klasy bazowej (<code>ColoredTurtle</code> <em>jest</em> żółwiem, tylko z dodatkowym atrybutem).</li>
+<li><strong>Kompozycja</strong> — gdy klasa <em>zawiera</em> inną w roli składowej (<code>Pochodna</code> <em>zawiera</em> funkcję, ale sama nie <em>jest</em> funkcją).</li>
+</ul>
+<p>W praktyce projektowej kompozycja jest częściej spotykana i prostsza w utrzymaniu. Powszechna rada: „zaczynaj od kompozycji, sięgaj po dziedziczenie tylko, gdy naprawdę modelujesz relację <em>jest rodzajem</em>”. Większość klas, z którymi spotkasz się w pracy z danymi (<code>Pipeline</code>, <code>ColumnTransformer</code>, <code>GridSearchCV</code>), oparta jest na kompozycji.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="podsumowanie" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="podsumowanie"><span class="header-section-number">10</span> Podsumowanie</h2>
+<p>Pojęcia z tego wykładu:</p>
+<ul>
+<li><strong>Metoda specjalna</strong> to metoda wywoływana niejawnie przez Python w odpowiedzi na określoną składnię. Nazwy zaczynają i kończą się dwoma podkreślnikami.</li>
+<li><strong><code>__repr__</code></strong> zwraca formalną reprezentację — w miarę możliwości poprawne wyrażenie Pythona konstruujące obiekt. Używana m.in. przez REPL.</li>
+<li><strong><code>__str__</code></strong> zwraca przyjazną reprezentację dla człowieka. Używana przez <code>print</code> i <code>str</code>. Jeśli klasa nie ma <code>__str__</code>, <code>print</code> używa <code>__repr__</code>.</li>
+<li><strong><code>__call__</code></strong> czyni instancję wywoływalną. <code>x(args)</code> przekłada się na <code>x.__call__(args)</code>.</li>
+<li><strong><code>__eq__</code></strong> przeciąża <code>==</code>. <code>__ne__</code> jest tworzone automatycznie jako negacja.</li>
+<li><strong>Operatory arytmetyczne</strong> — <code>__add__</code>, <code>__sub__</code>, <code>__mul__</code>, … Ich „odwrócone” wersje (<code>__radd__</code>, <code>__rsub__</code>, <code>__rmul__</code>, …) są wywoływane, gdy lewy operand nie wie, jak wykonać operację z prawym.</li>
+<li><strong><code>__len__</code> i <code>__getitem__</code></strong> czynią obiekt sekwencjopodobnym. Iteracja, rozpakowanie, <code>max</code>, <code>sum</code>, listy składane działają wtedy „za darmo”.</li>
+<li><strong>Dziedziczenie</strong> — <code>class Pochodna(Bazowa):</code>. Klasa pochodna ma wszystkie atrybuty i metody bazy, plus to, co sama dorzuca. Metodę bazy można nadpisać w klasie pochodnej; <code>super().metoda(...)</code> wywołuje wersję z bazy.</li>
+<li><strong>Kompozycja</strong> — klasa zawiera obiekt innej klasy w roli składowej. W praktyce projektowej najczęściej silniejsza i prostsza od dziedziczenia.</li>
+</ul>
+<p>Główna myśl wykładu: metody specjalne pozwalają klasie <em>włączyć się w istniejącą składnię Pythona</em>. Dzięki nim instancje klas użytkownika zachowują się tak, jak liczby, listy i inne typy wbudowane — nie są obywatelami drugiej kategorii.</p>
+<hr>
+</section>
+<section id="co-dalej" class="level2" data-number="11">
+<h2 data-number="11" class="anchored" data-anchor-id="co-dalej"><span class="header-section-number">11</span> Co dalej</h2>
+<p>Wykład IX i X razem pokazują rdzeń składni klas: definicję, atrybuty, metody, najważniejsze metody specjalne, dziedziczenie, kompozycję. Pythonowy system klas ma jednak głębsze warstwy, których nie omawiamy w tym kursie:</p>
+<ul>
+<li><strong><code>@dataclass</code></strong> (moduł <code>dataclasses</code>) — dekorator, który na podstawie deklaracji atrybutów generuje za nas <code>__init__</code>, <code>__repr__</code>, <code>__eq__</code>. Wygodne dla klas, które są przede wszystkim „rekordami danych”.</li>
+<li><strong>Dziedziczenie wielokrotne</strong> — klasa pochodna od kilku klas bazowych. Mechanizm rozstrzygania konfliktów (MRO, <em>method resolution order</em>) jest nietrywialny.</li>
+<li><strong>Klasy abstrakcyjne</strong> (<code>abc.ABC</code>, <code>@abstractmethod</code>) — szkielety wymuszające, żeby klasa pochodna zaimplementowała konkretne metody.</li>
+<li><strong>Deskryptory, <code>__slots__</code>, metaklasy</strong> — niskopoziomowe narzędzia używane głównie przez autorów bibliotek.</li>
+</ul>
+<p>Po więcej zajrzyj do dokumentacji Pythona — sekcja <a href="https://docs.python.org/3/reference/datamodel.html">Data model</a> i <a href="https://docs.python.org/3/tutorial/classes.html">Classes</a> — albo do książki Luciano Ramalho <em>Fluent Python</em>, która szczegółowo omawia każdą z tych warstw.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/rodakt\.github\.io\/PPwAD2\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<hr><center><small>Ostatnia aktualizacja: last-modified</small></center>
+
+
+
+
+</body></html>

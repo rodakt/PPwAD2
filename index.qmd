@@ -25,6 +25,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 - [Wykład VII: Dekoratory](wyklad_VII.qmd)
 - [Wykład VIII: Rekurencja](wyklad_VIII.qmd)
 - [Wykład IX: Klasy i obiekty](wyklad_IX.qmd)
+- [Wykład X: Klasy i obiekty II: metody specjalne](wyklad_X.qmd)
 
 ## Laboratoria
 

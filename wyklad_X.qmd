@@ -1,0 +1,664 @@
+---
+title: "Klasy i obiekty II: metody specjalne"
+subtitle: "Podstawy programowania (AD) 2"
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+## Wprowadzenie
+
+Klasa `Turtle` z poprzedniego wykładu działa, ale ma trzy widoczne braki:
+
+* domyślny napis dla obiektu — `<__main__.Turtle object at 0x...>` — niczego nie mówi o stanie żółwia;
+* dwa identycznie skonstruowane żółwie nie są równe przez `==`, mimo że mają te same dane;
+* sama instancja nie jest wywoływalna, więc nie da się napisać `tolek(5)`, gdyby kiedyś okazało się to wygodne.
+
+Wszystkie trzy braki naprawimy tym samym mechanizmem — **metodami specjalnymi**. Przy okazji zobaczymy jeszcze kilka takich metod (`__call__`, `__add__`, `__len__`, `__getitem__`) na drugiej i trzeciej klasie przykładowej, a na końcu pokażemy minimalny przykład **dziedziczenia**.
+
+***
+
+## Rozgrzewka: domyślne zachowania
+
+Dla każdego pytania najpierw odpowiedz samodzielnie, a następnie sprawdź odpowiedź w interpreterze. Zakładamy klasę `Turtle` z poprzedniego wykładu — z `__init__`, `left`, `right`, `forward` i bez żadnych metod specjalnych poza `__init__`.
+
+**1.** Co wyświetli REPL po wpisaniu samej nazwy obiektu?
+
+```python
+>>> tolek = Turtle(name="Tolek")
+>>> tolek
+???
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Coś w rodzaju `<__main__.Turtle object at 0x7f8a1c0d4e50>`. To domyślna reprezentacja, którą Python stosuje dla każdego obiektu, gdy klasa nie zdefiniowała innej. Pokazuje nazwę klasy i adres w pamięci — ani jedno, ani drugie nie jest informatywne.
+:::
+
+**2.** Co zwróci to porównanie?
+
+```python
+>>> Turtle(name="T") == Turtle(name="T")
+???
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`False`. Mimo że oba żółwie skonstruowano z tymi samymi argumentami, są to dwa różne obiekty o różnych tożsamościach. Domyślne `==` na obiektach niestandardowych sprowadza się do `is` — porównuje tożsamości, a nie zawartość.
+:::
+
+**3.** Co stanie się po wywołaniu `tolek(5)`?
+
+```python
+>>> tolek = Turtle(name="Tolek")
+>>> tolek(5)
+???
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`TypeError: 'Turtle' object is not callable`. Operator wywołania `()` nie wie, co miałby zrobić z instancją `Turtle`, bo klasa nie zadeklarowała tego zachowania.
+:::
+
+***
+
+## Metody specjalne
+
+::: {.callout-important}
+## Metoda specjalna
+**Metoda specjalna** to metoda, której nazwa jest otoczona dwoma podkreślnikami — `__init__`, `__repr__`, `__eq__` i wiele innych. Dwie cechy odróżniają ją od zwykłej metody:
+
+1. Python wywołuje ją **niejawnie** w odpowiedzi na określoną składnię (np. `repr(x)` szuka `x.__repr__()`, `x == y` szuka `x.__eq__(y)`).
+2. Konwencja precyzyjnie określa, **za co** każda taka metoda odpowiada.
+:::
+
+Potocznie mówi się o nich **dunder methods** (od *double underscore*). Pełną listę znajdziesz w dokumentacji Pythona: [Data model](https://docs.python.org/3/reference/datamodel.html).
+
+Poznaliśmy już jedną metodę specjalną — `__init__`, wywoływaną automatycznie przez `Klasa(...)`. W tym wykładzie zobaczymy następne.
+
+***
+
+## `__repr__` i `__str__`
+
+Pierwszy brak z wprowadzenia naprawimy dwoma metodami. Każda zwraca napis opisujący obiekt, ale w innym celu:
+
+* `__repr__(self)` — **formalna** reprezentacja obiektu, używana m.in. przez REPL i `repr(x)`. Konwencja: napis powinien być, o ile to możliwe, poprawnym wyrażeniem Pythona, które po wykonaniu odtworzyłoby obiekt.
+* `__str__(self)` — **przyjazna** reprezentacja, używana przez `print(x)` i `str(x)`. Powinna być wygodna dla człowieka.
+
+Obie metody nie biorą innych parametrów niż `self` i obie zwracają napis. Jeśli klasa definiuje tylko `__repr__`, to `print(x)` użyje go jako fallbacku.
+
+Dorzucamy obie metody do `Turtle`:
+
+```python
+from math import cos, sin, radians
+
+
+class Turtle:
+    """Żółw LOGO.
+
+    Atrybuty:
+        position : list[tuple[float, float]] — historia położeń, ostatni element to bieżące położenie.
+        azimuth  : float — kąt (w stopniach) między kierunkiem żółwia a dodatnią osią x.
+        name     : str — nazwa żółwia.
+    """
+
+    def __init__(self, x=0, y=0, azimuth=0, name=""):
+        self.position = [(x, y)]
+        self.azimuth = azimuth
+        self.name = name
+
+    def __repr__(self):
+        x, y = self.position[0]
+        return f"Turtle(x={x}, y={y}, azimuth={self.azimuth}, name={self.name!r})"
+
+    def __str__(self):
+        x, y = self.position[-1]
+        return f"{self.name} @ ({x:.2f}, {y:.2f}), azymut {self.azimuth}°"
+
+    def left(self, a):
+        self.azimuth += a
+
+    def right(self, a):
+        self.azimuth -= a
+
+    def forward(self, r):
+        x, y = self.position[-1]
+        rad = radians(self.azimuth)
+        self.position.append((x + r * cos(rad), y + r * sin(rad)))
+```
+
+Teraz REPL pokazuje sensowny napis:
+
+```python
+>>> tolek = Turtle(name="Tolek")
+>>> tolek
+Turtle(x=0, y=0, azimuth=0, name='Tolek')
+>>> print(tolek)
+Tolek @ (0.00, 0.00), azymut 0°
+```
+
+Po kilku ruchach `__str__` pokazuje *bieżące* położenie, a `__repr__` — **początkowe**, takie, jakie zostało użyte do skonstruowania obiektu:
+
+```python
+>>> tolek.forward(3)
+>>> tolek.left(90)
+>>> tolek.forward(4)
+>>> tolek
+Turtle(x=0, y=0, azimuth=90, name='Tolek')
+>>> print(tolek)
+Tolek @ (3.00, 4.00), azymut 90°
+```
+
+Podział pracy między tymi dwiema metodami staje się tu wyraźny. `__repr__` jest *zapisem konstrukcyjnym* — formą, z której da się odtworzyć obiekt; `__str__` jest *zapisem stanu* — formą wygodną do oglądania.
+
+::: {.callout-note}
+## `!r` w f-stringach
+Specyfikator `!r` w f-stringu wymusza użycie `repr` zamiast `str` — dlatego `name='Tolek'` w wyniku `__repr__` ma cudzysłowy. Bez `!r` zobaczylibyśmy `name=Tolek`, co nie byłoby już poprawnym wyrażeniem Pythona.
+:::
+
+Drugi przykład, prostszy. Funkcja liniowa $y = ax + b$:
+
+```python
+class FunkcjaLiniowa:
+    """Funkcja liniowa y = a*x + b."""
+
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def __repr__(self):
+        return f"FunkcjaLiniowa({self.a}, {self.b})"
+
+    def __str__(self):
+        if self.b >= 0:
+            return f"y = {self.a}*x + {self.b}"
+        return f"y = {self.a}*x - {-self.b}"
+```
+
+```python
+>>> f = FunkcjaLiniowa(2, -3)
+>>> f
+FunkcjaLiniowa(2, -3)
+>>> print(f)
+y = 2*x - 3
+```
+
+Klasy biblioteczne stosują tę samą konwencję. Spójrz na obiekt daty:
+
+```python
+>>> import datetime
+>>> dzisiaj = datetime.date(2026, 5, 3)
+>>> dzisiaj
+datetime.date(2026, 5, 3)
+>>> print(dzisiaj)
+2026-05-03
+```
+
+`repr` daje wyrażenie konstruujące obiekt; `str` daje formę przyjazną dla człowieka, zgodną z normą ISO 8601.
+
+***
+
+## `__call__`
+
+Trzeci brak z wprowadzenia — niewywoływalność instancji — naprawia metoda `__call__`. Operator wywołania `()` na obiekcie szuka tej metody i, jeśli ją znajdzie, wywołuje:
+
+```
+x(args)   <=>   x.__call__(args)
+```
+
+Dodajemy `__call__` do `FunkcjaLiniowa`:
+
+```python
+class FunkcjaLiniowa:
+    """Funkcja liniowa y = a*x + b."""
+
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def __repr__(self):
+        return f"FunkcjaLiniowa({self.a}, {self.b})"
+
+    def __str__(self):
+        if self.b >= 0:
+            return f"y = {self.a}*x + {self.b}"
+        return f"y = {self.a}*x - {-self.b}"
+
+    def __call__(self, x):
+        return self.a * x + self.b
+```
+
+```python
+>>> f = FunkcjaLiniowa(2, -3)
+>>> f(5)
+7
+>>> f(0)
+-3
+```
+
+Funkcja `callable` (wbudowana) sprawdza, czy obiekt jest wywoływalny:
+
+```python
+>>> callable(f)
+True
+>>> callable(42)
+False
+```
+
+::: {.callout-note}
+## Kategorie obiektów wywoływalnych
+Po dodaniu `__call__` do listy znamy już niemal wszystkie kategorie obiektów wywoływalnych w Pythonie:
+
+* funkcje wbudowane, np. `len`;
+* funkcje zdefiniowane przez użytkownika (`def`, `lambda`);
+* metody wbudowane, np. `"abc".upper`;
+* klasy (wywołanie klasy tworzy instancję);
+* metody zdefiniowane przez użytkownika;
+* obiekty posiadające metodę `__call__`.
+:::
+
+### Przykład: różniczkowanie numeryczne
+
+Pochodna funkcji $f\colon (a, b) \to \mathbb{R}$ w punkcie $x_0 \in (a, b)$ to granica ilorazu różnicowego:
+
+$$
+f'(x_0) = \lim_{h \to 0} \frac{f(x_0 + h) - f(x_0)}{h}.
+$$
+
+Numerycznie zamiast obliczać granicę, bierzemy iloraz dla konkretnego, dostatecznie małego `h`. Klasa `Pochodna` produkuje obiekt wywoływalny, który dla zadanego `x` zwraca to przybliżenie:
+
+```python
+class Pochodna:
+    """Numeryczne przybliżenie pochodnej funkcji f.
+
+    Atrybuty:
+        f : obiekt wywoływalny zwracający liczby — różniczkowana funkcja.
+        h : float — krok ilorazu różnicowego, domyślnie 1e-7.
+    """
+
+    def __init__(self, f, h=1e-7):
+        self.f = f
+        self.h = h
+
+    def __call__(self, x):
+        return (self.f(x + self.h) - self.f(x)) / self.h
+```
+
+Sprawdzamy na funkcji liniowej — pochodna $f(x) = 2x + 3$ powinna być stale równa 2:
+
+```python
+>>> f = FunkcjaLiniowa(2, 3)
+>>> df = Pochodna(f)
+>>> round(df(0), 5)
+2.0
+>>> round(df(100), 5)
+2.0
+```
+
+Zauważ, że `Pochodna(f)` przyjmuje `f` — instancję `FunkcjaLiniowa` — i traktuje ją jak zwykłą funkcję. Można tak zrobić właśnie dlatego, że `FunkcjaLiniowa` ma `__call__`.
+
+Funkcja kwadratowa — pochodna $x^2$ to $2x$:
+
+```python
+>>> def kwadratowa(x):
+...     return x * x
+>>> dkwadratowa = Pochodna(kwadratowa)
+>>> for x in range(-3, 4):
+...     print(f"x = {x:>2}, 2*x = {2*x:>3}, dkwadratowa(x) = {round(dkwadratowa(x), 4)}")
+x = -3, 2*x =  -6, dkwadratowa(x) = -6.0
+x = -2, 2*x =  -4, dkwadratowa(x) = -4.0
+x = -1, 2*x =  -2, dkwadratowa(x) = -2.0
+x =  0, 2*x =   0, dkwadratowa(x) = 0.0
+x =  1, 2*x =   2, dkwadratowa(x) = 2.0
+x =  2, 2*x =   4, dkwadratowa(x) = 4.0
+x =  3, 2*x =   6, dkwadratowa(x) = 6.0
+```
+
+Funkcja sinus — pochodna $\sin x$ to $\cos x$:
+
+```python
+>>> from math import sin, cos, pi
+>>> dsin = Pochodna(sin)
+>>> for x in [0, pi/2, pi, 3*pi/2]:
+...     print(f"x = {x:.3f}, cos(x) = {cos(x):>6.3f}, dsin(x) = {round(dsin(x), 3)}")
+x = 0.000, cos(x) =  1.000, dsin(x) = 1.0
+x = 1.571, cos(x) =  0.000, dsin(x) = 0.0
+x = 3.142, cos(x) = -1.000, dsin(x) = -1.0
+x = 4.712, cos(x) = -0.000, dsin(x) = 0.0
+```
+
+::: {.callout-note}
+## O wyborze `h`
+Domyślne `h = 1e-7` to kompromis. Dla bardzo małych `h` rośnie *błąd zaokrągleń* — różnica `f(x+h) - f(x)` w liczniku traci znaczące cyfry, bo bliskie sobie liczby zmiennoprzecinkowe odejmowane są ze stratą precyzji. Dla większych `h` rośnie *błąd obcięcia* — iloraz różnicowy gorzej przybliża prawdziwą granicę. Sztuka dobierania `h` to temat analizy numerycznej, poza zakresem tego kursu.
+:::
+
+### Wartość bezwzględna w zerze
+
+Wiadomo, że $y = |x|$ nie jest różniczkowalna w punkcie $x_0 = 0$. Klasa `Pochodna` pomaga zobaczyć dlaczego:
+
+```python
+>>> wartosc_bezwzgledna = lambda x: abs(x)
+>>> d_abs = Pochodna(wartosc_bezwzgledna)
+>>> for x in [-2, -1, -0.1, -0.01, 0, 0.01, 0.1, 1, 2]:
+...     print(f"x = {x:>6}, d|x|/dx ≈ {round(d_abs(x), 4)}")
+x =     -2, d|x|/dx ≈ -1.0
+x =     -1, d|x|/dx ≈ -1.0
+x =   -0.1, d|x|/dx ≈ -1.0
+x =  -0.01, d|x|/dx ≈ -1.0
+x =      0, d|x|/dx ≈ 1.0
+x =   0.01, d|x|/dx ≈ 1.0
+x =    0.1, d|x|/dx ≈ 1.0
+x =      1, d|x|/dx ≈ 1.0
+x =      2, d|x|/dx ≈ 1.0
+```
+
+Pochodna skacze z $-1$ na $+1$ przy przejściu przez zero. Nie ma jednej wartości, do której zmierzałby iloraz różnicowy — granica nie istnieje. To właśnie znaczy „nie jest różniczkowalna w zerze".
+
+::: {.callout-note}
+## Kompozycja
+Klasa `Pochodna` nie *jest* funkcją liniową ani sinusem — *trzyma* funkcję jako atrybut i wywołuje ją w `__call__`. Ten wzorzec — klasa zawierająca obiekt innej klasy w roli składowej — nazywamy **kompozycją**. To bardzo częsta i bardzo praktyczna konstrukcja: znajdziesz ją w bibliotece `functools` (`partial` zawiera funkcję i część jej argumentów), w `scikit-learn` (`Pipeline` zawiera listę transformatorów i model), w `pandas` (`Series` zawiera `Index`). Wrócimy do tego pojęcia na końcu wykładu, w zestawieniu z dziedziczeniem.
+:::
+
+***
+
+## `__eq__`
+
+Drugi brak z wprowadzenia — `==` na żółwiach sprowadza się do tożsamości — naprawiamy metodą `__eq__`:
+
+```python
+def __eq__(self, other):
+    return (
+        self.position == other.position
+        and self.azimuth == other.azimuth
+        and self.name == other.name
+    )
+```
+
+Dorzucamy ją do klasy `Turtle`. Teraz dwa żółwie z tymi samymi danymi są równe:
+
+```python
+>>> a = Turtle(name="Tolek")
+>>> b = Turtle(name="Tolek")
+>>> a == b
+True
+>>> a is b
+False
+```
+
+`==` patrzy na zawartość, `is` patrzy na tożsamość — to dwa różne pytania.
+
+Po wykonaniu różnych ruchów żółwie się różnią:
+
+```python
+>>> a.forward(1)
+>>> a == b
+False
+```
+
+::: {.callout-note}
+## `__ne__` jest darmowe
+Metoda `__eq__` przeciąża `==`. Jej dopełnieniem jest `__ne__` przeciążająca `!=`. Tej drugiej **nie trzeba pisać** — Python automatycznie tworzy `__ne__` jako logiczną negację `__eq__`. Wartością zwracaną z `__eq__` nie musi być `bool` — Python wywoła `bool(...)` na wyniku, jeśli to konieczne.
+:::
+
+Pełen zestaw metod porównujących, na wypadek gdyby kiedyś przydały się dla innej klasy:
+
+* `__eq__(self, other)` — `==`
+* `__ne__(self, other)` — `!=`
+* `__lt__(self, other)` — `<`
+* `__le__(self, other)` — `<=`
+* `__gt__(self, other)` — `>`
+* `__ge__(self, other)` — `>=`
+
+Dla żółwia mają sens tylko `==` i `!=` — porządek na żółwiach nie ma naturalnej definicji. Zaraz zobaczymy klasę, która ma jeszcze mniej powodów, żeby definiować ostre nierówności (`Wektor` w przestrzeni 3D nie jest „mniejszy" ani „większy" od innego), ale w której `==` jest oczywiste.
+
+***
+
+## Operatory arytmetyczne — `Wektor`
+
+Klasa `Wektor` reprezentuje wektory w przestrzeni euklidesowej dowolnego wymiaru. Pokażemy na niej mechanizm przeciążania operatorów arytmetycznych:
+
+```python
+class Wektor:
+    """Wektor w przestrzeni euklidesowej dowolnego wymiaru.
+
+    Atrybuty:
+        wsp : tuple[float, ...] — krotka współrzędnych.
+    """
+
+    def __init__(self, *wsp):
+        self.wsp = wsp
+
+    def __repr__(self):
+        wsp_str = ", ".join(str(x) for x in self.wsp)
+        return f"Wektor({wsp_str})"
+
+    def __add__(self, other):
+        if len(self.wsp) != len(other.wsp):
+            raise ValueError("konflikt wymiarów")
+        return Wektor(*(x + y for x, y in zip(self.wsp, other.wsp)))
+
+    def __rmul__(self, skalar):
+        return Wektor(*(skalar * x for x in self.wsp))
+
+    def __neg__(self):
+        return -1 * self
+
+    def __sub__(self, other):
+        return self + -other
+
+    def __eq__(self, other):
+        return self.wsp == other.wsp
+```
+
+Dodawanie:
+
+```python
+>>> w1 = Wektor(3, 1, 2)
+>>> w2 = Wektor(4, -2, 8)
+>>> w1 + w2
+Wektor(7, -1, 10)
+```
+
+Mnożenie wektora przez skalar:
+
+```python
+>>> 5 * w1
+Wektor(15, 5, 10)
+>>> 0.5 * w1
+Wektor(1.5, 0.5, 1.0)
+```
+
+Złożone wyrażenia:
+
+```python
+>>> 2 * w1 - 3 * w2
+Wektor(-6, 8, -20)
+>>> -w1
+Wektor(-3, -1, -2)
+```
+
+Porównanie:
+
+```python
+>>> w1 == Wektor(3, 1, 2)
+True
+>>> w1 == w2
+False
+```
+
+Wszystko działa „naturalnie", choć sami napisaliśmy tylko kilka metod specjalnych. Mechanizm jest taki: gdy interpreter widzi `x + y`, szuka `x.__add__(y)`. Jeśli tej metody nie ma lub jeśli zwraca specjalną wartość `NotImplemented`, próbuje `y.__radd__(x)`. Analogicznie dla pozostałych operatorów dwuargumentowych.
+
+::: {.callout-tip collapse="true"}
+## Sprawdź się: dlaczego `__rmul__` zamiast `__mul__`?
+Klasa `Wektor` ma metodę `__rmul__` (od *right multiply*), ale nie ma `__mul__`. Wyrażenie `5 * w1` działa, ale `w1 * 5` zawiedzie z `TypeError`. Dlaczego tak zaprojektowano klasę i co właściwie się dzieje przy obu wywołaniach?
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+W algebrze liniowej skalar zwyczajowo stoi z lewej strony wektora, więc piszemy $5\mathbf{w}$, a nie $\mathbf{w}\cdot 5$. Klasa świadomie odzwierciedla tę konwencję.
+
+Mechanizm wywołań:
+
+* `5 * w1` — Python najpierw próbuje `(5).__mul__(w1)`. Metoda `int.__mul__` nie wie, jak pomnożyć liczbę przez `Wektor`, i zwraca `NotImplemented`. Wtedy Python szuka `__rmul__` w drugim argumencie, znajduje `w1.__rmul__(5)` i wywołuje ją. Działa.
+* `w1 * 5` — Python próbuje `w1.__mul__(5)`. Metody nie ma, więc Python szuka `__rmul__` w `5`. `int.__rmul__` też nie wie, jak pomnożyć liczbę przez `Wektor`. Wynik: `TypeError`.
+
+Gdyby chcieć symetrii, wystarczy dopisać:
+
+```python
+def __mul__(self, skalar):
+    return skalar * self
+```
+
+To wywołanie odwoła się do `__rmul__` (przez `skalar * self`), więc nie trzeba powtarzać kodu mnożenia.
+:::
+:::
+
+Pełna lista operatorów dwuargumentowych, jakie można przeciążać tym samym wzorcem:
+
+* `__add__` / `__radd__` — `+`
+* `__sub__` / `__rsub__` — `-`
+* `__mul__` / `__rmul__` — `*`
+* `__truediv__` / `__rtruediv__` — `/`
+* `__floordiv__` / `__rfloordiv__` — `//`
+* `__mod__` / `__rmod__` — `%`
+* `__pow__` / `__rpow__` — `**`
+* `__matmul__` / `__rmatmul__` — `@` (mnożenie macierzowe)
+
+Plus operatory bitowe (`&`, `|`, `^`, `<<`, `>>`) z analogicznymi parami `__and__/__rand__` itd. Operatory jednoargumentowe to m.in. `__neg__` (`-x`), `__pos__` (`+x`) i `__abs__` (`abs(x)`).
+
+***
+
+## Sekwencyjność: `__len__` i `__getitem__`
+
+Wektor ma określoną liczbę współrzędnych i każda współrzędna ma swój indeks — to wygląda jak sekwencja. Dwie metody specjalne pozwalają obiektowi udawać sekwencję:
+
+```python
+def __len__(self):
+    return len(self.wsp)
+
+def __getitem__(self, i):
+    return self.wsp[i]
+```
+
+Dorzucamy je do `Wektor`. Teraz działa `len` i indeksowanie:
+
+```python
+>>> w = Wektor(3, 1, 4, 1, 5, 9)
+>>> len(w)
+6
+>>> w[0]
+3
+>>> w[-1]
+9
+```
+
+`__getitem__` daje też **iterację** — i to za darmo, bez pisania `__iter__`. Gdy obiekt nie ma własnego iteratora, Python wywołuje `__getitem__` z kolejnymi indeksami `0, 1, 2, ...` aż do `IndexError`, który traktuje jako sygnał końca:
+
+```python
+>>> for x in w:
+...     print(x)
+3
+1
+4
+1
+5
+9
+```
+
+Skoro iteracja działa, działają też wszystkie wyrażenia, które jej używają — rozpakowanie, funkcje wbudowane konsumujące iterowalne, listy składane:
+
+```python
+>>> a, b, *reszta = w
+>>> a, b, reszta
+(3, 1, [4, 1, 5, 9])
+>>> max(w), sum(w), list(w)
+(9, 23, [3, 1, 4, 1, 5, 9])
+>>> [x**2 for x in w]
+[9, 1, 16, 1, 25, 81]
+```
+
+Tym samym mechanizmem działają obiekty, których używają analitycy danych: `Series` i `DataFrame` z `pandas`, `ndarray` z `numpy`, `Tensor` z `pytorch`. Wszystkie one przeciążają `__len__`, `__getitem__`, operatory arytmetyczne i metody porównujące — to dlatego `s + 1`, `s[0]`, `len(s)`, `for x in s` „po prostu działają" tak, jak intuicja podpowiada.
+
+***
+
+## Dziedziczenie
+
+Trzeci wątek zapowiedziany w poprzednim wykładzie: **dziedziczenie**. Załóżmy, że potrzebujemy żółwia z dodatkowym atrybutem — kolorem, w jakim rysuje. Moglibyśmy napisać klasę od zera, ale wtedy musielibyśmy powtórzyć całą zawartość `Turtle`: `__init__`, `forward`, `left`, `right`, `__repr__`, `__str__`, `__eq__`. Dziedziczenie pozwala uniknąć tego powtórzenia: nowa klasa „bierze wszystko" z istniejącej i tylko dorzuca lub zmienia, co potrzeba.
+
+```python
+class ColoredTurtle(Turtle):
+    """Żółw z dodatkowym atrybutem color (kolor atramentu)."""
+
+    def __init__(self, x=0, y=0, azimuth=0, name="", color="black"):
+        super().__init__(x=x, y=y, azimuth=azimuth, name=name)
+        self.color = color
+
+    def __repr__(self):
+        x, y = self.position[0]
+        return (
+            f"ColoredTurtle(x={x}, y={y}, azimuth={self.azimuth}, "
+            f"name={self.name!r}, color={self.color!r})"
+        )
+```
+
+Składnia `class ColoredTurtle(Turtle):` mówi: `ColoredTurtle` **dziedziczy** po `Turtle`. `Turtle` to **klasa bazowa**, `ColoredTurtle` to **klasa pochodna**. Każda instancja `ColoredTurtle` ma wszystkie atrybuty i metody zdefiniowane w `Turtle` plus to, co dorzucimy w samej `ColoredTurtle`.
+
+W `__init__` widać dwie nowe rzeczy:
+
+* **`super().__init__(...)`** — `super()` daje dostęp do metod klasy bazowej. Wywołanie `super().__init__(x=x, y=y, azimuth=azimuth, name=name)` uruchamia `Turtle.__init__` na tej samej instancji, dzięki czemu nie musimy ręcznie wpisywać `self.position = [(x, y)]`, `self.azimuth = azimuth`, `self.name = name` — robi to za nas konstruktor bazy. Po powrocie z `super().__init__` dorzucamy własne `self.color = color`.
+* **Override `__repr__`** — definiujemy w klasie pochodnej metodę o tej samej nazwie co w bazie. Dla instancji `ColoredTurtle` Python wybierze tę z klasy pochodnej; metoda z bazy zostanie przesłonięta (ale nadal jest dostępna przez `super().__repr__()`, gdybyśmy jej potrzebowali).
+
+`__str__`, `__eq__`, `forward`, `left`, `right` nie są nadpisane — działają tak, jak w bazie, bez żadnego wysiłku z naszej strony:
+
+```python
+>>> tolek = ColoredTurtle(name="Tolek", color="red")
+>>> tolek
+ColoredTurtle(x=0, y=0, azimuth=0, name='Tolek', color='red')
+>>> tolek.forward(3)
+>>> tolek.left(90)
+>>> tolek.forward(4)
+>>> print(tolek)
+Tolek @ (3.00, 4.00), azymut 90°
+>>> tolek.color
+'red'
+```
+
+::: {.callout-note}
+## Dziedziczenie a kompozycja
+Dziedziczenie i kompozycja to dwa sposoby na to, żeby jedna klasa „korzystała" z drugiej. Praktyczne kryterium wyboru:
+
+* **Dziedziczenie** — gdy klasa pochodna *jest rodzajem* klasy bazowej (`ColoredTurtle` *jest* żółwiem, tylko z dodatkowym atrybutem).
+* **Kompozycja** — gdy klasa *zawiera* inną w roli składowej (`Pochodna` *zawiera* funkcję, ale sama nie *jest* funkcją).
+
+W praktyce projektowej kompozycja jest częściej spotykana i prostsza w utrzymaniu. Powszechna rada: „zaczynaj od kompozycji, sięgaj po dziedziczenie tylko, gdy naprawdę modelujesz relację *jest rodzajem*". Większość klas, z którymi spotkasz się w pracy z danymi (`Pipeline`, `ColumnTransformer`, `GridSearchCV`), oparta jest na kompozycji.
+:::
+
+***
+
+## Podsumowanie
+
+Pojęcia z tego wykładu:
+
+* **Metoda specjalna** to metoda wywoływana niejawnie przez Python w odpowiedzi na określoną składnię. Nazwy zaczynają i kończą się dwoma podkreślnikami.
+* **`__repr__`** zwraca formalną reprezentację — w miarę możliwości poprawne wyrażenie Pythona konstruujące obiekt. Używana m.in. przez REPL.
+* **`__str__`** zwraca przyjazną reprezentację dla człowieka. Używana przez `print` i `str`. Jeśli klasa nie ma `__str__`, `print` używa `__repr__`.
+* **`__call__`** czyni instancję wywoływalną. `x(args)` przekłada się na `x.__call__(args)`.
+* **`__eq__`** przeciąża `==`. `__ne__` jest tworzone automatycznie jako negacja.
+* **Operatory arytmetyczne** — `__add__`, `__sub__`, `__mul__`, … Ich „odwrócone" wersje (`__radd__`, `__rsub__`, `__rmul__`, …) są wywoływane, gdy lewy operand nie wie, jak wykonać operację z prawym.
+* **`__len__` i `__getitem__`** czynią obiekt sekwencjopodobnym. Iteracja, rozpakowanie, `max`, `sum`, listy składane działają wtedy „za darmo".
+* **Dziedziczenie** — `class Pochodna(Bazowa):`. Klasa pochodna ma wszystkie atrybuty i metody bazy, plus to, co sama dorzuca. Metodę bazy można nadpisać w klasie pochodnej; `super().metoda(...)` wywołuje wersję z bazy.
+* **Kompozycja** — klasa zawiera obiekt innej klasy w roli składowej. W praktyce projektowej najczęściej silniejsza i prostsza od dziedziczenia.
+
+Główna myśl wykładu: metody specjalne pozwalają klasie *włączyć się w istniejącą składnię Pythona*. Dzięki nim instancje klas użytkownika zachowują się tak, jak liczby, listy i inne typy wbudowane — nie są obywatelami drugiej kategorii.
+
+***
+
+## Co dalej
+
+Wykład IX i X razem pokazują rdzeń składni klas: definicję, atrybuty, metody, najważniejsze metody specjalne, dziedziczenie, kompozycję. Pythonowy system klas ma jednak głębsze warstwy, których nie omawiamy w tym kursie:
+
+* **`@dataclass`** (moduł `dataclasses`) — dekorator, który na podstawie deklaracji atrybutów generuje za nas `__init__`, `__repr__`, `__eq__`. Wygodne dla klas, które są przede wszystkim „rekordami danych".
+* **Dziedziczenie wielokrotne** — klasa pochodna od kilku klas bazowych. Mechanizm rozstrzygania konfliktów (MRO, *method resolution order*) jest nietrywialny.
+* **Klasy abstrakcyjne** (`abc.ABC`, `@abstractmethod`) — szkielety wymuszające, żeby klasa pochodna zaimplementowała konkretne metody.
+* **Deskryptory, `__slots__`, metaklasy** — niskopoziomowe narzędzia używane głównie przez autorów bibliotek.
+
+Po więcej zajrzyj do dokumentacji Pythona — sekcja [Data model](https://docs.python.org/3/reference/datamodel.html) i [Classes](https://docs.python.org/3/tutorial/classes.html) — albo do książki Luciano Ramalho *Fluent Python*, która szczegółowo omawia każdą z tych warstw.

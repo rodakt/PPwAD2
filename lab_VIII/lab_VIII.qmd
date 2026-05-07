@@ -212,10 +212,10 @@ Testy: [test_contracts.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_a
 
 Na wykładzie poznaliśmy dekorator `timethis` wypisujący czas pojedynczego wywołania dekorowanej funkcji. Pojedynczy pomiar jest jednak mało wiarygodny — wynik zależy od chwilowego obciążenia systemu. Zamiast tego chcemy mierzyć czas wielokrotnie i raportować statystyki.
 
-Napisz moduł `timed.py` zawierający parametryzowany dekorator `timed(repeat=5)`, który:
+Napisz moduł `timed.py` zawierający parametryzowany dekorator `timed(repeat=5, timer=None)`, który:
 
 1. Uruchamia dekorowaną funkcję `repeat` razy z tymi samymi argumentami.
-2. Mierzy czas każdego wywołania za pomocą `time.perf_counter`.
+2. Mierzy czas każdego wywołania za pomocą funkcji `timer`. Jeśli `timer=None`, używa `time.perf_counter`.
 3. Po ostatnim wywołaniu wypisuje średni czas i odchylenie standardowe w formacie:
    ```
    <nazwa_funkcji> (repeat=<N>): mean=<M> s, stdev=<S> s

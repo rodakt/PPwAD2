@@ -45,24 +45,22 @@ class TestTimed(unittest.TestCase):
             
         self.assertEqual(mock_func.call_count, 10)
 
-    @patch('time.perf_counter')
-    def test_output_format_and_stats(self, mock_perf):
+    def test_output_format_and_stats(self):
         """Sprawdza format wypisywanego komunikatu i poprawność obliczeń statystycznych."""
         # Symulujemy czasy trwania kolejnych wywołań: 1.0s, 2.0s, 3.0s
-        # perf_counter musi zwracać wartości narastające dla start i end każdego wywołania
         # Wywołanie 1: start=0, end=1.0 (czas 1.0)
         # Wywołanie 2: start=2, end=4.0 (czas 2.0)
         # Wywołanie 3: start=5, end=8.0 (czas 3.0)
-        mock_perf.side_effect = [0.0, 1.0, 2.0, 4.0, 5.0, 8.0]
-        
-        @timed(repeat=3)
+        times = iter([0.0, 1.0, 2.0, 4.0, 5.0, 8.0])
+
+        @timed(repeat=3, timer=lambda: next(times))
         def slow_func():
             pass
-            
+
         captured_output = io.StringIO()
         with patch('sys.stdout', new=captured_output):
             slow_func()
-            
+
         output = captured_output.getvalue().strip()
         
         # Oczekiwane statystyki dla [1.0, 2.0, 3.0]:

@@ -560,10 +560,10 @@ Cześć!</code></pre>
 <section id="mierzenie-czasu-wykonania" class="level2" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="mierzenie-czasu-wykonania"><span class="header-section-number">4</span> Mierzenie czasu wykonania</h2>
 <p>Na wykładzie poznaliśmy dekorator <code>timethis</code> wypisujący czas pojedynczego wywołania dekorowanej funkcji. Pojedynczy pomiar jest jednak mało wiarygodny — wynik zależy od chwilowego obciążenia systemu. Zamiast tego chcemy mierzyć czas wielokrotnie i raportować statystyki.</p>
-<p>Napisz moduł <code>timed.py</code> zawierający parametryzowany dekorator <code>timed(repeat=5)</code>, który:</p>
+<p>Napisz moduł <code>timed.py</code> zawierający parametryzowany dekorator <code>timed(repeat=5, timer=None)</code>, który:</p>
 <ol type="1">
 <li><p>Uruchamia dekorowaną funkcję <code>repeat</code> razy z tymi samymi argumentami.</p></li>
-<li><p>Mierzy czas każdego wywołania za pomocą <code>time.perf_counter</code>.</p></li>
+<li><p>Mierzy czas każdego wywołania za pomocą funkcji <code>timer</code>. Jeśli <code>timer=None</code>, używa <code>time.perf_counter</code>.</p></li>
 <li><p>Po ostatnim wywołaniu wypisuje średni czas i odchylenie standardowe w formacie:</p>
 <pre><code>&lt;nazwa_funkcji&gt; (repeat=&lt;N&gt;): mean=&lt;M&gt; s, stdev=&lt;S&gt; s</code></pre>
 <p>gdzie <code>&lt;M&gt;</code> i <code>&lt;S&gt;</code> są zaokrąglone do czterech miejsc po przecinku (użyj formatowania z f-stringiem: <code>f'{M:.4f}'</code>).</p></li>

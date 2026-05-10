@@ -1,0 +1,914 @@
+---
+title: "Iteratory i generatory"
+subtitle: "Podstawy programowania (AD) 2"
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+## Wprowadzenie
+
+Od początku semestru używaliśmy pętli `for` jak narzędzia oczywistego. Iterowaliśmy po listach, krotkach, łańcuchach, zakresach `range`, słownikach, zbiorach, plikach. Nie zatrzymywaliśmy się jednak nad pytaniem: **co dokładnie sprawia, że obiekt nadaje się do pętli `for`?** Czy istnieje jakaś jedna cecha, którą każdy z tych typów musi spełniać?
+
+Odpowiedź jest prosta: tak. Istnieją dwa pojęcia — **obiekt iterowalny** i **iterator** — które opisują wszystko, co Python umie podać w `for`. Tym wykładem porządkujemy te pojęcia, pokazujemy jak zaimplementować je we własnej klasie, a na końcu poznajemy **generatory**: lekki sposób na pisanie iteratorów, który w praktyce wypiera klasy iteratorów niemal całkowicie.
+
+Po drodze odkryjemy, że iteratory pozwalają reprezentować strumienie danych **leniwie** — wartość po wartości, na żądanie. Dzięki temu możemy w skończonej pamięci pracować ze strumieniami nieskończonymi. Na zakończenie napiszemy generator chodzący po wszystkich punktach kratowych płaszczyzny i zapiszemy jego początek do pliku CSV.
+
+***
+
+## Trzy zajawki
+
+Zanim zaczniemy systematyczny wykład, popatrzmy na trzy interakcje z REPL-em, które na pierwszy rzut oka są zaskakujące. Każda z nich trafia w jakąś istotną cechę iteratorów — wrócimy do nich, gdy będziemy już mieli teorię.
+
+**Zajawka 1.** Trzy obiekty, po których da się iterować, prezentują się zupełnie różnie:
+
+```python
+>>> [3, 1, 2, 4]
+[3, 1, 2, 4]
+>>> range(10)
+range(0, 10)
+>>> reversed('ala ma kota')
+<reversed object at 0x7f298cbff340>
+```
+
+Pierwszy pokazuje wszystkie elementy. Drugi pokazuje przepis. Trzeci nie pokazuje **nic** — tylko nazwę typu i adres w pamięci. Skąd ta różnica?
+
+**Zajawka 2.** Wykonujemy ten sam zapis dwa razy:
+
+```python
+>>> r = reversed('abc')
+>>> tuple(r)
+('c', 'b', 'a')
+>>> tuple(r)
+()
+```
+
+Drugie wywołanie `tuple(r)` daje pustą krotkę — tak, jakby `r` po pierwszym przebiegu został zjedzony. A teraz to samo z obiektem `range`:
+
+```python
+>>> z = range(3)
+>>> tuple(z)
+(0, 1, 2)
+>>> tuple(z)
+(0, 1, 2)
+```
+
+Tu nic się nie zjada — `z` przeżywa pierwszy przebieg w nienaruszonym stanie. Co odróżnia `r` od `z`?
+
+**Zajawka 3.** Obiekt, po którym można iterować, nie zawsze zachowuje się jak sekwencja:
+
+```python
+>>> r = reversed('abc')
+>>> len(r)
+TypeError: object of type 'reversed' has no len()
+>>> r[0]
+TypeError: 'reversed' object is not subscriptable
+```
+
+Dla list, krotek, łańcuchów `len` i indeksowanie po prostu działają. Dla `reversed` — nie. Dlaczego niektóre obiekty iterowalne tracą te udogodnienia?
+
+Te trzy obserwacje trafiają w jedno pojęcie: **iterator**. Tym pojęciem zaczynamy.
+
+***
+
+## Iteratory
+
+::: {.callout-important}
+## Iterator
+**Iterator** to obiekt reprezentujący strumień danych, na którym zdefiniowane są dwie metody specjalne:
+
+* `__next__(self)` — zwraca kolejną wartość ze strumienia. Po wyczerpaniu rzuca wyjątek `StopIteration`.
+* `__iter__(self)` — zwraca `self`. Czyli iterator jest swoim własnym obiektem iterowalnym.
+:::
+
+Wbudowana funkcja `next(it)` to skrót na `it.__next__()`:
+
+```python
+>>> it = reversed('abc')
+>>> it
+<reversed object at 0x7f298cbff640>
+>>> next(it)
+'c'
+>>> next(it)
+'b'
+>>> next(it)
+'a'
+>>> next(it)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+```
+
+Wyjątek `StopIteration` to umowny sygnał: „strumień się skończył, nie ma już co czytać". Pętla `for` i wszystkie funkcje konsumujące iterowalne (`tuple`, `list`, `set`, `sum`, `max`, …) wyłapują ten wyjątek i traktują go jako zakończenie pracy:
+
+```python
+>>> it = reversed('abc')
+>>> next(it)
+'c'
+>>> next(it)
+'b'
+>>> next(it)
+'a'
+>>> tuple(it)
+()
+```
+
+Trzy razy konsumujemy ręcznie, czwarty raz przez `tuple` — krotka jest pusta, bo `tuple` natychmiast natrafia na `StopIteration`.
+
+Nie wszystko, po czym da się iterować, jest iteratorem. Obiekty `range`, listy, krotki, słowniki, zbiory **nie są iteratorami**, mimo że można po nich iterować:
+
+```python
+>>> z = range(5)
+>>> z
+range(0, 5)
+>>> next(z)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'range' object is not an iterator
+```
+
+Czym one są — i jak `for` na nich działa — wyjaśnimy w następnej sekcji.
+
+### Iteratory są leniwe
+
+Iterator nie generuje wartości naprzód — produkuje je dopiero w odpowiedzi na `next`. Mówimy, że jest **leniwy** (*lazy*). Konsekwencja jest praktyczna: iterator zajmuje stałą, niewielką ilość pamięci, niezależnie od tego, ile wartości jest w stanie zwrócić. Może być nawet **nieskończony** — zaraz takie zobaczymy.
+
+### Iterator można przebiec tylko raz
+
+Druga ważna cecha: iterator zużywa się przy iteracji. Gdy `next` wyczerpie strumień, iterator zaczyna trwale rzucać `StopIteration`. Nie da się „wrócić na początek". To wyjaśnia drugą zajawkę:
+
+```python
+>>> r = reversed('abc')
+>>> tuple(r)         # konsumujemy strumień
+('c', 'b', 'a')
+>>> tuple(r)         # próbujemy raz jeszcze — strumień jest pusty
+()
+```
+
+Po iteratorze można też biec tylko **w jedną stronę** — wartość raz pobrana, jeśli nie zostanie zapamiętana, przepada.
+
+### Brak `__len__` i `__getitem__`
+
+Iterator **nie jest sekwencją**. Sekwencje (lista, krotka, łańcuch) udostępniają `len` i indeksowanie:
+
+```python
+>>> len([1, 2, 3])
+3
+>>> [10, 20, 30][1]
+20
+```
+
+Iteratory nie:
+
+```python
+>>> r = reversed('abc')
+>>> len(r)
+TypeError: object of type 'reversed' has no len()
+>>> r[0]
+TypeError: 'reversed' object is not subscriptable
+```
+
+Powód jest głęboki: długość iteratora nie jest w ogóle zdefiniowana, dopóki go nie przebiegniemy. Iterator może być nieskończony, może warunkowo się zatrzymać, może mieć długość zależną od jakiegoś zewnętrznego stanu. Jedynym sposobem dowiedzenia się, ile elementów ma iterator, jest **przebiec po nim i policzyć** — co go równocześnie wyczerpuje.
+
+To wyjaśnia trzecią zajawkę.
+
+### Funkcje wbudowane zwracające iteratory
+
+Spotkaliśmy już sporo funkcji, które wyglądają „kolekcyjnie", ale faktycznie zwracają iteratory:
+
+* `iter(x)` — z dowolnego obiektu iterowalnego tworzy iterator;
+* `enumerate(x)` — pary `(indeks, element)`;
+* `reversed(x)` — elementy w kolejności odwrotnej;
+* `zip(x, y, …)` — krotki z elementów wziętych po kolei z każdego argumentu;
+* `map(f, x)` — wartości funkcji `f` na elementach `x`;
+* `filter(p, x)` — te elementy `x`, dla których `p(element)` jest prawdziwe;
+* `open(filename)` — strumień linii z pliku.
+
+Wszystkie te obiekty są leniwe i jednorazowego użytku. Stąd typowa pułapka:
+
+```python
+>>> pary = zip([1, 2, 3], ['a', 'b', 'c'])
+>>> list(pary)
+[(1, 'a'), (2, 'b'), (3, 'c')]
+>>> list(pary)
+[]
+```
+
+Po pierwszym `list(pary)` iterator jest wyczerpany. Drugie wywołanie zastaje pustkę.
+
+::: {.callout-note}
+## Funkcja `open()`
+Obiekt dostępu do pliku zwracany przez `open()` nieco wyłamuje się z podanego wyżej schematu. Jest swoim własnym iteratorem — leniwym i ulegającym wyczerpaniu — ale można go przewijać metodą `seek()`. Ponadto wymaga jawnego zamknięcia po użyciu (`close()` albo `with`), bo trzyma uchwyt pliku — zasób systemowy.
+:::
+
+***
+
+## Obiekty iterowalne
+
+::: {.callout-important}
+## Obiekt iterowalny
+**Obiekt iterowalny** to dowolny obiekt, z którego wbudowana funkcja `iter()` umie zrobić iterator. Równoważnie — obiekt, po którym można iterować pętlą `for`.
+:::
+
+Mechanizm `iter` opiera się na metodzie specjalnej `__iter__`. Dla obiektu, który nie jest iteratorem, `__iter__` zwraca **nowy** iterator po jego elementach:
+
+```python
+>>> z = range(3)
+>>> it1 = iter(z)
+>>> it2 = iter(z)
+>>> it1 is it2
+False
+>>> next(it1)
+0
+>>> next(it2)
+0
+```
+
+Dwa wywołania `iter(z)` dają **dwa niezależne iteratory**. Każdy ma swój stan, każdy zaczyna od zera. To jest powód, dla którego można pusczać `for` po `range` dowolnie wiele razy: 
+
+```python
+>>> z = range(3)
+>>> for _ in range(3):
+...     for x in z:
+...         print(x, end=' ')
+...     print()
+0 1 2
+0 1 2
+0 1 2
+```
+
+Każde wejście do `for` woła `iter(z)` i dostaje **świeży** iterator.
+
+Iterator też jest obiektem iterowalnym — bo definiuje `__iter__` jako `return self`. `iter(it)` na iteratorze zwraca ten sam iterator, nie świeży. Stąd asymetria: `range` przeżywa wielokrotne pętle, `reversed('abc')` nie.
+
+Obiekty iterowalne to:
+
+* listy, krotki, łańcuchy, bytes-y;
+* słowniki, zbiory;
+* `range`;
+* obiekty zwracane przez `enumerate`, `reversed`, `zip`, `map`, `filter`, `open`;
+* wszystkie iteratory;
+* nasze własne klasy, jeśli zaimplementujemy `__iter__` (zaraz to zrobimy).
+
+### Jak działa pętla `for` pod spodem
+
+Mając pojęcia iteratora i obiektu iterowalnego, możemy precyzyjnie opisać, co się dzieje, gdy piszemy
+
+```python
+for element in obiekt_iterowalny:
+    instrukcje
+```
+
+Python tłumaczy to na:
+
+```python
+it = iter(obiekt_iterowalny)
+while True:
+    try:
+        element = next(it)
+    except StopIteration:
+        break
+    instrukcje
+```
+
+Najpierw `iter` wyciąga z obiektu iterator. Potem `next` w pętli pobiera kolejne wartości, aż do `StopIteration`. Funkcje takie jak `tuple`, `list`, `sum` działają według tego samego schematu — wnętrze różni się tylko tym, co robią z pobranymi wartościami.
+
+***
+
+## Iteratory tworzone klasą
+
+Zaimplementujemy teraz trzy własne iteratory jako klasy — od najprostszego do najbardziej rozbudowanego.
+
+### Kwadraty
+
+Iterator zwracający wszystkie kwadraty liczb naturalnych: `0, 1, 4, 9, 16, …`. Strumień jest **nieskończony** — `__next__` nigdy nie rzuca `StopIteration`, klasa `Kwadraty` po prostu tego nie potrzebuje.
+
+Stan iteratora trzymamy w atrybucie `_n` — to liczba, której kwadrat zwrócimy następnym razem. Konstruktor ustawia go na `0`. Każde wywołanie `__next__` zwraca `_n ** 2` i zwiększa `_n` o jeden.
+
+```python
+class Kwadraty:
+    """Iterator po kolejnych kwadratach liczb naturalnych: 0, 1, 4, 9, ..."""
+
+    def __init__(self):
+        self._n = 0
+
+    def __next__(self):
+        v = self._n ** 2
+        self._n += 1
+        return v
+
+    def __iter__(self):
+        return self
+```
+
+```python
+>>> kw = Kwadraty()
+>>> next(kw), next(kw), next(kw), next(kw)
+(0, 1, 4, 9)
+```
+
+Skoro `Kwadraty` jest nieskończone, nie da się napisać `list(Kwadraty())` — pętla nigdy się nie skończy. Możemy jednak wziąć skończony **prefiks**, na przykład listą składaną z licznikiem:
+
+```python
+>>> kw = Kwadraty()
+>>> [next(kw) for _ in range(10)]
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+```
+
+Albo zatrzymać `for` instrukcją `break`:
+
+```python
+>>> for v in Kwadraty():
+...     if v > 100:
+...         break
+...     print(v, end=' ')
+0 1 4 9 16 25 36 49 64 81 100
+```
+
+### Collatz
+
+Klasyczny ciąg Collatza: startujemy od liczby naturalnej `n` i powtarzamy regułę:
+
+* jeśli `n` jest parzyste, dziel przez 2;
+* jeśli `n` jest nieparzyste, weź `3n + 1`.
+
+Hipoteza Collatza mówi, że niezależnie od startowego `n` ciąg zawsze dochodzi do `1`. Hipoteza jest otwartym problemem — sprawdzona obliczeniowo dla bardzo wielu liczb. Ciąg jest skończony (przynajmniej dla wszystkich wypróbowanych `n`), ale jego długość nie jest znana z góry.
+
+Iterator startuje od `n` i zwraca kolejne wyrazy ciągu. Po zwróceniu `1` strumień się kończy.
+
+```python
+class Collatz:
+    """Iterator po wyrazach ciągu Collatza zaczynającego się od n.
+
+    Reguła: n parzyste -> n // 2; n nieparzyste -> 3n + 1.
+    Strumień kończy się po zwróceniu 1.
+    """
+
+    def __init__(self, n):
+        if n < 1:
+            raise ValueError("n musi być dodatnie")
+        self._n = n
+        self._done = False
+
+    def __repr__(self):
+        return f"Collatz(n={self._n})"
+
+    def __next__(self):
+        if self._done:
+            raise StopIteration
+        v = self._n
+        if v == 1:
+            self._done = True
+        elif v % 2 == 0:
+            self._n = v // 2
+        else:
+            self._n = 3 * v + 1
+        return v
+
+    def __iter__(self):
+        return self
+```
+
+Stan klasy to teraz dwie rzeczy: bieżąca wartość `_n` i flaga `_done` mówiąca, czy zwróciliśmy już `1`. Bez flagi nie umielibyśmy odróżnić „zaraz zwrócę 1" od „już zwróciłem 1, czas się zatrzymać" — bo `_n` w obu przypadkach byłoby równe `1`.
+
+```python
+>>> c = Collatz(6)
+>>> c
+Collatz(n=6)
+>>> list(c)
+[6, 3, 10, 5, 16, 8, 4, 2, 1]
+>>> list(Collatz(27))   # 27 daje wyjątkowo długi ciąg
+[27, 82, 41, 124, 62, 31, 94, 47, 142, 71, 214, 107, 322, 161, 484, 242, 121,
+ 364, 182, 91, 274, 137, 412, 206, 103, 310, 155, 466, 233, 700, 350, 175,
+ 526, 263, 790, 395, 1186, 593, 1780, 890, 445, 1336, 668, 334, 167, 502,
+ 251, 754, 377, 1132, 566, 283, 850, 425, 1276, 638, 319, 958, 479, 1438,
+ 719, 2158, 1079, 3238, 1619, 4858, 2429, 7288, 3644, 1822, 911, 2734, 1367,
+ 4102, 2051, 6154, 3077, 9232, 4616, 2308, 1154, 577, 1732, 866, 433, 1300,
+ 650, 325, 976, 488, 244, 122, 61, 184, 92, 46, 23, 70, 35, 106, 53, 160, 80,
+ 40, 20, 10, 5, 16, 8, 4, 2, 1]
+>>> len(list(Collatz(27)))
+112
+```
+
+W ten sposób reprezentujemy strumień, którego długość zależy od reguły wewnątrz `__next__`, a nie od licznika ustawianego w konstruktorze.
+
+### Loader
+
+Trzeci przykład jest motywujący: pokażemy iterator, **którego nie da się sensownie zastąpić generatorem**. Klasa `Loader` ładuje dane z sekwencji wartością po wartości, z opcjonalnym tasowaniem, i pozwala restartować iterację metodą `reset`. Wzorzec inspirowany jest klasą `DataLoader` z biblioteki PyTorch — każda *epoka* uczenia sieci neuronowej polega na przejściu po danych, najczęściej w nowej, losowej kolejności.
+
+```python
+import random
+
+
+class Loader:
+    """Iterator po elementach sekwencji z opcjonalnym tasowaniem.
+
+    Po wyczerpaniu można zrestartować iterację metodą reset(). Jeśli
+    shuffle=True, każdy reset losuje nową kolejność.
+    """
+
+    def __init__(self, data, *, shuffle=False):
+        self._data = list(data)
+        self._shuffle = shuffle
+        self._i = 0
+        if shuffle:
+            random.shuffle(self._data)
+
+    def __next__(self):
+        if self._i == len(self._data):
+            raise StopIteration
+        v = self._data[self._i]
+        self._i += 1
+        return v
+
+    def __iter__(self):
+        return self
+
+    def __len__(self):
+        return len(self._data)
+
+    def reset(self):
+        self._i = 0
+        if self._shuffle:
+            random.shuffle(self._data)
+```
+
+Klasa łamie dwie cechy iteratora, o których wcześniej mówiliśmy:
+
+* **Ma długość.** `__len__` zwraca rozmiar całych danych — wiadomo z góry, ile elementów może wyjść w jednej epoce.
+* **Można ją zrestartować.** `reset` ustawia licznik `_i` z powrotem na zero, a przy `shuffle=True` dodatkowo losuje nową kolejność.
+
+```python
+>>> loader = Loader([10, 20, 30, 40, 50], shuffle=True)
+>>> len(loader)
+5
+>>> for epoka in range(3):
+...     loader.reset()
+...     print(f"Epoka {epoka}: {list(loader)}")
+Epoka 0: [30, 10, 50, 20, 40]
+Epoka 1: [40, 50, 30, 10, 20]
+Epoka 2: [20, 40, 10, 50, 30]
+```
+
+Generator napisany funkcją `def` z `yield` (poznamy go za chwilę) nie umie ani przechowywać `__len__`, ani być restartowanym z zewnątrz. To są właśnie te sytuacje, w których klasa się opłaca: gdy iterator ma **trwały stan i zachowanie poza samą iteracją**.
+
+::: {.callout-note}
+## Trzy klasy, trzy schematy końca strumienia
+Każda z naszych klas ma inny scenariusz dla `StopIteration`:
+
+* `Kwadraty` — **nigdy go nie rzuca**, bo strumień jest nieskończony.
+* `Collatz` — rzuca, gdy spełni się **warunek wewnętrzny** (zwrócono `1`).
+* `Loader` — rzuca, gdy licznik dobije do **znanej z góry długości**.
+
+Wszystkie trzy schematy są typowe. Pisząc własny iterator, najpierw odpowiadamy sobie: czy mój strumień się kończy? Jeśli tak — kiedy?
+:::
+
+***
+
+## Generatory
+
+Pisanie klasy iteratora to dużo rusztowania: trzy metody, atrybut na stan, ręczne `StopIteration`. W większości przypadków da się to samo napisać jednym narzędziem językowym — **funkcją generatora**.
+
+::: {.callout-important}
+## Funkcja generatora i generator
+**Funkcja generatora** to funkcja zawierająca w swoim ciele instrukcję `yield`. Po wywołaniu nie wykonuje swojego ciała — zwraca **generator**: iterator, który leniwie wykona ciało funkcji, krok po kroku, na żądanie `next`.
+
+Każde napotkanie `yield` w trakcie iteracji **wstrzymuje** funkcję, oddaje wartość po prawej stronie `yield`, i zachowuje stan lokalnych zmiennych. Następne `next` podejmuje funkcję od miejsca, w którym ją wstrzymano.
+
+Wyjście z funkcji generatora (instrukcją `return` albo dotarciem do końca ciała) jest tłumaczone na `StopIteration`.
+:::
+
+Najprostszy przykład: ten sam iterator po kwadratach liczb naturalnych, który napisaliśmy wyżej jako klasę `Kwadraty`, można skrócić do:
+
+```python
+def kwadraty():
+    n = 0
+    while True:
+        yield n ** 2
+        n += 1
+```
+
+To jest pełna definicja. Cały stan, który wcześniej trzymaliśmy w atrybucie `_n`, teraz mieszka w lokalnej zmiennej `n` — Python sam zadba, by przeżyła pomiędzy kolejnymi wywołaniami `next`.
+
+```python
+>>> k = kwadraty()
+>>> k
+<generator object kwadraty at 0x7ff3007c81d0>
+>>> next(k), next(k), next(k), next(k)
+(0, 1, 4, 9)
+>>> [next(k) for _ in range(5)]
+[25, 36, 49, 64, 81]
+```
+
+Pięć linii zamiast dziewięciu, bez `__init__`, `__next__`, `__iter__`, bez ręcznego zarządzania stanem.
+
+### Czym `yield` różni się od `return`
+
+Spójrz na dwie funkcje, które wyglądają niemal identycznie:
+
+```python
+def f():
+    for litera in 'abc':
+        return litera
+
+
+def g():
+    for litera in 'abc':
+        yield litera
+```
+
+A przy tym ich zachowanie jest zupełnie inne:
+
+```python
+>>> f()
+'a'
+>>> g()
+<generator object g at 0x7ff3007c89d0>
+>>> list(g())
+['a', 'b', 'c']
+```
+
+* `f()` to zwykła funkcja. Wykonuje pierwszą iterację pętli, trafia na `return`, **opuszcza funkcję** i zwraca jedną literę.
+* `g()` to funkcja generatora — bo zawiera `yield`. Wywołanie nic nie liczy: zwraca generator. Dopiero `list(g())` (albo `next` w pętli) podejmuje wykonanie. Każde napotkanie `yield` zwraca wartość, ale **funkcji nie opuszcza** — kolejne `next` podejmuje pętlę od następnej iteracji.
+
+Z tego kontrastu wynika lekkość generatorów: skoro `yield` nie wychodzi z funkcji, możemy mieć dowolnie wiele yieldów w pętli, bez dodatkowej księgowości.
+
+### Przykład: rzuty kością aż do trafienia
+
+Funkcja generatora `rzuty_aż_wystąpi(k)` symuluje rzucanie kostką sześcienną i zwraca kolejne wyrzucone oczka, aż wypadnie zadana wartość `k`:
+
+```python
+from random import randint
+
+
+def rzuty_aż_wystąpi(k):
+    while True:
+        rzut = randint(1, 6)
+        yield rzut
+        if rzut == k:
+            break
+```
+
+```python
+>>> list(rzuty_aż_wystąpi(6))
+[5, 6]
+>>> list(rzuty_aż_wystąpi(6))
+[3, 1, 4, 1, 5, 6]
+```
+
+Instrukcja `break` opuszcza pętlę; sterowanie dochodzi do końca ciała funkcji; generator wyrzuca `StopIteration`.
+
+Drobna modyfikacja zmienia zachowanie: jeśli `yield` wstawimy **po** sprawdzeniu warunku, ostatni rzut (ten z trafioną wartością) nie pojawi się w wynikach:
+
+```python
+def rzuty_aż_wystąpi(k):
+    while True:
+        rzut = randint(1, 6)
+        if rzut == k:
+            break
+        yield rzut
+```
+
+```python
+>>> list(rzuty_aż_wystąpi(6))
+[5, 4, 5, 4, 5]
+```
+
+Decyzja, którą wersję wybrać, zależy od tego, czy wartość spełniająca warunek ma być częścią strumienia czy tylko sygnałem zatrzymania.
+
+### Przykład: ciąg Fibonacciego
+
+Generator nieskończonego ciągu Fibonacciego — w czterech linijkach:
+
+```python
+def fib():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b
+```
+
+Wywołanie `fib()` zwraca świeży generator. Co z nim zrobić, zależy od potrzeby:
+
+**Pierwszych 15 wyrazów:**
+
+```python
+>>> f = fib()
+>>> [next(f) for _ in range(15)]
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+```
+
+**Tylko piętnasty wyraz:** porzucamy 14 wartości, czytamy piętnastą:
+
+```python
+>>> f = fib()
+>>> for _ in range(14):
+...     next(f)
+>>> next(f)
+377
+```
+
+**Wszystkie wyrazy mniejsze od 10000:**
+
+```python
+>>> for x in fib():
+...     if x >= 10000:
+...         break
+...     print(x, end=' ')
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765
+```
+
+Cztery linie definicji, niewielka pamięć, dowolny prefiks na żądanie.
+
+### Wyrażenie generatora
+
+Listy składane mają kuzyna — **wyrażenie generatora**. Składnia jest taka sama, tylko zewnętrzne nawiasy `[]` zastępujemy przez `()`:
+
+```python
+>>> potęgi = (2 ** n for n in range(10))
+>>> potęgi
+<generator object <genexpr> at 0x7ff3007c89d0>
+>>> list(potęgi)
+[1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
+```
+
+W odróżnieniu od listy składanej, wyrażenie generatora **nie tworzy listy** — tworzy iterator, który dopiero po kolei policzy wartości. Korzyść: pamięć. `list(range(10**9))` zabije program; `(x for x in range(10**9))` jest natychmiastowe.
+
+Funkcje konsumujące iterowalne (`sum`, `max`, `any`, `all`, …) pozwalają opuścić nawiasy okrągłe, gdy wyrażenie generatora jest jedynym argumentem:
+
+```python
+>>> sum(2 ** n for n in range(10))
+1023
+>>> max(len(s) for s in ['ala', 'ma', 'kota'])
+4
+```
+
+To jest pythonowy, oszczędny zapis dla obliczeń typu „suma czegoś po czymś", bez tworzenia pośredniej listy.
+
+### `return` w funkcji generatora
+
+Chcemy napisać funkcję generatora `różnice(seq)`. Argument `seq` jest sekwencją liczb. Generator ma zwracać kolejne różnice między sąsiadami: `seq[1]-seq[0]`, `seq[2]-seq[1]`, … Dla sekwencji `[3, 1, 6, 10, 20]` chcemy dostać `-2, 5, 4, 10`.
+
+Pierwsza próba:
+
+```python
+def różnice(seq):
+    a = seq[0]
+    for b in seq[1:]:
+        yield b - a
+        a = b
+```
+
+```python
+>>> list(różnice([3, 1, 6, 10, 20]))
+[-2, 5, 4, 10]
+>>> list(różnice([7]))
+[]
+```
+
+Dla sekwencji jednoelementowej generator jest pusty (pętla `for` nie wchodzi do ciała). Ale dla pustej:
+
+```python
+>>> list(różnice([]))
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+IndexError: list index out of range
+```
+
+Linia `a = seq[0]` rzuca `IndexError`. Naprawiamy to wcześniejszym sprawdzeniem i opuszczeniem generatora przez `return`:
+
+```python
+def różnice(seq):
+    if not seq:
+        return
+    a = seq[0]
+    for b in seq[1:]:
+        yield b - a
+        a = b
+```
+
+W funkcji generatora `return` (bez wartości) jest dopuszczalny — oznacza „zakończ strumień". Python przekłada to na `StopIteration`.
+
+```python
+>>> list(różnice([]))
+[]
+>>> list(różnice([7]))
+[]
+>>> list(różnice([3, 1, 6, 10, 20]))
+[-2, 5, 4, 10]
+```
+
+::: {.callout-note}
+## Dlaczego nie `raise StopIteration`?
+Mogłoby się wydawać, że zamiast `return` da się napisać `raise StopIteration`. **Nie da się.** Od Pythona 3.7 (zgodnie z [PEP 479](https://www.python.org/dev/peps/pep-0479/)) `StopIteration` rzucony wewnątrz funkcji generatora jest automatycznie konwertowany na `RuntimeError`:
+
+```python
+>>> def zły():
+...     yield 1
+...     raise StopIteration
+>>> list(zły())
+Traceback (most recent call last):
+  ...
+RuntimeError: generator raised StopIteration
+```
+
+Powód jest praktyczny: dawniej `StopIteration` z głębi generatora cicho kończył iterację, co maskowało błędy w kodzie generatora. Teraz musimy używać `return`, a `StopIteration` rezerwujemy dla iteratorów pisanych ręcznie klasą.
+:::
+
+Funkcja `różnice(seq)` zakłada, że `seq` jest sekwencją — używamy `seq[0]` i `seq[1:]`. Nie zadziała na iteratorze ani na zbiorze. Wersja ogólna, działająca na dowolnym obiekcie iterowalnym:
+
+```python
+def różnice(it):
+    it = iter(it)
+    try:
+        a = next(it)
+    except StopIteration:
+        return
+    for b in it:
+        yield b - a
+        a = b
+```
+
+* `iter(it)` sprowadza argument do iteratora; jeśli już jest iteratorem, nic nie zmienia.
+* Blok `try/except` pobiera pierwszy element. Jeśli iterator jest pusty, `next` rzuca `StopIteration`, my łapiemy i wychodzimy z generatora przez `return`.
+* Pętla `for` biegnie po **reszcie** iteratora — ten sam `it`, z którego pobraliśmy już pierwszy element.
+
+```python
+>>> list(różnice(x ** 2 for x in range(6)))
+[1, 3, 5, 7, 9]
+```
+
+Wyrażenie generatora `(x ** 2 for x in range(6))` daje strumień `0, 1, 4, 9, 16, 25`. Różnice sąsiadów to znane `1, 3, 5, 7, 9` — kolejne nieparzyste.
+
+***
+
+## Przykład: spirala kratowa
+
+Zbierzmy pojęcia w jednym, większym przykładzie. Napiszemy generator `krata()`, który chodzi po wszystkich punktach kratowych płaszczyzny — czyli punktach o **całkowitych** współrzędnych — i odwiedza każdy z nich dokładnie raz. Trasa będzie spiralą zaczynającą się w `(0, 0)`:
+
+```
+(0,0) → (1,0) → (1,-1) → (0,-1) → (-1,-1) → (-1,0) → (-1,1) → (0,1) → (1,1) → (2,1) → ...
+```
+
+Idziemy 1 krok w prawo, 1 krok w dół, 2 kroki w lewo, 2 kroki w górę, 3 kroki w prawo, 3 kroki w dół, … — co dwa boki długość boku rośnie o 1.
+
+Zbudujemy `krata()` z dwóch pomocniczych generatorów.
+
+**Generator długości boków** — produkuje strumień `1, 1, 2, 2, 3, 3, 4, 4, …`:
+
+```python
+def długości_boków():
+    k = 1
+    while True:
+        yield k
+        yield k
+        k += 1
+```
+
+W jednej iteracji pętli `while` mamy **dwa** `yield`y. To jest ten moment, w którym ciężar `yield`-a jako mechanizmu różnego od `return` staje się namacalny — `return` jednorazowo opuściłby funkcję, `yield` jedynie wstrzymuje.
+
+**Generator kierunków** — strumień `'P', 'D', 'L', 'G', 'P', 'D', 'L', 'G', …`:
+
+```python
+def kierunki():
+    while True:
+        for kierunek in 'PDLG':
+            yield kierunek
+```
+
+**Słownik przesunięć** — każdemu kierunkowi przyporządkowuje funkcję, która przekształca punkt:
+
+```python
+PRZESUNIĘCIA = {
+    'P': lambda x, y: (x + 1, y),
+    'D': lambda x, y: (x, y - 1),
+    'L': lambda x, y: (x - 1, y),
+    'G': lambda x, y: (x, y + 1),
+}
+```
+
+**Główny generator** — chodzi po spirali, oddając kolejne punkty:
+
+```python
+def krata():
+    boki = długości_boków()
+    kier = kierunki()
+    x, y = 0, 0
+    while True:
+        długość = next(boki)
+        kierunek = next(kier)
+        for _ in range(długość):
+            yield x, y
+            x, y = PRZESUNIĘCIA[kierunek](x, y)
+```
+
+Zauważ: `krata()` korzysta z `next(boki)` i `next(kier)` na generatorach pomocniczych. Nieskończone generatory komponują się ze sobą bez kłopotu, każdy w swoim tempie.
+
+```python
+>>> p = krata()
+>>> [next(p) for _ in range(9)]
+[(0, 0), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1)]
+```
+
+### Zapis do CSV — leniwy
+
+Teraz chcemy zapisać początkowy fragment spirali do pliku CSV, żeby móc go obejrzeć w arkuszu kalkulacyjnym albo zwizualizować poza Pythonem. Ale `krata()` jest nieskończona — musimy wziąć jakiś **prefiks**.
+
+Tutaj wchodzi do gry funkcja [`itertools.islice`](https://docs.python.org/3/library/itertools.html#itertools.islice). Z modułu `itertools`, biblioteki narzędzi do pracy z iteratorami:
+
+```python
+>>> from itertools import islice
+>>> list(islice(krata(), 9))
+[(0, 0), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1)]
+```
+
+`islice(it, n)` to leniwy odpowiednik `it[:n]` — bierze pierwsze `n` elementów iteratora, ale **nie tworzy listy**. Wynik to znów iterator, do którego można odwołać się tylko wtedy, gdy ktoś naprawdę poprosi o wartość.
+
+Funkcja zapisująca:
+
+```python
+import csv
+from itertools import islice
+
+
+def krata_do_csv(filename, n=225):
+    """Zapisuje pierwszych n punktów spirali kratowej do pliku CSV."""
+    with open(filename, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["x", "y"])
+        writer.writerows(islice(krata(), n))
+```
+
+Trzy obserwacje:
+
+* `writer.writerows` przyjmuje **dowolne iterowalne wiersze**. Nie żąda listy — chętnie weźmie iterator.
+* `islice(krata(), n)` jest leniwy. W żadnym momencie nie powstaje pełna lista 225 punktów w pamięci — `writerows` po prostu w pętli `next`-uje aż do `StopIteration`.
+* W rezultacie potrafimy zapisać do pliku skończony prefiks **nieskończonego** strumienia, nie materializując go.
+
+```python
+>>> krata_do_csv("krata.csv")
+```
+
+Plik `krata.csv` zaczyna się tak:
+
+```
+x,y
+0,0
+1,0
+1,-1
+0,-1
+-1,-1
+-1,0
+-1,1
+0,1
+1,1
+...
+```
+
+Trasę z pliku możesz obejrzeć:
+
+* w arkuszu kalkulacyjnym (np. Excel) — wykres XY ze wszystkich wierszy;
+* w narzędziu online jak [csvplot](https://www.csvplot.com);
+* w notatniku Jupyter za pomocą `pandas` i `matplotlib`, sposobem opisanym w laboratorium VI.
+
+***
+
+## Uwaga o terminologii
+
+Słowa „iterator" i „generator" w tekstach o Pythonie bywają używane zamiennie i niezgodnie z definicjami. Ujednolicamy:
+
+* **Iterator** — obiekt z metodami `__next__` i `__iter__`. Może powstać z klasy ręcznie, może być zwrócony przez funkcję wbudowaną (`reversed`, `map`, …), może być wynikiem wywołania funkcji generatora.
+* **Generator** — to, co zwraca funkcja generatora albo wyrażenie generatora. Generator jest szczególnym przypadkiem iteratora.
+* **Funkcja generatora** — funkcja zawierająca `yield`. Po wywołaniu zwraca generator.
+
+Tak rozumiane terminy bierzemy z książki Luciano Ramalho [*Fluent Python*](https://www.fluentpython.com/) (2nd edition, O'Reilly 2022). Z kolei [Python Glossary](https://docs.python.org/3/glossary.html#term-generator) używa terminu *generator* dla funkcji zawierającej `yield`, a obiekt zwracany przez taką funkcję nazywa *generator iterator*. Społeczność miesza te konwencje swobodnie. W tym wykładzie trzymamy się terminologii Ramalho.
+
+***
+
+## Podsumowanie
+
+Pojęcia z tego wykładu:
+
+* **Iterator** to obiekt z metodami `__next__` i `__iter__`. `next(it)` zwraca kolejną wartość; po wyczerpaniu rzuca `StopIteration`. `iter(it)` zwraca `self`.
+* Iteratory są **leniwe** (wartości na żądanie), **jednorazowe** (po wyczerpaniu nie da się ich zrestartować bez dodatkowego mechanizmu) i nie są sekwencjami (nie mają `__len__` ani `__getitem__`).
+* **Obiekt iterowalny** to obiekt, z którego `iter()` umie wyprodukować iterator. Każdy iterator jest obiektem iterowalnym; nie każdy obiekt iterowalny jest iteratorem (`range`, listy, słowniki — nie są).
+* Pętla `for x in obiekt:` rozwija się do wzorca: `it = iter(obiekt); while True: try: x = next(it); … except StopIteration: break`.
+* **Klasa iteratora** trzyma stan w atrybutach instancji, implementuje `__next__` i `__iter__`. Sensowna, gdy iterator ma trwałe zachowanie poza samym strumieniem (długość znaną z góry, możliwość restartu, dodatkowe metody).
+* **Funkcja generatora** to funkcja z `yield`. Wywołana zwraca generator. `yield` wstrzymuje wykonanie i zwraca wartość; następne `next` podejmuje funkcję od miejsca wstrzymania. `return` w generatorze (bez wartości) kończy strumień.
+* **Wyrażenie generatora** ma składnię listy składanej z nawiasami `()` zamiast `[]`. Tworzy generator zamiast listy. Przy pojedynczym argumencie funkcji konsumującej (np. `sum`) nawiasy można opuścić.
+* `itertools.islice(it, n)` bierze leniwie pierwsze `n` elementów iteratora — odpowiednik `it[:n]` dla iteratorów.
+
+Główna myśl wykładu: iterator to abstrakcja **strumienia danych pobieranego na żądanie**. Pozwala oddzielić *jak* dane są generowane od *kto i kiedy* je czyta. Dzięki temu możemy w skończonej pamięci pracować ze strumieniami nieskończonymi — i pisać kod, który składa się z drobnych, leniwych części.
+
+***
+
+## Co dalej
+
+Wykład XI zamyka semestr od strony wykładów. Po stronie samych iteratorów ekosystem Pythona oferuje znacznie więcej, niż mogliśmy tu zmieścić:
+
+* **Moduł [`itertools`](https://docs.python.org/3/library/itertools.html)** — biblioteka funkcji do komponowania iteratorów. Poza `islice` warto poznać `chain`, `cycle`, `count`, `takewhile`, `dropwhile`, `groupby`, `accumulate`, `combinations`, `permutations`. Każda z nich jest leniwa i każda wraca w realnym kodzie analitycznym.
+* **`yield from`** — składnia delegowania do innego generatora. Pozwala napisać `yield from inny_generator()` zamiast `for x in inny_generator(): yield x`.
+* **Generatory jako korutyny** — `yield` może też **przyjmować** wartość przez `gen.send(x)`. Ten kierunek prowadzi do koncepcji korutyny i jest fundamentem `async`/`await` w Pythonie.
+* **Asynchroniczne iteratory** — `__aiter__`, `__anext__`, `async for`. Ten sam wzorzec, ale dla operacji oczekujących na I/O.
+
+Kanoniczna lektura: [A. Kuchling, *Functional Programming HOWTO*](https://docs.python.org/3/howto/functional.html) z dokumentacji Pythona, oraz odpowiednie rozdziały *Fluent Python* L. Ramalho.

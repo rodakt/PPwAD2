@@ -1,0 +1,621 @@
+---
+title: "Lab XI: Metody specjalne i dziedziczenie"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+Te ćwiczenia nawiązują do drugiego wykładu o klasach. Główne motywy to: metody specjalne integrujące obiekt z wbudowaną składnią Pythona — operatory `+`, `*`, `&`, `|`, `==`, `in` oraz wbudowane funkcje `bool`, `repr` i `str` — a także **dziedziczenie**, którym wreszcie wyeliminujemy duplikację z klas `MovingAverage` i `AverageSpeed` z lab X. Po drodze wrócimy do dwóch zadań z lab VII (losowanie z urny, szyfrator) i napiszemy je jako klasy zamiast domknięć — bezpośrednie porównanie obu wariantów to ważne ćwiczenie samo w sobie. Końcowe zadanie — sumy przedziałów otwartych — jest zauważalnie obszerniejsze od pozostałych; potraktuj je jako materiał dla chętnych. Poprawność rozwiązań weryfikuj za pomocą dołączonych plików z testami albo doctestów.
+
+## Rozgrzewka: metody specjalne i dziedziczenie
+
+Dla każdego z poniższych pytań najpierw udziel odpowiedzi samodzielnie, a następnie sprawdź ją w interpreterze.
+
+**1.** Co wypiszą obie linie `print`?
+
+```python
+class Punkt:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __repr__(self):
+        return f"Punkt({self.x}, {self.y})"
+
+p = Punkt(3, 4)
+print(p)
+print(repr(p))
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Obie linie wypiszą `Punkt(3, 4)`. Klasa nie definiuje `__str__`, a `print(p)` (czyli `str(p)`) korzysta wówczas z `__repr__` jako fallbacku. To samo zachowanie, które omówiliśmy w callout o `__repr__` i `__str__` w lab X — dopóki nie zdefiniujesz osobno `__str__`, `str(obj)` i `repr(obj)` dają ten sam napis.
+:::
+
+**2.** Co zwrócą poniższe wyrażenia?
+
+```python
+class A:
+    pass
+
+class B:
+    def __bool__(self):
+        return False
+
+print(bool(A()))
+print(bool(B()))
+print(bool(A()) and bool(B()))
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Wypisze `True`, `False`, `False`. Domyślnie *każda* instancja klasy zdefiniowanej przez użytkownika jest prawdziwa — `if obj:` przepuści ją bez sprzeciwu. Aby instancja mogła być fałszywa, klasa musi sama zdefiniować `__bool__`. Ten mechanizm wykorzystamy w `OpenInterval` i `Intervals` — przedział pusty będzie fałszywy, niepusty prawdziwy.
+:::
+
+**3.** Co wypisze ten kod?
+
+```python
+class Wektor:
+    def __init__(self, x):
+        self.x = x
+
+    def __mul__(self, k):
+        return Wektor(self.x * k)
+
+    def __repr__(self):
+        return f"Wektor({self.x})"
+
+w = Wektor(3)
+print(w * 2)
+print(2 * w)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Pierwsza linia wypisze `Wektor(6)`. Druga zgłosi `TypeError: unsupported operand type(s) for *: 'int' and 'Wektor'`.
+
+Wyrażenie `w * 2` Python tłumaczy na `w.__mul__(2)` — typ lewego argumentu odpowiada za operację. Wyrażenie `2 * w` Python próbuje obsłużyć przez `(2).__mul__(w)`, ale `int.__mul__` nie wie, jak pomnożyć liczbę przez `Wektor`, więc zwraca specjalną wartość `NotImplemented`. Wtedy — i dopiero wtedy — Python pyta prawego operanda przez `w.__rmul__(2)`. Klasa `Wektor` nie zdefiniowała `__rmul__`, więc cała operacja kończy się `TypeError`.
+
+Symetrię trzeba dorobić ręcznie — przez `__rmul__`, którą wykorzystamy w zadaniu o `ZZ` (iloczyn liczby całkowitej przez resztę).
+:::
+
+**4.** Co wypisze ten kod?
+
+```python
+class A:
+    def __init__(self):
+        self.x = 1
+
+    def show(self):
+        return self.x
+
+class B(A):
+    def show(self):
+        return self.x * 10
+
+a = A()
+b = B()
+print(a.show(), b.show())
+print(b.x)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Wypisze `1 10` i potem `1`. Klasa `B` dziedziczy z `A` (zapis `class B(A):`) i nie definiuje własnego `__init__`, więc do utworzenia instancji `B()` użyty zostaje konstruktor z `A` — stąd `b.x == 1`. Metoda `show` w `B` jest natomiast nadpisana (lokalna definicja przesłania odziedziczoną), więc `b.show()` daje `10`, a `a.show()` — `1`.
+
+Ten wzorzec — *dziedziczę całą inicjalizację, podmieniam tylko jedną metodę* — wykorzystamy w pierwszym zadaniu tego labu.
+:::
+
+***
+
+## Średnia ruchoma raz jeszcze
+
+W lab X zauważyliśmy, że klasy `MovingAverage` i `AverageSpeed` powtarzają tę samą strukturę — obie prowadzą dwie sumy bieżące i zwracają ich iloraz. W tym zadaniu wyeliminujemy to powtórzenie przez **dziedziczenie**: zdefiniujemy wspólną klasę bazową `RatioAccumulator`, a `MovingAverage` i `AverageSpeed` zaimplementujemy jako jej podklasy.
+
+Napisz moduł `moving_average.py` zawierający trzy klasy: `RatioAccumulator`, `MovingAverage` i `AverageSpeed`. Jest to refaktoryzacja modułu z lab X — interfejs się zmienia, więc zmienią się także testy.
+
+**`RatioAccumulator`** — klasa bazowa, która zna tylko abstrakcyjne pojęcie „iloraz dwóch sum bieżących":
+
+- atrybuty `numerator` (suma w liczniku) i `denominator` (suma w mianowniku);
+- `__init__(self)` — inicjalizuje oba atrybuty na zero;
+- `add(self, a, b)` — dodaje `a` do `numerator`, `b` do `denominator`, a następnie zwraca aktualną wartość `numerator / denominator`.
+
+```python
+class RatioAccumulator:
+    """Klasa bazowa: prowadzi dwie sumy bieżące i zwraca ich iloraz.
+
+    >>> r = RatioAccumulator()
+    >>> r.numerator, r.denominator
+    (0, 0)
+    >>> r.add(2, 1)
+    2.0
+    >>> r.add(4, 1)
+    3.0
+    >>> r.numerator, r.denominator
+    (6, 2)
+    >>> r.add(0, 2)
+    1.5
+    """
+    pass
+```
+
+**`MovingAverage`** — podklasa `RatioAccumulator`, która specjalizuje się w średniej arytmetycznej:
+
+- nie definiuje własnego `__init__` (dziedziczy go z `RatioAccumulator`);
+- `add_value(self, value)` — dodaje `value` do bieżącej sumy z wagą 1; wewnątrz korzysta z odziedziczonej metody `add` i zwraca jej wynik.
+
+```python
+class MovingAverage(RatioAccumulator):
+    """Średnia arytmetyczna kolejno dodawanych wartości.
+
+    >>> m = MovingAverage()
+    >>> m.add_value(10)
+    10.0
+    >>> m.add_value(20)
+    15.0
+    >>> m.add_value(30)
+    20.0
+    >>> m.numerator, m.denominator
+    (60, 3)
+    """
+    pass
+```
+
+**`AverageSpeed`** — podklasa `RatioAccumulator`, która specjalizuje się w prędkości średniej:
+
+- nie definiuje własnego `__init__`;
+- `add_section(self, distance, time)` — dodaje nowy odcinek o długości `distance` pokonany w czasie `time`; wewnątrz korzysta z odziedziczonej metody `add` i zwraca jej wynik (czyli aktualną prędkość średnią).
+
+```python
+class AverageSpeed(RatioAccumulator):
+    """Prędkość średnia obliczana z kolejnych odcinków drogi i czasu.
+
+    >>> v = AverageSpeed()
+    >>> v.add_section(100, 2)
+    50.0
+    >>> v.add_section(200, 3)
+    60.0
+    >>> v.numerator, v.denominator
+    (300, 5)
+    """
+    pass
+```
+
+::: {.callout-note}
+## Dziedziczenie w praktyce
+
+Składnia `class MovingAverage(RatioAccumulator):` deklaruje, że `MovingAverage` jest **podklasą** klasy `RatioAccumulator`. Podklasa dziedziczy wszystkie atrybuty i metody nadklasy — łącznie z `__init__`. W tym zadaniu obie podklasy nie definiują własnego `__init__`; tworzą instancje korzystając z konstruktora odziedziczonego z `RatioAccumulator`, który ustawia `numerator = 0` i `denominator = 0`.
+
+Ciało każdej podklasy zawiera tylko jedną metodę dziedzinową (`add_value` albo `add_section`), która wewnątrz deleguje całą logikę do odziedziczonej `add(a, b)`. Cała różnica między `MovingAverage` i `AverageSpeed` sprowadza się do tego, *jaką parę* `(a, b)` podstawiamy do `add` — w pierwszej klasie waga zawsze wynosi 1 (każda wartość liczy się tak samo), w drugiej wagą jest czas, w którym pokonano odpowiedni dystans.
+
+Zauważ, że w wersji z lab X każda z klas miała własne, dziedzinowe nazwy atrybutów (`total` i `count` w `MovingAverage`; `distance`, `time`, `average_speed` w `AverageSpeed`). Po refaktoryzacji wszystkie obiekty noszą jednolite nazwy `numerator` i `denominator` — i to jest cena, jaką płacimy za eliminację duplikacji. Specyficzne dla dziedziny pozostają tylko *publiczne metody* (`add_value`, `add_section`), którymi użytkownik klasy posługuje się na co dzień.
+:::
+
+***
+
+## Klasa losująca z urny
+
+W lab VII pisałeś funkcję `random_ball_machine()`, która zwracała bezparametrową funkcję `machine()` symulującą losowanie kul z urny. Stan urny — bieżący skład kolorów i tryb losowania — przechowywany był w domknięciu funkcji wewnętrznej. W tym zadaniu napiszesz wariant **obiektowy**: stan urny będzie atrybutem instancji, a losowanie — metodą.
+
+Napisz moduł `random_ball_machine.py` zawierający klasę `RandomBallMachine`. Interfejs:
+
+- `__init__(self, return_balls=True, **balls)` — `balls` to argumenty kluczowe postaci `<kolor>=<liczba>`, opisujące początkowy skład urny (np. `red=3, blue=2`). `return_balls` decyduje o trybie losowania: `True` oznacza losowanie ze zwracaniem (skład urny się nie zmienia), `False` — losowanie bez zwracania (kula po wylosowaniu opuszcza urnę). Inicjalizator zapamiętuje oba parametry jako atrybuty instancji.
+- `__call__(self)` — losuje jedną kulę z urny i zwraca jej kolor (napis). W trybie bez zwracania *modyfikuje* skład urny: liczba kul wylosowanego koloru maleje o jeden. Jeśli urna jest pusta (suma kul wynosi zero), metoda zgłasza `ValueError` z komunikatem `Urna jest pusta`.
+- `__len__(self)` — zwraca aktualną sumę kul w urnie.
+
+```python
+class RandomBallMachine:
+    """Symuluje losowanie kul z urny.
+
+    >>> import random
+    >>> random.seed(0)
+    >>> machine = RandomBallMachine(red=3, blue=2)
+    >>> len(machine)
+    5
+    >>> machine()                           # losowanie ze zwracaniem
+    'red'
+    >>> len(machine)                        # skład bez zmian
+    5
+    >>> machine = RandomBallMachine(return_balls=False, red=2, blue=1)
+    >>> sorted(machine() for _ in range(3)) # doctest: +SKIP
+    ['blue', 'red', 'red']
+    >>> len(machine)
+    0
+    >>> machine()
+    Traceback (most recent call last):
+        ...
+    ValueError: Urna jest pusta
+    """
+    pass
+```
+
+::: {.callout-note}
+## Klasa zamiast domknięcia
+
+W lab VII stan urny był ukryty w domknięciu — *niewidoczny z zewnątrz*, dostępny tylko przez wywołanie zwróconej funkcji. To eleganckie, ale ma cenę: nie da się zapytać, ile kul zostało w urnie, ani przerwać losowania w połowie i sprawdzić skład.
+
+Klasa rozwiązuje oba problemy. Stan jest atrybutem instancji — można go odczytać, zwizualizować, wypisać w debugerze. Metoda `__len__` daje wprost odpowiedź na pytanie „ile kul zostało?", a metoda `__call__` zachowuje wygodę z lab VII: instancja klasy z `__call__` zachowuje się jak funkcja, więc składnia wywołania `machine()` jest identyczna w obu wariantach. To samo widzieliśmy w lab X przy `Wywoływalnym Fibonaccim` — klasa z `__call__` to nie jest „cięższa" funkcja, tylko funkcja z otwartym dostępem do swojego stanu.
+:::
+
+***
+
+## Klasa szyfratora
+
+W lab VII pisałeś funkcję wyższego rzędu, która budowała szyfrator tekstu — zamykała alfabet i przesunięcie w domknięciu i zwracała funkcję szyfrującą pojedynczy napis. Tutaj zrobimy to samo za pomocą klasy.
+
+Napisz moduł `caesar_cipher.py` zawierający klasę `CaesarCipher`. Klasa reprezentuje szyfr Cezara o zadanym przesunięciu, działający na wybranym alfabecie. Interfejs:
+
+- `__init__(self, shift, alphabet="abcdefghijklmnopqrstuvwxyz")` — zapamiętuje przesunięcie (liczba całkowita; może być ujemne) i alfabet (napis bez powtarzających się znaków).
+- `__call__(self, text)` — zwraca tekst zaszyfrowany. Każdy znak `text`, który występuje w `alphabet`, zostaje przesunięty o `shift` pozycji w przód (cyklicznie); znaki spoza alfabetu pozostają bez zmian. Wielkość liter jest istotna — domyślny alfabet zawiera tylko małe litery, więc `'A'` w tekście wejściowym zostanie potraktowane jako znak spoza alfabetu.
+- `decrypt(self, text)` — zwraca tekst odszyfrowany, czyli zaszyfrowany przesunięciem `-shift`.
+- `__repr__(self)` — zwraca napis, który po wpisaniu do interpretera odtwarza obiekt.
+
+```python
+class CaesarCipher:
+    """Szyfr Cezara o zadanym przesunięciu.
+
+    >>> cipher = CaesarCipher(3)
+    >>> cipher("ala ma kota")
+    'dod pd nrwd'
+    >>> cipher.decrypt("dod pd nrwd")
+    'ala ma kota'
+    >>> cipher
+    CaesarCipher(3)
+    >>> rot13 = CaesarCipher(13)
+    >>> rot13(rot13("hello world"))         # ROT13 jest swoją własną odwrotnością
+    'hello world'
+    >>> binary = CaesarCipher(1, alphabet="01")
+    >>> binary("01010 11")
+    '10101 00'
+    """
+    pass
+```
+
+::: {.callout-tip}
+## Wskazówka
+
+Zarówno szyfrowanie, jak i odszyfrowywanie sprowadzają się do tej samej operacji: przesunięcia każdego znaku o pewną liczbę pozycji w alfabecie. Zamiast pisać dwie niemal identyczne metody, możesz wydzielić prywatną metodę pomocniczą `_shift_text(self, text, by)` — `__call__` woła ją z `by=self.shift`, a `decrypt` z `by=-self.shift`. Konwencja: nazwy zaczynające się od podkreślnika sygnalizują, że metoda jest implementacyjna, nie należy do publicznego interfejsu klasy.
+:::
+
+::: {.callout-note}
+## Dwa razy ten sam pomysł
+
+Zadania o urnie i o szyfratorze są w istocie tym samym ćwiczeniem: *bierzemy funkcję wyższego rzędu z lab VII i przepisujemy ją jako klasę z `__call__`*. W obu przypadkach dane, które w wersji funkcyjnej zamykały się w domknięciu (skład urny; alfabet i przesunięcie), stają się atrybutami instancji. Operator `()` na instancji zachowuje się tak samo jak na zwróconej funkcji — to dlatego mówimy, że obiekt z `__call__` *jest wywoływalny*.
+
+Co zyskujemy? Stan jest jawny i dostępny przez kropkę (`machine.return_balls`, `cipher.shift`), klasa może mieć dodatkowe metody publiczne (`decrypt`) i specjalne (`__len__`, `__repr__`), a wszystko to bez cienia magii — zwykłe atrybuty i zwykłe metody. Co tracimy? Trochę zwięzłości; definicja klasy z trzema metodami jest dłuższa niż jednolinijkowa lambda. W praktyce wybór między domknięciem a klasą sprowadza się do pytania: *czy stan ma pozostać prywatny, czy ma być częścią interfejsu?* Jeśli prywatny — domknięcie. Jeśli publiczny i bogaty — klasa.
+:::
+
+***
+
+## Otwarty przedział
+
+Napisz moduł `open_interval.py` zawierający klasę `OpenInterval`. Obiekty tej klasy reprezentują przedziały otwarte na osi liczbowej. Każdy przedział wyznaczony jest przez dwie liczby rzeczywiste `start` i `end`. Przedział otwarty $(a, b)$ to zbiór tych liczb rzeczywistych $x$, że $a < x < b$. Jeżeli $a \geq b$, to taki zbiór jest pusty.
+
+Interfejs:
+
+- `__init__(self, start, end)` — ustawia atrybuty `start` i `end`. Jeśli `start >= end`, przedział jest pusty — w tym przypadku oba atrybuty otrzymują wartość `0`. Wszystkie puste przedziały reprezentujemy zatem jednakowo, jako `OpenInterval(0, 0)`; jest to **kanonizacja** — różne argumenty wejściowe (`(5, 3)`, `(7, 7)`, `(0, -1)`) prowadzą do *jednego* obiektu reprezentującego pustkę.
+- `length(self)` — zwraca długość przedziału jako liczbę zmiennoprzecinkową. Dla przedziału pustego zwraca `0`.
+- `__bool__(self)` — zwraca `True`, jeśli przedział nie jest pusty, w przeciwnym razie `False`.
+- `__repr__(self)` — zwraca napis postaci `OpenInterval(start, end)`, taki, że jego wpisanie do interpretera odtwarza obiekt.
+- `__str__(self)` — zwraca napis `(start, end)`, jeśli przedział nie jest pusty, w przeciwnym razie znak `∅` (U+2205, sekwencja ucieczkowa `'\u2205'`).
+- `__contains__(self, x)` — zwraca `True`, jeśli liczba `x` należy do przedziału (czyli `start < x < end`), w przeciwnym razie `False`. Wywoływana niejawnie przez wyrażenie `x in interval`.
+- `__eq__(self, other)` — zwraca `True`, jeśli oba przedziały mają ten sam `start` i ten sam `end`, w przeciwnym razie `False`. Po kanonizacji oznacza to także, że *wszystkie* puste przedziały są sobie równe.
+- `__and__(self, other)` — zwraca część wspólną dwóch przedziałów jako nowy `OpenInterval`. Część wspólna dwóch przedziałów otwartych jest przedziałem otwartym (być może pustym).
+- `__or__(self, other)` — zwraca sumę dwóch przedziałów jako nowy `OpenInterval`, *o ile suma jest pojedynczym przedziałem otwartym*. Jeśli niepuste przedziały mają puste przecięcie (czyli są rozłączne lub jedynie dotykają się końcami), metoda zgłasza `NotImplementedError` z komunikatem `Suma nie jest przedziałem otwartym`.
+
+```python
+class OpenInterval:
+    """Przedział otwarty na osi liczbowej.
+
+    >>> i1 = OpenInterval(1, 3)
+    >>> i2 = OpenInterval(2, 4)
+    >>> i1
+    OpenInterval(1, 3)
+    >>> print(i1)
+    (1, 3)
+    >>> i1.length()
+    2
+    >>> i1 & i2
+    OpenInterval(2, 3)
+    >>> i1 | i2
+    OpenInterval(1, 4)
+    >>> 2 in i1
+    True
+    >>> 4 in i1
+    False
+    >>> bool(i1)
+    True
+    >>> i1 == i2
+    False
+    >>> (i1 | i2) == OpenInterval(1, 4)
+    True
+    >>> empty = OpenInterval(5, 3)
+    >>> empty
+    OpenInterval(0, 0)
+    >>> bool(empty)
+    False
+    >>> print(empty)
+    ∅
+    >>> empty.length()
+    0
+    >>> empty == OpenInterval(7, 7)
+    True
+    >>> i1 | OpenInterval(4, 5)             # rozłączne
+    Traceback (most recent call last):
+        ...
+    NotImplementedError: Suma nie jest przedziałem otwartym
+    >>> OpenInterval(1, 3) | OpenInterval(3, 5)   # dotykają się końcami
+    Traceback (most recent call last):
+        ...
+    NotImplementedError: Suma nie jest przedziałem otwartym
+    """
+    pass
+```
+
+::: {.callout-note}
+## Dlaczego nie `__len__`?
+
+Naturalnie chcielibyśmy nazwać metodę długości `__len__` i pisać `len(i1)`. Jest jednak techniczna przeszkoda: `len()` w Pythonie *musi* zwracać nieujemną liczbę całkowitą, a długość przedziału `OpenInterval(1.5, 2.7)` to `1.2` — liczba zmiennoprzecinkowa. Próba zaokrąglenia byłaby sztuczna i myląca.
+
+W takich sytuacjach Python rezerwuje `__len__` dla pojemników (zbiorów, list, krotek), gdzie „rozmiar" jest zawsze całkowity, a dla wielkości ciągłych używa się zwykłej metody albo property. My wybieramy zwykłą metodę `length()` — `len(i1)` w `OpenInterval` po prostu nie zadziała, ale `i1.length()` jest tak samo czytelne.
+
+Zauważ, że ten kompromis nie dotyczy `__bool__`: ono musi zwracać `bool` i z liczbami zmiennoprzecinkowymi nie ma kłopotu. Przedział pusty jest fałszywy, niepusty prawdziwy — i to wystarcza, żeby pisać `if interval:` w kodzie korzystającym z klasy.
+:::
+
+::: {.callout-note}
+## Operatory `&` i `|`
+
+Operatory `&` i `|` są w Pythonie standardowo używane do przecięcia i sumy zbiorów (`set`); w naszej klasie podtrzymujemy tę konwencję — przecięcie i suma przedziałów. Mechanizm jest taki sam jak dla `+` i `*`: wyrażenie `i1 & i2` Python tłumaczy na `i1.__and__(i2)`, a `i1 | i2` na `i1.__or__(i2)`.
+
+Dlaczego `__or__` może zgłaszać `NotImplementedError`? Bo suma dwóch otwartych przedziałów *nie zawsze* jest otwartym przedziałem — dla rozłącznych `(1, 2)` i `(3, 4)` wynikiem jest zbiór złożony z dwóch kawałków, którego nie da się zapisać jednym `OpenInterval`. Klasa nie obsługuje takiego przypadku; ograniczenie usuniemy w następnym zadaniu, gdy zdefiniujemy `Intervals` — sumy skończenie wielu przedziałów otwartych.
+:::
+
+::: {.callout-tip}
+## Przecięcie i suma przedziałów otwartych
+
+Niech $A = (a_1, a_2)$ i $B = (b_1, b_2)$ będą niepuste. Wtedy:
+
+- $A \cap B = (\max(a_1, b_1),\ \min(a_2, b_2))$ — może być pusty, jeśli przedziały nie zachodzą na siebie.
+- $A \cup B$ jest pojedynczym przedziałem otwartym dokładnie wtedy, gdy mają **niepuste przecięcie** — tj. gdy $\max(a_1, b_1) < \min(a_2, b_2)$ (nierówność ostra). Wynikiem jest wtedy $(\min(a_1, b_1),\ \max(a_2, b_2))$.
+
+Jeśli przedziały są rozłączne lub dotykają się końcami (np. $(1, 3)$ i $(3, 5)$), `__or__` zgłasza wyjątek — punkt styku nie należy do żadnego z otwartych przedziałów, więc nie należy do sumy, a wynik nie jest reprezentowalny przez jeden `OpenInterval`.
+
+Przypadki brzegowe: jeśli któryś z argumentów jest pusty, wynik `&` też jest pusty; wynik `|` to po prostu drugi argument (suma niczego z $A$ to $A$). Zaplanuj te przypadki w kodzie zanim zaczniesz pisać.
+:::
+
+***
+
+## Arytmetyka modularna
+
+W tym zadaniu zaprojektujesz klasę reprezentującą arytmetykę reszt modulo $m$ — fundament teorii liczb i kryptografii. Poza wartością dydaktyczną zadanie ma walor projektowy: w odróżnieniu od poprzednich zadań tego labu pełna implementacja wymaga decyzji, których dotąd nie podejmowałeś samodzielnie — na przykład co zrobić, gdy próbujemy dodać dwa elementy z różnych modulusów.
+
+### Tło matematyczne
+
+Dla liczby całkowitej $m \geq 2$ rozważamy zbiór reszt z dzielenia przez $m$:
+$$
+\mathbb{Z}_m = \{0, 1, 2, \ldots, m-1\}.
+$$
+
+Na tym zbiorze definiujemy dwie operacje:
+
+- **dodawanie modulo $m$:** $a \oplus b$ to reszta z dzielenia $a + b$ przez $m$;
+- **mnożenie modulo $m$:** $a \odot b$ to reszta z dzielenia $a \cdot b$ przez $m$.
+
+Na przykład w $\mathbb{Z}_7$ mamy $5 \oplus 4 = 2$ (bo $9 = 7 + 2$) oraz $3 \odot 5 = 1$ (bo $15 = 2 \cdot 7 + 1$).
+
+**Element przeciwny.** Dla każdego $a \in \mathbb{Z}_m$ istnieje dokładnie jedna reszta $b$ taka, że $a \oplus b = 0$. Oznaczamy ją $-a$ i nazywamy elementem przeciwnym. Łatwo sprawdzić, że $-a = (m - a) \bmod m$ — w szczególności $-0 = 0$.
+
+**Odejmowanie:** $a \ominus b := a \oplus (-b)$.
+
+**Iloczyn liczby całkowitej przez resztę.** Dla $k \in \mathbb{Z}$ definiujemy:
+$$
+k \cdot a := \underbrace{a \oplus a \oplus \cdots \oplus a}_{k \text{ składników}} \quad \text{dla } k \geq 0,
+$$
+oraz $k \cdot a := -((-k) \cdot a)$ dla $k < 0$. Konwencja: liczba całkowita zawsze jest pierwszym czynnikiem; zapis $a \cdot k$ nie jest zdefiniowany.
+
+**Element odwrotny.** Dla niektórych reszt $a$ istnieje reszta $b$ taka, że $a \odot b = 1$ — wtedy $b$ nazywamy elementem odwrotnym do $a$ i oznaczamy $a^{-1}$. Element odwrotny *nie zawsze istnieje*: na przykład w $\mathbb{Z}_6$ reszta $2$ nie ma odwrotności, bo wszystkie iloczyny $2 \odot b$ są parzyste, a $1$ jest nieparzyste. Twierdzenie z teorii liczb mówi, że $a$ ma element odwrotny w $\mathbb{Z}_m$ wtedy i tylko wtedy, gdy $\gcd(a, m) = 1$.
+
+### Interfejs
+
+Napisz moduł `zz.py` zawierający klasę `ZZ`. Każda instancja reprezentuje jedną resztę z określonym modulusem.
+
+- `__init__(self, value, modulus)` — inicjalizuje obiekt. Argument `value` jest liczbą całkowitą (niekoniecznie z zakresu $\{0, \ldots, m-1\}$ — wartość redukujemy modulo `modulus`), `modulus` jest liczbą całkowitą $\geq 2$. Jeśli `modulus < 2`, zgłoś `ValueError` z komunikatem `Modulus musi być >= 2`. Atrybuty po inicjalizacji: `value` (już zredukowana, czyli z zakresu $\{0, \ldots, m-1\}$) i `modulus`.
+- `__repr__(self)` — zwraca napis postaci `ZZ(value, modulus)`, taki, że jego wpisanie do interpretera odtwarza obiekt.
+- `__str__(self)` — zwraca napis postaci `[value]_modulus` (np. `'[3]_7'`).
+- `__eq__(self, other)` — zwraca `True`, jeśli oba obiekty mają ten sam `value` i ten sam `modulus`. Reszty z różnych modulusów *nigdy nie są równe*, nawet jeśli mają tę samą wartość.
+- `__add__(self, other)`, `__sub__(self, other)`, `__mul__(self, other)` — odpowiednio $\oplus$, $\ominus$, $\odot$. Argumenty muszą mieć ten sam modulus; jeśli modulusy się różnią, zgłoś `ValueError` z komunikatem `Niezgodne modulusy`. Wynik jest nową instancją `ZZ` z tym samym modulusem.
+- `__neg__(self)` — zwraca element przeciwny. Wywoływany niejawnie przez wyrażenie `-a`.
+- `__rmul__(self, k)` — obsługuje wyrażenie `k * a`, gdzie `k` jest liczbą całkowitą, a `a` instancją `ZZ`. Zwraca nową instancję `ZZ`. Realizuje iloczyn liczby całkowitej przez resztę zdefiniowany powyżej.
+- `inverse(self)` — zwraca element odwrotny jako nową instancję `ZZ`. Jeśli element odwrotny nie istnieje, zgłasza `ZeroDivisionError` z komunikatem `Element nie ma odwrotności`.
+
+```python
+class ZZ:
+    """Reszta modulo m z arytmetyką modularną.
+
+    >>> a = ZZ(5, 7)
+    >>> b = ZZ(4, 7)
+    >>> a
+    ZZ(5, 7)
+    >>> print(a)
+    [5]_7
+    >>> a + b
+    ZZ(2, 7)
+    >>> a - b
+    ZZ(1, 7)
+    >>> a * b
+    ZZ(6, 7)
+    >>> -a
+    ZZ(2, 7)
+    >>> a + (-a) == ZZ(0, 7)
+    True
+    >>> 3 * a
+    ZZ(1, 7)
+    >>> (-2) * a
+    ZZ(4, 7)
+    >>> a.inverse()
+    ZZ(3, 7)
+    >>> a * a.inverse() == ZZ(1, 7)
+    True
+    >>> ZZ(15, 7)                           # redukcja w inicjalizatorze
+    ZZ(1, 7)
+    >>> ZZ(-1, 7)                           # ujemne też redukowane
+    ZZ(6, 7)
+    >>> ZZ(2, 6).inverse()
+    Traceback (most recent call last):
+        ...
+    ZeroDivisionError: Element nie ma odwrotności
+    >>> ZZ(3, 7) + ZZ(3, 5)
+    Traceback (most recent call last):
+        ...
+    ValueError: Niezgodne modulusy
+    >>> ZZ(0, 1)
+    Traceback (most recent call last):
+        ...
+    ValueError: Modulus musi być >= 2
+    """
+    pass
+```
+
+::: {.callout-tip}
+## Wskazówki implementacyjne
+
+**Redukcja w `__init__`.** Operator `%` w Pythonie działa zgodnie z definicją matematyczną także dla ujemnych argumentów: `-1 % 7` zwraca `6`, nie `-1`. Cała redukcja sprowadza się więc do `self.value = value % modulus`.
+
+**Element odwrotny.** Twierdzenie z tła matematycznego daje warunek istnienia, ale nie podpowiada, jak go znaleźć. Najprostsza metoda — w sam raz na ten lab — to przeszukiwanie zupełne: przejrzyj wszystkie reszty $b \in \{1, \ldots, m-1\}$ i sprawdź, czy $a \odot b = 1$. Jeśli znajdziesz, zwróć `ZZ(b, m)`; jeśli nie znajdziesz po przejrzeniu całego zbioru, zgłoś wyjątek. Zauważ, że ten test jest równocześnie kryterium istnienia (nie musisz osobno sprawdzać `gcd`) — jeśli `gcd(a, m) > 1`, żadne `b` nie spełni warunku.
+
+W praktyce kryptograficznej używa się rozszerzonego algorytmu Euklidesa, który robi to w $O(\log m)$ zamiast $O(m)$. Wzmianka dla świadomości; tutaj brute force wystarczy.
+
+**`__rmul__` i znak `k`.** Wyrażenie `3 * ZZ(5, 7)` Python tłumaczy na `(3).__mul__(ZZ(5, 7))`, a ponieważ `int.__mul__` nie wie, jak pomnożyć `int` przez `ZZ`, zwraca `NotImplemented`. Wtedy Python pyta prawego operanda przez `ZZ.__rmul__`. To dokładnie to zachowanie, które omawialiśmy w rozgrzewce. W ciele `__rmul__` dla nieujemnego `k` skorzystaj z faktu, że `k * a` sprowadza się do `(k * self.value) % self.modulus` — nie musisz iterować dodawania. Dla ujemnego `k` skorzystaj z definicji.
+:::
+
+::: {.callout-note}
+## Dlaczego `ZeroDivisionError` zamiast `ValueError`?
+
+Brak elementu odwrotnego jest matematycznym analogiem dzielenia przez zero. W ciele liczb wymiernych nie ma odwrotności tylko dla zera; w pierścieniu $\mathbb{Z}_m$ nie ma jej dla wszystkich elementów, których `gcd` z modulusem jest większy niż 1. Z punktu widzenia użytkownika klasy operacja jest jednak ta sama: *próbujemy odwrócić coś, czego się odwrócić nie da*. Stąd ten sam typ wyjątku.
+
+Praktyczna konsekwencja: kod, który ostrożnie obsługuje dzielenie przez zero w arytmetyce zwykłej, działa tak samo, gdy podstawimy pod niego `ZZ` — wystarczy złapać `ZeroDivisionError`.
+:::
+
+***
+
+## Sumy przedziałów otwartych
+
+::: {.callout-warning}
+## Zadanie zaawansowane
+
+To zadanie jest zauważalnie obszerniejsze od pozostałych w tym labie — łączy materiał z całego labu (klasa, metody specjalne, dziedziczenie pojęciowe od `OpenInterval`) z algorytmem scalania przedziałów i operacjami teorio-mnogościowymi na sumach. Potraktuj je jako wyzwanie tygodnia, nie jako obowiązkową część labu.
+:::
+
+Klasa `OpenInterval` z poprzedniego zadania ma istotne ograniczenie: suma dwóch rozłącznych przedziałów otwartych nie jest przedziałem otwartym, więc operator `|` zgłasza wyjątek. W tym zadaniu usuniemy to ograniczenie — wprowadzimy klasę `Intervals` reprezentującą **skończoną sumę** przedziałów otwartych. Obiekt klasy `Intervals` przechowuje wewnętrznie listę `OpenInterval`, scaloną i posortowaną tak, że żadne dwa przedziały na liście się nie nakładają.
+
+Napisz moduł `intervals.py` zawierający klasę `Intervals`. Klasa korzysta z `OpenInterval` z poprzedniego zadania — zaimportuj ją na początku modułu.
+
+### Interfejs
+
+- `__init__(self, *intervals)` — argumenty pozycyjne `intervals` to obiekty `OpenInterval` lub krotki postaci `(start, end)`. Krotki są przekształcane do `OpenInterval`. Inicjalizator definiuje atrybut `self.intervals` jako listę `OpenInterval`, scaloną i posortowaną rosnąco po `start`. Jeśli nie podano żadnych argumentów albo wszystkie podane są puste, `self.intervals` jest jednoelementową listą zawierającą `OpenInterval(0, 0)`.
+- `length(self)` — zwraca sumę długości przedziałów z `self.intervals`. Dla pustej sumy zwraca `0`.
+- `__bool__(self)` — zwraca `True`, jeśli `self.intervals` zawiera choć jeden przedział niepusty, w przeciwnym razie `False`.
+- `__repr__(self)` — zwraca napis postaci `Intervals(OpenInterval(...), OpenInterval(...))`, taki, że jego wpisanie do interpretera odtwarza obiekt.
+- `__str__(self)` — zwraca napis będący sumą napisów `(start, end)` poszczególnych przedziałów, połączonych znakiem `∪` (U+222A, sekwencja ucieczkowa `'\u222a'`). Dla pustej sumy zwraca `∅`.
+- `__contains__(self, x)` — zwraca `True`, jeśli `x` należy do *któregokolwiek* z przedziałów składowych.
+- `__eq__(self, other)` — zwraca `True`, jeśli `self.intervals` i `other.intervals` zawierają te same przedziały. Po scaleniu i posortowaniu w inicjalizatorze równość obiektów sprowadza się do równości list.
+- `__and__(self, other)` — zwraca część wspólną dwóch sum przedziałów jako nową instancję `Intervals`.
+- `__or__(self, other)` — zwraca sumę dwóch sum przedziałów jako nową instancję `Intervals`. W odróżnieniu od `OpenInterval.__or__` ta operacja nigdy nie zgłasza wyjątku — sumy rozłączne są w pełni reprezentowalne przez `Intervals`.
+
+```python
+class Intervals:
+    """Skończona suma przedziałów otwartych na osi liczbowej.
+
+    >>> i1 = Intervals((1, 5))
+    >>> i2 = Intervals((3, 7))
+    >>> i3 = Intervals((5, 9))
+    >>> i4 = Intervals((6, 7))
+    >>> i5 = Intervals((8, 9))
+    >>> i6 = Intervals((10, 20))
+    >>> i1
+    Intervals(OpenInterval(1, 5))
+    >>> print(i1)
+    (1, 5)
+    >>> i1 & i2
+    Intervals(OpenInterval(3, 5))
+    >>> i1 | i2
+    Intervals(OpenInterval(1, 7))
+    >>> 4 in (i1 | i3)
+    True
+    >>> 5 in (i1 | i3)
+    False
+    >>> bool(i1 | i6)
+    True
+    >>> bool(i1 & i6)
+    False
+    >>> i1 & i2 | i3
+    Intervals(OpenInterval(3, 5), OpenInterval(5, 9))
+    >>> (i1 | i5) & (i2 | i4)
+    Intervals(OpenInterval(3, 5))
+    >>> (i1 | i5) & (i2 | i4) == (i1 & i2) | (i1 & i4) | (i5 & i2) | (i5 & i4)
+    True
+    >>> Intervals((1, 3), (3, 5))
+    Intervals(OpenInterval(1, 3), OpenInterval(3, 5))
+    >>> 3 in Intervals((1, 3), (3, 5))
+    False
+    >>> Intervals()
+    Intervals(OpenInterval(0, 0))
+    >>> print(Intervals())
+    ∅
+    """
+    pass
+```
+
+::: {.callout-tip}
+## Algorytm scalania
+
+Zasadnicza praca dzieje się w `__init__`: po przekształceniu krotek na `OpenInterval` i odsianiu pustych musimy *scalić* te przedziały, które się przecinają, w jeden większy przedział. Wydziel tę operację jako pomocniczą funkcję `merge_intervals(intervals)` — przyjmuje listę `OpenInterval`, zwraca nową listę po scaleniu. Możesz ją zdefiniować jako zwykłą funkcję na poziomie modułu, jako metodę statyczną klasy (`@staticmethod`) albo jako zwykłą metodę.
+
+Iteracyjny algorytm w pseudokodzie:
+
+```
+merge_intervals(intervals):
+    while True:
+        scalono = False
+        for A, B in kombinacje(intervals, 2):
+            if A & B:
+                intervals.remove(A)
+                intervals.remove(B)
+                intervals.append(A | B)
+                scalono = True
+                break          # zaczynamy pętlę while od początku
+        if not scalono:
+            return intervals   # nic się nie scaliło, koniec
+```
+
+Ten algorytm jest naiwny — w najgorszym razie wykonuje $O(n^2)$ porównań na jeden przebieg, a przebiegów może być do $n$. Dla typowej liczby przedziałów w testach to wystarczająco szybkie. Wariant linearithmiczny ($O(n \log n)$) opiera się na sortowaniu po `start` i jednym przejściu po posortowanej liście — możesz go zaimplementować, jeśli masz ochotę, ale dla tego labu nie jest wymagany.
+
+`kombinacje(intervals, 2)` to `itertools.combinations(intervals, 2)` — pary różnych elementów listy bez powtórzeń.
+
+**Uwaga o `A & B`.** W warunku scalania sprawdzamy *przecięcie*, nie sumę. Dla dwóch otwartych przedziałów `A` i `B` warunki „mają niepuste przecięcie" i „suma jest pojedynczym przedziałem otwartym" są **równoważne** — wykluczają zarówno przypadek całkowitej rozłączności, jak i dotykania się końcami. Dlatego strażnik `if A & B:` jest dokładnie tym, czego potrzebujemy: gwarantuje, że `A | B` zwróci wynik, zamiast zgłosić wyjątek. W konsekwencji `Intervals((1, 3), (3, 5))` zawiera *dwa* przedziały, nie jeden — punkt `3` nie należy do żadnego z otwartych przedziałów, więc suma rzeczywiście rozpada się na dwa kawałki, i poprawnie tego nie scalamy.
+:::
+
+::: {.callout-tip}
+## Część wspólna i suma sum
+
+Obie operacje sprowadzają się do dwóch zagnieżdżonych pętli po przedziałach składowych.
+
+**Część wspólna `self & other`.** Część wspólna dwóch sum to suma wszystkich par przecięć:
+$$
+(A_1 \cup A_2) \cap (B_1 \cup B_2) = (A_1 \cap B_1) \cup (A_1 \cap B_2) \cup (A_2 \cap B_1) \cup (A_2 \cap B_2).
+$$
+Iteruj po `self.intervals` i `other.intervals`, zbierz wszystkie przecięcia (każde jest `OpenInterval`), wyrzuć puste, i zbuduj z nich nową instancję `Intervals(*niepuste)`. Scalenie i sortowanie zrobi za ciebie inicjalizator.
+
+**Suma `self | other`.** Połącz wszystkie przedziały z obu list i przekaż je do inicjalizatora — `Intervals(*self.intervals, *other.intervals)`. Nie musisz nic ręcznie scalać; cała robota dzieje się w `__init__`.
+
+Zauważ, że obie metody nie modyfikują `self` ani `other` — zwracają *nową* instancję. To konwencja, której trzymają się wszystkie operatory arytmetyczne i mnogościowe w Pythonie: `a + b` nie zmienia ani `a`, ani `b`.
+:::
+
+::: {.callout-note}
+## Kompozycja zamiast dziedziczenia
+
+Klasa `Intervals` *używa* obiektów `OpenInterval`, ale nie dziedziczy po niej. To świadoma decyzja projektowa: `Intervals` nie *jest* `OpenInterval` — nie ma jednej pary `(start, end)`, nie zachowuje się jak pojedynczy przedział, nie spełniłaby kontraktu klasy nadrzędnej. Zamiast tego `Intervals` zawiera w sobie listę `OpenInterval` jako atrybut. Mówimy, że `Intervals` jest *kompozycją* `OpenInterval`, a nie *podklasą*.
+
+Reguła kciuka: dziedziczenie to *jest-rodzajem* (`MovingAverage` jest rodzajem `RatioAccumulator`), kompozycja to *zawiera* lub *używa* (`Intervals` zawiera `OpenInterval`). To jedno z najczęściej cytowanych przykazań projektowania obiektowego — *prefer composition over inheritance*. Tutaj kierunek jest naturalny: gdybyśmy próbowali zrobić `Intervals` podklasą `OpenInterval`, musielibyśmy przedefiniować praktycznie każdą metodę, bo żadna nie pasowałaby bez przeróbek.
+:::

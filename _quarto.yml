@@ -32,6 +32,7 @@ website:
           - file: wyklad_VIII.qmd
           - file: wyklad_IX.qmd
           - file: wyklad_X.qmd
+          - file: wyklad_XI.qmd
 
           
 
@@ -48,6 +49,7 @@ website:
           - file: lab_VIII/lab_VIII.qmd
           - file: lab_IX/lab_IX.qmd
           - file: lab_X/lab_X.qmd
+          - file: lab_XI/lab_XI.qmd
 
 format:
   html:

@@ -26,6 +26,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 - [Wykład VIII: Rekurencja](wyklad_VIII.qmd)
 - [Wykład IX: Klasy i obiekty](wyklad_IX.qmd)
 - [Wykład X: Klasy i obiekty II: metody specjalne](wyklad_X.qmd)
+- [Wykład XI: Iteratory i generatory](wyklad_XI.qmd)
 
 ## Laboratoria
 
@@ -39,6 +40,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 - [Laboratorium 8: Dekoratory](lab_VIII/lab_VIII.qmd)
 - [Laboratorium 9: Rekurencja](lab_IX/lab_IX.qmd)
 - [Laboratorium 10: Klasy i obiekty](lab_X/lab_X.qmd)
+- [Laboratorium 11: Metody specjalne i dziedziczenie](lab_XI/lab_XI.qmd)
 
 ## Zaliczenie
 

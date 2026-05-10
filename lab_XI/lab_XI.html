@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tomasz Rodak">
+
+<title>Lab XI: Metody specjalne i dziedziczenie – Podstawy programowania (AD) 2</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a91fd2e505097536da9e8d380e199038.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_XI/lab_XI.html">Lab XI: Metody specjalne i dziedziczenie</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Podstawy programowania (AD) 2</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Strona główna</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Wykłady</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Zmienne. Instrukcja przypisania</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wypakowywanie obiektów iterowalnych. Parametry i argumenty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Przestrzenie nazw i moduły</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Funkcje jako obiekty. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rekurencja</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_IX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Klasy i obiekty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_X.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Klasy i obiekty II: metody specjalne</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Laboratoria</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab I: Zadania na rozgrzewkę</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_II/lab_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab II: Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_III/lab_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab III: Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_IV/lab_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IV: Zmienne, aliasy, kopie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_V/lab_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab V: Wypakowywanie i parametry funkcji</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_VI/lab_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VI: Geometria żółwia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_VII/lab_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VII: Funkcje wyższego rzędu. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_VIII/lab_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VIII: Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_IX/lab_IX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IX: Rekurencja</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_X/lab_X.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab X: Klasy i obiekty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_XI/lab_XI.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Lab XI: Metody specjalne i dziedziczenie</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Spis treści</h2>
+   
+  <ul>
+  <li><a href="#rozgrzewka-metody-specjalne-i-dziedziczenie" id="toc-rozgrzewka-metody-specjalne-i-dziedziczenie" class="nav-link active" data-scroll-target="#rozgrzewka-metody-specjalne-i-dziedziczenie"><span class="header-section-number">1</span> Rozgrzewka: metody specjalne i dziedziczenie</a></li>
+  <li><a href="#średnia-ruchoma-raz-jeszcze" id="toc-średnia-ruchoma-raz-jeszcze" class="nav-link" data-scroll-target="#średnia-ruchoma-raz-jeszcze"><span class="header-section-number">2</span> Średnia ruchoma raz jeszcze</a></li>
+  <li><a href="#klasa-losująca-z-urny" id="toc-klasa-losująca-z-urny" class="nav-link" data-scroll-target="#klasa-losująca-z-urny"><span class="header-section-number">3</span> Klasa losująca z urny</a></li>
+  <li><a href="#klasa-szyfratora" id="toc-klasa-szyfratora" class="nav-link" data-scroll-target="#klasa-szyfratora"><span class="header-section-number">4</span> Klasa szyfratora</a></li>
+  <li><a href="#otwarty-przedział" id="toc-otwarty-przedział" class="nav-link" data-scroll-target="#otwarty-przedział"><span class="header-section-number">5</span> Otwarty przedział</a></li>
+  <li><a href="#arytmetyka-modularna" id="toc-arytmetyka-modularna" class="nav-link" data-scroll-target="#arytmetyka-modularna"><span class="header-section-number">6</span> Arytmetyka modularna</a>
+  <ul class="collapse">
+  <li><a href="#tło-matematyczne" id="toc-tło-matematyczne" class="nav-link" data-scroll-target="#tło-matematyczne"><span class="header-section-number">6.1</span> Tło matematyczne</a></li>
+  <li><a href="#interfejs" id="toc-interfejs" class="nav-link" data-scroll-target="#interfejs"><span class="header-section-number">6.2</span> Interfejs</a></li>
+  </ul></li>
+  <li><a href="#sumy-przedziałów-otwartych" id="toc-sumy-przedziałów-otwartych" class="nav-link" data-scroll-target="#sumy-przedziałów-otwartych"><span class="header-section-number">7</span> Sumy przedziałów otwartych</a>
+  <ul class="collapse">
+  <li><a href="#interfejs-1" id="toc-interfejs-1" class="nav-link" data-scroll-target="#interfejs-1"><span class="header-section-number">7.1</span> Interfejs</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_XI/lab_XI.html">Lab XI: Metody specjalne i dziedziczenie</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Lab XI: Metody specjalne i dziedziczenie</h1>
+<p class="subtitle lead">Podstawy programowania (AD) 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tomasz Rodak </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Te ćwiczenia nawiązują do drugiego wykładu o klasach. Główne motywy to: metody specjalne integrujące obiekt z wbudowaną składnią Pythona — operatory <code>+</code>, <code>*</code>, <code>&amp;</code>, <code>|</code>, <code>==</code>, <code>in</code> oraz wbudowane funkcje <code>bool</code>, <code>repr</code> i <code>str</code> — a także <strong>dziedziczenie</strong>, którym wreszcie wyeliminujemy duplikację z klas <code>MovingAverage</code> i <code>AverageSpeed</code> z lab X. Po drodze wrócimy do dwóch zadań z lab VII (losowanie z urny, szyfrator) i napiszemy je jako klasy zamiast domknięć — bezpośrednie porównanie obu wariantów to ważne ćwiczenie samo w sobie. Końcowe zadanie — sumy przedziałów otwartych — jest zauważalnie obszerniejsze od pozostałych; potraktuj je jako materiał dla chętnych. Poprawność rozwiązań weryfikuj za pomocą dołączonych plików z testami albo doctestów.</p>
+<section id="rozgrzewka-metody-specjalne-i-dziedziczenie" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="rozgrzewka-metody-specjalne-i-dziedziczenie"><span class="header-section-number">1</span> Rozgrzewka: metody specjalne i dziedziczenie</h2>
+<p>Dla każdego z poniższych pytań najpierw udziel odpowiedzi samodzielnie, a następnie sprawdź ją w interpreterze.</p>
+<p><strong>1.</strong> Co wypiszą obie linie <code>print</code>?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">class</span> Punkt:</span>
+<span id="cb1-2"><a href="#cb1-2"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, x, y):</span>
+<span id="cb1-3"><a href="#cb1-3"></a>        <span class="va">self</span>.x <span class="op">=</span> x</span>
+<span id="cb1-4"><a href="#cb1-4"></a>        <span class="va">self</span>.y <span class="op">=</span> y</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):</span>
+<span id="cb1-7"><a href="#cb1-7"></a>        <span class="cf">return</span> <span class="ss">f"Punkt(</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>x<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>y<span class="sc">}</span><span class="ss">)"</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-9"><a href="#cb1-9"></a>p <span class="op">=</span> Punkt(<span class="dv">3</span>, <span class="dv">4</span>)</span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="bu">print</span>(p)</span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="bu">print</span>(<span class="bu">repr</span>(p))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Obie linie wypiszą <code>Punkt(3, 4)</code>. Klasa nie definiuje <code>__str__</code>, a <code>print(p)</code> (czyli <code>str(p)</code>) korzysta wówczas z <code>__repr__</code> jako fallbacku. To samo zachowanie, które omówiliśmy w callout o <code>__repr__</code> i <code>__str__</code> w lab X — dopóki nie zdefiniujesz osobno <code>__str__</code>, <code>str(obj)</code> i <code>repr(obj)</code> dają ten sam napis.</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> Co zwrócą poniższe wyrażenia?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">class</span> A:</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    <span class="cf">pass</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="kw">class</span> B:</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    <span class="kw">def</span> <span class="fu">__bool__</span>(<span class="va">self</span>):</span>
+<span id="cb2-6"><a href="#cb2-6"></a>        <span class="cf">return</span> <span class="va">False</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="bu">print</span>(<span class="bu">bool</span>(A()))</span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="bu">print</span>(<span class="bu">bool</span>(B()))</span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="bu">print</span>(<span class="bu">bool</span>(A()) <span class="kw">and</span> <span class="bu">bool</span>(B()))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Wypisze <code>True</code>, <code>False</code>, <code>False</code>. Domyślnie <em>każda</em> instancja klasy zdefiniowanej przez użytkownika jest prawdziwa — <code>if obj:</code> przepuści ją bez sprzeciwu. Aby instancja mogła być fałszywa, klasa musi sama zdefiniować <code>__bool__</code>. Ten mechanizm wykorzystamy w <code>OpenInterval</code> i <code>Intervals</code> — przedział pusty będzie fałszywy, niepusty prawdziwy.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> Co wypisze ten kod?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">class</span> Wektor:</span>
+<span id="cb3-2"><a href="#cb3-2"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, x):</span>
+<span id="cb3-3"><a href="#cb3-3"></a>        <span class="va">self</span>.x <span class="op">=</span> x</span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a>    <span class="kw">def</span> <span class="fu">__mul__</span>(<span class="va">self</span>, k):</span>
+<span id="cb3-6"><a href="#cb3-6"></a>        <span class="cf">return</span> Wektor(<span class="va">self</span>.x <span class="op">*</span> k)</span>
+<span id="cb3-7"><a href="#cb3-7"></a></span>
+<span id="cb3-8"><a href="#cb3-8"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):</span>
+<span id="cb3-9"><a href="#cb3-9"></a>        <span class="cf">return</span> <span class="ss">f"Wektor(</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>x<span class="sc">}</span><span class="ss">)"</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a></span>
+<span id="cb3-11"><a href="#cb3-11"></a>w <span class="op">=</span> Wektor(<span class="dv">3</span>)</span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="bu">print</span>(w <span class="op">*</span> <span class="dv">2</span>)</span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="bu">print</span>(<span class="dv">2</span> <span class="op">*</span> w)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Pierwsza linia wypisze <code>Wektor(6)</code>. Druga zgłosi <code>TypeError: unsupported operand type(s) for *: 'int' and 'Wektor'</code>.</p>
+<p>Wyrażenie <code>w * 2</code> Python tłumaczy na <code>w.__mul__(2)</code> — typ lewego argumentu odpowiada za operację. Wyrażenie <code>2 * w</code> Python próbuje obsłużyć przez <code>(2).__mul__(w)</code>, ale <code>int.__mul__</code> nie wie, jak pomnożyć liczbę przez <code>Wektor</code>, więc zwraca specjalną wartość <code>NotImplemented</code>. Wtedy — i dopiero wtedy — Python pyta prawego operanda przez <code>w.__rmul__(2)</code>. Klasa <code>Wektor</code> nie zdefiniowała <code>__rmul__</code>, więc cała operacja kończy się <code>TypeError</code>.</p>
+<p>Symetrię trzeba dorobić ręcznie — przez <code>__rmul__</code>, którą wykorzystamy w zadaniu o <code>ZZ</code> (iloczyn liczby całkowitej przez resztę).</p>
+</div>
+</div>
+</div>
+<p><strong>4.</strong> Co wypisze ten kod?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">class</span> A:</span>
+<span id="cb4-2"><a href="#cb4-2"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb4-3"><a href="#cb4-3"></a>        <span class="va">self</span>.x <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a>    <span class="kw">def</span> show(<span class="va">self</span>):</span>
+<span id="cb4-6"><a href="#cb4-6"></a>        <span class="cf">return</span> <span class="va">self</span>.x</span>
+<span id="cb4-7"><a href="#cb4-7"></a></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="kw">class</span> B(A):</span>
+<span id="cb4-9"><a href="#cb4-9"></a>    <span class="kw">def</span> show(<span class="va">self</span>):</span>
+<span id="cb4-10"><a href="#cb4-10"></a>        <span class="cf">return</span> <span class="va">self</span>.x <span class="op">*</span> <span class="dv">10</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a></span>
+<span id="cb4-12"><a href="#cb4-12"></a>a <span class="op">=</span> A()</span>
+<span id="cb4-13"><a href="#cb4-13"></a>b <span class="op">=</span> B()</span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="bu">print</span>(a.show(), b.show())</span>
+<span id="cb4-15"><a href="#cb4-15"></a><span class="bu">print</span>(b.x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Wypisze <code>1 10</code> i potem <code>1</code>. Klasa <code>B</code> dziedziczy z <code>A</code> (zapis <code>class B(A):</code>) i nie definiuje własnego <code>__init__</code>, więc do utworzenia instancji <code>B()</code> użyty zostaje konstruktor z <code>A</code> — stąd <code>b.x == 1</code>. Metoda <code>show</code> w <code>B</code> jest natomiast nadpisana (lokalna definicja przesłania odziedziczoną), więc <code>b.show()</code> daje <code>10</code>, a <code>a.show()</code> — <code>1</code>.</p>
+<p>Ten wzorzec — <em>dziedziczę całą inicjalizację, podmieniam tylko jedną metodę</em> — wykorzystamy w pierwszym zadaniu tego labu.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="średnia-ruchoma-raz-jeszcze" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="średnia-ruchoma-raz-jeszcze"><span class="header-section-number">2</span> Średnia ruchoma raz jeszcze</h2>
+<p>W lab X zauważyliśmy, że klasy <code>MovingAverage</code> i <code>AverageSpeed</code> powtarzają tę samą strukturę — obie prowadzą dwie sumy bieżące i zwracają ich iloraz. W tym zadaniu wyeliminujemy to powtórzenie przez <strong>dziedziczenie</strong>: zdefiniujemy wspólną klasę bazową <code>RatioAccumulator</code>, a <code>MovingAverage</code> i <code>AverageSpeed</code> zaimplementujemy jako jej podklasy.</p>
+<p>Napisz moduł <code>moving_average.py</code> zawierający trzy klasy: <code>RatioAccumulator</code>, <code>MovingAverage</code> i <code>AverageSpeed</code>. Jest to refaktoryzacja modułu z lab X — interfejs się zmienia, więc zmienią się także testy.</p>
+<p><strong><code>RatioAccumulator</code></strong> — klasa bazowa, która zna tylko abstrakcyjne pojęcie „iloraz dwóch sum bieżących”:</p>
+<ul>
+<li>atrybuty <code>numerator</code> (suma w liczniku) i <code>denominator</code> (suma w mianowniku);</li>
+<li><code>__init__(self)</code> — inicjalizuje oba atrybuty na zero;</li>
+<li><code>add(self, a, b)</code> — dodaje <code>a</code> do <code>numerator</code>, <code>b</code> do <code>denominator</code>, a następnie zwraca aktualną wartość <code>numerator / denominator</code>.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">class</span> RatioAccumulator:</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    <span class="co">"""Klasa bazowa: prowadzi dwie sumy bieżące i zwraca ich iloraz.</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">    &gt;&gt;&gt; r = RatioAccumulator()</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co">    &gt;&gt;&gt; r.numerator, r.denominator</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="co">    (0, 0)</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co">    &gt;&gt;&gt; r.add(2, 1)</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="co">    2.0</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co">    &gt;&gt;&gt; r.add(4, 1)</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="co">    3.0</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="co">    &gt;&gt;&gt; r.numerator, r.denominator</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="co">    (6, 2)</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="co">    &gt;&gt;&gt; r.add(0, 2)</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a><span class="co">    1.5</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a><span class="co">    """</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong><code>MovingAverage</code></strong> — podklasa <code>RatioAccumulator</code>, która specjalizuje się w średniej arytmetycznej:</p>
+<ul>
+<li>nie definiuje własnego <code>__init__</code> (dziedziczy go z <code>RatioAccumulator</code>);</li>
+<li><code>add_value(self, value)</code> — dodaje <code>value</code> do bieżącej sumy z wagą 1; wewnątrz korzysta z odziedziczonej metody <code>add</code> i zwraca jej wynik.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">class</span> MovingAverage(RatioAccumulator):</span>
+<span id="cb6-2"><a href="#cb6-2"></a>    <span class="co">"""Średnia arytmetyczna kolejno dodawanych wartości.</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">    &gt;&gt;&gt; m = MovingAverage()</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co">    &gt;&gt;&gt; m.add_value(10)</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="co">    10.0</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co">    &gt;&gt;&gt; m.add_value(20)</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="co">    15.0</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="co">    &gt;&gt;&gt; m.add_value(30)</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co">    20.0</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co">    &gt;&gt;&gt; m.numerator, m.denominator</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="co">    (60, 3)</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="co">    """</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong><code>AverageSpeed</code></strong> — podklasa <code>RatioAccumulator</code>, która specjalizuje się w prędkości średniej:</p>
+<ul>
+<li>nie definiuje własnego <code>__init__</code>;</li>
+<li><code>add_section(self, distance, time)</code> — dodaje nowy odcinek o długości <code>distance</code> pokonany w czasie <code>time</code>; wewnątrz korzysta z odziedziczonej metody <code>add</code> i zwraca jej wynik (czyli aktualną prędkość średnią).</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">class</span> AverageSpeed(RatioAccumulator):</span>
+<span id="cb7-2"><a href="#cb7-2"></a>    <span class="co">"""Prędkość średnia obliczana z kolejnych odcinków drogi i czasu.</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="co">    &gt;&gt;&gt; v = AverageSpeed()</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="co">    &gt;&gt;&gt; v.add_section(100, 2)</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="co">    50.0</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="co">    &gt;&gt;&gt; v.add_section(200, 3)</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="co">    60.0</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="co">    &gt;&gt;&gt; v.numerator, v.denominator</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="co">    (300, 5)</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="co">    """</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Dziedziczenie w praktyce
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Składnia <code>class MovingAverage(RatioAccumulator):</code> deklaruje, że <code>MovingAverage</code> jest <strong>podklasą</strong> klasy <code>RatioAccumulator</code>. Podklasa dziedziczy wszystkie atrybuty i metody nadklasy — łącznie z <code>__init__</code>. W tym zadaniu obie podklasy nie definiują własnego <code>__init__</code>; tworzą instancje korzystając z konstruktora odziedziczonego z <code>RatioAccumulator</code>, który ustawia <code>numerator = 0</code> i <code>denominator = 0</code>.</p>
+<p>Ciało każdej podklasy zawiera tylko jedną metodę dziedzinową (<code>add_value</code> albo <code>add_section</code>), która wewnątrz deleguje całą logikę do odziedziczonej <code>add(a, b)</code>. Cała różnica między <code>MovingAverage</code> i <code>AverageSpeed</code> sprowadza się do tego, <em>jaką parę</em> <code>(a, b)</code> podstawiamy do <code>add</code> — w pierwszej klasie waga zawsze wynosi 1 (każda wartość liczy się tak samo), w drugiej wagą jest czas, w którym pokonano odpowiedni dystans.</p>
+<p>Zauważ, że w wersji z lab X każda z klas miała własne, dziedzinowe nazwy atrybutów (<code>total</code> i <code>count</code> w <code>MovingAverage</code>; <code>distance</code>, <code>time</code>, <code>average_speed</code> w <code>AverageSpeed</code>). Po refaktoryzacji wszystkie obiekty noszą jednolite nazwy <code>numerator</code> i <code>denominator</code> — i to jest cena, jaką płacimy za eliminację duplikacji. Specyficzne dla dziedziny pozostają tylko <em>publiczne metody</em> (<code>add_value</code>, <code>add_section</code>), którymi użytkownik klasy posługuje się na co dzień.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="klasa-losująca-z-urny" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="klasa-losująca-z-urny"><span class="header-section-number">3</span> Klasa losująca z urny</h2>
+<p>W lab VII pisałeś funkcję <code>random_ball_machine()</code>, która zwracała bezparametrową funkcję <code>machine()</code> symulującą losowanie kul z urny. Stan urny — bieżący skład kolorów i tryb losowania — przechowywany był w domknięciu funkcji wewnętrznej. W tym zadaniu napiszesz wariant <strong>obiektowy</strong>: stan urny będzie atrybutem instancji, a losowanie — metodą.</p>
+<p>Napisz moduł <code>random_ball_machine.py</code> zawierający klasę <code>RandomBallMachine</code>. Interfejs:</p>
+<ul>
+<li><code>__init__(self, return_balls=True, **balls)</code> — <code>balls</code> to argumenty kluczowe postaci <code>&lt;kolor&gt;=&lt;liczba&gt;</code>, opisujące początkowy skład urny (np. <code>red=3, blue=2</code>). <code>return_balls</code> decyduje o trybie losowania: <code>True</code> oznacza losowanie ze zwracaniem (skład urny się nie zmienia), <code>False</code> — losowanie bez zwracania (kula po wylosowaniu opuszcza urnę). Inicjalizator zapamiętuje oba parametry jako atrybuty instancji.</li>
+<li><code>__call__(self)</code> — losuje jedną kulę z urny i zwraca jej kolor (napis). W trybie bez zwracania <em>modyfikuje</em> skład urny: liczba kul wylosowanego koloru maleje o jeden. Jeśli urna jest pusta (suma kul wynosi zero), metoda zgłasza <code>ValueError</code> z komunikatem <code>Urna jest pusta</code>.</li>
+<li><code>__len__(self)</code> — zwraca aktualną sumę kul w urnie.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">class</span> RandomBallMachine:</span>
+<span id="cb8-2"><a href="#cb8-2"></a>    <span class="co">"""Symuluje losowanie kul z urny.</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co">    &gt;&gt;&gt; import random</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co">    &gt;&gt;&gt; random.seed(0)</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">    &gt;&gt;&gt; machine = RandomBallMachine(red=3, blue=2)</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">    &gt;&gt;&gt; len(machine)</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">    5</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="co">    &gt;&gt;&gt; machine()                           # losowanie ze zwracaniem</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="co">    'red'</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="co">    &gt;&gt;&gt; len(machine)                        # skład bez zmian</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="co">    5</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">    &gt;&gt;&gt; machine = RandomBallMachine(return_balls=False, red=2, blue=1)</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="co">    &gt;&gt;&gt; sorted(machine() for _ in range(3)) # doctest: +SKIP</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="co">    ['blue', 'red', 'red']</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="co">    &gt;&gt;&gt; len(machine)</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co">    0</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="co">    &gt;&gt;&gt; machine()</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a><span class="co">    Traceback (most recent call last):</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a><span class="co">        ...</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a><span class="co">    ValueError: Urna jest pusta</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a><span class="co">    """</span></span>
+<span id="cb8-23"><a href="#cb8-23"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Klasa zamiast domknięcia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>W lab VII stan urny był ukryty w domknięciu — <em>niewidoczny z zewnątrz</em>, dostępny tylko przez wywołanie zwróconej funkcji. To eleganckie, ale ma cenę: nie da się zapytać, ile kul zostało w urnie, ani przerwać losowania w połowie i sprawdzić skład.</p>
+<p>Klasa rozwiązuje oba problemy. Stan jest atrybutem instancji — można go odczytać, zwizualizować, wypisać w debugerze. Metoda <code>__len__</code> daje wprost odpowiedź na pytanie „ile kul zostało?“, a metoda <code>__call__</code> zachowuje wygodę z lab VII: instancja klasy z <code>__call__</code> zachowuje się jak funkcja, więc składnia wywołania <code>machine()</code> jest identyczna w obu wariantach. To samo widzieliśmy w lab X przy <code>Wywoływalnym Fibonaccim</code> — klasa z <code>__call__</code> to nie jest „cięższa” funkcja, tylko funkcja z otwartym dostępem do swojego stanu.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="klasa-szyfratora" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="klasa-szyfratora"><span class="header-section-number">4</span> Klasa szyfratora</h2>
+<p>W lab VII pisałeś funkcję wyższego rzędu, która budowała szyfrator tekstu — zamykała alfabet i przesunięcie w domknięciu i zwracała funkcję szyfrującą pojedynczy napis. Tutaj zrobimy to samo za pomocą klasy.</p>
+<p>Napisz moduł <code>caesar_cipher.py</code> zawierający klasę <code>CaesarCipher</code>. Klasa reprezentuje szyfr Cezara o zadanym przesunięciu, działający na wybranym alfabecie. Interfejs:</p>
+<ul>
+<li><code>__init__(self, shift, alphabet="abcdefghijklmnopqrstuvwxyz")</code> — zapamiętuje przesunięcie (liczba całkowita; może być ujemne) i alfabet (napis bez powtarzających się znaków).</li>
+<li><code>__call__(self, text)</code> — zwraca tekst zaszyfrowany. Każdy znak <code>text</code>, który występuje w <code>alphabet</code>, zostaje przesunięty o <code>shift</code> pozycji w przód (cyklicznie); znaki spoza alfabetu pozostają bez zmian. Wielkość liter jest istotna — domyślny alfabet zawiera tylko małe litery, więc <code>'A'</code> w tekście wejściowym zostanie potraktowane jako znak spoza alfabetu.</li>
+<li><code>decrypt(self, text)</code> — zwraca tekst odszyfrowany, czyli zaszyfrowany przesunięciem <code>-shift</code>.</li>
+<li><code>__repr__(self)</code> — zwraca napis, który po wpisaniu do interpretera odtwarza obiekt.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">class</span> CaesarCipher:</span>
+<span id="cb9-2"><a href="#cb9-2"></a>    <span class="co">"""Szyfr Cezara o zadanym przesunięciu.</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="co">    &gt;&gt;&gt; cipher = CaesarCipher(3)</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co">    &gt;&gt;&gt; cipher("ala ma kota")</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="co">    'dod pd nrwd'</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="co">    &gt;&gt;&gt; cipher.decrypt("dod pd nrwd")</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="co">    'ala ma kota'</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="co">    &gt;&gt;&gt; cipher</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="co">    CaesarCipher(3)</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="co">    &gt;&gt;&gt; rot13 = CaesarCipher(13)</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="co">    &gt;&gt;&gt; rot13(rot13("hello world"))         # ROT13 jest swoją własną odwrotnością</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="co">    'hello world'</span></span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="co">    &gt;&gt;&gt; binary = CaesarCipher(1, alphabet="01")</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a><span class="co">    &gt;&gt;&gt; binary("01010 11")</span></span>
+<span id="cb9-16"><a href="#cb9-16"></a><span class="co">    '10101 00'</span></span>
+<span id="cb9-17"><a href="#cb9-17"></a><span class="co">    """</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Wskazówka
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Zarówno szyfrowanie, jak i odszyfrowywanie sprowadzają się do tej samej operacji: przesunięcia każdego znaku o pewną liczbę pozycji w alfabecie. Zamiast pisać dwie niemal identyczne metody, możesz wydzielić prywatną metodę pomocniczą <code>_shift_text(self, text, by)</code> — <code>__call__</code> woła ją z <code>by=self.shift</code>, a <code>decrypt</code> z <code>by=-self.shift</code>. Konwencja: nazwy zaczynające się od podkreślnika sygnalizują, że metoda jest implementacyjna, nie należy do publicznego interfejsu klasy.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Dwa razy ten sam pomysł
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Zadania o urnie i o szyfratorze są w istocie tym samym ćwiczeniem: <em>bierzemy funkcję wyższego rzędu z lab VII i przepisujemy ją jako klasę z <code>__call__</code></em>. W obu przypadkach dane, które w wersji funkcyjnej zamykały się w domknięciu (skład urny; alfabet i przesunięcie), stają się atrybutami instancji. Operator <code>()</code> na instancji zachowuje się tak samo jak na zwróconej funkcji — to dlatego mówimy, że obiekt z <code>__call__</code> <em>jest wywoływalny</em>.</p>
+<p>Co zyskujemy? Stan jest jawny i dostępny przez kropkę (<code>machine.return_balls</code>, <code>cipher.shift</code>), klasa może mieć dodatkowe metody publiczne (<code>decrypt</code>) i specjalne (<code>__len__</code>, <code>__repr__</code>), a wszystko to bez cienia magii — zwykłe atrybuty i zwykłe metody. Co tracimy? Trochę zwięzłości; definicja klasy z trzema metodami jest dłuższa niż jednolinijkowa lambda. W praktyce wybór między domknięciem a klasą sprowadza się do pytania: <em>czy stan ma pozostać prywatny, czy ma być częścią interfejsu?</em> Jeśli prywatny — domknięcie. Jeśli publiczny i bogaty — klasa.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="otwarty-przedział" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="otwarty-przedział"><span class="header-section-number">5</span> Otwarty przedział</h2>
+<p>Napisz moduł <code>open_interval.py</code> zawierający klasę <code>OpenInterval</code>. Obiekty tej klasy reprezentują przedziały otwarte na osi liczbowej. Każdy przedział wyznaczony jest przez dwie liczby rzeczywiste <code>start</code> i <code>end</code>. Przedział otwarty <span class="math inline">\((a, b)\)</span> to zbiór tych liczb rzeczywistych <span class="math inline">\(x\)</span>, że <span class="math inline">\(a &lt; x &lt; b\)</span>. Jeżeli <span class="math inline">\(a \geq b\)</span>, to taki zbiór jest pusty.</p>
+<p>Interfejs:</p>
+<ul>
+<li><code>__init__(self, start, end)</code> — ustawia atrybuty <code>start</code> i <code>end</code>. Jeśli <code>start &gt;= end</code>, przedział jest pusty — w tym przypadku oba atrybuty otrzymują wartość <code>0</code>. Wszystkie puste przedziały reprezentujemy zatem jednakowo, jako <code>OpenInterval(0, 0)</code>; jest to <strong>kanonizacja</strong> — różne argumenty wejściowe (<code>(5, 3)</code>, <code>(7, 7)</code>, <code>(0, -1)</code>) prowadzą do <em>jednego</em> obiektu reprezentującego pustkę.</li>
+<li><code>length(self)</code> — zwraca długość przedziału jako liczbę zmiennoprzecinkową. Dla przedziału pustego zwraca <code>0</code>.</li>
+<li><code>__bool__(self)</code> — zwraca <code>True</code>, jeśli przedział nie jest pusty, w przeciwnym razie <code>False</code>.</li>
+<li><code>__repr__(self)</code> — zwraca napis postaci <code>OpenInterval(start, end)</code>, taki, że jego wpisanie do interpretera odtwarza obiekt.</li>
+<li><code>__str__(self)</code> — zwraca napis <code>(start, end)</code>, jeśli przedział nie jest pusty, w przeciwnym razie znak <code>∅</code> (U+2205, sekwencja ucieczkowa <code>'\u2205'</code>).</li>
+<li><code>__contains__(self, x)</code> — zwraca <code>True</code>, jeśli liczba <code>x</code> należy do przedziału (czyli <code>start &lt; x &lt; end</code>), w przeciwnym razie <code>False</code>. Wywoływana niejawnie przez wyrażenie <code>x in interval</code>.</li>
+<li><code>__eq__(self, other)</code> — zwraca <code>True</code>, jeśli oba przedziały mają ten sam <code>start</code> i ten sam <code>end</code>, w przeciwnym razie <code>False</code>. Po kanonizacji oznacza to także, że <em>wszystkie</em> puste przedziały są sobie równe.</li>
+<li><code>__and__(self, other)</code> — zwraca część wspólną dwóch przedziałów jako nowy <code>OpenInterval</code>. Część wspólna dwóch przedziałów otwartych jest przedziałem otwartym (być może pustym).</li>
+<li><code>__or__(self, other)</code> — zwraca sumę dwóch przedziałów jako nowy <code>OpenInterval</code>, <em>o ile suma jest pojedynczym przedziałem otwartym</em>. Jeśli niepuste przedziały mają puste przecięcie (czyli są rozłączne lub jedynie dotykają się końcami), metoda zgłasza <code>NotImplementedError</code> z komunikatem <code>Suma nie jest przedziałem otwartym</code>.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">class</span> OpenInterval:</span>
+<span id="cb10-2"><a href="#cb10-2"></a>    <span class="co">"""Przedział otwarty na osi liczbowej.</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="co">    &gt;&gt;&gt; i1 = OpenInterval(1, 3)</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="co">    &gt;&gt;&gt; i2 = OpenInterval(2, 4)</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="co">    &gt;&gt;&gt; i1</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="co">    OpenInterval(1, 3)</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="co">    &gt;&gt;&gt; print(i1)</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="co">    (1, 3)</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="co">    &gt;&gt;&gt; i1.length()</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a><span class="co">    2</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="co">    &gt;&gt;&gt; i1 &amp; i2</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="co">    OpenInterval(2, 3)</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a><span class="co">    &gt;&gt;&gt; i1 | i2</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a><span class="co">    OpenInterval(1, 4)</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a><span class="co">    &gt;&gt;&gt; 2 in i1</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a><span class="co">    True</span></span>
+<span id="cb10-18"><a href="#cb10-18"></a><span class="co">    &gt;&gt;&gt; 4 in i1</span></span>
+<span id="cb10-19"><a href="#cb10-19"></a><span class="co">    False</span></span>
+<span id="cb10-20"><a href="#cb10-20"></a><span class="co">    &gt;&gt;&gt; bool(i1)</span></span>
+<span id="cb10-21"><a href="#cb10-21"></a><span class="co">    True</span></span>
+<span id="cb10-22"><a href="#cb10-22"></a><span class="co">    &gt;&gt;&gt; i1 == i2</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a><span class="co">    False</span></span>
+<span id="cb10-24"><a href="#cb10-24"></a><span class="co">    &gt;&gt;&gt; (i1 | i2) == OpenInterval(1, 4)</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a><span class="co">    True</span></span>
+<span id="cb10-26"><a href="#cb10-26"></a><span class="co">    &gt;&gt;&gt; empty = OpenInterval(5, 3)</span></span>
+<span id="cb10-27"><a href="#cb10-27"></a><span class="co">    &gt;&gt;&gt; empty</span></span>
+<span id="cb10-28"><a href="#cb10-28"></a><span class="co">    OpenInterval(0, 0)</span></span>
+<span id="cb10-29"><a href="#cb10-29"></a><span class="co">    &gt;&gt;&gt; bool(empty)</span></span>
+<span id="cb10-30"><a href="#cb10-30"></a><span class="co">    False</span></span>
+<span id="cb10-31"><a href="#cb10-31"></a><span class="co">    &gt;&gt;&gt; print(empty)</span></span>
+<span id="cb10-32"><a href="#cb10-32"></a><span class="co">    ∅</span></span>
+<span id="cb10-33"><a href="#cb10-33"></a><span class="co">    &gt;&gt;&gt; empty.length()</span></span>
+<span id="cb10-34"><a href="#cb10-34"></a><span class="co">    0</span></span>
+<span id="cb10-35"><a href="#cb10-35"></a><span class="co">    &gt;&gt;&gt; empty == OpenInterval(7, 7)</span></span>
+<span id="cb10-36"><a href="#cb10-36"></a><span class="co">    True</span></span>
+<span id="cb10-37"><a href="#cb10-37"></a><span class="co">    &gt;&gt;&gt; i1 | OpenInterval(4, 5)             # rozłączne</span></span>
+<span id="cb10-38"><a href="#cb10-38"></a><span class="co">    Traceback (most recent call last):</span></span>
+<span id="cb10-39"><a href="#cb10-39"></a><span class="co">        ...</span></span>
+<span id="cb10-40"><a href="#cb10-40"></a><span class="co">    NotImplementedError: Suma nie jest przedziałem otwartym</span></span>
+<span id="cb10-41"><a href="#cb10-41"></a><span class="co">    &gt;&gt;&gt; OpenInterval(1, 3) | OpenInterval(3, 5)   # dotykają się końcami</span></span>
+<span id="cb10-42"><a href="#cb10-42"></a><span class="co">    Traceback (most recent call last):</span></span>
+<span id="cb10-43"><a href="#cb10-43"></a><span class="co">        ...</span></span>
+<span id="cb10-44"><a href="#cb10-44"></a><span class="co">    NotImplementedError: Suma nie jest przedziałem otwartym</span></span>
+<span id="cb10-45"><a href="#cb10-45"></a><span class="co">    """</span></span>
+<span id="cb10-46"><a href="#cb10-46"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Dlaczego nie <code>__len__</code>?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Naturalnie chcielibyśmy nazwać metodę długości <code>__len__</code> i pisać <code>len(i1)</code>. Jest jednak techniczna przeszkoda: <code>len()</code> w Pythonie <em>musi</em> zwracać nieujemną liczbę całkowitą, a długość przedziału <code>OpenInterval(1.5, 2.7)</code> to <code>1.2</code> — liczba zmiennoprzecinkowa. Próba zaokrąglenia byłaby sztuczna i myląca.</p>
+<p>W takich sytuacjach Python rezerwuje <code>__len__</code> dla pojemników (zbiorów, list, krotek), gdzie „rozmiar” jest zawsze całkowity, a dla wielkości ciągłych używa się zwykłej metody albo property. My wybieramy zwykłą metodę <code>length()</code> — <code>len(i1)</code> w <code>OpenInterval</code> po prostu nie zadziała, ale <code>i1.length()</code> jest tak samo czytelne.</p>
+<p>Zauważ, że ten kompromis nie dotyczy <code>__bool__</code>: ono musi zwracać <code>bool</code> i z liczbami zmiennoprzecinkowymi nie ma kłopotu. Przedział pusty jest fałszywy, niepusty prawdziwy — i to wystarcza, żeby pisać <code>if interval:</code> w kodzie korzystającym z klasy.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Operatory <code>&amp;</code> i <code>|</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Operatory <code>&amp;</code> i <code>|</code> są w Pythonie standardowo używane do przecięcia i sumy zbiorów (<code>set</code>); w naszej klasie podtrzymujemy tę konwencję — przecięcie i suma przedziałów. Mechanizm jest taki sam jak dla <code>+</code> i <code>*</code>: wyrażenie <code>i1 &amp; i2</code> Python tłumaczy na <code>i1.__and__(i2)</code>, a <code>i1 | i2</code> na <code>i1.__or__(i2)</code>.</p>
+<p>Dlaczego <code>__or__</code> może zgłaszać <code>NotImplementedError</code>? Bo suma dwóch otwartych przedziałów <em>nie zawsze</em> jest otwartym przedziałem — dla rozłącznych <code>(1, 2)</code> i <code>(3, 4)</code> wynikiem jest zbiór złożony z dwóch kawałków, którego nie da się zapisać jednym <code>OpenInterval</code>. Klasa nie obsługuje takiego przypadku; ograniczenie usuniemy w następnym zadaniu, gdy zdefiniujemy <code>Intervals</code> — sumy skończenie wielu przedziałów otwartych.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Przecięcie i suma przedziałów otwartych
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Niech <span class="math inline">\(A = (a_1, a_2)\)</span> i <span class="math inline">\(B = (b_1, b_2)\)</span> będą niepuste. Wtedy:</p>
+<ul>
+<li><span class="math inline">\(A \cap B = (\max(a_1, b_1),\ \min(a_2, b_2))\)</span> — może być pusty, jeśli przedziały nie zachodzą na siebie.</li>
+<li><span class="math inline">\(A \cup B\)</span> jest pojedynczym przedziałem otwartym dokładnie wtedy, gdy mają <strong>niepuste przecięcie</strong> — tj. gdy <span class="math inline">\(\max(a_1, b_1) &lt; \min(a_2, b_2)\)</span> (nierówność ostra). Wynikiem jest wtedy <span class="math inline">\((\min(a_1, b_1),\ \max(a_2, b_2))\)</span>.</li>
+</ul>
+<p>Jeśli przedziały są rozłączne lub dotykają się końcami (np. <span class="math inline">\((1, 3)\)</span> i <span class="math inline">\((3, 5)\)</span>), <code>__or__</code> zgłasza wyjątek — punkt styku nie należy do żadnego z otwartych przedziałów, więc nie należy do sumy, a wynik nie jest reprezentowalny przez jeden <code>OpenInterval</code>.</p>
+<p>Przypadki brzegowe: jeśli któryś z argumentów jest pusty, wynik <code>&amp;</code> też jest pusty; wynik <code>|</code> to po prostu drugi argument (suma niczego z <span class="math inline">\(A\)</span> to <span class="math inline">\(A\)</span>). Zaplanuj te przypadki w kodzie zanim zaczniesz pisać.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="arytmetyka-modularna" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="arytmetyka-modularna"><span class="header-section-number">6</span> Arytmetyka modularna</h2>
+<p>W tym zadaniu zaprojektujesz klasę reprezentującą arytmetykę reszt modulo <span class="math inline">\(m\)</span> — fundament teorii liczb i kryptografii. Poza wartością dydaktyczną zadanie ma walor projektowy: w odróżnieniu od poprzednich zadań tego labu pełna implementacja wymaga decyzji, których dotąd nie podejmowałeś samodzielnie — na przykład co zrobić, gdy próbujemy dodać dwa elementy z różnych modulusów.</p>
+<section id="tło-matematyczne" class="level3" data-number="6.1">
+<h3 data-number="6.1" class="anchored" data-anchor-id="tło-matematyczne"><span class="header-section-number">6.1</span> Tło matematyczne</h3>
+<p>Dla liczby całkowitej <span class="math inline">\(m \geq 2\)</span> rozważamy zbiór reszt z dzielenia przez <span class="math inline">\(m\)</span>: <span class="math display">\[
+\mathbb{Z}_m = \{0, 1, 2, \ldots, m-1\}.
+\]</span></p>
+<p>Na tym zbiorze definiujemy dwie operacje:</p>
+<ul>
+<li><strong>dodawanie modulo <span class="math inline">\(m\)</span>:</strong> <span class="math inline">\(a \oplus b\)</span> to reszta z dzielenia <span class="math inline">\(a + b\)</span> przez <span class="math inline">\(m\)</span>;</li>
+<li><strong>mnożenie modulo <span class="math inline">\(m\)</span>:</strong> <span class="math inline">\(a \odot b\)</span> to reszta z dzielenia <span class="math inline">\(a \cdot b\)</span> przez <span class="math inline">\(m\)</span>.</li>
+</ul>
+<p>Na przykład w <span class="math inline">\(\mathbb{Z}_7\)</span> mamy <span class="math inline">\(5 \oplus 4 = 2\)</span> (bo <span class="math inline">\(9 = 7 + 2\)</span>) oraz <span class="math inline">\(3 \odot 5 = 1\)</span> (bo <span class="math inline">\(15 = 2 \cdot 7 + 1\)</span>).</p>
+<p><strong>Element przeciwny.</strong> Dla każdego <span class="math inline">\(a \in \mathbb{Z}_m\)</span> istnieje dokładnie jedna reszta <span class="math inline">\(b\)</span> taka, że <span class="math inline">\(a \oplus b = 0\)</span>. Oznaczamy ją <span class="math inline">\(-a\)</span> i nazywamy elementem przeciwnym. Łatwo sprawdzić, że <span class="math inline">\(-a = (m - a) \bmod m\)</span> — w szczególności <span class="math inline">\(-0 = 0\)</span>.</p>
+<p><strong>Odejmowanie:</strong> <span class="math inline">\(a \ominus b := a \oplus (-b)\)</span>.</p>
+<p><strong>Iloczyn liczby całkowitej przez resztę.</strong> Dla <span class="math inline">\(k \in \mathbb{Z}\)</span> definiujemy: <span class="math display">\[
+k \cdot a := \underbrace{a \oplus a \oplus \cdots \oplus a}_{k \text{ składników}} \quad \text{dla } k \geq 0,
+\]</span> oraz <span class="math inline">\(k \cdot a := -((-k) \cdot a)\)</span> dla <span class="math inline">\(k &lt; 0\)</span>. Konwencja: liczba całkowita zawsze jest pierwszym czynnikiem; zapis <span class="math inline">\(a \cdot k\)</span> nie jest zdefiniowany.</p>
+<p><strong>Element odwrotny.</strong> Dla niektórych reszt <span class="math inline">\(a\)</span> istnieje reszta <span class="math inline">\(b\)</span> taka, że <span class="math inline">\(a \odot b = 1\)</span> — wtedy <span class="math inline">\(b\)</span> nazywamy elementem odwrotnym do <span class="math inline">\(a\)</span> i oznaczamy <span class="math inline">\(a^{-1}\)</span>. Element odwrotny <em>nie zawsze istnieje</em>: na przykład w <span class="math inline">\(\mathbb{Z}_6\)</span> reszta <span class="math inline">\(2\)</span> nie ma odwrotności, bo wszystkie iloczyny <span class="math inline">\(2 \odot b\)</span> są parzyste, a <span class="math inline">\(1\)</span> jest nieparzyste. Twierdzenie z teorii liczb mówi, że <span class="math inline">\(a\)</span> ma element odwrotny w <span class="math inline">\(\mathbb{Z}_m\)</span> wtedy i tylko wtedy, gdy <span class="math inline">\(\gcd(a, m) = 1\)</span>.</p>
+</section>
+<section id="interfejs" class="level3" data-number="6.2">
+<h3 data-number="6.2" class="anchored" data-anchor-id="interfejs"><span class="header-section-number">6.2</span> Interfejs</h3>
+<p>Napisz moduł <code>zz.py</code> zawierający klasę <code>ZZ</code>. Każda instancja reprezentuje jedną resztę z określonym modulusem.</p>
+<ul>
+<li><code>__init__(self, value, modulus)</code> — inicjalizuje obiekt. Argument <code>value</code> jest liczbą całkowitą (niekoniecznie z zakresu <span class="math inline">\(\{0, \ldots, m-1\}\)</span> — wartość redukujemy modulo <code>modulus</code>), <code>modulus</code> jest liczbą całkowitą <span class="math inline">\(\geq 2\)</span>. Jeśli <code>modulus &lt; 2</code>, zgłoś <code>ValueError</code> z komunikatem <code>Modulus musi być &gt;= 2</code>. Atrybuty po inicjalizacji: <code>value</code> (już zredukowana, czyli z zakresu <span class="math inline">\(\{0, \ldots, m-1\}\)</span>) i <code>modulus</code>.</li>
+<li><code>__repr__(self)</code> — zwraca napis postaci <code>ZZ(value, modulus)</code>, taki, że jego wpisanie do interpretera odtwarza obiekt.</li>
+<li><code>__str__(self)</code> — zwraca napis postaci <code>[value]_modulus</code> (np. <code>'[3]_7'</code>).</li>
+<li><code>__eq__(self, other)</code> — zwraca <code>True</code>, jeśli oba obiekty mają ten sam <code>value</code> i ten sam <code>modulus</code>. Reszty z różnych modulusów <em>nigdy nie są równe</em>, nawet jeśli mają tę samą wartość.</li>
+<li><code>__add__(self, other)</code>, <code>__sub__(self, other)</code>, <code>__mul__(self, other)</code> — odpowiednio <span class="math inline">\(\oplus\)</span>, <span class="math inline">\(\ominus\)</span>, <span class="math inline">\(\odot\)</span>. Argumenty muszą mieć ten sam modulus; jeśli modulusy się różnią, zgłoś <code>ValueError</code> z komunikatem <code>Niezgodne modulusy</code>. Wynik jest nową instancją <code>ZZ</code> z tym samym modulusem.</li>
+<li><code>__neg__(self)</code> — zwraca element przeciwny. Wywoływany niejawnie przez wyrażenie <code>-a</code>.</li>
+<li><code>__rmul__(self, k)</code> — obsługuje wyrażenie <code>k * a</code>, gdzie <code>k</code> jest liczbą całkowitą, a <code>a</code> instancją <code>ZZ</code>. Zwraca nową instancję <code>ZZ</code>. Realizuje iloczyn liczby całkowitej przez resztę zdefiniowany powyżej.</li>
+<li><code>inverse(self)</code> — zwraca element odwrotny jako nową instancję <code>ZZ</code>. Jeśli element odwrotny nie istnieje, zgłasza <code>ZeroDivisionError</code> z komunikatem <code>Element nie ma odwrotności</code>.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">class</span> ZZ:</span>
+<span id="cb11-2"><a href="#cb11-2"></a>    <span class="co">"""Reszta modulo m z arytmetyką modularną.</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="co">    &gt;&gt;&gt; a = ZZ(5, 7)</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="co">    &gt;&gt;&gt; b = ZZ(4, 7)</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="co">    &gt;&gt;&gt; a</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="co">    ZZ(5, 7)</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="co">    &gt;&gt;&gt; print(a)</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="co">    [5]_7</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a><span class="co">    &gt;&gt;&gt; a + b</span></span>
+<span id="cb11-11"><a href="#cb11-11"></a><span class="co">    ZZ(2, 7)</span></span>
+<span id="cb11-12"><a href="#cb11-12"></a><span class="co">    &gt;&gt;&gt; a - b</span></span>
+<span id="cb11-13"><a href="#cb11-13"></a><span class="co">    ZZ(1, 7)</span></span>
+<span id="cb11-14"><a href="#cb11-14"></a><span class="co">    &gt;&gt;&gt; a * b</span></span>
+<span id="cb11-15"><a href="#cb11-15"></a><span class="co">    ZZ(6, 7)</span></span>
+<span id="cb11-16"><a href="#cb11-16"></a><span class="co">    &gt;&gt;&gt; -a</span></span>
+<span id="cb11-17"><a href="#cb11-17"></a><span class="co">    ZZ(2, 7)</span></span>
+<span id="cb11-18"><a href="#cb11-18"></a><span class="co">    &gt;&gt;&gt; a + (-a) == ZZ(0, 7)</span></span>
+<span id="cb11-19"><a href="#cb11-19"></a><span class="co">    True</span></span>
+<span id="cb11-20"><a href="#cb11-20"></a><span class="co">    &gt;&gt;&gt; 3 * a</span></span>
+<span id="cb11-21"><a href="#cb11-21"></a><span class="co">    ZZ(1, 7)</span></span>
+<span id="cb11-22"><a href="#cb11-22"></a><span class="co">    &gt;&gt;&gt; (-2) * a</span></span>
+<span id="cb11-23"><a href="#cb11-23"></a><span class="co">    ZZ(4, 7)</span></span>
+<span id="cb11-24"><a href="#cb11-24"></a><span class="co">    &gt;&gt;&gt; a.inverse()</span></span>
+<span id="cb11-25"><a href="#cb11-25"></a><span class="co">    ZZ(3, 7)</span></span>
+<span id="cb11-26"><a href="#cb11-26"></a><span class="co">    &gt;&gt;&gt; a * a.inverse() == ZZ(1, 7)</span></span>
+<span id="cb11-27"><a href="#cb11-27"></a><span class="co">    True</span></span>
+<span id="cb11-28"><a href="#cb11-28"></a><span class="co">    &gt;&gt;&gt; ZZ(15, 7)                           # redukcja w inicjalizatorze</span></span>
+<span id="cb11-29"><a href="#cb11-29"></a><span class="co">    ZZ(1, 7)</span></span>
+<span id="cb11-30"><a href="#cb11-30"></a><span class="co">    &gt;&gt;&gt; ZZ(-1, 7)                           # ujemne też redukowane</span></span>
+<span id="cb11-31"><a href="#cb11-31"></a><span class="co">    ZZ(6, 7)</span></span>
+<span id="cb11-32"><a href="#cb11-32"></a><span class="co">    &gt;&gt;&gt; ZZ(2, 6).inverse()</span></span>
+<span id="cb11-33"><a href="#cb11-33"></a><span class="co">    Traceback (most recent call last):</span></span>
+<span id="cb11-34"><a href="#cb11-34"></a><span class="co">        ...</span></span>
+<span id="cb11-35"><a href="#cb11-35"></a><span class="co">    ZeroDivisionError: Element nie ma odwrotności</span></span>
+<span id="cb11-36"><a href="#cb11-36"></a><span class="co">    &gt;&gt;&gt; ZZ(3, 7) + ZZ(3, 5)</span></span>
+<span id="cb11-37"><a href="#cb11-37"></a><span class="co">    Traceback (most recent call last):</span></span>
+<span id="cb11-38"><a href="#cb11-38"></a><span class="co">        ...</span></span>
+<span id="cb11-39"><a href="#cb11-39"></a><span class="co">    ValueError: Niezgodne modulusy</span></span>
+<span id="cb11-40"><a href="#cb11-40"></a><span class="co">    &gt;&gt;&gt; ZZ(0, 1)</span></span>
+<span id="cb11-41"><a href="#cb11-41"></a><span class="co">    Traceback (most recent call last):</span></span>
+<span id="cb11-42"><a href="#cb11-42"></a><span class="co">        ...</span></span>
+<span id="cb11-43"><a href="#cb11-43"></a><span class="co">    ValueError: Modulus musi być &gt;= 2</span></span>
+<span id="cb11-44"><a href="#cb11-44"></a><span class="co">    """</span></span>
+<span id="cb11-45"><a href="#cb11-45"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Wskazówki implementacyjne
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Redukcja w <code>__init__</code>.</strong> Operator <code>%</code> w Pythonie działa zgodnie z definicją matematyczną także dla ujemnych argumentów: <code>-1 % 7</code> zwraca <code>6</code>, nie <code>-1</code>. Cała redukcja sprowadza się więc do <code>self.value = value % modulus</code>.</p>
+<p><strong>Element odwrotny.</strong> Twierdzenie z tła matematycznego daje warunek istnienia, ale nie podpowiada, jak go znaleźć. Najprostsza metoda — w sam raz na ten lab — to przeszukiwanie zupełne: przejrzyj wszystkie reszty <span class="math inline">\(b \in \{1, \ldots, m-1\}\)</span> i sprawdź, czy <span class="math inline">\(a \odot b = 1\)</span>. Jeśli znajdziesz, zwróć <code>ZZ(b, m)</code>; jeśli nie znajdziesz po przejrzeniu całego zbioru, zgłoś wyjątek. Zauważ, że ten test jest równocześnie kryterium istnienia (nie musisz osobno sprawdzać <code>gcd</code>) — jeśli <code>gcd(a, m) &gt; 1</code>, żadne <code>b</code> nie spełni warunku.</p>
+<p>W praktyce kryptograficznej używa się rozszerzonego algorytmu Euklidesa, który robi to w <span class="math inline">\(O(\log m)\)</span> zamiast <span class="math inline">\(O(m)\)</span>. Wzmianka dla świadomości; tutaj brute force wystarczy.</p>
+<p><strong><code>__rmul__</code> i znak <code>k</code>.</strong> Wyrażenie <code>3 * ZZ(5, 7)</code> Python tłumaczy na <code>(3).__mul__(ZZ(5, 7))</code>, a ponieważ <code>int.__mul__</code> nie wie, jak pomnożyć <code>int</code> przez <code>ZZ</code>, zwraca <code>NotImplemented</code>. Wtedy Python pyta prawego operanda przez <code>ZZ.__rmul__</code>. To dokładnie to zachowanie, które omawialiśmy w rozgrzewce. W ciele <code>__rmul__</code> dla nieujemnego <code>k</code> skorzystaj z faktu, że <code>k * a</code> sprowadza się do <code>(k * self.value) % self.modulus</code> — nie musisz iterować dodawania. Dla ujemnego <code>k</code> skorzystaj z definicji.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Dlaczego <code>ZeroDivisionError</code> zamiast <code>ValueError</code>?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Brak elementu odwrotnego jest matematycznym analogiem dzielenia przez zero. W ciele liczb wymiernych nie ma odwrotności tylko dla zera; w pierścieniu <span class="math inline">\(\mathbb{Z}_m\)</span> nie ma jej dla wszystkich elementów, których <code>gcd</code> z modulusem jest większy niż 1. Z punktu widzenia użytkownika klasy operacja jest jednak ta sama: <em>próbujemy odwrócić coś, czego się odwrócić nie da</em>. Stąd ten sam typ wyjątku.</p>
+<p>Praktyczna konsekwencja: kod, który ostrożnie obsługuje dzielenie przez zero w arytmetyce zwykłej, działa tak samo, gdy podstawimy pod niego <code>ZZ</code> — wystarczy złapać <code>ZeroDivisionError</code>.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="sumy-przedziałów-otwartych" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="sumy-przedziałów-otwartych"><span class="header-section-number">7</span> Sumy przedziałów otwartych</h2>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Zadanie zaawansowane
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To zadanie jest zauważalnie obszerniejsze od pozostałych w tym labie — łączy materiał z całego labu (klasa, metody specjalne, dziedziczenie pojęciowe od <code>OpenInterval</code>) z algorytmem scalania przedziałów i operacjami teorio-mnogościowymi na sumach. Potraktuj je jako wyzwanie tygodnia, nie jako obowiązkową część labu.</p>
+</div>
+</div>
+<p>Klasa <code>OpenInterval</code> z poprzedniego zadania ma istotne ograniczenie: suma dwóch rozłącznych przedziałów otwartych nie jest przedziałem otwartym, więc operator <code>|</code> zgłasza wyjątek. W tym zadaniu usuniemy to ograniczenie — wprowadzimy klasę <code>Intervals</code> reprezentującą <strong>skończoną sumę</strong> przedziałów otwartych. Obiekt klasy <code>Intervals</code> przechowuje wewnętrznie listę <code>OpenInterval</code>, scaloną i posortowaną tak, że żadne dwa przedziały na liście się nie nakładają.</p>
+<p>Napisz moduł <code>intervals.py</code> zawierający klasę <code>Intervals</code>. Klasa korzysta z <code>OpenInterval</code> z poprzedniego zadania — zaimportuj ją na początku modułu.</p>
+<section id="interfejs-1" class="level3" data-number="7.1">
+<h3 data-number="7.1" class="anchored" data-anchor-id="interfejs-1"><span class="header-section-number">7.1</span> Interfejs</h3>
+<ul>
+<li><code>__init__(self, *intervals)</code> — argumenty pozycyjne <code>intervals</code> to obiekty <code>OpenInterval</code> lub krotki postaci <code>(start, end)</code>. Krotki są przekształcane do <code>OpenInterval</code>. Inicjalizator definiuje atrybut <code>self.intervals</code> jako listę <code>OpenInterval</code>, scaloną i posortowaną rosnąco po <code>start</code>. Jeśli nie podano żadnych argumentów albo wszystkie podane są puste, <code>self.intervals</code> jest jednoelementową listą zawierającą <code>OpenInterval(0, 0)</code>.</li>
+<li><code>length(self)</code> — zwraca sumę długości przedziałów z <code>self.intervals</code>. Dla pustej sumy zwraca <code>0</code>.</li>
+<li><code>__bool__(self)</code> — zwraca <code>True</code>, jeśli <code>self.intervals</code> zawiera choć jeden przedział niepusty, w przeciwnym razie <code>False</code>.</li>
+<li><code>__repr__(self)</code> — zwraca napis postaci <code>Intervals(OpenInterval(...), OpenInterval(...))</code>, taki, że jego wpisanie do interpretera odtwarza obiekt.</li>
+<li><code>__str__(self)</code> — zwraca napis będący sumą napisów <code>(start, end)</code> poszczególnych przedziałów, połączonych znakiem <code>∪</code> (U+222A, sekwencja ucieczkowa <code>'\u222a'</code>). Dla pustej sumy zwraca <code>∅</code>.</li>
+<li><code>__contains__(self, x)</code> — zwraca <code>True</code>, jeśli <code>x</code> należy do <em>któregokolwiek</em> z przedziałów składowych.</li>
+<li><code>__eq__(self, other)</code> — zwraca <code>True</code>, jeśli <code>self.intervals</code> i <code>other.intervals</code> zawierają te same przedziały. Po scaleniu i posortowaniu w inicjalizatorze równość obiektów sprowadza się do równości list.</li>
+<li><code>__and__(self, other)</code> — zwraca część wspólną dwóch sum przedziałów jako nową instancję <code>Intervals</code>.</li>
+<li><code>__or__(self, other)</code> — zwraca sumę dwóch sum przedziałów jako nową instancję <code>Intervals</code>. W odróżnieniu od <code>OpenInterval.__or__</code> ta operacja nigdy nie zgłasza wyjątku — sumy rozłączne są w pełni reprezentowalne przez <code>Intervals</code>.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">class</span> Intervals:</span>
+<span id="cb12-2"><a href="#cb12-2"></a>    <span class="co">"""Skończona suma przedziałów otwartych na osi liczbowej.</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="co">    &gt;&gt;&gt; i1 = Intervals((1, 5))</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="co">    &gt;&gt;&gt; i2 = Intervals((3, 7))</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="co">    &gt;&gt;&gt; i3 = Intervals((5, 9))</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="co">    &gt;&gt;&gt; i4 = Intervals((6, 7))</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="co">    &gt;&gt;&gt; i5 = Intervals((8, 9))</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="co">    &gt;&gt;&gt; i6 = Intervals((10, 20))</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="co">    &gt;&gt;&gt; i1</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="co">    Intervals(OpenInterval(1, 5))</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="co">    &gt;&gt;&gt; print(i1)</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="co">    (1, 5)</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a><span class="co">    &gt;&gt;&gt; i1 &amp; i2</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="co">    Intervals(OpenInterval(3, 5))</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a><span class="co">    &gt;&gt;&gt; i1 | i2</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a><span class="co">    Intervals(OpenInterval(1, 7))</span></span>
+<span id="cb12-18"><a href="#cb12-18"></a><span class="co">    &gt;&gt;&gt; 4 in (i1 | i3)</span></span>
+<span id="cb12-19"><a href="#cb12-19"></a><span class="co">    True</span></span>
+<span id="cb12-20"><a href="#cb12-20"></a><span class="co">    &gt;&gt;&gt; 5 in (i1 | i3)</span></span>
+<span id="cb12-21"><a href="#cb12-21"></a><span class="co">    False</span></span>
+<span id="cb12-22"><a href="#cb12-22"></a><span class="co">    &gt;&gt;&gt; bool(i1 | i6)</span></span>
+<span id="cb12-23"><a href="#cb12-23"></a><span class="co">    True</span></span>
+<span id="cb12-24"><a href="#cb12-24"></a><span class="co">    &gt;&gt;&gt; bool(i1 &amp; i6)</span></span>
+<span id="cb12-25"><a href="#cb12-25"></a><span class="co">    False</span></span>
+<span id="cb12-26"><a href="#cb12-26"></a><span class="co">    &gt;&gt;&gt; i1 &amp; i2 | i3</span></span>
+<span id="cb12-27"><a href="#cb12-27"></a><span class="co">    Intervals(OpenInterval(3, 5), OpenInterval(5, 9))</span></span>
+<span id="cb12-28"><a href="#cb12-28"></a><span class="co">    &gt;&gt;&gt; (i1 | i5) &amp; (i2 | i4)</span></span>
+<span id="cb12-29"><a href="#cb12-29"></a><span class="co">    Intervals(OpenInterval(3, 5))</span></span>
+<span id="cb12-30"><a href="#cb12-30"></a><span class="co">    &gt;&gt;&gt; (i1 | i5) &amp; (i2 | i4) == (i1 &amp; i2) | (i1 &amp; i4) | (i5 &amp; i2) | (i5 &amp; i4)</span></span>
+<span id="cb12-31"><a href="#cb12-31"></a><span class="co">    True</span></span>
+<span id="cb12-32"><a href="#cb12-32"></a><span class="co">    &gt;&gt;&gt; Intervals((1, 3), (3, 5))</span></span>
+<span id="cb12-33"><a href="#cb12-33"></a><span class="co">    Intervals(OpenInterval(1, 3), OpenInterval(3, 5))</span></span>
+<span id="cb12-34"><a href="#cb12-34"></a><span class="co">    &gt;&gt;&gt; 3 in Intervals((1, 3), (3, 5))</span></span>
+<span id="cb12-35"><a href="#cb12-35"></a><span class="co">    False</span></span>
+<span id="cb12-36"><a href="#cb12-36"></a><span class="co">    &gt;&gt;&gt; Intervals()</span></span>
+<span id="cb12-37"><a href="#cb12-37"></a><span class="co">    Intervals(OpenInterval(0, 0))</span></span>
+<span id="cb12-38"><a href="#cb12-38"></a><span class="co">    &gt;&gt;&gt; print(Intervals())</span></span>
+<span id="cb12-39"><a href="#cb12-39"></a><span class="co">    ∅</span></span>
+<span id="cb12-40"><a href="#cb12-40"></a><span class="co">    """</span></span>
+<span id="cb12-41"><a href="#cb12-41"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Algorytm scalania
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Zasadnicza praca dzieje się w <code>__init__</code>: po przekształceniu krotek na <code>OpenInterval</code> i odsianiu pustych musimy <em>scalić</em> te przedziały, które się przecinają, w jeden większy przedział. Wydziel tę operację jako pomocniczą funkcję <code>merge_intervals(intervals)</code> — przyjmuje listę <code>OpenInterval</code>, zwraca nową listę po scaleniu. Możesz ją zdefiniować jako zwykłą funkcję na poziomie modułu, jako metodę statyczną klasy (<code>@staticmethod</code>) albo jako zwykłą metodę.</p>
+<p>Iteracyjny algorytm w pseudokodzie:</p>
+<pre><code>merge_intervals(intervals):
+    while True:
+        scalono = False
+        for A, B in kombinacje(intervals, 2):
+            if A &amp; B:
+                intervals.remove(A)
+                intervals.remove(B)
+                intervals.append(A | B)
+                scalono = True
+                break          # zaczynamy pętlę while od początku
+        if not scalono:
+            return intervals   # nic się nie scaliło, koniec</code></pre>
+<p>Ten algorytm jest naiwny — w najgorszym razie wykonuje <span class="math inline">\(O(n^2)\)</span> porównań na jeden przebieg, a przebiegów może być do <span class="math inline">\(n\)</span>. Dla typowej liczby przedziałów w testach to wystarczająco szybkie. Wariant linearithmiczny (<span class="math inline">\(O(n \log n)\)</span>) opiera się na sortowaniu po <code>start</code> i jednym przejściu po posortowanej liście — możesz go zaimplementować, jeśli masz ochotę, ale dla tego labu nie jest wymagany.</p>
+<p><code>kombinacje(intervals, 2)</code> to <code>itertools.combinations(intervals, 2)</code> — pary różnych elementów listy bez powtórzeń.</p>
+<p><strong>Uwaga o <code>A &amp; B</code>.</strong> W warunku scalania sprawdzamy <em>przecięcie</em>, nie sumę. Dla dwóch otwartych przedziałów <code>A</code> i <code>B</code> warunki „mają niepuste przecięcie” i „suma jest pojedynczym przedziałem otwartym” są <strong>równoważne</strong> — wykluczają zarówno przypadek całkowitej rozłączności, jak i dotykania się końcami. Dlatego strażnik <code>if A &amp; B:</code> jest dokładnie tym, czego potrzebujemy: gwarantuje, że <code>A | B</code> zwróci wynik, zamiast zgłosić wyjątek. W konsekwencji <code>Intervals((1, 3), (3, 5))</code> zawiera <em>dwa</em> przedziały, nie jeden — punkt <code>3</code> nie należy do żadnego z otwartych przedziałów, więc suma rzeczywiście rozpada się na dwa kawałki, i poprawnie tego nie scalamy.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Część wspólna i suma sum
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Obie operacje sprowadzają się do dwóch zagnieżdżonych pętli po przedziałach składowych.</p>
+<p><strong>Część wspólna <code>self &amp; other</code>.</strong> Część wspólna dwóch sum to suma wszystkich par przecięć: <span class="math display">\[
+(A_1 \cup A_2) \cap (B_1 \cup B_2) = (A_1 \cap B_1) \cup (A_1 \cap B_2) \cup (A_2 \cap B_1) \cup (A_2 \cap B_2).
+\]</span> Iteruj po <code>self.intervals</code> i <code>other.intervals</code>, zbierz wszystkie przecięcia (każde jest <code>OpenInterval</code>), wyrzuć puste, i zbuduj z nich nową instancję <code>Intervals(*niepuste)</code>. Scalenie i sortowanie zrobi za ciebie inicjalizator.</p>
+<p><strong>Suma <code>self | other</code>.</strong> Połącz wszystkie przedziały z obu list i przekaż je do inicjalizatora — <code>Intervals(*self.intervals, *other.intervals)</code>. Nie musisz nic ręcznie scalać; cała robota dzieje się w <code>__init__</code>.</p>
+<p>Zauważ, że obie metody nie modyfikują <code>self</code> ani <code>other</code> — zwracają <em>nową</em> instancję. To konwencja, której trzymają się wszystkie operatory arytmetyczne i mnogościowe w Pythonie: <code>a + b</code> nie zmienia ani <code>a</code>, ani <code>b</code>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Kompozycja zamiast dziedziczenia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Klasa <code>Intervals</code> <em>używa</em> obiektów <code>OpenInterval</code>, ale nie dziedziczy po niej. To świadoma decyzja projektowa: <code>Intervals</code> nie <em>jest</em> <code>OpenInterval</code> — nie ma jednej pary <code>(start, end)</code>, nie zachowuje się jak pojedynczy przedział, nie spełniłaby kontraktu klasy nadrzędnej. Zamiast tego <code>Intervals</code> zawiera w sobie listę <code>OpenInterval</code> jako atrybut. Mówimy, że <code>Intervals</code> jest <em>kompozycją</em> <code>OpenInterval</code>, a nie <em>podklasą</em>.</p>
+<p>Reguła kciuka: dziedziczenie to <em>jest-rodzajem</em> (<code>MovingAverage</code> jest rodzajem <code>RatioAccumulator</code>), kompozycja to <em>zawiera</em> lub <em>używa</em> (<code>Intervals</code> zawiera <code>OpenInterval</code>). To jedno z najczęściej cytowanych przykazań projektowania obiektowego — <em>prefer composition over inheritance</em>. Tutaj kierunek jest naturalny: gdybyśmy próbowali zrobić <code>Intervals</code> podklasą <code>OpenInterval</code>, musielibyśmy przedefiniować praktycznie każdą metodę, bo żadna nie pasowałaby bez przeróbek.</p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/rodakt\.github\.io\/PPwAD2\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<hr><center><small>Ostatnia aktualizacja: last-modified</small></center>
+
+
+
+
+</body></html>

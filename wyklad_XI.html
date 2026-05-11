@@ -383,7 +383,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="wprowadzenie" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="wprowadzenie"><span class="header-section-number">1</span> Wprowadzenie</h2>
 <p>Od początku semestru używaliśmy pętli <code>for</code> jak narzędzia oczywistego. Iterowaliśmy po listach, krotkach, łańcuchach, zakresach <code>range</code>, słownikach, zbiorach, plikach. Nie zatrzymywaliśmy się jednak nad pytaniem: <strong>co dokładnie sprawia, że obiekt nadaje się do pętli <code>for</code>?</strong> Czy istnieje jakaś jedna cecha, którą każdy z tych typów musi spełniać?</p>
-<p>Odpowiedź jest prosta: tak. Istnieją dwa pojęcia — <strong>obiekt iterowalny</strong> i <strong>iterator</strong> — które opisują wszystko, co Python umie podać w <code>for</code>. Tym wykładem porządkujemy te pojęcia, pokazujemy jak zaimplementować je we własnej klasie, a na końcu poznajemy <strong>generatory</strong>: lekki sposób na pisanie iteratorów, który w praktyce wypiera klasy iteratorów niemal całkowicie.</p>
+<p>Odpowiedź jest prosta: tak. Istnieją dwa pojęcia — <strong>obiekt iterowalny</strong> i <strong>iterator</strong> — które opisują wszystko, co Python umie wyorzystać w pętli <code>for</code>. Tym wykładem porządkujemy te pojęcia, pokazujemy jak zaimplementować je we własnej klasie, a na końcu poznajemy <strong>generatory</strong>: lekki sposób na pisanie iteratorów, który w praktyce wypiera klasy iteratorów niemal całkowicie.</p>
 <p>Po drodze odkryjemy, że iteratory pozwalają reprezentować strumienie danych <strong>leniwie</strong> — wartość po wartości, na żądanie. Dzięki temu możemy w skończonej pamięci pracować ze strumieniami nieskończonymi. Na zakończenie napiszemy generator chodzący po wszystkich punktach kratowych płaszczyzny i zapiszemy jego początek do pliku CSV.</p>
 <hr>
 </section>
@@ -440,7 +440,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </div>
 </div>
-<p>Wbudowana funkcja <code>next(it)</code> to skrót na <code>it.__next__()</code>:</p>
+<p>Wbudowana funkcja <code>next(it)</code> wywołuje automatycznie <code>it.__next__()</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">&gt;&gt;&gt;</span> it <span class="op">=</span> <span class="bu">reversed</span>(<span class="st">'abc'</span>)</span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="op">&gt;&gt;&gt;</span> it</span>
 <span id="cb5-3"><a href="#cb5-3"></a><span class="op">&lt;</span><span class="bu">reversed</span> <span class="bu">object</span> at <span class="bn">0x7f298cbff640</span><span class="op">&gt;</span></span>
@@ -522,7 +522,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-3"><a href="#cb11-3"></a>[(<span class="dv">1</span>, <span class="st">'a'</span>), (<span class="dv">2</span>, <span class="st">'b'</span>), (<span class="dv">3</span>, <span class="st">'c'</span>)]</span>
 <span id="cb11-4"><a href="#cb11-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(pary)</span>
 <span id="cb11-5"><a href="#cb11-5"></a>[]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Po pierwszym <code>list(pary)</code> iterator jest wyczerpany. Drugie wywołanie zastaje pustkę.</p>
+<p>Po pierwszym <code>list(pary)</code> iterator jest wyczerpany. Drugie wywołanie zastaje pustą kolekcję.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -564,7 +564,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-7"><a href="#cb12-7"></a><span class="dv">0</span></span>
 <span id="cb12-8"><a href="#cb12-8"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">next</span>(it2)</span>
 <span id="cb12-9"><a href="#cb12-9"></a><span class="dv">0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Dwa wywołania <code>iter(z)</code> dają <strong>dwa niezależne iteratory</strong>. Każdy ma swój stan, każdy zaczyna od zera. To jest powód, dla którego można pusczać <code>for</code> po <code>range</code> dowolnie wiele razy:</p>
+<p>Dwa wywołania <code>iter(z)</code> dają <strong>dwa niezależne iteratory</strong>. Każdy ma swój stan, każdy zaczyna od zera. To jest powód, dla którego można uruchamiać <code>for</code> na <code>range</code> dowolnie wiele razy:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="op">&gt;&gt;&gt;</span> z <span class="op">=</span> <span class="bu">range</span>(<span class="dv">3</span>)</span>
 <span id="cb13-2"><a href="#cb13-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
 <span id="cb13-3"><a href="#cb13-3"></a>...     <span class="cf">for</span> x <span class="kw">in</span> z:</span>
@@ -577,7 +577,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Iterator też jest obiektem iterowalnym — bo definiuje <code>__iter__</code> jako <code>return self</code>. <code>iter(it)</code> na iteratorze zwraca ten sam iterator, nie świeży. Stąd asymetria: <code>range</code> przeżywa wielokrotne pętle, <code>reversed('abc')</code> nie.</p>
 <p>Obiekty iterowalne to:</p>
 <ul>
-<li>listy, krotki, łańcuchy, bytes-y;</li>
+<li>listy, krotki, łańcuchy, łańcuchy bajtów;</li>
 <li>słowniki, zbiory;</li>
 <li><code>range</code>;</li>
 <li>obiekty zwracane przez <code>enumerate</code>, <code>reversed</code>, <code>zip</code>, <code>map</code>, <code>filter</code>, <code>open</code>;</li>
@@ -624,7 +624,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="op">&gt;&gt;&gt;</span> kw <span class="op">=</span> Kwadraty()</span>
 <span id="cb17-2"><a href="#cb17-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">next</span>(kw), <span class="bu">next</span>(kw), <span class="bu">next</span>(kw), <span class="bu">next</span>(kw)</span>
 <span id="cb17-3"><a href="#cb17-3"></a>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Skoro <code>Kwadraty</code> jest nieskończone, nie da się napisać <code>list(Kwadraty())</code> — pętla nigdy się nie skończy. Możemy jednak wziąć skończony <strong>prefiks</strong>, na przykład listą składaną z licznikiem:</p>
+<p>Skoro <code>Kwadraty</code> jest nieskończone, nie da się napisać <code>list(Kwadraty())</code> — pętla nigdy się nie skończy. Możemy jednak wziąć skończony <strong>prefiks</strong>, na przykład wyrażeniem listowym z licznikiem:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a><span class="op">&gt;&gt;&gt;</span> kw <span class="op">=</span> Kwadraty()</span>
 <span id="cb18-2"><a href="#cb18-2"></a><span class="op">&gt;&gt;&gt;</span> [<span class="bu">next</span>(kw) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>)]</span>
 <span id="cb18-3"><a href="#cb18-3"></a>[<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">16</span>, <span class="dv">25</span>, <span class="dv">36</span>, <span class="dv">49</span>, <span class="dv">64</span>, <span class="dv">81</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -642,7 +642,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>jeśli <code>n</code> jest parzyste, dziel przez 2;</li>
 <li>jeśli <code>n</code> jest nieparzyste, weź <code>3n + 1</code>.</li>
 </ul>
-<p>Hipoteza Collatza mówi, że niezależnie od startowego <code>n</code> ciąg zawsze dochodzi do <code>1</code>. Hipoteza jest otwartym problemem — sprawdzona obliczeniowo dla bardzo wielu liczb. Ciąg jest skończony (przynajmniej dla wszystkich wypróbowanych <code>n</code>), ale jego długość nie jest znana z góry.</p>
+<p>Hipoteza Collatza mówi, że niezależnie od startowego <code>n</code> ciąg zawsze dochodzi do <code>1</code>. Hipoteza jest otwartym problemem — sprawdzona obliczeniowo dla bardzo wielu liczb, jak dotąd jednak nadal bez dowodu. Ciąg jest skończony (przynajmniej dla wszystkich wypróbowanych <code>n</code>), ale jego długość nie jest znana z góry.</p>
 <p>Iterator startuje od <code>n</code> i zwraca kolejne wyrazy ciągu. Po zwróceniu <code>1</code> strumień się kończy.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">class</span> Collatz:</span>
 <span id="cb20-2"><a href="#cb20-2"></a>    <span class="co">"""Iterator po wyrazach ciągu Collatza zaczynającego się od n.</span></span>
@@ -695,7 +695,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="loader" class="level3" data-number="5.3">
 <h3 data-number="5.3" class="anchored" data-anchor-id="loader"><span class="header-section-number">5.3</span> Loader</h3>
-<p>Trzeci przykład jest motywujący: pokażemy iterator, <strong>którego nie da się sensownie zastąpić generatorem</strong>. Klasa <code>Loader</code> ładuje dane z sekwencji wartością po wartości, z opcjonalnym tasowaniem, i pozwala restartować iterację metodą <code>reset</code>. Wzorzec inspirowany jest klasą <code>DataLoader</code> z biblioteki PyTorch — każda <em>epoka</em> uczenia sieci neuronowej polega na przejściu po danych, najczęściej w nowej, losowej kolejności.</p>
+<p>Trzeci przykład jest motywujący: pokażemy iterator, <strong>którego nie da się sensownie zastąpić generatorem</strong>. Klasa <code>Loader</code> ładuje dane z sekwencji wartość po wartości, z opcjonalnym tasowaniem, i pozwala restartować iterację metodą <code>reset</code>. Wzorzec inspirowany jest klasą <code>DataLoader</code> z biblioteki PyTorch — każda <em>epoka</em> uczenia sieci neuronowej polega na przejściu po danych, najczęściej w nowej, losowej kolejności.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a><span class="im">import</span> random</span>
 <span id="cb22-2"><a href="#cb22-2"></a></span>
 <span id="cb22-3"><a href="#cb22-3"></a></span>
@@ -769,7 +769,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="generatory" class="level2" data-number="6">
 <h2 data-number="6" class="anchored" data-anchor-id="generatory"><span class="header-section-number">6</span> Generatory</h2>
-<p>Pisanie klasy iteratora to dużo rusztowania: trzy metody, atrybut na stan, ręczne <code>StopIteration</code>. W większości przypadków da się to samo napisać jednym narzędziem językowym — <strong>funkcją generatora</strong>.</p>
+<p>Pisanie klasy iteratora to dużo elementów: trzy metody, atrybut na stan, ręczne <code>StopIteration</code>. W większości przypadków da się to samo napisać jednym narzędziem językowym — <strong>funkcją generatora</strong>.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -871,7 +871,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb34-3"><a href="#cb34-3"></a>...     <span class="bu">next</span>(f)</span>
 <span id="cb34-4"><a href="#cb34-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">next</span>(f)</span>
 <span id="cb34-5"><a href="#cb34-5"></a><span class="dv">377</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Wszystkie wyrazy mniejsze od 10000:</strong></p>
+<p><strong>Wszystkie wyrazy mniejsze od 10_000:</strong></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="cf">for</span> x <span class="kw">in</span> fib():</span>
 <span id="cb35-2"><a href="#cb35-2"></a>...     <span class="cf">if</span> x <span class="op">&gt;=</span> <span class="dv">10000</span>:</span>
 <span id="cb35-3"><a href="#cb35-3"></a>...         <span class="cf">break</span></span>
@@ -881,13 +881,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="wyrażenie-generatora" class="level3" data-number="6.4">
 <h3 data-number="6.4" class="anchored" data-anchor-id="wyrażenie-generatora"><span class="header-section-number">6.4</span> Wyrażenie generatora</h3>
-<p>Listy składane mają kuzyna — <strong>wyrażenie generatora</strong>. Składnia jest taka sama, tylko zewnętrzne nawiasy <code>[]</code> zastępujemy przez <code>()</code>:</p>
+<p>Wyrażenia listowe mają kuzyna — <strong>wyrażenie generatora</strong>. Składnia jest taka sama, tylko zewnętrzne nawiasy <code>[]</code> zastępujemy przez <code>()</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1"></a><span class="op">&gt;&gt;&gt;</span> potęgi <span class="op">=</span> (<span class="dv">2</span> <span class="op">**</span> n <span class="cf">for</span> n <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>))</span>
 <span id="cb36-2"><a href="#cb36-2"></a><span class="op">&gt;&gt;&gt;</span> potęgi</span>
 <span id="cb36-3"><a href="#cb36-3"></a><span class="op">&lt;</span>generator <span class="bu">object</span> <span class="op">&lt;</span>genexpr<span class="op">&gt;</span> at <span class="bn">0x7ff3007c89d0</span><span class="op">&gt;</span></span>
 <span id="cb36-4"><a href="#cb36-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(potęgi)</span>
 <span id="cb36-5"><a href="#cb36-5"></a>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">16</span>, <span class="dv">32</span>, <span class="dv">64</span>, <span class="dv">128</span>, <span class="dv">256</span>, <span class="dv">512</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>W odróżnieniu od listy składanej, wyrażenie generatora <strong>nie tworzy listy</strong> — tworzy iterator, który dopiero po kolei policzy wartości. Korzyść: pamięć. <code>list(range(10**9))</code> zabije program; <code>(x for x in range(10**9))</code> jest natychmiastowe.</p>
+<p>W odróżnieniu od wyrażenia listowego, wyrażenie generatora <strong>nie tworzy listy</strong> — tworzy iterator, który dopiero po kolei policzy wartości. Korzyść: pamięć. <code>list(range(10**9))</code> zabije program; <code>(x for x in range(10**9))</code> jest natychmiastowe.</p>
 <p>Funkcje konsumujące iterowalne (<code>sum</code>, <code>max</code>, <code>any</code>, <code>all</code>, …) pozwalają opuścić nawiasy okrągłe, gdy wyrażenie generatora jest jedynym argumentem:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">sum</span>(<span class="dv">2</span> <span class="op">**</span> n <span class="cf">for</span> n <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>))</span>
 <span id="cb37-2"><a href="#cb37-2"></a><span class="dv">1023</span></span>
@@ -1079,7 +1079,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Pętla <code>for x in obiekt:</code> rozwija się do wzorca: <code>it = iter(obiekt); while True: try: x = next(it); … except StopIteration: break</code>.</li>
 <li><strong>Klasa iteratora</strong> trzyma stan w atrybutach instancji, implementuje <code>__next__</code> i <code>__iter__</code>. Sensowna, gdy iterator ma trwałe zachowanie poza samym strumieniem (długość znaną z góry, możliwość restartu, dodatkowe metody).</li>
 <li><strong>Funkcja generatora</strong> to funkcja z <code>yield</code>. Wywołana zwraca generator. <code>yield</code> wstrzymuje wykonanie i zwraca wartość; następne <code>next</code> podejmuje funkcję od miejsca wstrzymania. <code>return</code> w generatorze (bez wartości) kończy strumień.</li>
-<li><strong>Wyrażenie generatora</strong> ma składnię listy składanej z nawiasami <code>()</code> zamiast <code>[]</code>. Tworzy generator zamiast listy. Przy pojedynczym argumencie funkcji konsumującej (np. <code>sum</code>) nawiasy można opuścić.</li>
+<li><strong>Wyrażenie generatora</strong> ma składnię wyrażenia listowego z nawiasami <code>()</code> zamiast <code>[]</code>. Tworzy generator zamiast listy. Przy pojedynczym argumencie funkcji konsumującej (np. <code>sum</code>) nawiasy można opuścić.</li>
 <li><code>itertools.islice(it, n)</code> bierze leniwie pierwsze <code>n</code> elementów iteratora — odpowiednik <code>it[:n]</code> dla iteratorów.</li>
 </ul>
 <p>Główna myśl wykładu: iterator to abstrakcja <strong>strumienia danych pobieranego na żądanie</strong>. Pozwala oddzielić <em>jak</em> dane są generowane od <em>kto i kiedy</em> je czyta. Dzięki temu możemy w skończonej pamięci pracować ze strumieniami nieskończonymi — i pisać kod, który składa się z drobnych, leniwych części.</p>

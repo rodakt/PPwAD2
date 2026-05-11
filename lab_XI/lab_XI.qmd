@@ -208,17 +208,22 @@ Napisz moduł `random_ball_machine.py` zawierający klasę `RandomBallMachine`. 
 class RandomBallMachine:
     """Symuluje losowanie kul z urny.
 
-    >>> import random
-    >>> random.seed(0)
     >>> machine = RandomBallMachine(red=3, blue=2)
     >>> len(machine)
     5
-    >>> machine()                           # losowanie ze zwracaniem
-    'red'
+    >>> isinstance(machine(), str)          # losowanie ze zwracaniem
+    True
     >>> len(machine)                        # skład bez zmian
     5
+    >>> wyniki = [machine() for _ in range(1000)]
+    >>> wyniki.count('red') > wyniki.count('blue')   # 3:2, prawie pewne
+    True
+    >>> machine = RandomBallMachine(red=2, blue=3)
+    >>> wyniki = [machine() for _ in range(1000)]
+    >>> wyniki.count('blue') > wyniki.count('red')   # odwrócone proporcje
+    True
     >>> machine = RandomBallMachine(return_balls=False, red=2, blue=1)
-    >>> sorted(machine() for _ in range(3)) # doctest: +SKIP
+    >>> sorted(machine() for _ in range(3))
     ['blue', 'red', 'red']
     >>> len(machine)
     0

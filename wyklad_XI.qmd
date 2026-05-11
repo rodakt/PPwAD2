@@ -10,7 +10,7 @@ execute:
 
 Od początku semestru używaliśmy pętli `for` jak narzędzia oczywistego. Iterowaliśmy po listach, krotkach, łańcuchach, zakresach `range`, słownikach, zbiorach, plikach. Nie zatrzymywaliśmy się jednak nad pytaniem: **co dokładnie sprawia, że obiekt nadaje się do pętli `for`?** Czy istnieje jakaś jedna cecha, którą każdy z tych typów musi spełniać?
 
-Odpowiedź jest prosta: tak. Istnieją dwa pojęcia — **obiekt iterowalny** i **iterator** — które opisują wszystko, co Python umie podać w `for`. Tym wykładem porządkujemy te pojęcia, pokazujemy jak zaimplementować je we własnej klasie, a na końcu poznajemy **generatory**: lekki sposób na pisanie iteratorów, który w praktyce wypiera klasy iteratorów niemal całkowicie.
+Odpowiedź jest prosta: tak. Istnieją dwa pojęcia — **obiekt iterowalny** i **iterator** — które opisują wszystko, co Python umie wyorzystać w pętli `for`. Tym wykładem porządkujemy te pojęcia, pokazujemy jak zaimplementować je we własnej klasie, a na końcu poznajemy **generatory**: lekki sposób na pisanie iteratorów, który w praktyce wypiera klasy iteratorów niemal całkowicie.
 
 Po drodze odkryjemy, że iteratory pozwalają reprezentować strumienie danych **leniwie** — wartość po wartości, na żądanie. Dzięki temu możemy w skończonej pamięci pracować ze strumieniami nieskończonymi. Na zakończenie napiszemy generator chodzący po wszystkich punktach kratowych płaszczyzny i zapiszemy jego początek do pliku CSV.
 
@@ -81,7 +81,7 @@ Te trzy obserwacje trafiają w jedno pojęcie: **iterator**. Tym pojęciem zaczy
 * `__iter__(self)` — zwraca `self`. Czyli iterator jest swoim własnym obiektem iterowalnym.
 :::
 
-Wbudowana funkcja `next(it)` to skrót na `it.__next__()`:
+Wbudowana funkcja `next(it)` wywołuje automatycznie `it.__next__()`:
 
 ```python
 >>> it = reversed('abc')
@@ -194,7 +194,7 @@ Wszystkie te obiekty są leniwe i jednorazowego użytku. Stąd typowa pułapka:
 []
 ```
 
-Po pierwszym `list(pary)` iterator jest wyczerpany. Drugie wywołanie zastaje pustkę.
+Po pierwszym `list(pary)` iterator jest wyczerpany. Drugie wywołanie zastaje pustą kolekcję.
 
 ::: {.callout-note}
 ## Funkcja `open()`
@@ -224,7 +224,7 @@ False
 0
 ```
 
-Dwa wywołania `iter(z)` dają **dwa niezależne iteratory**. Każdy ma swój stan, każdy zaczyna od zera. To jest powód, dla którego można pusczać `for` po `range` dowolnie wiele razy: 
+Dwa wywołania `iter(z)` dają **dwa niezależne iteratory**. Każdy ma swój stan, każdy zaczyna od zera. To jest powód, dla którego można uruchamiać `for` na `range` dowolnie wiele razy: 
 
 ```python
 >>> z = range(3)
@@ -243,7 +243,7 @@ Iterator też jest obiektem iterowalnym — bo definiuje `__iter__` jako `return
 
 Obiekty iterowalne to:
 
-* listy, krotki, łańcuchy, bytes-y;
+* listy, krotki, łańcuchy, łańcuchy bajtów;
 * słowniki, zbiory;
 * `range`;
 * obiekty zwracane przez `enumerate`, `reversed`, `zip`, `map`, `filter`, `open`;
@@ -307,7 +307,7 @@ class Kwadraty:
 (0, 1, 4, 9)
 ```
 
-Skoro `Kwadraty` jest nieskończone, nie da się napisać `list(Kwadraty())` — pętla nigdy się nie skończy. Możemy jednak wziąć skończony **prefiks**, na przykład listą składaną z licznikiem:
+Skoro `Kwadraty` jest nieskończone, nie da się napisać `list(Kwadraty())` — pętla nigdy się nie skończy. Możemy jednak wziąć skończony **prefiks**, na przykład wyrażeniem listowym z licznikiem:
 
 ```python
 >>> kw = Kwadraty()
@@ -332,7 +332,7 @@ Klasyczny ciąg Collatza: startujemy od liczby naturalnej `n` i powtarzamy regu�
 * jeśli `n` jest parzyste, dziel przez 2;
 * jeśli `n` jest nieparzyste, weź `3n + 1`.
 
-Hipoteza Collatza mówi, że niezależnie od startowego `n` ciąg zawsze dochodzi do `1`. Hipoteza jest otwartym problemem — sprawdzona obliczeniowo dla bardzo wielu liczb. Ciąg jest skończony (przynajmniej dla wszystkich wypróbowanych `n`), ale jego długość nie jest znana z góry.
+Hipoteza Collatza mówi, że niezależnie od startowego `n` ciąg zawsze dochodzi do `1`. Hipoteza jest otwartym problemem — sprawdzona obliczeniowo dla bardzo wielu liczb, jak dotąd jednak nadal bez dowodu. Ciąg jest skończony (przynajmniej dla wszystkich wypróbowanych `n`), ale jego długość nie jest znana z góry.
 
 Iterator startuje od `n` i zwraca kolejne wyrazy ciągu. Po zwróceniu `1` strumień się kończy.
 
@@ -394,7 +394,7 @@ W ten sposób reprezentujemy strumień, którego długość zależy od reguły w
 
 ### Loader
 
-Trzeci przykład jest motywujący: pokażemy iterator, **którego nie da się sensownie zastąpić generatorem**. Klasa `Loader` ładuje dane z sekwencji wartością po wartości, z opcjonalnym tasowaniem, i pozwala restartować iterację metodą `reset`. Wzorzec inspirowany jest klasą `DataLoader` z biblioteki PyTorch — każda *epoka* uczenia sieci neuronowej polega na przejściu po danych, najczęściej w nowej, losowej kolejności.
+Trzeci przykład jest motywujący: pokażemy iterator, **którego nie da się sensownie zastąpić generatorem**. Klasa `Loader` ładuje dane z sekwencji wartość po wartości, z opcjonalnym tasowaniem, i pozwala restartować iterację metodą `reset`. Wzorzec inspirowany jest klasą `DataLoader` z biblioteki PyTorch — każda *epoka* uczenia sieci neuronowej polega na przejściu po danych, najczęściej w nowej, losowej kolejności.
 
 ```python
 import random
@@ -467,7 +467,7 @@ Wszystkie trzy schematy są typowe. Pisząc własny iterator, najpierw odpowiada
 
 ## Generatory
 
-Pisanie klasy iteratora to dużo rusztowania: trzy metody, atrybut na stan, ręczne `StopIteration`. W większości przypadków da się to samo napisać jednym narzędziem językowym — **funkcją generatora**.
+Pisanie klasy iteratora to dużo elementów: trzy metody, atrybut na stan, ręczne `StopIteration`. W większości przypadków da się to samo napisać jednym narzędziem językowym — **funkcją generatora**.
 
 ::: {.callout-important}
 ## Funkcja generatora i generator
@@ -608,7 +608,7 @@ Wywołanie `fib()` zwraca świeży generator. Co z nim zrobić, zależy od potrz
 377
 ```
 
-**Wszystkie wyrazy mniejsze od 10000:**
+**Wszystkie wyrazy mniejsze od 10_000:**
 
 ```python
 >>> for x in fib():
@@ -622,7 +622,7 @@ Cztery linie definicji, niewielka pamięć, dowolny prefiks na żądanie.
 
 ### Wyrażenie generatora
 
-Listy składane mają kuzyna — **wyrażenie generatora**. Składnia jest taka sama, tylko zewnętrzne nawiasy `[]` zastępujemy przez `()`:
+Wyrażenia listowe mają kuzyna — **wyrażenie generatora**. Składnia jest taka sama, tylko zewnętrzne nawiasy `[]` zastępujemy przez `()`:
 
 ```python
 >>> potęgi = (2 ** n for n in range(10))
@@ -632,7 +632,7 @@ Listy składane mają kuzyna — **wyrażenie generatora**. Składnia jest taka 
 [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
 ```
 
-W odróżnieniu od listy składanej, wyrażenie generatora **nie tworzy listy** — tworzy iterator, który dopiero po kolei policzy wartości. Korzyść: pamięć. `list(range(10**9))` zabije program; `(x for x in range(10**9))` jest natychmiastowe.
+W odróżnieniu od wyrażenia listowego, wyrażenie generatora **nie tworzy listy** — tworzy iterator, który dopiero po kolei policzy wartości. Korzyść: pamięć. `list(range(10**9))` zabije program; `(x for x in range(10**9))` jest natychmiastowe.
 
 Funkcje konsumujące iterowalne (`sum`, `max`, `any`, `all`, …) pozwalają opuścić nawiasy okrągłe, gdy wyrażenie generatora jest jedynym argumentem:
 
@@ -895,7 +895,7 @@ Pojęcia z tego wykładu:
 * Pętla `for x in obiekt:` rozwija się do wzorca: `it = iter(obiekt); while True: try: x = next(it); … except StopIteration: break`.
 * **Klasa iteratora** trzyma stan w atrybutach instancji, implementuje `__next__` i `__iter__`. Sensowna, gdy iterator ma trwałe zachowanie poza samym strumieniem (długość znaną z góry, możliwość restartu, dodatkowe metody).
 * **Funkcja generatora** to funkcja z `yield`. Wywołana zwraca generator. `yield` wstrzymuje wykonanie i zwraca wartość; następne `next` podejmuje funkcję od miejsca wstrzymania. `return` w generatorze (bez wartości) kończy strumień.
-* **Wyrażenie generatora** ma składnię listy składanej z nawiasami `()` zamiast `[]`. Tworzy generator zamiast listy. Przy pojedynczym argumencie funkcji konsumującej (np. `sum`) nawiasy można opuścić.
+* **Wyrażenie generatora** ma składnię wyrażenia listowego z nawiasami `()` zamiast `[]`. Tworzy generator zamiast listy. Przy pojedynczym argumencie funkcji konsumującej (np. `sum`) nawiasy można opuścić.
 * `itertools.islice(it, n)` bierze leniwie pierwsze `n` elementów iteratora — odpowiednik `it[:n]` dla iteratorów.
 
 Główna myśl wykładu: iterator to abstrakcja **strumienia danych pobieranego na żądanie**. Pozwala oddzielić *jak* dane są generowane od *kto i kiedy* je czyta. Dzięki temu możemy w skończonej pamięci pracować ze strumieniami nieskończonymi — i pisać kod, który składa się z drobnych, leniwych części.

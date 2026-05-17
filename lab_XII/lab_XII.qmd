@@ -1,0 +1,434 @@
+---
+title: "Lab XII: Iteratory i generatory"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+Te ćwiczenia nawiązują do wykładu XI — pojęcia iteratora i generatora, wzorca funkcji generatora i wyrażenia generatora. Zadania uporządkowane są od najprostszych (krótkie funkcje generatora, kilka linii kodu każda) do bardziej rozbudowanych. Ostatnie zadanie wraca do iteratora pisanego ręcznie klasą — uzupełnia wzorzec `Loader` z wykładu o swobodę przesuwania się po pozycjach, analogicznie do `file.seek`. Poprawność rozwiązań weryfikuj za pomocą doctestów dołączonych do specyfikacji funkcji.
+
+## Rozgrzewka: iteratory i generatory
+
+Dla każdego z poniższych pytań najpierw udziel odpowiedzi samodzielnie, a następnie sprawdź ją w interpreterze.
+
+**1.** Cztery obiekty:
+
+```python
+it = iter([1, 2, 3])
+lst = [1, 2, 3]
+r = range(3)
+g = (x * x for x in range(3))
+```
+
+Dla każdego z nich — `next(it)`, `next(lst)`, `next(r)`, `next(g)` — odpowiedz: zwróci wartość czy rzuci `TypeError`?
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`next(it)` zwraca `1`, `next(g)` zwraca `0`. Pozostałe dwa wywołania rzucają `TypeError: '...' object is not an iterator`.
+
+`it` (wynik `iter(...)`) i `g` (wyrażenie generatora) są iteratorami — mają `__next__`. Lista i `range` są **obiektami iterowalnymi**, ale nie iteratorami: `for` po nich działa, bo Python pod spodem wywołuje `iter(lst)` i `iter(r)`, ale samo `next` na nich nie zadziała. To różnica, o której mówiliśmy w drugiej sekcji wykładu XI.
+:::
+
+**2.** Co zwracają wywołania `f()` i `list(g())`?
+
+```python
+def f():
+    for litera in 'abc':
+        return litera
+
+
+def g():
+    for litera in 'abc':
+        yield litera
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+`f()` zwraca `'a'`, `list(g())` zwraca `['a', 'b', 'c']`.
+
+`f` jest zwykłą funkcją: w pierwszej iteracji pętli trafia na `return` i opuszcza funkcję z jedną wartością. `g` zawiera `yield`, więc jest funkcją generatora. Wywołanie `g()` nie wykonuje ciała — zwraca generator; `list(g())` ten generator konsumuje. `yield` w odróżnieniu od `return` wstrzymuje, ale nie opuszcza funkcji, więc pętla wykonuje się w całości.
+:::
+
+**3.** Co wypisze ten kod?
+
+```python
+g = (x * x for x in range(3))
+print(list(g))
+print(list(g))
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Wypisze `[0, 1, 4]`, potem `[]`.
+
+`g` to wyrażenie generatora, czyli iterator. Iterator można przebiec **tylko raz** — po pierwszym `list(g)` strumień jest wyczerpany i kolejne wywołanie zastaje pustkę. To druga zajawka z wykładu XI: iterator zużywa się przy iteracji.
+:::
+
+**4.** Co wypisze ten kod?
+
+```python
+it = iter([1, 2, 3])
+print(it is iter(it))
+print(it is iter([1, 2, 3]))
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Wypisze `True`, a następnie `False`.
+
+Iterator definiuje `__iter__` jako `return self` — `iter(it)` na iteratorze zwraca **ten sam** obiekt, nie świeży. Z kolei `iter([1, 2, 3])` na liście tworzy **nowy** iterator po liście — inny obiekt niż `it`. Stąd asymetria, o której mówiliśmy: `range` (i każda inna sekwencja) przeżywa wielokrotne pętle `for`, bo każde wejście do `for` woła `iter` i dostaje nowy iterator. Iterator — nie, bo `iter` zwraca to samo.
+:::
+
+***
+
+## Drobne generatory
+
+Napisz moduł `helpers.py` zawierający cztery krótkie funkcje generatora. Każda z nich powinna mieścić się w 2–5 liniach kodu. Doctesty są częścią specyfikacji — używaj ich do weryfikacji.
+
+```python
+def my_enumerate(it, start=0):
+    """Odpowiednik wbudowanej funkcji `enumerate`.
+
+    Zwraca generator par `(indeks, element)` dla kolejnych elementów `it`,
+    gdzie indeks zaczyna się od `start` i rośnie o 1.
+
+    >>> list(my_enumerate('abc'))
+    [(0, 'a'), (1, 'b'), (2, 'c')]
+    >>> list(my_enumerate('abc', start=10))
+    [(10, 'a'), (11, 'b'), (12, 'c')]
+    >>> list(my_enumerate([]))
+    []
+    """
+    pass
+
+
+def take(it, n):
+    """Generator pierwszych `n` elementów z `it`.
+
+    Jeśli `it` ma mniej niż `n` elementów, zwraca wszystkie.
+    Odpowiednik `itertools.islice(it, n)`.
+
+    >>> list(take(range(100), 5))
+    [0, 1, 2, 3, 4]
+    >>> list(take('abc', 10))
+    ['a', 'b', 'c']
+    >>> list(take('abc', 0))
+    []
+    """
+    pass
+
+
+def repeat_each(it, k):
+    """Generator, w którym każdy element `it` powtórzony jest `k` razy.
+
+    >>> list(repeat_each([1, 2, 3], 2))
+    [1, 1, 2, 2, 3, 3]
+    >>> list(repeat_each('ab', 3))
+    ['a', 'a', 'a', 'b', 'b', 'b']
+    >>> list(repeat_each([1, 2, 3], 1))
+    [1, 2, 3]
+    >>> list(repeat_each([1, 2, 3], 0))
+    []
+    """
+    pass
+
+
+def geometric(a, r):
+    """Nieskończony generator ciągu geometrycznego: a, a*r, a*r**2, a*r**3, ...
+
+    >>> g = geometric(1, 2)
+    >>> [next(g) for _ in range(6)]
+    [1, 2, 4, 8, 16, 32]
+    >>> g = geometric(3, 10)
+    >>> [next(g) for _ in range(4)]
+    [3, 30, 300, 3000]
+    """
+    pass
+```
+
+Testy: [test_helpers.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XII/test_helpers.py).
+
+***
+
+## Akumulacja
+
+Napisz moduł `accumulate.py` zawierający funkcję generatora `accumulate(it, func, *, initial=None)`. Funkcja zwraca generator wartości bieżących akumulowanych operacją `func` na elementach `it`:
+
+- bez argumentu `initial`: pierwszą wartością strumienia jest pierwszy element `it`; każda kolejna powstaje jako `func(poprzednia_wartość, kolejny_element_it)`. Dla pustego `it` generator jest pusty.
+- z argumentem `initial`: pierwszą wartością strumienia jest `initial`, każda kolejna powstaje jak wyżej. Dla pustego `it` generator zwraca samo `initial`.
+
+```python
+def accumulate(it, func, *, initial=None):
+    """Generator bieżących wartości akumulowanych operacją `func`.
+
+    >>> from operator import add, mul
+    >>> list(accumulate([1, 2, 3, 4], add))
+    [1, 3, 6, 10]
+    >>> list(accumulate([1, 2, 3, 4], add, initial=0))
+    [0, 1, 3, 6, 10]
+    >>> list(accumulate([1, 2, 3, 4], mul, initial=1))
+    [1, 1, 2, 6, 24]
+    >>> list(accumulate([1, 2, 3, 2, 0, 7], max))
+    [1, 2, 3, 3, 3, 7]
+    >>> list(accumulate([1, 2, 3, 2, 0, 7], min))
+    [1, 1, 1, 1, 0, 0]
+    >>> list(accumulate([], add))
+    []
+    >>> list(accumulate([], add, initial=0))
+    [0]
+    """
+    pass
+```
+
+Przykłady zastosowania:
+
+- `accumulate(seq, add)` — bieżąca suma elementów `seq` (jak suma częściowa szeregu),
+- `accumulate(seq, mul, initial=1)` — bieżący iloczyn (z elementem neutralnym mnożenia jako wartością początkową),
+- `accumulate(seq, max)` — bieżące maksimum widzianych elementów.
+
+::: {.callout-note}
+## Wbudowane `itertools.accumulate`
+Funkcja, którą piszesz, to dokładnie [`itertools.accumulate`](https://docs.python.org/3/library/itertools.html#itertools.accumulate) z biblioteki standardowej. Cały moduł `itertools` — leniwych narzędzi do komponowania iteratorów — będzie tematem następnego wykładu. Tutaj piszemy własną wersję, żeby zrozumieć, jak to działa od środka.
+:::
+
+Testy: [test_accumulate.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XII/test_accumulate.py).
+
+***
+
+## Uogólnione ciągi Fibonacciego
+
+Wracamy do zadania z lab V. Tam funkcja zwracała pojedynczy wyraz ciągu pod zadanym indeksem; teraz napiszemy iteratory zwracające **cały** (potencjalnie nieskończony) strumień wyrazów.
+
+Przypomnienie definicji. Ciągiem $k$-Fibonacciego rzędu $k \geqslant 2$ z warunkami początkowymi $a_0, a_1, \ldots, a_{k-1}$ nazywamy ciąg dany rekurencyjnie:
+
+$$
+f_n = a_n \quad \text{dla } 0 \leqslant n < k,\qquad
+f_n = f_{n-k} + f_{n-k+1} + \cdots + f_{n-1} \quad \text{dla } n \geqslant k.
+$$
+
+Przypadki szczególne: $k = 2$ to klasyczny ciąg Fibonacciego, $k = 3$ — Tribonacciego, $k = 4$ — Tetranacciego.
+
+Napisz moduł `fib_gen.py` zawierający cztery funkcje, z których każda zwraca iterator po wyrazach odpowiedniego ciągu:
+
+1. `fib(a=0, b=1)` — iterator ciągu Fibonacciego o warunkach początkowych `a`, `b`,
+2. `trib(a=0, b=0, c=1)` — iterator ciągu Tribonacciego,
+3. `tetra(a=0, b=0, c=0, d=1)` — iterator ciągu Tetranacciego,
+4. `fib_general(a, b, *args)` — iterator uogólnionego ciągu $k$-Fibonacciego, gdzie $k = 2 + \text{len(args)}$, a warunki początkowe to `a, b, *args`.
+
+::: {.callout-tip}
+## Dwie drogi implementacji
+
+Funkcję `fib_general` musisz napisać jako funkcję generatora — z `yield` w ciele. To w niej mieszka cała logika nawrotów dla dowolnego rzędu $k$.
+
+Pozostałe trzy funkcje — `fib`, `trib`, `tetra` — możesz zaimplementować na dwa sposoby:
+
+- **Niezależnie**, każdą jako osobną funkcję generatora z własnym `yield`, według wzorca z wykładu XI (dwie/trzy/cztery zmienne stanu, aktualizowane przez przypisanie wielokrotne).
+- **Delegacyjnie**, zauważając, że każdy z tych ciągów jest szczególnym przypadkiem `fib_general`. Wtedy ciało funkcji to jedna linia:
+
+  ```python
+  def fib(a=0, b=1):
+      return fib_general(a, b)
+  ```
+
+  Funkcja `fib` zdefiniowana w ten sposób nie zawiera w ciele `yield` — to **nie** jest funkcja generatora w terminologii wykładu XI. Jest zwykłą funkcją, która zwraca generator wyprodukowany przez `fib_general`. Z punktu widzenia użytkownika obie wersje zachowują się identycznie: `next(fib())` daje pierwszą wartość ciągu, pętla `for x in fib()` przechodzi po wyrazach.
+:::
+
+```python
+def fib(a=0, b=1):
+    """Iterator ciągu Fibonacciego z warunkami początkowymi a, b.
+
+    >>> f = fib()
+    >>> [next(f) for _ in range(10)]
+    [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+    >>> f = fib(2, 1)
+    >>> [next(f) for _ in range(8)]
+    [2, 1, 3, 4, 7, 11, 18, 29]
+    """
+    pass
+
+
+def trib(a=0, b=0, c=1):
+    """Iterator ciągu Tribonacciego z warunkami początkowymi a, b, c.
+
+    >>> t = trib()
+    >>> [next(t) for _ in range(10)]
+    [0, 0, 1, 1, 2, 4, 7, 13, 24, 44]
+    """
+    pass
+
+
+def tetra(a=0, b=0, c=0, d=1):
+    """Iterator ciągu Tetranacciego z warunkami początkowymi a, b, c, d.
+
+    >>> t = tetra()
+    >>> [next(t) for _ in range(10)]
+    [0, 0, 0, 1, 1, 2, 4, 8, 15, 29]
+    """
+    pass
+
+
+def fib_general(a, b, *args):
+    """Generator uogólnionego ciągu k-Fibonacciego, k = 2 + len(args).
+
+    >>> g = fib_general(0, 1)
+    >>> [next(g) for _ in range(10)]
+    [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+    >>> g = fib_general(0, 0, 1)
+    >>> [next(g) for _ in range(10)]
+    [0, 0, 1, 1, 2, 4, 7, 13, 24, 44]
+    >>> g = fib_general(1, 1, 1, 1, 1)
+    >>> [next(g) for _ in range(10)]
+    [1, 1, 1, 1, 1, 5, 9, 17, 33, 65]
+    """
+    pass
+```
+
+Testy: [test_fib_gen.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XII/test_fib_gen.py).
+
+***
+
+## Naprzemienne łączenie iteratorów
+
+Napisz moduł `connect_alternately.py` zawierający dwie funkcje generatora:
+
+- `connect_alternately2(it1, it2)` — generator zwracający na przemian elementy z `it1` i z `it2`: pierwszy element `it1`, pierwszy `it2`, drugi `it1`, drugi `it2`, … Działanie kończy się, gdy któryś z iteratorów się wyczerpie.
+- `connect_alternately(*its)` — uogólnienie na dowolną liczbę argumentów. Generator zwraca elementy w porządku cyklicznym: pierwszy z `its[0]`, pierwszy z `its[1]`, …, pierwszy z `its[-1]`, drugi z `its[0]`, drugi z `its[1]`, … Działanie kończy się, gdy któryś z iteratorów się wyczerpie.
+
+```python
+def connect_alternately2(it1, it2):
+    """Naprzemiennie łączy dwa iteratory.
+
+    >>> list(connect_alternately2([1, 2, 3], 'abc'))
+    [1, 'a', 2, 'b', 3, 'c']
+    >>> list(connect_alternately2([1, 2, 3, 4, 5], 'ab'))
+    [1, 'a', 2, 'b', 3]
+    >>> list(connect_alternately2([], 'abc'))
+    []
+    """
+    pass
+
+
+def connect_alternately(*its):
+    """Naprzemiennie łączy dowolną liczbę iteratorów.
+
+    >>> list(connect_alternately([1, 2, 3], 'abc', [10, 20, 30]))
+    [1, 'a', 10, 2, 'b', 20, 3, 'c', 30]
+    >>> list(connect_alternately([1, 2], 'abc', [10, 20, 30]))
+    [1, 'a', 10, 2, 'b', 20]
+    >>> list(connect_alternately())
+    []
+    >>> list(connect_alternately('abc'))
+    ['a', 'b', 'c']
+    """
+    pass
+```
+
+::: {.callout-tip}
+## Wskazówka
+
+Argumenty `it1`, `it2`, `its` mogą być dowolnymi obiektami iterowalnymi — listami, krotkami, łańcuchami, generatorami. Rzutuj je najpierw na iteratory funkcją `iter`. Wtedy do pobierania kolejnych elementów użyjesz funkcji `next`. Wywołanie `next(it)` wymaga jednak strażnika — zawijaj je w blok `try` na okoliczność wyczerpania iteratora.
+:::
+
+***
+
+## Krata punktów płaszczyzny
+
+Napisz funkcję generatora `krata()` zwracającą nieskończony strumień punktów płaszczyzny o **całkowitych nieujemnych** współrzędnych. Każdy taki punkt ma się pojawić w strumieniu dokładnie raz.
+
+Inaczej mówiąc, `krata()` to konstruktywne wyliczenie zbioru $\mathbb{N} \times \mathbb{N}$ — ułożenie wszystkich par liczb naturalnych w jeden ciąg. Klasyczny problem: pokazał tym sposobem Cantor, że zbiór par liczb naturalnych jest przeliczalny.
+
+::: {.callout-tip}
+## Wybór porządku przechodzenia
+Sam decydujesz, w jakiej kolejności `krata()` odwiedza punkty — byle każdy pojawił się dokładnie raz i byle pierwsze 144 punkty zmieściły się w rozsądnym obszarze (powiedzmy: w prostokącie nie większym niż $20 \times 20$). Naturalny wybór to przechodzenie po kolejnych „przekątnych" $x + y = 0$, $x + y = 1$, $x + y = 2$, … — każda przekątna ma skończenie wiele punktów, więc po skończonej liczbie kroków odwiedzamy wszystkie punkty z dowolnie dalekiej przekątnej.
+
+**Narysuj** schemat przedstawiający kolejność pierwszych kilkunastu punktów Twojej kraty (analogicznie do rysunku w wykładzie XI dla spirali). Schemat dołącz do rozwiązania jako plik graficzny — może być wykonany w dowolnym narzędziu (kartka i zdjęcie, draw.io, matplotlib, cokolwiek), byle jednoznacznie pokazywał kierunek strzałek między kolejnymi punktami.
+:::
+
+Napisz następnie program, który:
+
+1. Zapisuje pierwsze 144 punkty zwrócone przez `krata()` do pliku `krata.csv` z nagłówkiem `x,y` i 144 wierszami danych.
+2. Wczytuje zawartość pliku `krata.csv` i wyświetla ją jako wykres punktowo-liniowy (punkty połączone w kolejności odwiedzania).
+
+Do zapisu CSV wzoruj się na funkcji `krata_do_csv` z wykładu XI. Do wykresu wykorzystaj `pandas` i `matplotlib`, jak w lab VI.
+
+::: {.callout-note}
+## Pierwsza ćwiartka, nie cała płaszczyzna
+W wykładzie XI `krata()` chodziła po **wszystkich** punktach kratowych — także z ujemnymi współrzędnymi — spiralą rozkręcającą się z początku układu. Tutaj zbiór punktów jest mniejszy: tylko pierwsza ćwiartka (włącznie z dwoma osiami). To zmienia naturalny porządek przechodzenia — spirala z wykładu nie zadziała, bo natychmiast wyszłaby poza ćwiartkę.
+:::
+
+***
+
+## Iterator z możliwością przesuwania
+
+Wykład XI pokazał klasę `Loader` — iterator po sekwencji z metodą `reset` pozwalającą zacząć od początku. Tym samym wzorcem napiszemy teraz `Seekable`: iterator po sekwencji z pełną swobodą przesuwania się po pozycjach, analogiczną do `file.seek` w pracy z plikami.
+
+Napisz moduł `seekable.py` zawierający klasę `Seekable`. Klasa pakuje sekwencję w iterator z dodatkowymi metodami:
+
+- `__init__(self, seq)` — zapamiętuje sekwencję (przyda się jej kopia w postaci listy), ustawia bieżącą pozycję na `0`.
+- `__next__(self)` — zwraca element pod bieżącą pozycją i zwiększa pozycję o `1`. Jeśli pozycja jest za końcem sekwencji, rzuca `StopIteration`.
+- `__iter__(self)` — zwraca `self`.
+- `__len__(self)` — zwraca długość sekwencji (niezależną od bieżącej pozycji).
+- `tell(self)` — zwraca bieżącą pozycję.
+- `seek(self, i)` — ustawia bieżącą pozycję na `i`. Dopuszczalne wartości to liczby z przedziału `0 <= i <= len(self)`; wartości spoza tego przedziału zgłaszają `IndexError`. Wartość `i == len(self)` jest dozwolona — oznacza „pozycję za końcem", po której kolejne `next` rzuci `StopIteration`.
+- `peek(self)` — zwraca element pod bieżącą pozycją **bez** jej zmiany. Jeśli pozycja jest za końcem, rzuca `StopIteration`.
+
+```python
+class Seekable:
+    """Iterator po sekwencji z możliwością swobodnego przesuwania się
+    po pozycjach.
+
+    >>> s = Seekable([10, 20, 30, 40, 50])
+    >>> len(s)
+    5
+    >>> next(s)
+    10
+    >>> next(s)
+    20
+    >>> s.tell()
+    2
+    >>> s.peek()
+    30
+    >>> s.peek()
+    30
+    >>> s.tell()
+    2
+    >>> next(s)
+    30
+    >>> s.seek(0)
+    >>> list(s)
+    [10, 20, 30, 40, 50]
+    >>> s.tell()
+    5
+    >>> next(s)
+    Traceback (most recent call last):
+        ...
+    StopIteration
+    >>> s.seek(3)
+    >>> next(s)
+    40
+    >>> s.seek(5)
+    >>> s.peek()
+    Traceback (most recent call last):
+        ...
+    StopIteration
+    >>> s.seek(-1)
+    Traceback (most recent call last):
+        ...
+    IndexError: pozycja poza zakresem
+    >>> s.seek(6)
+    Traceback (most recent call last):
+        ...
+    IndexError: pozycja poza zakresem
+    """
+    pass
+```
+
+::: {.callout-note}
+## Dlaczego klasa, nie funkcja generatora
+`Seekable` udostępnia operacje **na obiekcie iteratora** — `seek`, `tell`, `peek`, `__len__`. Generator zwrócony przez funkcję z `yield` udostępnia z zewnątrz tylko jedną operację: `next`. Cały stan wewnętrzny generatora (lokalne zmienne, miejsce wstrzymania) jest zamknięty i niedostępny — nie umiałbyś z zewnątrz powiedzieć generatorowi „cofnij się o trzy pozycje", bo on nie ma w API niczego, czym mógłbyś to wyrazić.
+
+Klasa daje pełną kontrolę nad stanem: bieżąca pozycja jest jawnym atrybutem, każda metoda może ją czytać i zmieniać. To dokładnie ten sam morał, który wyciągnęliśmy z `Loader` na wykładzie — gdy iterator ma trwałe zachowanie poza samą iteracją (długość, możliwość restartu, swobodę przesuwania), klasa się opłaca.
+:::
+
+Testy: [test_seekable.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XII/test_seekable.py).

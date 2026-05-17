@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tomasz Rodak">
+
+<title>Wyszukiwanie wyczerpujące. Moduł itertools, część I – Podstawy programowania (AD) 2</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c6add7d09649d03b5edbbe8cc8307c7d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./wyklad_I.html">Wykłady</a></li><li class="breadcrumb-item"><a href="./wyklad_XII.html">Wyszukiwanie wyczerpujące. Moduł itertools, część I</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Podstawy programowania (AD) 2</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Strona główna</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Wykłady</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Zmienne. Instrukcja przypisania</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wypakowywanie obiektów iterowalnych. Parametry i argumenty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Przestrzenie nazw i moduły</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Funkcje jako obiekty. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rekurencja</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_IX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Klasy i obiekty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_X.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Klasy i obiekty II: metody specjalne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_XI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Iteratory i generatory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_XII.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Wyszukiwanie wyczerpujące. Moduł itertools, część I</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Laboratoria</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab I: Zadania na rozgrzewkę</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_II/lab_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab II: Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_III/lab_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab III: Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_IV/lab_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IV: Zmienne, aliasy, kopie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_V/lab_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab V: Wypakowywanie i parametry funkcji</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_VI/lab_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VI: Geometria żółwia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_VII/lab_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VII: Funkcje wyższego rzędu. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_VIII/lab_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VIII: Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_IX/lab_IX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IX: Rekurencja</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_X/lab_X.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab X: Klasy i obiekty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_XI/lab_XI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab XI: Metody specjalne i dziedziczenie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_XII/lab_XII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab XII: Iteratory i generatory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Spis treści</h2>
+   
+  <ul>
+  <li><a href="#wprowadzenie" id="toc-wprowadzenie" class="nav-link active" data-scroll-target="#wprowadzenie"><span class="header-section-number">1</span> Wprowadzenie</a></li>
+  <li><a href="#cztery-siostry-kombinatoryczne" id="toc-cztery-siostry-kombinatoryczne" class="nav-link" data-scroll-target="#cztery-siostry-kombinatoryczne"><span class="header-section-number">2</span> Cztery siostry kombinatoryczne</a></li>
+  <li><a href="#przykład-zadanie-z-kangura" id="toc-przykład-zadanie-z-kangura" class="nav-link" data-scroll-target="#przykład-zadanie-z-kangura"><span class="header-section-number">3</span> Przykład: zadanie z Kangura</a></li>
+  <li><a href="#ścieżka-o-ekstremalnej-sumie" id="toc-ścieżka-o-ekstremalnej-sumie" class="nav-link" data-scroll-target="#ścieżka-o-ekstremalnej-sumie"><span class="header-section-number">4</span> Ścieżka o ekstremalnej sumie</a>
+  <ul class="collapse">
+  <li><a href="#tablice-o-większych-rozmiarach" id="toc-tablice-o-większych-rozmiarach" class="nav-link" data-scroll-target="#tablice-o-większych-rozmiarach"><span class="header-section-number">4.1</span> Tablice o większych rozmiarach</a></li>
+  </ul></li>
+  <li><a href="#podsumowanie" id="toc-podsumowanie" class="nav-link" data-scroll-target="#podsumowanie"><span class="header-section-number">5</span> Podsumowanie</a></li>
+  <li><a href="#co-dalej" id="toc-co-dalej" class="nav-link" data-scroll-target="#co-dalej"><span class="header-section-number">6</span> Co dalej</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./wyklad_I.html">Wykłady</a></li><li class="breadcrumb-item"><a href="./wyklad_XII.html">Wyszukiwanie wyczerpujące. Moduł itertools, część I</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Wyszukiwanie wyczerpujące. Moduł itertools, część I</h1>
+<p class="subtitle lead">Podstawy programowania (AD) 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tomasz Rodak </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="wprowadzenie" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="wprowadzenie"><span class="header-section-number">1</span> Wprowadzenie</h2>
+<p>Algorytmy typu <a href="https://en.wikipedia.org/wiki/Brute-force_search"><em>brute force</em></a> — <em>wyszukiwanie wyczerpujące</em>, <em>wyszukiwanie siłowe</em> — szukają rozwiązania problemu, przeliczając wszystkie możliwe przypadki. Jako pierwszy przykład rozważmy funkcję wyznaczającą dzielniki liczby naturalnej:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">def</span> dzielniki(n):</span>
+<span id="cb1-2"><a href="#cb1-2"></a>    <span class="co">"""Zwraca posortowaną listę dzielników n."""</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>    lst <span class="op">=</span> []</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    d <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>    <span class="cf">while</span> d <span class="op">*</span> d <span class="op">&lt;=</span> n:</span>
+<span id="cb1-6"><a href="#cb1-6"></a>        <span class="cf">if</span> n <span class="op">%</span> d <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb1-7"><a href="#cb1-7"></a>            <span class="cf">if</span> d <span class="op">*</span> d <span class="op">==</span> n:</span>
+<span id="cb1-8"><a href="#cb1-8"></a>                lst.append(d)</span>
+<span id="cb1-9"><a href="#cb1-9"></a>            <span class="cf">else</span>:</span>
+<span id="cb1-10"><a href="#cb1-10"></a>                lst.extend([d, n <span class="op">//</span> d])</span>
+<span id="cb1-11"><a href="#cb1-11"></a>        d <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>    <span class="cf">return</span> <span class="bu">sorted</span>(lst)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Algorytm sprawdza podzielność <code>n</code> przez wszystkie <code>d</code> takie, że <span class="math inline">\(d^2 \leq n\)</span>. Wykorzystuje przy tym obserwację, że dzielniki idą w parach: jeśli <code>d</code> dzieli <code>n</code>, to dzieli też <code>n // d</code>. Tak ograniczona pętla i tak ma siłowy charakter — przed nami liczba kroków rzędu <span class="math inline">\(\sqrt{n}\)</span>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> time</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="op">&gt;&gt;&gt;</span> start <span class="op">=</span> time.perf_counter()</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="op">&gt;&gt;&gt;</span> dzielniki(<span class="dv">10</span><span class="op">**</span><span class="dv">13</span> <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb2-4"><a href="#cb2-4"></a>[<span class="dv">1</span>, <span class="dv">11</span>, <span class="dv">859</span>, <span class="dv">9449</span>, <span class="dv">1058313049</span>, <span class="dv">11641443539</span>, <span class="dv">909090909091</span>, <span class="dv">10000000000001</span>]</span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(<span class="ss">f"czas: </span><span class="sc">{</span>time<span class="sc">.</span>perf_counter() <span class="op">-</span> start<span class="sc">:.2f}</span><span class="ss"> s"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>czas: <span class="fl">1.18</span> s</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ponad sekunda na wyznaczenie dzielników liczby rzędu <span class="math inline">\(10^{13}\)</span> — efekt charakterystyczny dla brute force: czas i pamięć rosną z rozmiarem danych wejściowych dużo szybciej niż w algorytmach „przemyślanych”.</p>
+<p>Mimo tego rozwiązania siłowe mają mocne strony:</p>
+<ul>
+<li>są często najprostsze do napisania;</li>
+<li>w sposób kompletny rozwiązują zadanie — jeśli odpowiedź istnieje, znajdą ją;</li>
+<li>są niezawodne i mniej podatne na błędy implementacyjne niż bardziej wymyślne procedury.</li>
+</ul>
+<p>Główna wada — wydajność. Czas i pamięć rosną gwałtownie z rozmiarem danych wejściowych. Mimo to, dzięki ogromnej prędkości i pamięci współczesnych komputerów, brute force jest skuteczny tak długo, jak zakres danych pozostaje na tyle mały, by się zmieścić w rozsądnym czasie i pamięci.</p>
+<p>W Pythonie implementacja rozwiązań siłowych jest szczególnie prosta. Wynika to z dwóch powodów. Po pierwsze, funkcje są obiektami pierwszej klasy i dzięki temu w bibliotece standardowej znajdziemy wiele funkcji wyższego rzędu (zob. wykład VI oraz moduły <a href="https://docs.python.org/3/library/functools.html"><code>functools</code></a> i <a href="https://docs.python.org/3/library/operator.html"><code>operator</code></a>). Po drugie, biblioteka standardowa zawiera moduł <a href="https://docs.python.org/3/library/itertools.html"><code>itertools</code></a>, który dostarcza iteratorów po rozmaitych obiektach kombinatorycznych.</p>
+<p>W tym wykładzie poznamy cztery najważniejsze funkcje z modułu <code>itertools</code> — generujące iloczyn kartezjański, permutacje, kombinacje oraz kombinacje z powtórzeniami. Pokażemy je w akcji na dwóch zadaniach typu brute force. W wykładzie XIII zajmiemy się szerszą rodziną funkcji <code>itertools</code> służących do komponowania strumieni danych.</p>
+<hr>
+</section>
+<section id="cztery-siostry-kombinatoryczne" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="cztery-siostry-kombinatoryczne"><span class="header-section-number">2</span> Cztery siostry kombinatoryczne</h2>
+<p>Wyobraź sobie, że masz zbiór <code>n</code> elementów i chcesz wybrać z niego <code>r</code> elementów. To pojedyncze sformułowanie kryje w sobie cztery różne pojęcia, w zależności od dwóch decyzji:</p>
+<ul>
+<li>czy w wyborze mogą się powtarzać te same elementy (<strong>z powtórzeniami</strong> / <strong>bez powtórzeń</strong>);</li>
+<li>czy kolejność elementów w wyborze ma znaczenie (<strong>z kolejnością</strong> / <strong>bez kolejności</strong>).</li>
+</ul>
+<p>Każda kombinacja tych dwóch decyzji daje inną liczbę możliwych wyborów i inną funkcję w module <code>itertools</code>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 26%">
+<col style="width: 44%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>z kolejnością</th>
+<th>bez kolejności</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>z powtórzeniami</strong></td>
+<td><code>product</code></td>
+<td><code>combinations_with_replacement</code></td>
+</tr>
+<tr class="even">
+<td><strong>bez powtórzeń</strong></td>
+<td><code>permutations</code></td>
+<td><code>combinations</code></td>
+</tr>
+</tbody>
+</table>
+<p>Spójrzmy, co każda z nich zwraca dla tego samego wejścia — zbioru <code>'ABC'</code> i <code>r = 2</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> product, permutations, combinations, combinations_with_replacement</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(product(<span class="st">'ABC'</span>, repeat<span class="op">=</span><span class="dv">2</span>))</span>
+<span id="cb3-3"><a href="#cb3-3"></a>[(<span class="st">'A'</span>, <span class="st">'A'</span>), (<span class="st">'A'</span>, <span class="st">'B'</span>), (<span class="st">'A'</span>, <span class="st">'C'</span>),</span>
+<span id="cb3-4"><a href="#cb3-4"></a> (<span class="st">'B'</span>, <span class="st">'A'</span>), (<span class="st">'B'</span>, <span class="st">'B'</span>), (<span class="st">'B'</span>, <span class="st">'C'</span>),</span>
+<span id="cb3-5"><a href="#cb3-5"></a> (<span class="st">'C'</span>, <span class="st">'A'</span>), (<span class="st">'C'</span>, <span class="st">'B'</span>), (<span class="st">'C'</span>, <span class="st">'C'</span>)]</span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(permutations(<span class="st">'ABC'</span>, <span class="dv">2</span>))</span>
+<span id="cb3-7"><a href="#cb3-7"></a>[(<span class="st">'A'</span>, <span class="st">'B'</span>), (<span class="st">'A'</span>, <span class="st">'C'</span>),</span>
+<span id="cb3-8"><a href="#cb3-8"></a> (<span class="st">'B'</span>, <span class="st">'A'</span>), (<span class="st">'B'</span>, <span class="st">'C'</span>),</span>
+<span id="cb3-9"><a href="#cb3-9"></a> (<span class="st">'C'</span>, <span class="st">'A'</span>), (<span class="st">'C'</span>, <span class="st">'B'</span>)]</span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(combinations(<span class="st">'ABC'</span>, <span class="dv">2</span>))</span>
+<span id="cb3-11"><a href="#cb3-11"></a>[(<span class="st">'A'</span>, <span class="st">'B'</span>), (<span class="st">'A'</span>, <span class="st">'C'</span>), (<span class="st">'B'</span>, <span class="st">'C'</span>)]</span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(combinations_with_replacement(<span class="st">'ABC'</span>, <span class="dv">2</span>))</span>
+<span id="cb3-13"><a href="#cb3-13"></a>[(<span class="st">'A'</span>, <span class="st">'A'</span>), (<span class="st">'A'</span>, <span class="st">'B'</span>), (<span class="st">'A'</span>, <span class="st">'C'</span>),</span>
+<span id="cb3-14"><a href="#cb3-14"></a> (<span class="st">'B'</span>, <span class="st">'B'</span>), (<span class="st">'B'</span>, <span class="st">'C'</span>),</span>
+<span id="cb3-15"><a href="#cb3-15"></a> (<span class="st">'C'</span>, <span class="st">'C'</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Różnice widać wprost na wynikach:</p>
+<ul>
+<li><code>product</code> zwraca <strong>wszystkie</strong> uporządkowane pary — z powtórzeniami, w pełni swobodne (<span class="math inline">\(3^2 = 9\)</span>);</li>
+<li><a href="https://pl.wikipedia.org/wiki/Permutacja"><code>permutations</code></a> ma kolejność, ale wyklucza powtórzenia — <code>('A', 'A')</code> nie pojawia się (<span class="math inline">\(3 \cdot 2 = 6\)</span>);</li>
+<li><a href="https://pl.wikipedia.org/wiki/Kombinacja_bez_powt%C3%B3rze%C5%84"><code>combinations</code></a> ignoruje kolejność i wyklucza powtórzenia — <code>('B', 'A')</code> i <code>('A', 'B')</code> to ta sama para, reprezentowana raz (<span class="math inline">\(\binom{3}{2} = 3\)</span>);</li>
+<li><code>combinations_with_replacement</code> ignoruje kolejność, ale dopuszcza powtórzenia — pojawia się <code>('A', 'A')</code>, lecz <code>('B', 'A')</code> już nie (<span class="math inline">\(\binom{3 + 2 - 1}{2} = 6\)</span>).</li>
+</ul>
+<p>Wzory na liczność każdego z czterech zbiorów:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>funkcja</th>
+<th>liczba elementów dla <code>n</code> elementów wybieranych po <code>r</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>product(seq, repeat=r)</code></td>
+<td><span class="math inline">\(n^r\)</span></td>
+</tr>
+<tr class="even">
+<td><code>permutations(seq, r)</code></td>
+<td><span class="math inline">\(\dfrac{n!}{(n-r)!} = n(n-1)\cdots(n-r+1)\)</span></td>
+</tr>
+<tr class="odd">
+<td><code>combinations(seq, r)</code></td>
+<td><span class="math inline">\(\dbinom{n}{r}\)</span></td>
+</tr>
+<tr class="even">
+<td><code>combinations_with_replacement(seq, r)</code></td>
+<td><span class="math inline">\(\dbinom{n+r-1}{r}\)</span></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Iteratory, nie listy
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Wszystkie cztery funkcje są <strong>leniwe</strong> — zwracają iteratory, a nie listy. Aby zobaczyć ich zawartość, trzeba je skonsumować, na przykład przez <code>list()</code> albo pętlą <code>for</code>. W kodzie brute force ta leniwość jest kluczowa: dla dużych <code>n</code> i <code>r</code> materializacja wyniku do listy nie zmieściłaby się w pamięci, ale iteracja po nim z <code>for</code> przebiegnie bez problemu.</p>
+</div>
+</div>
+<p>Funkcja <code>product</code> przyjmuje też inną składnię — może liczyć <a href="https://pl.wikipedia.org/wiki/Iloczyn_kartezja%C5%84ski">iloczyn kartezjański</a> <strong>różnych</strong> zbiorów:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(product(<span class="st">'AB'</span>, <span class="st">'XY'</span>))</span>
+<span id="cb4-2"><a href="#cb4-2"></a>[(<span class="st">'A'</span>, <span class="st">'X'</span>), (<span class="st">'A'</span>, <span class="st">'Y'</span>), (<span class="st">'B'</span>, <span class="st">'X'</span>), (<span class="st">'B'</span>, <span class="st">'Y'</span>)]</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(product(<span class="st">'AB'</span>, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]))</span>
+<span id="cb4-4"><a href="#cb4-4"></a>[(<span class="st">'A'</span>, <span class="dv">1</span>), (<span class="st">'A'</span>, <span class="dv">2</span>), (<span class="st">'A'</span>, <span class="dv">3</span>), (<span class="st">'B'</span>, <span class="dv">1</span>), (<span class="st">'B'</span>, <span class="dv">2</span>), (<span class="st">'B'</span>, <span class="dv">3</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zapis <code>product(seq, repeat=k)</code> jest skrótem dla <code>product(seq, seq, ..., seq)</code> z <code>k</code> powtórzeniami.</p>
+<p>W brute force najczęściej korzystamy z <code>product</code> i <code>combinations</code> — pokażemy te dwie funkcje w akcji, każdą w innym zadaniu.</p>
+<hr>
+</section>
+<section id="przykład-zadanie-z-kangura" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="przykład-zadanie-z-kangura"><span class="header-section-number">3</span> Przykład: zadanie z Kangura</h2>
+<p>Zaczniemy od zadania z konkursu Kangur 2017 dla drugiej klasy szkoły podstawowej :-)</p>
+<blockquote class="blockquote">
+<p><em>Za każdą literę <strong>A B C D E</strong> wstawiamy liczbę o cztery większą lub dwa razy większą niż poprzednia. Jeżeli A = 1, to która z liczb nigdy nie będzie równa E?</em></p>
+<p><em>A) 16 &nbsp; B) 17 &nbsp; C) 22 &nbsp; D) 30 &nbsp; E) 36</em></p>
+</blockquote>
+<p>Wzór jest taki:</p>
+<pre><code>A, op1(A) → B, op2(B) → C, op3(C) → D, op4(D) → E</code></pre>
+<p>Każdy z czterech operatorów <code>op1, ..., op4</code> może być albo „powiększ o cztery”, albo „pomnóż przez dwa”. Razem <span class="math inline">\(2^4 = 16\)</span> możliwych ciągów operatorów. Rozwiązanie brute force: dla każdego ciągu policz E i zbierz wszystkie uzyskane wartości.</p>
+<p>Wersja bezpośrednia, z zagnieżdżonymi pętlami <code>for</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a>ops <span class="op">=</span> [<span class="kw">lambda</span> x: x <span class="op">+</span> <span class="dv">4</span>, <span class="kw">lambda</span> x: <span class="dv">2</span> <span class="op">*</span> x]</span>
+<span id="cb6-2"><a href="#cb6-2"></a>A <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>wyniki <span class="op">=</span> <span class="bu">set</span>()  <span class="co"># zbiór, bo nie chcemy powtórzeń</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="cf">for</span> op1 <span class="kw">in</span> ops:</span>
+<span id="cb6-6"><a href="#cb6-6"></a>    <span class="cf">for</span> op2 <span class="kw">in</span> ops:</span>
+<span id="cb6-7"><a href="#cb6-7"></a>        <span class="cf">for</span> op3 <span class="kw">in</span> ops:</span>
+<span id="cb6-8"><a href="#cb6-8"></a>            <span class="cf">for</span> op4 <span class="kw">in</span> ops:</span>
+<span id="cb6-9"><a href="#cb6-9"></a>                E <span class="op">=</span> op4(op3(op2(op1(A))))</span>
+<span id="cb6-10"><a href="#cb6-10"></a>                wyniki.add(E)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">sorted</span>(wyniki)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>[<span class="dv">12</span>, <span class="dv">14</span>, <span class="dv">16</span>, <span class="dv">17</span>, <span class="dv">18</span>, <span class="dv">20</span>, <span class="dv">22</span>, <span class="dv">24</span>, <span class="dv">26</span>, <span class="dv">28</span>, <span class="dv">36</span>, <span class="dv">40</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Z odpowiedzi A–E brakuje liczby <code>30</code> — to ona „nigdy nie będzie równa E”.</p>
+<p>Program robi dokładnie to, co miał zrobić, ale nie jest skalowalny. Gdyby zadanie miało nie pięć liter, tylko dziesięć, musielibyśmy ręcznie dopisać sześć dodatkowych pętli. To znak, że pora po <code>product</code>.</p>
+<p>Iteracja po wszystkich ciągach operatorów to dokładnie iloczyn kartezjański <code>ops × ops × ops × ops</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(product([<span class="st">'+4'</span>, <span class="st">'*2'</span>], repeat<span class="op">=</span><span class="dv">4</span>))</span>
+<span id="cb8-2"><a href="#cb8-2"></a>[(<span class="st">'+4'</span>, <span class="st">'+4'</span>, <span class="st">'+4'</span>, <span class="st">'+4'</span>),</span>
+<span id="cb8-3"><a href="#cb8-3"></a> (<span class="st">'+4'</span>, <span class="st">'+4'</span>, <span class="st">'+4'</span>, <span class="st">'*2'</span>),</span>
+<span id="cb8-4"><a href="#cb8-4"></a> (<span class="st">'+4'</span>, <span class="st">'+4'</span>, <span class="st">'*2'</span>, <span class="st">'+4'</span>),</span>
+<span id="cb8-5"><a href="#cb8-5"></a> ...</span>
+<span id="cb8-6"><a href="#cb8-6"></a> (<span class="st">'*2'</span>, <span class="st">'*2'</span>, <span class="st">'*2'</span>, <span class="st">'*2'</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dzięki temu cztery zagnieżdżone pętle:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="cf">for</span> op1 <span class="kw">in</span> ops:</span>
+<span id="cb9-2"><a href="#cb9-2"></a>    <span class="cf">for</span> op2 <span class="kw">in</span> ops:</span>
+<span id="cb9-3"><a href="#cb9-3"></a>        <span class="cf">for</span> op3 <span class="kw">in</span> ops:</span>
+<span id="cb9-4"><a href="#cb9-4"></a>            <span class="cf">for</span> op4 <span class="kw">in</span> ops:</span>
+<span id="cb9-5"><a href="#cb9-5"></a>                <span class="op">&lt;</span>instrukcje<span class="op">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>zwijają się do jednej:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="cf">for</span> op1, op2, op3, op4 <span class="kw">in</span> product(ops, repeat<span class="op">=</span><span class="dv">4</span>):</span>
+<span id="cb10-2"><a href="#cb10-2"></a>    <span class="op">&lt;</span>instrukcje<span class="op">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>albo, gdy nie potrzebujemy nazw poszczególnych operatorów:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="cf">for</span> op_seq <span class="kw">in</span> product(ops, repeat<span class="op">=</span><span class="dv">4</span>):</span>
+<span id="cb11-2"><a href="#cb11-2"></a>    <span class="op">&lt;</span>instrukcje<span class="op">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Teraz <code>liczba_liter</code> staje się zwykłym parametrem. Funkcja <code>wartości_końcowe(A, liczba_liter, ops)</code> zwracająca posortowaną listę wszystkich możliwych wartości końcowych wygląda tak:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="im">from</span> itertools <span class="im">import</span> product</span>
+<span id="cb12-2"><a href="#cb12-2"></a></span>
+<span id="cb12-3"><a href="#cb12-3"></a></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="kw">def</span> wartości_końcowe(A, liczba_liter, ops):</span>
+<span id="cb12-5"><a href="#cb12-5"></a>    <span class="co">"""Zwraca posortowaną listę wartości końcowych dla wszystkich</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="co">    ciągów operatorów z `ops` zastosowanych po kolei do `A`."""</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a>    wyniki <span class="op">=</span> <span class="bu">set</span>()</span>
+<span id="cb12-8"><a href="#cb12-8"></a>    <span class="cf">for</span> op_seq <span class="kw">in</span> product(ops, repeat<span class="op">=</span>liczba_liter <span class="op">-</span> <span class="dv">1</span>):</span>
+<span id="cb12-9"><a href="#cb12-9"></a>        E <span class="op">=</span> A</span>
+<span id="cb12-10"><a href="#cb12-10"></a>        <span class="cf">for</span> op <span class="kw">in</span> op_seq:</span>
+<span id="cb12-11"><a href="#cb12-11"></a>            E <span class="op">=</span> op(E)</span>
+<span id="cb12-12"><a href="#cb12-12"></a>        wyniki.add(E)</span>
+<span id="cb12-13"><a href="#cb12-13"></a>    <span class="cf">return</span> <span class="bu">sorted</span>(wyniki)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zewnętrzna pętla wybiera ciąg operatorów. Wewnętrzna stosuje je kolejno do <code>A</code>, otrzymując końcową wartość <code>E</code>. Liczba operatorów jest o jeden mniejsza niż liczba liter — pięć liter, cztery operatory między nimi.</p>
+<p>Sprawdzamy na przykładach:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="op">&gt;&gt;&gt;</span> ops <span class="op">=</span> [<span class="kw">lambda</span> x: x <span class="op">+</span> <span class="dv">4</span>, <span class="kw">lambda</span> x: <span class="dv">2</span> <span class="op">*</span> x]</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="op">&gt;&gt;&gt;</span> wartości_końcowe(A<span class="op">=</span><span class="dv">1</span>, liczba_liter<span class="op">=</span><span class="dv">5</span>, ops<span class="op">=</span>ops)</span>
+<span id="cb13-3"><a href="#cb13-3"></a>[<span class="dv">12</span>, <span class="dv">14</span>, <span class="dv">16</span>, <span class="dv">17</span>, <span class="dv">18</span>, <span class="dv">20</span>, <span class="dv">22</span>, <span class="dv">24</span>, <span class="dv">26</span>, <span class="dv">28</span>, <span class="dv">36</span>, <span class="dv">40</span>]</span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="op">&gt;&gt;&gt;</span> wartości_końcowe(A<span class="op">=</span><span class="dv">10</span>, liczba_liter<span class="op">=</span><span class="dv">3</span>, ops<span class="op">=</span>ops)</span>
+<span id="cb13-5"><a href="#cb13-5"></a>[<span class="dv">18</span>, <span class="dv">24</span>, <span class="dv">28</span>, <span class="dv">40</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wracając do zadania z Kangura — <code>30</code> nie pojawia się na liście dla pięciu liter. Ale dla innych parametrów wszystko jest możliwe.</p>
+<p><strong>Zadanie do samodzielnego rozwiązania.</strong></p>
+<blockquote class="blockquote">
+<p><em>Za każdą literę A₁ A₂ … A₁₀ wstawiamy liczbę o jeden większą, o pięć większą lub dwa razy większą niż poprzednia. Jeżeli A₁ = 1, to która z liczb nigdy nie będzie równa A₁₀?</em></p>
+<p><em>A) 768 &nbsp; B) 769 &nbsp; C) 770 &nbsp; D) 771 &nbsp; E) 772</em></p>
+</blockquote>
+<p>Wskazówka: trzy operatory, dziewięć kroków — przeszukujemy <span class="math inline">\(3^9 = 19{,}683\)</span> ciągów. Brute force nadal działa od ręki. Gdyby liter było dwadzieścia, mielibyśmy już <span class="math inline">\(3^{19} \approx 1{,}16 \cdot 10^9\)</span> przypadków — i wtedy trzeba pomyśleć inaczej.</p>
+<hr>
+</section>
+<section id="ścieżka-o-ekstremalnej-sumie" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="ścieżka-o-ekstremalnej-sumie"><span class="header-section-number">4</span> Ścieżka o ekstremalnej sumie</h2>
+<blockquote class="blockquote">
+<p><em>Dana jest prostokątna tablica:</em></p>
+<pre><code>5  4  17 13 16 16 16 1  11 17 1  2  5  11 3
+5  15 16 5  14 4  11 2  18 7  13 13 15 5  7
+17 13 5  8  11 15 7  1  5  15 1  10 19 15 16
+8  6  14 12 12 19 2  7  17 2  16 20 12 10 4
+17 10 9  5  9  13 2  17 15 18 12 11 7  19 15
+11 5  3  4  18 12 8  19 13 5  15 11 2  19 2
+14 8  12 10 12 2  13 9  8  15 9  16 7  19 15
+8  1  15 2  1  13 17 8  14 16 19 16 7  16 19
+3  20 15 13 20 3  5  19 15 6  5  19 2  5  13
+16 8  14 18 15 13 3  8  19 1  10 18 10 20 18</code></pre>
+<p><em>Ustawiamy pionek w lewym górnym rogu (na liczbie 5). Pionek porusza się po polach z liczbami, wykonując ruchy „o jedno pole w prawo” lub „o jedno pole w dół”. Pionek przemieszcza się w ten sposób od lewego górnego do prawego dolnego rogu, sumując przy tym liczby z pól, przez które przeszedł. Wyznacz maksymalną i minimalną sumę, jaką da się w ten sposób uzyskać.</em></p>
+</blockquote>
+<p>Rozwiązanie siłowe polega na przejściu wszystkich możliwych ścieżek i wybraniu wśród ich sum największej i najmniejszej.</p>
+<p>Pomyśl o ścieżkach następująco. Jeśli tablica ma <code>m</code> wierszy i <code>n</code> kolumn, to pionek musi wykonać <code>m - 1</code> kroków w dół i <code>n - 1</code> kroków w prawo. Łącznie <code>m + n - 2</code> kroków. Każda ścieżka odpowiada wyborowi, które z <code>m + n - 2</code> kroków są w dół — pozostałe automatycznie są w prawo. To wybór <code>m - 1</code> elementów ze zbioru <code>m + n - 2</code> elementów, czyli <strong>kombinacja</strong> bez powtórzeń.</p>
+<p>Liczba wszystkich ścieżek to zatem</p>
+<p><span class="math display">\[
+\binom{m + n - 2}{m - 1}.
+\]</span></p>
+<p>Dla małej tablicy 3×4</p>
+<pre><code>5  4  17 13
+5  15 16 5
+17 13 5  8</code></pre>
+<p>mamy <span class="math inline">\(\binom{5}{2} = 10\)</span> ścieżek (kroki numerujemy od zera, jest ich <code>3 + 4 - 2 = 5</code>). Dwuelementowa kombinacja <code>(1, 4)</code> koduje ścieżkę, w której kroki numer 1 i 4 są w dół, a pozostałe w prawo:</p>
+<pre><code>krok 0 → w prawo: (0,0) → (0,1), wartość pola: 4
+krok 1 → w dół:   (0,1) → (1,1), wartość pola: 15
+krok 2 → w prawo: (1,1) → (1,2), wartość pola: 16
+krok 3 → w prawo: (1,2) → (1,3), wartość pola: 5
+krok 4 → w dół:   (1,3) → (2,3), wartość pola: 8</code></pre>
+<p>Suma wzdłuż tej ścieżki to <span class="math inline">\(5 + 4 + 15 + 16 + 5 + 8 = 53\)</span> (pierwsza piątka pochodzi z pola startowego).</p>
+<p><code>r</code>-elementowe kombinacje bez powtórzeń z obiektu iterowalnego zwraca funkcja <code>combinations</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> combinations</span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(combinations(<span class="bu">range</span>(<span class="dv">5</span>), <span class="dv">2</span>))</span>
+<span id="cb17-3"><a href="#cb17-3"></a>[(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">3</span>), (<span class="dv">0</span>, <span class="dv">4</span>),</span>
+<span id="cb17-4"><a href="#cb17-4"></a> (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">1</span>, <span class="dv">3</span>), (<span class="dv">1</span>, <span class="dv">4</span>),</span>
+<span id="cb17-5"><a href="#cb17-5"></a> (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">4</span>),</span>
+<span id="cb17-6"><a href="#cb17-6"></a> (<span class="dv">3</span>, <span class="dv">4</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Pozostaje dla każdej kombinacji odtworzyć kolejne pola ścieżki i zsumować ich wartości. Robimy to jednym przejściem — sama kombinacja w pełni koduje ścieżkę, żadne pośrednie reprezentacje typu napis <code>'DPPDP'</code> nie są nam potrzebne:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a><span class="im">from</span> itertools <span class="im">import</span> combinations</span>
+<span id="cb18-2"><a href="#cb18-2"></a></span>
+<span id="cb18-3"><a href="#cb18-3"></a></span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="kw">def</span> sumy_z_tablicy(tab):</span>
+<span id="cb18-5"><a href="#cb18-5"></a>    <span class="co">"""Generator sum wzdłuż wszystkich ścieżek w tablicy `tab`."""</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a>    m, n <span class="op">=</span> <span class="bu">len</span>(tab), <span class="bu">len</span>(tab[<span class="dv">0</span>])</span>
+<span id="cb18-7"><a href="#cb18-7"></a>    <span class="cf">for</span> komb <span class="kw">in</span> combinations(<span class="bu">range</span>(m <span class="op">+</span> n <span class="op">-</span> <span class="dv">2</span>), m <span class="op">-</span> <span class="dv">1</span>):</span>
+<span id="cb18-8"><a href="#cb18-8"></a>        kroki_w_dół <span class="op">=</span> <span class="bu">set</span>(komb)</span>
+<span id="cb18-9"><a href="#cb18-9"></a>        i <span class="op">=</span> j <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a>        suma <span class="op">=</span> tab[<span class="dv">0</span>][<span class="dv">0</span>]</span>
+<span id="cb18-11"><a href="#cb18-11"></a>        <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(m <span class="op">+</span> n <span class="op">-</span> <span class="dv">2</span>):</span>
+<span id="cb18-12"><a href="#cb18-12"></a>            <span class="cf">if</span> k <span class="kw">in</span> kroki_w_dół:</span>
+<span id="cb18-13"><a href="#cb18-13"></a>                i <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb18-14"><a href="#cb18-14"></a>            <span class="cf">else</span>:</span>
+<span id="cb18-15"><a href="#cb18-15"></a>                j <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb18-16"><a href="#cb18-16"></a>            suma <span class="op">+=</span> tab[i][j]</span>
+<span id="cb18-17"><a href="#cb18-17"></a>        <span class="cf">yield</span> suma</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Funkcja jest generatorem — nie buduje listy wszystkich sum, tylko zwraca je leniwie. To ważne, bo dla dużych tablic liczba sum może być olbrzymia. Konwersja <code>set(komb)</code> w środku pętli pozwala sprawdzać przynależność w czasie stałym; bez tego sprawdzanie <code>k in komb</code> po krotce byłoby liniowe.</p>
+<p>Dla małej tablicy:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a><span class="op">&gt;&gt;&gt;</span> tab <span class="op">=</span> [[<span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">17</span>, <span class="dv">13</span>],</span>
+<span id="cb19-2"><a href="#cb19-2"></a>...        [<span class="dv">5</span>, <span class="dv">15</span>, <span class="dv">16</span>, <span class="dv">5</span>],</span>
+<span id="cb19-3"><a href="#cb19-3"></a>...        [<span class="dv">17</span>, <span class="dv">13</span>, <span class="dv">5</span>, <span class="dv">8</span>]]</span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(sumy_z_tablicy(tab))</span>
+<span id="cb19-5"><a href="#cb19-5"></a>[<span class="dv">53</span>, <span class="dv">51</span>, <span class="dv">54</span>, <span class="dv">54</span>, <span class="dv">50</span>, <span class="dv">53</span>, <span class="dv">53</span>, <span class="dv">55</span>, <span class="dv">55</span>, <span class="dv">52</span>]</span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">max</span>(sumy_z_tablicy(tab)), <span class="bu">min</span>(sumy_z_tablicy(tab))</span>
+<span id="cb19-7"><a href="#cb19-7"></a>(<span class="dv">55</span>, <span class="dv">50</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dokładnie 10 sum — zgodnie z <span class="math inline">\(\binom{5}{2} = 10\)</span>.</p>
+<p>Wczytujemy teraz dużą tablicę z zadania. Najwygodniej skopiować ją do łańcucha (a w razie potrzeby wczytać z pliku):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a>tekst <span class="op">=</span> <span class="st">"""5  4  17 13 16 16 16 1  11 17 1  2  5  11 3</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="st">5  15 16 5  14 4  11 2  18 7  13 13 15 5  7</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a><span class="st">17 13 5  8  11 15 7  1  5  15 1  10 19 15 16</span></span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="st">8  6  14 12 12 19 2  7  17 2  16 20 12 10 4</span></span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="st">17 10 9  5  9  13 2  17 15 18 12 11 7  19 15</span></span>
+<span id="cb20-6"><a href="#cb20-6"></a><span class="st">11 5  3  4  18 12 8  19 13 5  15 11 2  19 2</span></span>
+<span id="cb20-7"><a href="#cb20-7"></a><span class="st">14 8  12 10 12 2  13 9  8  15 9  16 7  19 15</span></span>
+<span id="cb20-8"><a href="#cb20-8"></a><span class="st">8  1  15 2  1  13 17 8  14 16 19 16 7  16 19</span></span>
+<span id="cb20-9"><a href="#cb20-9"></a><span class="st">3  20 15 13 20 3  5  19 15 6  5  19 2  5  13</span></span>
+<span id="cb20-10"><a href="#cb20-10"></a><span class="st">16 8  14 18 15 13 3  8  19 1  10 18 10 20 18"""</span></span>
+<span id="cb20-11"><a href="#cb20-11"></a></span>
+<span id="cb20-12"><a href="#cb20-12"></a>tab <span class="op">=</span> [[<span class="bu">int</span>(k) <span class="cf">for</span> k <span class="kw">in</span> wiersz.split()] <span class="cf">for</span> wiersz <span class="kw">in</span> tekst.splitlines()]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Tablica ma <code>m = 10</code> wierszy i <code>n = 15</code> kolumn, więc liczba ścieżek to:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> math <span class="im">import</span> comb</span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="op">&gt;&gt;&gt;</span> m, n <span class="op">=</span> <span class="dv">10</span>, <span class="dv">15</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="op">&gt;&gt;&gt;</span> comb(m <span class="op">+</span> n <span class="op">-</span> <span class="dv">2</span>, m <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb21-4"><a href="#cb21-4"></a><span class="dv">817190</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Przy tym rozmiarze obliczenia są jeszcze wykonalne, choć czas pracy zaczyna być wyraźnie odczuwalny. Mierzymy go modułem <a href="https://docs.python.org/3/library/time.html"><code>time</code></a>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a><span class="im">import</span> time</span>
+<span id="cb22-2"><a href="#cb22-2"></a></span>
+<span id="cb22-3"><a href="#cb22-3"></a>start <span class="op">=</span> time.perf_counter()</span>
+<span id="cb22-4"><a href="#cb22-4"></a>maks <span class="op">=</span> <span class="bu">max</span>(sumy_z_tablicy(tab))</span>
+<span id="cb22-5"><a href="#cb22-5"></a>mini <span class="op">=</span> <span class="bu">min</span>(sumy_z_tablicy(tab))</span>
+<span id="cb22-6"><a href="#cb22-6"></a>elapsed <span class="op">=</span> time.perf_counter() <span class="op">-</span> start</span>
+<span id="cb22-7"><a href="#cb22-7"></a></span>
+<span id="cb22-8"><a href="#cb22-8"></a><span class="bu">print</span>(<span class="ss">f"maksimum: </span><span class="sc">{</span>maks<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb22-9"><a href="#cb22-9"></a><span class="bu">print</span>(<span class="ss">f"minimum:  </span><span class="sc">{</span>mini<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb22-10"><a href="#cb22-10"></a><span class="bu">print</span>(<span class="ss">f"czas:     </span><span class="sc">{</span>elapsed<span class="sc">:.2f}</span><span class="ss"> s"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Przykładowe wyjście (rząd wielkości zależny od maszyny):</p>
+<pre><code>maksimum: 338
+minimum:  197
+czas:     9.45 s</code></pre>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span><code>time.perf_counter</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Funkcja <code>time.perf_counter()</code> zwraca aktualny moment jako liczbę zmiennoprzecinkową sekund odmierzaną od arbitralnego punktu. Sama wartość nie ma żadnego sensu — sensowna jest dopiero <strong>różnica</strong> dwóch jej wywołań. To najczęściej zalecany sposób pomiaru czasu krótkich fragmentów kodu w Pythonie; ma najwyższą rozdzielczość spośród zegarów dostępnych w module <code>time</code>. W notatnikach Jupytera ten sam efekt daje magia <code>%%time</code>, ale poza Jupyterem (w skryptach, modułach, testach) musimy mierzyć ręcznie.</p>
+</div>
+</div>
+<section id="tablice-o-większych-rozmiarach" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="tablice-o-większych-rozmiarach"><span class="header-section-number">4.1</span> Tablice o większych rozmiarach</h3>
+<p>Czy ten sam pomysł zadziała dla tablicy 30×30? Liczba ścieżek wynosi:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1"></a><span class="op">&gt;&gt;&gt;</span> b <span class="op">=</span> comb(<span class="dv">30</span> <span class="op">+</span> <span class="dv">30</span> <span class="op">-</span> <span class="dv">2</span>, <span class="dv">30</span> <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="op">&gt;&gt;&gt;</span> b</span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="dv">30067266499541040</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="ss">f"</span><span class="sc">{</span>b<span class="sc">:.2e}</span><span class="ss">"</span></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="co">'3.01e+16'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Trzydzieści biliardów ścieżek. Nawet gdyby każda zajęła nanosekundę, brute force pracowałby przez rok. To granica metody siłowej — dalej trzeba pomyśleć.</p>
+<p>Algorytm, który radzi sobie z takimi rozmiarami, korzysta z <strong>programowania dynamicznego</strong>: zamiast za każdym razem sumować wzdłuż całej ścieżki od początku, zapamiętujemy najlepszą sumę, jaką da się uzyskać dla każdego pola — każde pole liczymy raz, a nie raz na każdą ścieżkę przechodzącą przez nie. Dla ogólniejszych grafów (z dowolnym układem krawędzi, niekoniecznie tylko „w prawo i w dół”) służy <a href="https://pl.wikipedia.org/wiki/Algorytm_Dijkstry">algorytm Dijkstry</a>.</p>
+<p>Jeśli chcesz spróbować sił, zajrzyj na <a href="https://projecteuler.net/problem=81">Project Euler, problem 81</a> — to dokładnie ten sam problem na tablicy 80×80.</p>
+<hr>
+</section>
+</section>
+<section id="podsumowanie" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="podsumowanie"><span class="header-section-number">5</span> Podsumowanie</h2>
+<p>Pojęcia z tego wykładu:</p>
+<ul>
+<li><strong>Brute force</strong> (wyszukiwanie wyczerpujące, siłowe) — strategia rozwiązywania problemu przez przeliczenie wszystkich możliwych przypadków. Zalety: prostota, kompletność, niezawodność. Wada: szybko rosnący czas i pamięć.</li>
+<li><strong>Cztery siostry kombinatoryczne</strong> z modułu <code>itertools</code>, ułożone w siatkę 2×2 wzdłuż osi „kolejność” i „powtórzenia”:
+<ul>
+<li><code>product(seq, repeat=r)</code> — iloczyn kartezjański, <span class="math inline">\(n^r\)</span> uporządkowanych krotek z powtórzeniami;</li>
+<li><code>permutations(seq, r)</code> — uporządkowane krotki bez powtórzeń, <span class="math inline">\(n!/(n-r)!\)</span> sztuk;</li>
+<li><code>combinations(seq, r)</code> — wybory bez kolejności i bez powtórzeń, <span class="math inline">\(\binom{n}{r}\)</span> sztuk;</li>
+<li><code>combinations_with_replacement(seq, r)</code> — wybory bez kolejności, z powtórzeniami, <span class="math inline">\(\binom{n+r-1}{r}\)</span> sztuk.</li>
+</ul></li>
+<li>Wszystkie cztery funkcje są <strong>leniwe</strong> — zwracają iteratory. Dzięki temu można po nich iterować nawet wtedy, gdy wynik nie zmieściłby się w pamięci jako lista.</li>
+<li><code>product(iter, repeat=k)</code> to skrót dla <code>product(iter, iter, ..., iter)</code> z <code>k</code> kopiami; <code>product</code> przyjmuje też zupełnie różne iterowalne argumenty.</li>
+<li><strong>Iloczyn kartezjański</strong> zwija dowolną liczbę zagnieżdżonych pętli <code>for</code> po tym samym zakresie do jednej pętli po <code>product(zakres, repeat=k)</code> — kod robi się czytelny i skalowalny.</li>
+<li><strong>Kombinacja</strong> to wybór podzbioru — w problemie ścieżek w tablicy każda kombinacja kroków „w dół” jednoznacznie wyznacza ścieżkę.</li>
+<li>Mierzenie czasu poza Jupyterem: <code>time.perf_counter()</code> zwraca aktualny moment w sekundach; różnica dwóch wywołań to czas, który upłynął.</li>
+<li>Brute force ma swoje granice — gdy liczba przypadków przekracza <span class="math inline">\(10^9\)</span>–<span class="math inline">\(10^{10}\)</span>, trzeba sięgnąć po inne metody (programowanie dynamiczne, algorytmy zachłanne, algorytmy z teorii grafów).</li>
+</ul>
+<p>Główna myśl wykładu: nie każde zadanie wymaga sprytnego algorytmu. Jeśli przestrzeń możliwych rozwiązań jest skończona i niezbyt wielka, najlepszym podejściem często jest po prostu je wszystkie przejrzeć — a <code>itertools</code> daje słownik podstawowych obiektów kombinatorycznych, którym możemy tę przestrzeń opisać.</p>
+<hr>
+</section>
+<section id="co-dalej" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="co-dalej"><span class="header-section-number">6</span> Co dalej</h2>
+<p>Wykład XIII będzie drugą częścią opowieści o <code>itertools</code>. Tym razem zajmiemy się funkcjami, które <strong>komponują strumienie danych</strong> — sklejają je, ucinają, grupują, akumulują. Wśród bohaterów:</p>
+<ul>
+<li><code>chain</code>, <code>chain.from_iterable</code> — sklejanie wielu iteratorów w jeden ciąg;</li>
+<li><code>count</code>, <code>cycle</code>, <code>repeat</code> — źródła strumieni <strong>nieskończonych</strong>;</li>
+<li><code>islice</code>, <code>takewhile</code>, <code>dropwhile</code> — narzędzia obcinające strumienie nieskończone do skończonego prefiksu;</li>
+<li><code>accumulate</code> — wszystkie sumy częściowe (a w wersji ogólnej: wszystkie kroki dowolnej operacji binarnej);</li>
+<li><code>groupby</code> — grupowanie kolejnych równych elementów;</li>
+<li><code>pairwise</code>, <code>starmap</code> i inne.</li>
+</ul>
+<p>Bohaterami będą też funkcje z modułów <a href="https://docs.python.org/3/library/functools.html"><code>functools</code></a> (<code>reduce</code>, <code>partial</code>) i <a href="https://docs.python.org/3/library/operator.html"><code>operator</code></a> (<code>itemgetter</code>, <code>attrgetter</code>), które naturalnie współpracują z <code>itertools</code> w wątku <strong>programowania funkcyjnego</strong>.</p>
+<p>Na koniec warto zajrzeć do <a href="https://docs.python.org/3/library/itertools.html#itertools-recipes"><code>itertools</code> recipes</a> — sekcji w dokumentacji modułu, w której pokazane są gotowe przepisy na typowe zadania (jak zgrupować elementy po <code>n</code>, znaleźć unikalne elementy zachowując kolejność, podzielić iterator na dwa), wszystkie zbudowane z funkcji wprowadzonych w XII i XIII.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/rodakt\.github\.io\/PPwAD2\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<hr><center><small>Ostatnia aktualizacja: last-modified</small></center>
+
+
+
+
+</body></html>

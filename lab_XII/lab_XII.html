@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tomasz Rodak">
+
+<title>Lab XII: Iteratory i generatory – Podstawy programowania (AD) 2</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-c6add7d09649d03b5edbbe8cc8307c7d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_XII/lab_XII.html">Lab XII: Iteratory i generatory</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Podstawy programowania (AD) 2</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Strona główna</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Wykłady</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Zmienne. Instrukcja przypisania</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wypakowywanie obiektów iterowalnych. Parametry i argumenty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Przestrzenie nazw i moduły</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Funkcje jako obiekty. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rekurencja</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_IX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Klasy i obiekty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_X.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Klasy i obiekty II: metody specjalne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wyklad_XI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Iteratory i generatory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Laboratoria</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab I: Zadania na rozgrzewkę</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_II/lab_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab II: Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_III/lab_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab III: Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_IV/lab_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IV: Zmienne, aliasy, kopie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_V/lab_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab V: Wypakowywanie i parametry funkcji</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_VI/lab_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VI: Geometria żółwia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_VII/lab_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VII: Funkcje wyższego rzędu. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_VIII/lab_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VIII: Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_IX/lab_IX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IX: Rekurencja</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_X/lab_X.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab X: Klasy i obiekty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_XI/lab_XI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab XI: Metody specjalne i dziedziczenie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_XII/lab_XII.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Lab XII: Iteratory i generatory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Spis treści</h2>
+   
+  <ul>
+  <li><a href="#rozgrzewka-iteratory-i-generatory" id="toc-rozgrzewka-iteratory-i-generatory" class="nav-link active" data-scroll-target="#rozgrzewka-iteratory-i-generatory"><span class="header-section-number">1</span> Rozgrzewka: iteratory i generatory</a></li>
+  <li><a href="#drobne-generatory" id="toc-drobne-generatory" class="nav-link" data-scroll-target="#drobne-generatory"><span class="header-section-number">2</span> Drobne generatory</a></li>
+  <li><a href="#akumulacja" id="toc-akumulacja" class="nav-link" data-scroll-target="#akumulacja"><span class="header-section-number">3</span> Akumulacja</a></li>
+  <li><a href="#uogólnione-ciągi-fibonacciego" id="toc-uogólnione-ciągi-fibonacciego" class="nav-link" data-scroll-target="#uogólnione-ciągi-fibonacciego"><span class="header-section-number">4</span> Uogólnione ciągi Fibonacciego</a></li>
+  <li><a href="#naprzemienne-łączenie-iteratorów" id="toc-naprzemienne-łączenie-iteratorów" class="nav-link" data-scroll-target="#naprzemienne-łączenie-iteratorów"><span class="header-section-number">5</span> Naprzemienne łączenie iteratorów</a></li>
+  <li><a href="#krata-punktów-płaszczyzny" id="toc-krata-punktów-płaszczyzny" class="nav-link" data-scroll-target="#krata-punktów-płaszczyzny"><span class="header-section-number">6</span> Krata punktów płaszczyzny</a></li>
+  <li><a href="#iterator-z-możliwością-przesuwania" id="toc-iterator-z-możliwością-przesuwania" class="nav-link" data-scroll-target="#iterator-z-możliwością-przesuwania"><span class="header-section-number">7</span> Iterator z możliwością przesuwania</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab_I/lab_I.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="../lab_XII/lab_XII.html">Lab XII: Iteratory i generatory</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Lab XII: Iteratory i generatory</h1>
+<p class="subtitle lead">Podstawy programowania (AD) 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tomasz Rodak </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Te ćwiczenia nawiązują do wykładu XI — pojęcia iteratora i generatora, wzorca funkcji generatora i wyrażenia generatora. Zadania uporządkowane są od najprostszych (krótkie funkcje generatora, kilka linii kodu każda) do bardziej rozbudowanych. Ostatnie zadanie wraca do iteratora pisanego ręcznie klasą — uzupełnia wzorzec <code>Loader</code> z wykładu o swobodę przesuwania się po pozycjach, analogicznie do <code>file.seek</code>. Poprawność rozwiązań weryfikuj za pomocą doctestów dołączonych do specyfikacji funkcji.</p>
+<section id="rozgrzewka-iteratory-i-generatory" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="rozgrzewka-iteratory-i-generatory"><span class="header-section-number">1</span> Rozgrzewka: iteratory i generatory</h2>
+<p>Dla każdego z poniższych pytań najpierw udziel odpowiedzi samodzielnie, a następnie sprawdź ją w interpreterze.</p>
+<p><strong>1.</strong> Cztery obiekty:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a>it <span class="op">=</span> <span class="bu">iter</span>([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb1-2"><a href="#cb1-2"></a>lst <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]</span>
+<span id="cb1-3"><a href="#cb1-3"></a>r <span class="op">=</span> <span class="bu">range</span>(<span class="dv">3</span>)</span>
+<span id="cb1-4"><a href="#cb1-4"></a>g <span class="op">=</span> (x <span class="op">*</span> x <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dla każdego z nich — <code>next(it)</code>, <code>next(lst)</code>, <code>next(r)</code>, <code>next(g)</code> — odpowiedz: zwróci wartość czy rzuci <code>TypeError</code>?</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>next(it)</code> zwraca <code>1</code>, <code>next(g)</code> zwraca <code>0</code>. Pozostałe dwa wywołania rzucają <code>TypeError: '...' object is not an iterator</code>.</p>
+<p><code>it</code> (wynik <code>iter(...)</code>) i <code>g</code> (wyrażenie generatora) są iteratorami — mają <code>__next__</code>. Lista i <code>range</code> są <strong>obiektami iterowalnymi</strong>, ale nie iteratorami: <code>for</code> po nich działa, bo Python pod spodem wywołuje <code>iter(lst)</code> i <code>iter(r)</code>, ale samo <code>next</code> na nich nie zadziała. To różnica, o której mówiliśmy w drugiej sekcji wykładu XI.</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> Co zwracają wywołania <code>f()</code> i <code>list(g())</code>?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">def</span> f():</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    <span class="cf">for</span> litera <span class="kw">in</span> <span class="st">'abc'</span>:</span>
+<span id="cb2-3"><a href="#cb2-3"></a>        <span class="cf">return</span> litera</span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="kw">def</span> g():</span>
+<span id="cb2-7"><a href="#cb2-7"></a>    <span class="cf">for</span> litera <span class="kw">in</span> <span class="st">'abc'</span>:</span>
+<span id="cb2-8"><a href="#cb2-8"></a>        <span class="cf">yield</span> litera</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>f()</code> zwraca <code>'a'</code>, <code>list(g())</code> zwraca <code>['a', 'b', 'c']</code>.</p>
+<p><code>f</code> jest zwykłą funkcją: w pierwszej iteracji pętli trafia na <code>return</code> i opuszcza funkcję z jedną wartością. <code>g</code> zawiera <code>yield</code>, więc jest funkcją generatora. Wywołanie <code>g()</code> nie wykonuje ciała — zwraca generator; <code>list(g())</code> ten generator konsumuje. <code>yield</code> w odróżnieniu od <code>return</code> wstrzymuje, ale nie opuszcza funkcji, więc pętla wykonuje się w całości.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> Co wypisze ten kod?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a>g <span class="op">=</span> (x <span class="op">*</span> x <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>))</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="bu">print</span>(<span class="bu">list</span>(g))</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="bu">print</span>(<span class="bu">list</span>(g))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Wypisze <code>[0, 1, 4]</code>, potem <code>[]</code>.</p>
+<p><code>g</code> to wyrażenie generatora, czyli iterator. Iterator można przebiec <strong>tylko raz</strong> — po pierwszym <code>list(g)</code> strumień jest wyczerpany i kolejne wywołanie zastaje pustkę. To druga zajawka z wykładu XI: iterator zużywa się przy iteracji.</p>
+</div>
+</div>
+</div>
+<p><strong>4.</strong> Co wypisze ten kod?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a>it <span class="op">=</span> <span class="bu">iter</span>([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="bu">print</span>(it <span class="kw">is</span> <span class="bu">iter</span>(it))</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="bu">print</span>(it <span class="kw">is</span> <span class="bu">iter</span>([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Odpowiedź
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Wypisze <code>True</code>, a następnie <code>False</code>.</p>
+<p>Iterator definiuje <code>__iter__</code> jako <code>return self</code> — <code>iter(it)</code> na iteratorze zwraca <strong>ten sam</strong> obiekt, nie świeży. Z kolei <code>iter([1, 2, 3])</code> na liście tworzy <strong>nowy</strong> iterator po liście — inny obiekt niż <code>it</code>. Stąd asymetria, o której mówiliśmy: <code>range</code> (i każda inna sekwencja) przeżywa wielokrotne pętle <code>for</code>, bo każde wejście do <code>for</code> woła <code>iter</code> i dostaje nowy iterator. Iterator — nie, bo <code>iter</code> zwraca to samo.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="drobne-generatory" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="drobne-generatory"><span class="header-section-number">2</span> Drobne generatory</h2>
+<p>Napisz moduł <code>helpers.py</code> zawierający cztery krótkie funkcje generatora. Każda z nich powinna mieścić się w 2–5 liniach kodu. Doctesty są częścią specyfikacji — używaj ich do weryfikacji.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">def</span> my_enumerate(it, start<span class="op">=</span><span class="dv">0</span>):</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    <span class="co">"""Odpowiednik wbudowanej funkcji `enumerate`.</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">    Zwraca generator par `(indeks, element)` dla kolejnych elementów `it`,</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co">    gdzie indeks zaczyna się od `start` i rośnie o 1.</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co">    &gt;&gt;&gt; list(my_enumerate('abc'))</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="co">    [(0, 'a'), (1, 'b'), (2, 'c')]</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co">    &gt;&gt;&gt; list(my_enumerate('abc', start=10))</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="co">    [(10, 'a'), (11, 'b'), (12, 'c')]</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="co">    &gt;&gt;&gt; list(my_enumerate([]))</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="co">    []</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="co">    """</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>    <span class="cf">pass</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a></span>
+<span id="cb5-16"><a href="#cb5-16"></a></span>
+<span id="cb5-17"><a href="#cb5-17"></a><span class="kw">def</span> take(it, n):</span>
+<span id="cb5-18"><a href="#cb5-18"></a>    <span class="co">"""Generator pierwszych `n` elementów z `it`.</span></span>
+<span id="cb5-19"><a href="#cb5-19"></a></span>
+<span id="cb5-20"><a href="#cb5-20"></a><span class="co">    Jeśli `it` ma mniej niż `n` elementów, zwraca wszystkie.</span></span>
+<span id="cb5-21"><a href="#cb5-21"></a><span class="co">    Odpowiednik `itertools.islice(it, n)`.</span></span>
+<span id="cb5-22"><a href="#cb5-22"></a></span>
+<span id="cb5-23"><a href="#cb5-23"></a><span class="co">    &gt;&gt;&gt; list(take(range(100), 5))</span></span>
+<span id="cb5-24"><a href="#cb5-24"></a><span class="co">    [0, 1, 2, 3, 4]</span></span>
+<span id="cb5-25"><a href="#cb5-25"></a><span class="co">    &gt;&gt;&gt; list(take('abc', 10))</span></span>
+<span id="cb5-26"><a href="#cb5-26"></a><span class="co">    ['a', 'b', 'c']</span></span>
+<span id="cb5-27"><a href="#cb5-27"></a><span class="co">    &gt;&gt;&gt; list(take('abc', 0))</span></span>
+<span id="cb5-28"><a href="#cb5-28"></a><span class="co">    []</span></span>
+<span id="cb5-29"><a href="#cb5-29"></a><span class="co">    """</span></span>
+<span id="cb5-30"><a href="#cb5-30"></a>    <span class="cf">pass</span></span>
+<span id="cb5-31"><a href="#cb5-31"></a></span>
+<span id="cb5-32"><a href="#cb5-32"></a></span>
+<span id="cb5-33"><a href="#cb5-33"></a><span class="kw">def</span> repeat_each(it, k):</span>
+<span id="cb5-34"><a href="#cb5-34"></a>    <span class="co">"""Generator, w którym każdy element `it` powtórzony jest `k` razy.</span></span>
+<span id="cb5-35"><a href="#cb5-35"></a></span>
+<span id="cb5-36"><a href="#cb5-36"></a><span class="co">    &gt;&gt;&gt; list(repeat_each([1, 2, 3], 2))</span></span>
+<span id="cb5-37"><a href="#cb5-37"></a><span class="co">    [1, 1, 2, 2, 3, 3]</span></span>
+<span id="cb5-38"><a href="#cb5-38"></a><span class="co">    &gt;&gt;&gt; list(repeat_each('ab', 3))</span></span>
+<span id="cb5-39"><a href="#cb5-39"></a><span class="co">    ['a', 'a', 'a', 'b', 'b', 'b']</span></span>
+<span id="cb5-40"><a href="#cb5-40"></a><span class="co">    &gt;&gt;&gt; list(repeat_each([1, 2, 3], 1))</span></span>
+<span id="cb5-41"><a href="#cb5-41"></a><span class="co">    [1, 2, 3]</span></span>
+<span id="cb5-42"><a href="#cb5-42"></a><span class="co">    &gt;&gt;&gt; list(repeat_each([1, 2, 3], 0))</span></span>
+<span id="cb5-43"><a href="#cb5-43"></a><span class="co">    []</span></span>
+<span id="cb5-44"><a href="#cb5-44"></a><span class="co">    """</span></span>
+<span id="cb5-45"><a href="#cb5-45"></a>    <span class="cf">pass</span></span>
+<span id="cb5-46"><a href="#cb5-46"></a></span>
+<span id="cb5-47"><a href="#cb5-47"></a></span>
+<span id="cb5-48"><a href="#cb5-48"></a><span class="kw">def</span> geometric(a, r):</span>
+<span id="cb5-49"><a href="#cb5-49"></a>    <span class="co">"""Nieskończony generator ciągu geometrycznego: a, a*r, a*r**2, a*r**3, ...</span></span>
+<span id="cb5-50"><a href="#cb5-50"></a></span>
+<span id="cb5-51"><a href="#cb5-51"></a><span class="co">    &gt;&gt;&gt; g = geometric(1, 2)</span></span>
+<span id="cb5-52"><a href="#cb5-52"></a><span class="co">    &gt;&gt;&gt; [next(g) for _ in range(6)]</span></span>
+<span id="cb5-53"><a href="#cb5-53"></a><span class="co">    [1, 2, 4, 8, 16, 32]</span></span>
+<span id="cb5-54"><a href="#cb5-54"></a><span class="co">    &gt;&gt;&gt; g = geometric(3, 10)</span></span>
+<span id="cb5-55"><a href="#cb5-55"></a><span class="co">    &gt;&gt;&gt; [next(g) for _ in range(4)]</span></span>
+<span id="cb5-56"><a href="#cb5-56"></a><span class="co">    [3, 30, 300, 3000]</span></span>
+<span id="cb5-57"><a href="#cb5-57"></a><span class="co">    """</span></span>
+<span id="cb5-58"><a href="#cb5-58"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Testy: <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XII/test_helpers.py">test_helpers.py</a>.</p>
+<hr>
+</section>
+<section id="akumulacja" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="akumulacja"><span class="header-section-number">3</span> Akumulacja</h2>
+<p>Napisz moduł <code>accumulate.py</code> zawierający funkcję generatora <code>accumulate(it, func, *, initial=None)</code>. Funkcja zwraca generator wartości bieżących akumulowanych operacją <code>func</code> na elementach <code>it</code>:</p>
+<ul>
+<li>bez argumentu <code>initial</code>: pierwszą wartością strumienia jest pierwszy element <code>it</code>; każda kolejna powstaje jako <code>func(poprzednia_wartość, kolejny_element_it)</code>. Dla pustego <code>it</code> generator jest pusty.</li>
+<li>z argumentem <code>initial</code>: pierwszą wartością strumienia jest <code>initial</code>, każda kolejna powstaje jak wyżej. Dla pustego <code>it</code> generator zwraca samo <code>initial</code>.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">def</span> accumulate(it, func, <span class="op">*</span>, initial<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb6-2"><a href="#cb6-2"></a>    <span class="co">"""Generator bieżących wartości akumulowanych operacją `func`.</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">    &gt;&gt;&gt; from operator import add, mul</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co">    &gt;&gt;&gt; list(accumulate([1, 2, 3, 4], add))</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="co">    [1, 3, 6, 10]</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co">    &gt;&gt;&gt; list(accumulate([1, 2, 3, 4], add, initial=0))</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="co">    [0, 1, 3, 6, 10]</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="co">    &gt;&gt;&gt; list(accumulate([1, 2, 3, 4], mul, initial=1))</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co">    [1, 1, 2, 6, 24]</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co">    &gt;&gt;&gt; list(accumulate([1, 2, 3, 2, 0, 7], max))</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="co">    [1, 2, 3, 3, 3, 7]</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="co">    &gt;&gt;&gt; list(accumulate([1, 2, 3, 2, 0, 7], min))</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="co">    [1, 1, 1, 1, 0, 0]</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="co">    &gt;&gt;&gt; list(accumulate([], add))</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a><span class="co">    []</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a><span class="co">    &gt;&gt;&gt; list(accumulate([], add, initial=0))</span></span>
+<span id="cb6-18"><a href="#cb6-18"></a><span class="co">    [0]</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a><span class="co">    """</span></span>
+<span id="cb6-20"><a href="#cb6-20"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Przykłady zastosowania:</p>
+<ul>
+<li><code>accumulate(seq, add)</code> — bieżąca suma elementów <code>seq</code> (jak suma częściowa szeregu),</li>
+<li><code>accumulate(seq, mul, initial=1)</code> — bieżący iloczyn (z elementem neutralnym mnożenia jako wartością początkową),</li>
+<li><code>accumulate(seq, max)</code> — bieżące maksimum widzianych elementów.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Wbudowane <code>itertools.accumulate</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Funkcja, którą piszesz, to dokładnie <a href="https://docs.python.org/3/library/itertools.html#itertools.accumulate"><code>itertools.accumulate</code></a> z biblioteki standardowej. Cały moduł <code>itertools</code> — leniwych narzędzi do komponowania iteratorów — będzie tematem następnego wykładu. Tutaj piszemy własną wersję, żeby zrozumieć, jak to działa od środka.</p>
+</div>
+</div>
+<p>Testy: <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XII/test_accumulate.py">test_accumulate.py</a>.</p>
+<hr>
+</section>
+<section id="uogólnione-ciągi-fibonacciego" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="uogólnione-ciągi-fibonacciego"><span class="header-section-number">4</span> Uogólnione ciągi Fibonacciego</h2>
+<p>Wracamy do zadania z lab V. Tam funkcja zwracała pojedynczy wyraz ciągu pod zadanym indeksem; teraz napiszemy iteratory zwracające <strong>cały</strong> (potencjalnie nieskończony) strumień wyrazów.</p>
+<p>Przypomnienie definicji. Ciągiem <span class="math inline">\(k\)</span>-Fibonacciego rzędu <span class="math inline">\(k \geqslant 2\)</span> z warunkami początkowymi <span class="math inline">\(a_0, a_1, \ldots, a_{k-1}\)</span> nazywamy ciąg dany rekurencyjnie:</p>
+<p><span class="math display">\[
+f_n = a_n \quad \text{dla } 0 \leqslant n &lt; k,\qquad
+f_n = f_{n-k} + f_{n-k+1} + \cdots + f_{n-1} \quad \text{dla } n \geqslant k.
+\]</span></p>
+<p>Przypadki szczególne: <span class="math inline">\(k = 2\)</span> to klasyczny ciąg Fibonacciego, <span class="math inline">\(k = 3\)</span> — Tribonacciego, <span class="math inline">\(k = 4\)</span> — Tetranacciego.</p>
+<p>Napisz moduł <code>fib_gen.py</code> zawierający cztery funkcje, z których każda zwraca iterator po wyrazach odpowiedniego ciągu:</p>
+<ol type="1">
+<li><code>fib(a=0, b=1)</code> — iterator ciągu Fibonacciego o warunkach początkowych <code>a</code>, <code>b</code>,</li>
+<li><code>trib(a=0, b=0, c=1)</code> — iterator ciągu Tribonacciego,</li>
+<li><code>tetra(a=0, b=0, c=0, d=1)</code> — iterator ciągu Tetranacciego,</li>
+<li><code>fib_general(a, b, *args)</code> — iterator uogólnionego ciągu <span class="math inline">\(k\)</span>-Fibonacciego, gdzie <span class="math inline">\(k = 2 + \text{len(args)}\)</span>, a warunki początkowe to <code>a, b, *args</code>.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Dwie drogi implementacji
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Funkcję <code>fib_general</code> musisz napisać jako funkcję generatora — z <code>yield</code> w ciele. To w niej mieszka cała logika nawrotów dla dowolnego rzędu <span class="math inline">\(k\)</span>.</p>
+<p>Pozostałe trzy funkcje — <code>fib</code>, <code>trib</code>, <code>tetra</code> — możesz zaimplementować na dwa sposoby:</p>
+<ul>
+<li><p><strong>Niezależnie</strong>, każdą jako osobną funkcję generatora z własnym <code>yield</code>, według wzorca z wykładu XI (dwie/trzy/cztery zmienne stanu, aktualizowane przez przypisanie wielokrotne).</p></li>
+<li><p><strong>Delegacyjnie</strong>, zauważając, że każdy z tych ciągów jest szczególnym przypadkiem <code>fib_general</code>. Wtedy ciało funkcji to jedna linia:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">def</span> fib(a<span class="op">=</span><span class="dv">0</span>, b<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb7-2"><a href="#cb7-2"></a>    <span class="cf">return</span> fib_general(a, b)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Funkcja <code>fib</code> zdefiniowana w ten sposób nie zawiera w ciele <code>yield</code> — to <strong>nie</strong> jest funkcja generatora w terminologii wykładu XI. Jest zwykłą funkcją, która zwraca generator wyprodukowany przez <code>fib_general</code>. Z punktu widzenia użytkownika obie wersje zachowują się identycznie: <code>next(fib())</code> daje pierwszą wartość ciągu, pętla <code>for x in fib()</code> przechodzi po wyrazach.</p></li>
+</ul>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">def</span> fib(a<span class="op">=</span><span class="dv">0</span>, b<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb8-2"><a href="#cb8-2"></a>    <span class="co">"""Iterator ciągu Fibonacciego z warunkami początkowymi a, b.</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co">    &gt;&gt;&gt; f = fib()</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co">    &gt;&gt;&gt; [next(f) for _ in range(10)]</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">    [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">    &gt;&gt;&gt; f = fib(2, 1)</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">    &gt;&gt;&gt; [next(f) for _ in range(8)]</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="co">    [2, 1, 3, 4, 7, 11, 18, 29]</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="co">    """</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a>    <span class="cf">pass</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a></span>
+<span id="cb8-13"><a href="#cb8-13"></a></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="kw">def</span> trib(a<span class="op">=</span><span class="dv">0</span>, b<span class="op">=</span><span class="dv">0</span>, c<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb8-15"><a href="#cb8-15"></a>    <span class="co">"""Iterator ciągu Tribonacciego z warunkami początkowymi a, b, c.</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co">    &gt;&gt;&gt; t = trib()</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="co">    &gt;&gt;&gt; [next(t) for _ in range(10)]</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a><span class="co">    [0, 0, 1, 1, 2, 4, 7, 13, 24, 44]</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a><span class="co">    """</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a>    <span class="cf">pass</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a></span>
+<span id="cb8-23"><a href="#cb8-23"></a></span>
+<span id="cb8-24"><a href="#cb8-24"></a><span class="kw">def</span> tetra(a<span class="op">=</span><span class="dv">0</span>, b<span class="op">=</span><span class="dv">0</span>, c<span class="op">=</span><span class="dv">0</span>, d<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb8-25"><a href="#cb8-25"></a>    <span class="co">"""Iterator ciągu Tetranacciego z warunkami początkowymi a, b, c, d.</span></span>
+<span id="cb8-26"><a href="#cb8-26"></a></span>
+<span id="cb8-27"><a href="#cb8-27"></a><span class="co">    &gt;&gt;&gt; t = tetra()</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a><span class="co">    &gt;&gt;&gt; [next(t) for _ in range(10)]</span></span>
+<span id="cb8-29"><a href="#cb8-29"></a><span class="co">    [0, 0, 0, 1, 1, 2, 4, 8, 15, 29]</span></span>
+<span id="cb8-30"><a href="#cb8-30"></a><span class="co">    """</span></span>
+<span id="cb8-31"><a href="#cb8-31"></a>    <span class="cf">pass</span></span>
+<span id="cb8-32"><a href="#cb8-32"></a></span>
+<span id="cb8-33"><a href="#cb8-33"></a></span>
+<span id="cb8-34"><a href="#cb8-34"></a><span class="kw">def</span> fib_general(a, b, <span class="op">*</span>args):</span>
+<span id="cb8-35"><a href="#cb8-35"></a>    <span class="co">"""Generator uogólnionego ciągu k-Fibonacciego, k = 2 + len(args).</span></span>
+<span id="cb8-36"><a href="#cb8-36"></a></span>
+<span id="cb8-37"><a href="#cb8-37"></a><span class="co">    &gt;&gt;&gt; g = fib_general(0, 1)</span></span>
+<span id="cb8-38"><a href="#cb8-38"></a><span class="co">    &gt;&gt;&gt; [next(g) for _ in range(10)]</span></span>
+<span id="cb8-39"><a href="#cb8-39"></a><span class="co">    [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</span></span>
+<span id="cb8-40"><a href="#cb8-40"></a><span class="co">    &gt;&gt;&gt; g = fib_general(0, 0, 1)</span></span>
+<span id="cb8-41"><a href="#cb8-41"></a><span class="co">    &gt;&gt;&gt; [next(g) for _ in range(10)]</span></span>
+<span id="cb8-42"><a href="#cb8-42"></a><span class="co">    [0, 0, 1, 1, 2, 4, 7, 13, 24, 44]</span></span>
+<span id="cb8-43"><a href="#cb8-43"></a><span class="co">    &gt;&gt;&gt; g = fib_general(1, 1, 1, 1, 1)</span></span>
+<span id="cb8-44"><a href="#cb8-44"></a><span class="co">    &gt;&gt;&gt; [next(g) for _ in range(10)]</span></span>
+<span id="cb8-45"><a href="#cb8-45"></a><span class="co">    [1, 1, 1, 1, 1, 5, 9, 17, 33, 65]</span></span>
+<span id="cb8-46"><a href="#cb8-46"></a><span class="co">    """</span></span>
+<span id="cb8-47"><a href="#cb8-47"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Testy: <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XII/test_fib_gen.py">test_fib_gen.py</a>.</p>
+<hr>
+</section>
+<section id="naprzemienne-łączenie-iteratorów" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="naprzemienne-łączenie-iteratorów"><span class="header-section-number">5</span> Naprzemienne łączenie iteratorów</h2>
+<p>Napisz moduł <code>connect_alternately.py</code> zawierający dwie funkcje generatora:</p>
+<ul>
+<li><code>connect_alternately2(it1, it2)</code> — generator zwracający na przemian elementy z <code>it1</code> i z <code>it2</code>: pierwszy element <code>it1</code>, pierwszy <code>it2</code>, drugi <code>it1</code>, drugi <code>it2</code>, … Działanie kończy się, gdy któryś z iteratorów się wyczerpie.</li>
+<li><code>connect_alternately(*its)</code> — uogólnienie na dowolną liczbę argumentów. Generator zwraca elementy w porządku cyklicznym: pierwszy z <code>its[0]</code>, pierwszy z <code>its[1]</code>, …, pierwszy z <code>its[-1]</code>, drugi z <code>its[0]</code>, drugi z <code>its[1]</code>, … Działanie kończy się, gdy któryś z iteratorów się wyczerpie.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">def</span> connect_alternately2(it1, it2):</span>
+<span id="cb9-2"><a href="#cb9-2"></a>    <span class="co">"""Naprzemiennie łączy dwa iteratory.</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="co">    &gt;&gt;&gt; list(connect_alternately2([1, 2, 3], 'abc'))</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co">    [1, 'a', 2, 'b', 3, 'c']</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="co">    &gt;&gt;&gt; list(connect_alternately2([1, 2, 3, 4, 5], 'ab'))</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="co">    [1, 'a', 2, 'b', 3]</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="co">    &gt;&gt;&gt; list(connect_alternately2([], 'abc'))</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="co">    []</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="co">    """</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a>    <span class="cf">pass</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a></span>
+<span id="cb9-13"><a href="#cb9-13"></a></span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="kw">def</span> connect_alternately(<span class="op">*</span>its):</span>
+<span id="cb9-15"><a href="#cb9-15"></a>    <span class="co">"""Naprzemiennie łączy dowolną liczbę iteratorów.</span></span>
+<span id="cb9-16"><a href="#cb9-16"></a></span>
+<span id="cb9-17"><a href="#cb9-17"></a><span class="co">    &gt;&gt;&gt; list(connect_alternately([1, 2, 3], 'abc', [10, 20, 30]))</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a><span class="co">    [1, 'a', 10, 2, 'b', 20, 3, 'c', 30]</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a><span class="co">    &gt;&gt;&gt; list(connect_alternately([1, 2], 'abc', [10, 20, 30]))</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a><span class="co">    [1, 'a', 10, 2, 'b', 20]</span></span>
+<span id="cb9-21"><a href="#cb9-21"></a><span class="co">    &gt;&gt;&gt; list(connect_alternately())</span></span>
+<span id="cb9-22"><a href="#cb9-22"></a><span class="co">    []</span></span>
+<span id="cb9-23"><a href="#cb9-23"></a><span class="co">    &gt;&gt;&gt; list(connect_alternately('abc'))</span></span>
+<span id="cb9-24"><a href="#cb9-24"></a><span class="co">    ['a', 'b', 'c']</span></span>
+<span id="cb9-25"><a href="#cb9-25"></a><span class="co">    """</span></span>
+<span id="cb9-26"><a href="#cb9-26"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Wskazówka
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Argumenty <code>it1</code>, <code>it2</code>, <code>its</code> mogą być dowolnymi obiektami iterowalnymi — listami, krotkami, łańcuchami, generatorami. Rzutuj je najpierw na iteratory funkcją <code>iter</code>. Wtedy do pobierania kolejnych elementów użyjesz funkcji <code>next</code>. Wywołanie <code>next(it)</code> wymaga jednak strażnika — zawijaj je w blok <code>try</code> na okoliczność wyczerpania iteratora.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="krata-punktów-płaszczyzny" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="krata-punktów-płaszczyzny"><span class="header-section-number">6</span> Krata punktów płaszczyzny</h2>
+<p>Napisz funkcję generatora <code>krata()</code> zwracającą nieskończony strumień punktów płaszczyzny o <strong>całkowitych nieujemnych</strong> współrzędnych. Każdy taki punkt ma się pojawić w strumieniu dokładnie raz.</p>
+<p>Inaczej mówiąc, <code>krata()</code> to konstruktywne wyliczenie zbioru <span class="math inline">\(\mathbb{N} \times \mathbb{N}\)</span> — ułożenie wszystkich par liczb naturalnych w jeden ciąg. Klasyczny problem: pokazał tym sposobem Cantor, że zbiór par liczb naturalnych jest przeliczalny.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Wybór porządku przechodzenia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Sam decydujesz, w jakiej kolejności <code>krata()</code> odwiedza punkty — byle każdy pojawił się dokładnie raz i byle pierwsze 144 punkty zmieściły się w rozsądnym obszarze (powiedzmy: w prostokącie nie większym niż <span class="math inline">\(20 \times 20\)</span>). Naturalny wybór to przechodzenie po kolejnych „przekątnych” <span class="math inline">\(x + y = 0\)</span>, <span class="math inline">\(x + y = 1\)</span>, <span class="math inline">\(x + y = 2\)</span>, … — każda przekątna ma skończenie wiele punktów, więc po skończonej liczbie kroków odwiedzamy wszystkie punkty z dowolnie dalekiej przekątnej.</p>
+<p><strong>Narysuj</strong> schemat przedstawiający kolejność pierwszych kilkunastu punktów Twojej kraty (analogicznie do rysunku w wykładzie XI dla spirali). Schemat dołącz do rozwiązania jako plik graficzny — może być wykonany w dowolnym narzędziu (kartka i zdjęcie, draw.io, matplotlib, cokolwiek), byle jednoznacznie pokazywał kierunek strzałek między kolejnymi punktami.</p>
+</div>
+</div>
+<p>Napisz następnie program, który:</p>
+<ol type="1">
+<li>Zapisuje pierwsze 144 punkty zwrócone przez <code>krata()</code> do pliku <code>krata.csv</code> z nagłówkiem <code>x,y</code> i 144 wierszami danych.</li>
+<li>Wczytuje zawartość pliku <code>krata.csv</code> i wyświetla ją jako wykres punktowo-liniowy (punkty połączone w kolejności odwiedzania).</li>
+</ol>
+<p>Do zapisu CSV wzoruj się na funkcji <code>krata_do_csv</code> z wykładu XI. Do wykresu wykorzystaj <code>pandas</code> i <code>matplotlib</code>, jak w lab VI.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Pierwsza ćwiartka, nie cała płaszczyzna
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>W wykładzie XI <code>krata()</code> chodziła po <strong>wszystkich</strong> punktach kratowych — także z ujemnymi współrzędnymi — spiralą rozkręcającą się z początku układu. Tutaj zbiór punktów jest mniejszy: tylko pierwsza ćwiartka (włącznie z dwoma osiami). To zmienia naturalny porządek przechodzenia — spirala z wykładu nie zadziała, bo natychmiast wyszłaby poza ćwiartkę.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="iterator-z-możliwością-przesuwania" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="iterator-z-możliwością-przesuwania"><span class="header-section-number">7</span> Iterator z możliwością przesuwania</h2>
+<p>Wykład XI pokazał klasę <code>Loader</code> — iterator po sekwencji z metodą <code>reset</code> pozwalającą zacząć od początku. Tym samym wzorcem napiszemy teraz <code>Seekable</code>: iterator po sekwencji z pełną swobodą przesuwania się po pozycjach, analogiczną do <code>file.seek</code> w pracy z plikami.</p>
+<p>Napisz moduł <code>seekable.py</code> zawierający klasę <code>Seekable</code>. Klasa pakuje sekwencję w iterator z dodatkowymi metodami:</p>
+<ul>
+<li><code>__init__(self, seq)</code> — zapamiętuje sekwencję (przyda się jej kopia w postaci listy), ustawia bieżącą pozycję na <code>0</code>.</li>
+<li><code>__next__(self)</code> — zwraca element pod bieżącą pozycją i zwiększa pozycję o <code>1</code>. Jeśli pozycja jest za końcem sekwencji, rzuca <code>StopIteration</code>.</li>
+<li><code>__iter__(self)</code> — zwraca <code>self</code>.</li>
+<li><code>__len__(self)</code> — zwraca długość sekwencji (niezależną od bieżącej pozycji).</li>
+<li><code>tell(self)</code> — zwraca bieżącą pozycję.</li>
+<li><code>seek(self, i)</code> — ustawia bieżącą pozycję na <code>i</code>. Dopuszczalne wartości to liczby z przedziału <code>0 &lt;= i &lt;= len(self)</code>; wartości spoza tego przedziału zgłaszają <code>IndexError</code>. Wartość <code>i == len(self)</code> jest dozwolona — oznacza „pozycję za końcem”, po której kolejne <code>next</code> rzuci <code>StopIteration</code>.</li>
+<li><code>peek(self)</code> — zwraca element pod bieżącą pozycją <strong>bez</strong> jej zmiany. Jeśli pozycja jest za końcem, rzuca <code>StopIteration</code>.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">class</span> Seekable:</span>
+<span id="cb10-2"><a href="#cb10-2"></a>    <span class="co">"""Iterator po sekwencji z możliwością swobodnego przesuwania się</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="co">    po pozycjach.</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="co">    &gt;&gt;&gt; s = Seekable([10, 20, 30, 40, 50])</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="co">    &gt;&gt;&gt; len(s)</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="co">    5</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="co">    &gt;&gt;&gt; next(s)</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="co">    10</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="co">    &gt;&gt;&gt; next(s)</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a><span class="co">    20</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="co">    &gt;&gt;&gt; s.tell()</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="co">    2</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a><span class="co">    &gt;&gt;&gt; s.peek()</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a><span class="co">    30</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a><span class="co">    &gt;&gt;&gt; s.peek()</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a><span class="co">    30</span></span>
+<span id="cb10-18"><a href="#cb10-18"></a><span class="co">    &gt;&gt;&gt; s.tell()</span></span>
+<span id="cb10-19"><a href="#cb10-19"></a><span class="co">    2</span></span>
+<span id="cb10-20"><a href="#cb10-20"></a><span class="co">    &gt;&gt;&gt; next(s)</span></span>
+<span id="cb10-21"><a href="#cb10-21"></a><span class="co">    30</span></span>
+<span id="cb10-22"><a href="#cb10-22"></a><span class="co">    &gt;&gt;&gt; s.seek(0)</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a><span class="co">    &gt;&gt;&gt; list(s)</span></span>
+<span id="cb10-24"><a href="#cb10-24"></a><span class="co">    [10, 20, 30, 40, 50]</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a><span class="co">    &gt;&gt;&gt; s.tell()</span></span>
+<span id="cb10-26"><a href="#cb10-26"></a><span class="co">    5</span></span>
+<span id="cb10-27"><a href="#cb10-27"></a><span class="co">    &gt;&gt;&gt; next(s)</span></span>
+<span id="cb10-28"><a href="#cb10-28"></a><span class="co">    Traceback (most recent call last):</span></span>
+<span id="cb10-29"><a href="#cb10-29"></a><span class="co">        ...</span></span>
+<span id="cb10-30"><a href="#cb10-30"></a><span class="co">    StopIteration</span></span>
+<span id="cb10-31"><a href="#cb10-31"></a><span class="co">    &gt;&gt;&gt; s.seek(3)</span></span>
+<span id="cb10-32"><a href="#cb10-32"></a><span class="co">    &gt;&gt;&gt; next(s)</span></span>
+<span id="cb10-33"><a href="#cb10-33"></a><span class="co">    40</span></span>
+<span id="cb10-34"><a href="#cb10-34"></a><span class="co">    &gt;&gt;&gt; s.seek(5)</span></span>
+<span id="cb10-35"><a href="#cb10-35"></a><span class="co">    &gt;&gt;&gt; s.peek()</span></span>
+<span id="cb10-36"><a href="#cb10-36"></a><span class="co">    Traceback (most recent call last):</span></span>
+<span id="cb10-37"><a href="#cb10-37"></a><span class="co">        ...</span></span>
+<span id="cb10-38"><a href="#cb10-38"></a><span class="co">    StopIteration</span></span>
+<span id="cb10-39"><a href="#cb10-39"></a><span class="co">    &gt;&gt;&gt; s.seek(-1)</span></span>
+<span id="cb10-40"><a href="#cb10-40"></a><span class="co">    Traceback (most recent call last):</span></span>
+<span id="cb10-41"><a href="#cb10-41"></a><span class="co">        ...</span></span>
+<span id="cb10-42"><a href="#cb10-42"></a><span class="co">    IndexError: pozycja poza zakresem</span></span>
+<span id="cb10-43"><a href="#cb10-43"></a><span class="co">    &gt;&gt;&gt; s.seek(6)</span></span>
+<span id="cb10-44"><a href="#cb10-44"></a><span class="co">    Traceback (most recent call last):</span></span>
+<span id="cb10-45"><a href="#cb10-45"></a><span class="co">        ...</span></span>
+<span id="cb10-46"><a href="#cb10-46"></a><span class="co">    IndexError: pozycja poza zakresem</span></span>
+<span id="cb10-47"><a href="#cb10-47"></a><span class="co">    """</span></span>
+<span id="cb10-48"><a href="#cb10-48"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Dlaczego klasa, nie funkcja generatora
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>Seekable</code> udostępnia operacje <strong>na obiekcie iteratora</strong> — <code>seek</code>, <code>tell</code>, <code>peek</code>, <code>__len__</code>. Generator zwrócony przez funkcję z <code>yield</code> udostępnia z zewnątrz tylko jedną operację: <code>next</code>. Cały stan wewnętrzny generatora (lokalne zmienne, miejsce wstrzymania) jest zamknięty i niedostępny — nie umiałbyś z zewnątrz powiedzieć generatorowi „cofnij się o trzy pozycje”, bo on nie ma w API niczego, czym mógłbyś to wyrazić.</p>
+<p>Klasa daje pełną kontrolę nad stanem: bieżąca pozycja jest jawnym atrybutem, każda metoda może ją czytać i zmieniać. To dokładnie ten sam morał, który wyciągnęliśmy z <code>Loader</code> na wykładzie — gdy iterator ma trwałe zachowanie poza samą iteracją (długość, możliwość restartu, swobodę przesuwania), klasa się opłaca.</p>
+</div>
+</div>
+<p>Testy: <a href="https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XII/test_seekable.py">test_seekable.py</a>.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/rodakt\.github\.io\/PPwAD2\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<hr><center><small>Ostatnia aktualizacja: last-modified</small></center>
+
+
+
+
+</body></html>

@@ -1,0 +1,448 @@
+---
+title: "Wyszukiwanie wyczerpujące. Moduł itertools, część I"
+subtitle: "Podstawy programowania (AD) 2"
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+## Wprowadzenie
+
+Algorytmy typu [*brute force*](https://en.wikipedia.org/wiki/Brute-force_search) — *wyszukiwanie wyczerpujące*, *wyszukiwanie siłowe* — szukają rozwiązania problemu, przeliczając wszystkie możliwe przypadki. Jako pierwszy przykład rozważmy funkcję wyznaczającą dzielniki liczby naturalnej:
+
+```python
+def dzielniki(n):
+    """Zwraca posortowaną listę dzielników n."""
+    lst = []
+    d = 1
+    while d * d <= n:
+        if n % d == 0:
+            if d * d == n:
+                lst.append(d)
+            else:
+                lst.extend([d, n // d])
+        d += 1
+    return sorted(lst)
+```
+
+Algorytm sprawdza podzielność `n` przez wszystkie `d` takie, że $d^2 \leq n$. Wykorzystuje przy tym obserwację, że dzielniki idą w parach: jeśli `d` dzieli `n`, to dzieli też `n // d`. Tak ograniczona pętla i tak ma siłowy charakter — przed nami liczba kroków rzędu $\sqrt{n}$:
+
+```python
+>>> import time
+>>> start = time.perf_counter()
+>>> dzielniki(10**13 + 1)
+[1, 11, 859, 9449, 1058313049, 11641443539, 909090909091, 10000000000001]
+>>> print(f"czas: {time.perf_counter() - start:.2f} s")
+czas: 1.18 s
+```
+
+Ponad sekunda na wyznaczenie dzielników liczby rzędu $10^{13}$ — efekt charakterystyczny dla brute force: czas i pamięć rosną z rozmiarem danych wejściowych dużo szybciej niż w algorytmach „przemyślanych".
+
+Mimo tego rozwiązania siłowe mają mocne strony:
+
+* są często najprostsze do napisania;
+* w sposób kompletny rozwiązują zadanie — jeśli odpowiedź istnieje, znajdą ją;
+* są niezawodne i mniej podatne na błędy implementacyjne niż bardziej wymyślne procedury.
+
+Główna wada — wydajność. Czas i pamięć rosną gwałtownie z rozmiarem danych wejściowych. Mimo to, dzięki ogromnej prędkości i pamięci współczesnych komputerów, brute force jest skuteczny tak długo, jak zakres danych pozostaje na tyle mały, by się zmieścić w rozsądnym czasie i pamięci.
+
+W Pythonie implementacja rozwiązań siłowych jest szczególnie prosta. Wynika to z dwóch powodów. Po pierwsze, funkcje są obiektami pierwszej klasy i dzięki temu w bibliotece standardowej znajdziemy wiele funkcji wyższego rzędu (zob. wykład VI oraz moduły [`functools`](https://docs.python.org/3/library/functools.html) i [`operator`](https://docs.python.org/3/library/operator.html)). Po drugie, biblioteka standardowa zawiera moduł [`itertools`](https://docs.python.org/3/library/itertools.html), który dostarcza iteratorów po rozmaitych obiektach kombinatorycznych.
+
+W tym wykładzie poznamy cztery najważniejsze funkcje z modułu `itertools` — generujące iloczyn kartezjański, permutacje, kombinacje oraz kombinacje z powtórzeniami. Pokażemy je w akcji na dwóch zadaniach typu brute force. W wykładzie XIII zajmiemy się szerszą rodziną funkcji `itertools` służących do komponowania strumieni danych.
+
+***
+
+## Cztery siostry kombinatoryczne
+
+Wyobraź sobie, że masz zbiór `n` elementów i chcesz wybrać z niego `r` elementów. To pojedyncze sformułowanie kryje w sobie cztery różne pojęcia, w zależności od dwóch decyzji:
+
+* czy w wyborze mogą się powtarzać te same elementy (**z powtórzeniami** / **bez powtórzeń**);
+* czy kolejność elementów w wyborze ma znaczenie (**z kolejnością** / **bez kolejności**).
+
+Każda kombinacja tych dwóch decyzji daje inną liczbę możliwych wyborów i inną funkcję w module `itertools`:
+
+|                       | z kolejnością       | bez kolejności                   |
+| --------------------- | ------------------- | -------------------------------- |
+| **z powtórzeniami**   | `product`           | `combinations_with_replacement`  |
+| **bez powtórzeń**     | `permutations`      | `combinations`                   |
+
+Spójrzmy, co każda z nich zwraca dla tego samego wejścia — zbioru `'ABC'` i `r = 2`:
+
+```python
+>>> from itertools import product, permutations, combinations, combinations_with_replacement
+>>> list(product('ABC', repeat=2))
+[('A', 'A'), ('A', 'B'), ('A', 'C'),
+ ('B', 'A'), ('B', 'B'), ('B', 'C'),
+ ('C', 'A'), ('C', 'B'), ('C', 'C')]
+>>> list(permutations('ABC', 2))
+[('A', 'B'), ('A', 'C'),
+ ('B', 'A'), ('B', 'C'),
+ ('C', 'A'), ('C', 'B')]
+>>> list(combinations('ABC', 2))
+[('A', 'B'), ('A', 'C'), ('B', 'C')]
+>>> list(combinations_with_replacement('ABC', 2))
+[('A', 'A'), ('A', 'B'), ('A', 'C'),
+ ('B', 'B'), ('B', 'C'),
+ ('C', 'C')]
+```
+
+Różnice widać wprost na wynikach:
+
+* `product` zwraca **wszystkie** uporządkowane pary — z powtórzeniami, w pełni swobodne ($3^2 = 9$);
+* [`permutations`](https://pl.wikipedia.org/wiki/Permutacja) ma kolejność, ale wyklucza powtórzenia — `('A', 'A')` nie pojawia się ($3 \cdot 2 = 6$);
+* [`combinations`](https://pl.wikipedia.org/wiki/Kombinacja_bez_powt%C3%B3rze%C5%84) ignoruje kolejność i wyklucza powtórzenia — `('B', 'A')` i `('A', 'B')` to ta sama para, reprezentowana raz ($\binom{3}{2} = 3$);
+* `combinations_with_replacement` ignoruje kolejność, ale dopuszcza powtórzenia — pojawia się `('A', 'A')`, lecz `('B', 'A')` już nie ($\binom{3 + 2 - 1}{2} = 6$).
+
+Wzory na liczność każdego z czterech zbiorów:
+
+| funkcja                                  | liczba elementów dla `n` elementów wybieranych po `r` |
+| ---------------------------------------- | ----------------------------------------------------- |
+| `product(seq, repeat=r)`                 | $n^r$                                                 |
+| `permutations(seq, r)`                   | $\dfrac{n!}{(n-r)!} = n(n-1)\cdots(n-r+1)$            |
+| `combinations(seq, r)`                   | $\dbinom{n}{r}$                                       |
+| `combinations_with_replacement(seq, r)`  | $\dbinom{n+r-1}{r}$                                   |
+
+::: {.callout-note}
+## Iteratory, nie listy
+Wszystkie cztery funkcje są **leniwe** — zwracają iteratory, a nie listy. Aby zobaczyć ich zawartość, trzeba je skonsumować, na przykład przez `list()` albo pętlą `for`. W kodzie brute force ta leniwość jest kluczowa: dla dużych `n` i `r` materializacja wyniku do listy nie zmieściłaby się w pamięci, ale iteracja po nim z `for` przebiegnie bez problemu.
+:::
+
+Funkcja `product` przyjmuje też inną składnię — może liczyć [iloczyn kartezjański](https://pl.wikipedia.org/wiki/Iloczyn_kartezja%C5%84ski) **różnych** zbiorów:
+
+```python
+>>> list(product('AB', 'XY'))
+[('A', 'X'), ('A', 'Y'), ('B', 'X'), ('B', 'Y')]
+>>> list(product('AB', [1, 2, 3]))
+[('A', 1), ('A', 2), ('A', 3), ('B', 1), ('B', 2), ('B', 3)]
+```
+
+Zapis `product(seq, repeat=k)` jest skrótem dla `product(seq, seq, ..., seq)` z `k` powtórzeniami.
+
+W brute force najczęściej korzystamy z `product` i `combinations` — pokażemy te dwie funkcje w akcji, każdą w innym zadaniu.
+
+***
+
+## Przykład: zadanie z Kangura
+
+Zaczniemy od zadania z konkursu Kangur 2017 dla drugiej klasy szkoły podstawowej :-)
+
+> *Za każdą literę **A B C D E** wstawiamy liczbę o cztery większą lub dwa razy większą niż poprzednia. Jeżeli A = 1, to która z liczb nigdy nie będzie równa E?*
+>
+> *A) 16 &nbsp; B) 17 &nbsp; C) 22 &nbsp; D) 30 &nbsp; E) 36*
+
+Wzór jest taki:
+
+```
+A, op1(A) → B, op2(B) → C, op3(C) → D, op4(D) → E
+```
+
+Każdy z czterech operatorów `op1, ..., op4` może być albo „powiększ o cztery", albo „pomnóż przez dwa". Razem $2^4 = 16$ możliwych ciągów operatorów. Rozwiązanie brute force: dla każdego ciągu policz E i zbierz wszystkie uzyskane wartości.
+
+Wersja bezpośrednia, z zagnieżdżonymi pętlami `for`:
+
+```python
+ops = [lambda x: x + 4, lambda x: 2 * x]
+A = 1
+wyniki = set()  # zbiór, bo nie chcemy powtórzeń
+
+for op1 in ops:
+    for op2 in ops:
+        for op3 in ops:
+            for op4 in ops:
+                E = op4(op3(op2(op1(A))))
+                wyniki.add(E)
+```
+
+```python
+>>> sorted(wyniki)
+[12, 14, 16, 17, 18, 20, 22, 24, 26, 28, 36, 40]
+```
+
+Z odpowiedzi A–E brakuje liczby `30` — to ona „nigdy nie będzie równa E".
+
+Program robi dokładnie to, co miał zrobić, ale nie jest skalowalny. Gdyby zadanie miało nie pięć liter, tylko dziesięć, musielibyśmy ręcznie dopisać sześć dodatkowych pętli. To znak, że pora po `product`.
+
+Iteracja po wszystkich ciągach operatorów to dokładnie iloczyn kartezjański `ops × ops × ops × ops`:
+
+```python
+>>> list(product(['+4', '*2'], repeat=4))
+[('+4', '+4', '+4', '+4'),
+ ('+4', '+4', '+4', '*2'),
+ ('+4', '+4', '*2', '+4'),
+ ...
+ ('*2', '*2', '*2', '*2')]
+```
+
+Dzięki temu cztery zagnieżdżone pętle:
+
+```python
+for op1 in ops:
+    for op2 in ops:
+        for op3 in ops:
+            for op4 in ops:
+                <instrukcje>
+```
+
+zwijają się do jednej:
+
+```python
+for op1, op2, op3, op4 in product(ops, repeat=4):
+    <instrukcje>
+```
+
+albo, gdy nie potrzebujemy nazw poszczególnych operatorów:
+
+```python
+for op_seq in product(ops, repeat=4):
+    <instrukcje>
+```
+
+Teraz `liczba_liter` staje się zwykłym parametrem. Funkcja `wartości_końcowe(A, liczba_liter, ops)` zwracająca posortowaną listę wszystkich możliwych wartości końcowych wygląda tak:
+
+```python
+from itertools import product
+
+
+def wartości_końcowe(A, liczba_liter, ops):
+    """Zwraca posortowaną listę wartości końcowych dla wszystkich
+    ciągów operatorów z `ops` zastosowanych po kolei do `A`."""
+    wyniki = set()
+    for op_seq in product(ops, repeat=liczba_liter - 1):
+        E = A
+        for op in op_seq:
+            E = op(E)
+        wyniki.add(E)
+    return sorted(wyniki)
+```
+
+Zewnętrzna pętla wybiera ciąg operatorów. Wewnętrzna stosuje je kolejno do `A`, otrzymując końcową wartość `E`. Liczba operatorów jest o jeden mniejsza niż liczba liter — pięć liter, cztery operatory między nimi.
+
+Sprawdzamy na przykładach:
+
+```python
+>>> ops = [lambda x: x + 4, lambda x: 2 * x]
+>>> wartości_końcowe(A=1, liczba_liter=5, ops=ops)
+[12, 14, 16, 17, 18, 20, 22, 24, 26, 28, 36, 40]
+>>> wartości_końcowe(A=10, liczba_liter=3, ops=ops)
+[18, 24, 28, 40]
+```
+
+Wracając do zadania z Kangura — `30` nie pojawia się na liście dla pięciu liter. Ale dla innych parametrów wszystko jest możliwe.
+
+**Zadanie do samodzielnego rozwiązania.**
+
+> *Za każdą literę A₁ A₂ … A₁₀ wstawiamy liczbę o jeden większą, o pięć większą lub dwa razy większą niż poprzednia. Jeżeli A₁ = 1, to która z liczb nigdy nie będzie równa A₁₀?*
+>
+> *A) 768 &nbsp; B) 769 &nbsp; C) 770 &nbsp; D) 771 &nbsp; E) 772*
+
+Wskazówka: trzy operatory, dziewięć kroków — przeszukujemy $3^9 = 19{,}683$ ciągów. Brute force nadal działa od ręki. Gdyby liter było dwadzieścia, mielibyśmy już $3^{19} \approx 1{,}16 \cdot 10^9$ przypadków — i wtedy trzeba pomyśleć inaczej.
+
+***
+
+## Ścieżka o ekstremalnej sumie
+
+> *Dana jest prostokątna tablica:*
+>
+> ```
+> 5  4  17 13 16 16 16 1  11 17 1  2  5  11 3
+> 5  15 16 5  14 4  11 2  18 7  13 13 15 5  7
+> 17 13 5  8  11 15 7  1  5  15 1  10 19 15 16
+> 8  6  14 12 12 19 2  7  17 2  16 20 12 10 4
+> 17 10 9  5  9  13 2  17 15 18 12 11 7  19 15
+> 11 5  3  4  18 12 8  19 13 5  15 11 2  19 2
+> 14 8  12 10 12 2  13 9  8  15 9  16 7  19 15
+> 8  1  15 2  1  13 17 8  14 16 19 16 7  16 19
+> 3  20 15 13 20 3  5  19 15 6  5  19 2  5  13
+> 16 8  14 18 15 13 3  8  19 1  10 18 10 20 18
+> ```
+>
+> *Ustawiamy pionek w lewym górnym rogu (na liczbie 5). Pionek porusza się po polach z liczbami, wykonując ruchy „o jedno pole w prawo" lub „o jedno pole w dół". Pionek przemieszcza się w ten sposób od lewego górnego do prawego dolnego rogu, sumując przy tym liczby z pól, przez które przeszedł. Wyznacz maksymalną i minimalną sumę, jaką da się w ten sposób uzyskać.*
+
+Rozwiązanie siłowe polega na przejściu wszystkich możliwych ścieżek i wybraniu wśród ich sum największej i najmniejszej.
+
+Pomyśl o ścieżkach następująco. Jeśli tablica ma `m` wierszy i `n` kolumn, to pionek musi wykonać `m - 1` kroków w dół i `n - 1` kroków w prawo. Łącznie `m + n - 2` kroków. Każda ścieżka odpowiada wyborowi, które z `m + n - 2` kroków są w dół — pozostałe automatycznie są w prawo. To wybór `m - 1` elementów ze zbioru `m + n - 2` elementów, czyli **kombinacja** bez powtórzeń.
+
+Liczba wszystkich ścieżek to zatem
+
+$$
+\binom{m + n - 2}{m - 1}.
+$$
+
+Dla małej tablicy 3×4
+
+```
+5  4  17 13
+5  15 16 5
+17 13 5  8
+```
+
+mamy $\binom{5}{2} = 10$ ścieżek (kroki numerujemy od zera, jest ich `3 + 4 - 2 = 5`). Dwuelementowa kombinacja `(1, 4)` koduje ścieżkę, w której kroki numer 1 i 4 są w dół, a pozostałe w prawo:
+
+```
+krok 0 → w prawo: (0,0) → (0,1), wartość pola: 4
+krok 1 → w dół:   (0,1) → (1,1), wartość pola: 15
+krok 2 → w prawo: (1,1) → (1,2), wartość pola: 16
+krok 3 → w prawo: (1,2) → (1,3), wartość pola: 5
+krok 4 → w dół:   (1,3) → (2,3), wartość pola: 8
+```
+
+Suma wzdłuż tej ścieżki to $5 + 4 + 15 + 16 + 5 + 8 = 53$ (pierwsza piątka pochodzi z pola startowego).
+
+`r`-elementowe kombinacje bez powtórzeń z obiektu iterowalnego zwraca funkcja `combinations`:
+
+```python
+>>> from itertools import combinations
+>>> list(combinations(range(5), 2))
+[(0, 1), (0, 2), (0, 3), (0, 4),
+ (1, 2), (1, 3), (1, 4),
+ (2, 3), (2, 4),
+ (3, 4)]
+```
+
+Pozostaje dla każdej kombinacji odtworzyć kolejne pola ścieżki i zsumować ich wartości. Robimy to jednym przejściem — sama kombinacja w pełni koduje ścieżkę, żadne pośrednie reprezentacje typu napis `'DPPDP'` nie są nam potrzebne:
+
+```python
+from itertools import combinations
+
+
+def sumy_z_tablicy(tab):
+    """Generator sum wzdłuż wszystkich ścieżek w tablicy `tab`."""
+    m, n = len(tab), len(tab[0])
+    for komb in combinations(range(m + n - 2), m - 1):
+        kroki_w_dół = set(komb)
+        i = j = 0
+        suma = tab[0][0]
+        for k in range(m + n - 2):
+            if k in kroki_w_dół:
+                i += 1
+            else:
+                j += 1
+            suma += tab[i][j]
+        yield suma
+```
+
+Funkcja jest generatorem — nie buduje listy wszystkich sum, tylko zwraca je leniwie. To ważne, bo dla dużych tablic liczba sum może być olbrzymia. Konwersja `set(komb)` w środku pętli pozwala sprawdzać przynależność w czasie stałym; bez tego sprawdzanie `k in komb` po krotce byłoby liniowe.
+
+Dla małej tablicy:
+
+```python
+>>> tab = [[5, 4, 17, 13],
+...        [5, 15, 16, 5],
+...        [17, 13, 5, 8]]
+>>> list(sumy_z_tablicy(tab))
+[53, 51, 54, 54, 50, 53, 53, 55, 55, 52]
+>>> max(sumy_z_tablicy(tab)), min(sumy_z_tablicy(tab))
+(55, 50)
+```
+
+Dokładnie 10 sum — zgodnie z $\binom{5}{2} = 10$.
+
+Wczytujemy teraz dużą tablicę z zadania. Najwygodniej skopiować ją do łańcucha (a w razie potrzeby wczytać z pliku):
+
+```python
+tekst = """5  4  17 13 16 16 16 1  11 17 1  2  5  11 3
+5  15 16 5  14 4  11 2  18 7  13 13 15 5  7
+17 13 5  8  11 15 7  1  5  15 1  10 19 15 16
+8  6  14 12 12 19 2  7  17 2  16 20 12 10 4
+17 10 9  5  9  13 2  17 15 18 12 11 7  19 15
+11 5  3  4  18 12 8  19 13 5  15 11 2  19 2
+14 8  12 10 12 2  13 9  8  15 9  16 7  19 15
+8  1  15 2  1  13 17 8  14 16 19 16 7  16 19
+3  20 15 13 20 3  5  19 15 6  5  19 2  5  13
+16 8  14 18 15 13 3  8  19 1  10 18 10 20 18"""
+
+tab = [[int(k) for k in wiersz.split()] for wiersz in tekst.splitlines()]
+```
+
+Tablica ma `m = 10` wierszy i `n = 15` kolumn, więc liczba ścieżek to:
+
+```python
+>>> from math import comb
+>>> m, n = 10, 15
+>>> comb(m + n - 2, m - 1)
+817190
+```
+
+Przy tym rozmiarze obliczenia są jeszcze wykonalne, choć czas pracy zaczyna być wyraźnie odczuwalny. Mierzymy go modułem [`time`](https://docs.python.org/3/library/time.html):
+
+```python
+import time
+
+start = time.perf_counter()
+maks = max(sumy_z_tablicy(tab))
+mini = min(sumy_z_tablicy(tab))
+elapsed = time.perf_counter() - start
+
+print(f"maksimum: {maks}")
+print(f"minimum:  {mini}")
+print(f"czas:     {elapsed:.2f} s")
+```
+
+Przykładowe wyjście (rząd wielkości zależny od maszyny):
+
+```
+maksimum: 338
+minimum:  197
+czas:     9.45 s
+```
+
+::: {.callout-note}
+## `time.perf_counter`
+Funkcja `time.perf_counter()` zwraca aktualny moment jako liczbę zmiennoprzecinkową sekund odmierzaną od arbitralnego punktu. Sama wartość nie ma żadnego sensu — sensowna jest dopiero **różnica** dwóch jej wywołań. To najczęściej zalecany sposób pomiaru czasu krótkich fragmentów kodu w Pythonie; ma najwyższą rozdzielczość spośród zegarów dostępnych w module `time`. W notatnikach Jupytera ten sam efekt daje magia `%%time`, ale poza Jupyterem (w skryptach, modułach, testach) musimy mierzyć ręcznie.
+:::
+
+### Tablice o większych rozmiarach
+
+Czy ten sam pomysł zadziała dla tablicy 30×30? Liczba ścieżek wynosi:
+
+```python
+>>> b = comb(30 + 30 - 2, 30 - 1)
+>>> b
+30067266499541040
+>>> f"{b:.2e}"
+'3.01e+16'
+```
+
+Trzydzieści biliardów ścieżek. Nawet gdyby każda zajęła nanosekundę, brute force pracowałby przez rok. To granica metody siłowej — dalej trzeba pomyśleć.
+
+Algorytm, który radzi sobie z takimi rozmiarami, korzysta z **programowania dynamicznego**: zamiast za każdym razem sumować wzdłuż całej ścieżki od początku, zapamiętujemy najlepszą sumę, jaką da się uzyskać dla każdego pola — każde pole liczymy raz, a nie raz na każdą ścieżkę przechodzącą przez nie. Dla ogólniejszych grafów (z dowolnym układem krawędzi, niekoniecznie tylko „w prawo i w dół") służy [algorytm Dijkstry](https://pl.wikipedia.org/wiki/Algorytm_Dijkstry).
+
+Jeśli chcesz spróbować sił, zajrzyj na [Project Euler, problem 81](https://projecteuler.net/problem=81) — to dokładnie ten sam problem na tablicy 80×80.
+
+***
+
+## Podsumowanie
+
+Pojęcia z tego wykładu:
+
+* **Brute force** (wyszukiwanie wyczerpujące, siłowe) — strategia rozwiązywania problemu przez przeliczenie wszystkich możliwych przypadków. Zalety: prostota, kompletność, niezawodność. Wada: szybko rosnący czas i pamięć.
+* **Cztery siostry kombinatoryczne** z modułu `itertools`, ułożone w siatkę 2×2 wzdłuż osi „kolejność" i „powtórzenia":
+  - `product(seq, repeat=r)` — iloczyn kartezjański, $n^r$ uporządkowanych krotek z powtórzeniami;
+  - `permutations(seq, r)` — uporządkowane krotki bez powtórzeń, $n!/(n-r)!$ sztuk;
+  - `combinations(seq, r)` — wybory bez kolejności i bez powtórzeń, $\binom{n}{r}$ sztuk;
+  - `combinations_with_replacement(seq, r)` — wybory bez kolejności, z powtórzeniami, $\binom{n+r-1}{r}$ sztuk.
+* Wszystkie cztery funkcje są **leniwe** — zwracają iteratory. Dzięki temu można po nich iterować nawet wtedy, gdy wynik nie zmieściłby się w pamięci jako lista.
+* `product(iter, repeat=k)` to skrót dla `product(iter, iter, ..., iter)` z `k` kopiami; `product` przyjmuje też zupełnie różne iterowalne argumenty.
+* **Iloczyn kartezjański** zwija dowolną liczbę zagnieżdżonych pętli `for` po tym samym zakresie do jednej pętli po `product(zakres, repeat=k)` — kod robi się czytelny i skalowalny.
+* **Kombinacja** to wybór podzbioru — w problemie ścieżek w tablicy każda kombinacja kroków „w dół" jednoznacznie wyznacza ścieżkę.
+* Mierzenie czasu poza Jupyterem: `time.perf_counter()` zwraca aktualny moment w sekundach; różnica dwóch wywołań to czas, który upłynął.
+* Brute force ma swoje granice — gdy liczba przypadków przekracza $10^9$–$10^{10}$, trzeba sięgnąć po inne metody (programowanie dynamiczne, algorytmy zachłanne, algorytmy z teorii grafów).
+
+Główna myśl wykładu: nie każde zadanie wymaga sprytnego algorytmu. Jeśli przestrzeń możliwych rozwiązań jest skończona i niezbyt wielka, najlepszym podejściem często jest po prostu je wszystkie przejrzeć — a `itertools` daje słownik podstawowych obiektów kombinatorycznych, którym możemy tę przestrzeń opisać.
+
+***
+
+## Co dalej
+
+Wykład XIII będzie drugą częścią opowieści o `itertools`. Tym razem zajmiemy się funkcjami, które **komponują strumienie danych** — sklejają je, ucinają, grupują, akumulują. Wśród bohaterów:
+
+* `chain`, `chain.from_iterable` — sklejanie wielu iteratorów w jeden ciąg;
+* `count`, `cycle`, `repeat` — źródła strumieni **nieskończonych**;
+* `islice`, `takewhile`, `dropwhile` — narzędzia obcinające strumienie nieskończone do skończonego prefiksu;
+* `accumulate` — wszystkie sumy częściowe (a w wersji ogólnej: wszystkie kroki dowolnej operacji binarnej);
+* `groupby` — grupowanie kolejnych równych elementów;
+* `pairwise`, `starmap` i inne.
+
+Bohaterami będą też funkcje z modułów [`functools`](https://docs.python.org/3/library/functools.html) (`reduce`, `partial`) i [`operator`](https://docs.python.org/3/library/operator.html) (`itemgetter`, `attrgetter`), które naturalnie współpracują z `itertools` w wątku **programowania funkcyjnego**.
+
+Na koniec warto zajrzeć do [`itertools` recipes](https://docs.python.org/3/library/itertools.html#itertools-recipes) — sekcji w dokumentacji modułu, w której pokazane są gotowe przepisy na typowe zadania (jak zgrupować elementy po `n`, znaleźć unikalne elementy zachowując kolejność, podzielić iterator na dwa), wszystkie zbudowane z funkcji wprowadzonych w XII i XIII.

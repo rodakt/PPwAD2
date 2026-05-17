@@ -27,6 +27,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 - [Wykład IX: Klasy i obiekty](wyklad_IX.qmd)
 - [Wykład X: Klasy i obiekty II: metody specjalne](wyklad_X.qmd)
 - [Wykład XI: Iteratory i generatory](wyklad_XI.qmd)
+- [Wykład XII: Wyszukiwanie wyczerpujące. Moduł itertools, część I](wyklad_XII.qmd)
 
 ## Laboratoria
 

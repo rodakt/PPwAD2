@@ -52,7 +52,7 @@ W tym wykładzie poznamy cztery najważniejsze funkcje z modułu `itertools` —
 
 ***
 
-## Cztery siostry kombinatoryczne
+## Cztery motywy kombinatoryczne
 
 Wyobraź sobie, że masz zbiór `n` elementów i chcesz wybrać z niego `r` elementów. To pojedyncze sformułowanie kryje w sobie cztery różne pojęcia, w zależności od dwóch decyzji:
 
@@ -118,7 +118,7 @@ Funkcja `product` przyjmuje też inną składnię — może liczyć [iloczyn kar
 
 Zapis `product(seq, repeat=k)` jest skrótem dla `product(seq, seq, ..., seq)` z `k` powtórzeniami.
 
-W brute force najczęściej korzystamy z `product` i `combinations` — pokażemy te dwie funkcje w akcji, każdą w innym zadaniu.
+Pokażemy teraz `product` i `combinations` w akcji, każdą w innym zadaniu.
 
 ***
 
@@ -160,7 +160,7 @@ for op1 in ops:
 
 Z odpowiedzi A–E brakuje liczby `30` — to ona „nigdy nie będzie równa E".
 
-Program robi dokładnie to, co miał zrobić, ale nie jest skalowalny. Gdyby zadanie miało nie pięć liter, tylko dziesięć, musielibyśmy ręcznie dopisać sześć dodatkowych pętli. To znak, że pora po `product`.
+Program robi dokładnie to, co miał zrobić, ale nie jest skalowalny. Gdyby zadanie miało nie pięć liter, tylko dziesięć, musielibyśmy ręcznie dopisać sześć dodatkowych pętli. Zamiast tego możemy użyć `product`.
 
 Iteracja po wszystkich ciągach operatorów to dokładnie iloczyn kartezjański `ops × ops × ops × ops`:
 
@@ -227,7 +227,7 @@ Sprawdzamy na przykładach:
 [18, 24, 28, 40]
 ```
 
-Wracając do zadania z Kangura — `30` nie pojawia się na liście dla pięciu liter. Ale dla innych parametrów wszystko jest możliwe.
+Wracając do zadania z Kangura — `30` nie pojawia się na liście dla pięciu liter.
 
 **Zadanie do samodzielnego rozwiązania.**
 
@@ -299,7 +299,7 @@ Suma wzdłuż tej ścieżki to $5 + 4 + 15 + 16 + 5 + 8 = 53$ (pierwsza piątka 
  (3, 4)]
 ```
 
-Pozostaje dla każdej kombinacji odtworzyć kolejne pola ścieżki i zsumować ich wartości. Robimy to jednym przejściem — sama kombinacja w pełni koduje ścieżkę, żadne pośrednie reprezentacje typu napis `'DPPDP'` nie są nam potrzebne:
+Pozostaje dla każdej kombinacji odtworzyć kolejne pola ścieżki i zsumować ich wartości. Robimy to jednym przejściem — sama kombinacja w pełni koduje ścieżkę:
 
 ```python
 from itertools import combinations
@@ -383,13 +383,8 @@ Przykładowe wyjście (rząd wielkości zależny od maszyny):
 ```
 maksimum: 338
 minimum:  197
-czas:     9.45 s
+czas:     2.53 s
 ```
-
-::: {.callout-note}
-## `time.perf_counter`
-Funkcja `time.perf_counter()` zwraca aktualny moment jako liczbę zmiennoprzecinkową sekund odmierzaną od arbitralnego punktu. Sama wartość nie ma żadnego sensu — sensowna jest dopiero **różnica** dwóch jej wywołań. To najczęściej zalecany sposób pomiaru czasu krótkich fragmentów kodu w Pythonie; ma najwyższą rozdzielczość spośród zegarów dostępnych w module `time`. W notatnikach Jupytera ten sam efekt daje magia `%%time`, ale poza Jupyterem (w skryptach, modułach, testach) musimy mierzyć ręcznie.
-:::
 
 ### Tablice o większych rozmiarach
 
@@ -416,7 +411,7 @@ Jeśli chcesz spróbować sił, zajrzyj na [Project Euler, problem 81](https://p
 Pojęcia z tego wykładu:
 
 * **Brute force** (wyszukiwanie wyczerpujące, siłowe) — strategia rozwiązywania problemu przez przeliczenie wszystkich możliwych przypadków. Zalety: prostota, kompletność, niezawodność. Wada: szybko rosnący czas i pamięć.
-* **Cztery siostry kombinatoryczne** z modułu `itertools`, ułożone w siatkę 2×2 wzdłuż osi „kolejność" i „powtórzenia":
+* **Cztery motywy kombinatoryczne** z modułu `itertools`, ułożone w siatkę 2×2 wzdłuż osi „kolejność" i „powtórzenia":
   - `product(seq, repeat=r)` — iloczyn kartezjański, $n^r$ uporządkowanych krotek z powtórzeniami;
   - `permutations(seq, r)` — uporządkowane krotki bez powtórzeń, $n!/(n-r)!$ sztuk;
   - `combinations(seq, r)` — wybory bez kolejności i bez powtórzeń, $\binom{n}{r}$ sztuk;

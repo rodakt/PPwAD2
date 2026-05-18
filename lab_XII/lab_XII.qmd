@@ -330,7 +330,7 @@ def connect_alternately(*its):
 Argumenty `it1`, `it2`, `its` mogą być dowolnymi obiektami iterowalnymi — listami, krotkami, łańcuchami, generatorami. Rzutuj je najpierw na iteratory funkcją `iter`. Wtedy do pobierania kolejnych elementów użyjesz funkcji `next`. Wywołanie `next(it)` wymaga jednak strażnika — zawijaj je w blok `try` na okoliczność wyczerpania iteratora.
 :::
 
-Testy: [test_helpers.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XII/test_connect_alternately.py).
+Testy: [test_connect_alternately.py](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XII/test_connect_alternately.py).
 
 ***
 

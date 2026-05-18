@@ -356,7 +356,7 @@ window.Quarto = {
    
   <ul>
   <li><a href="#wprowadzenie" id="toc-wprowadzenie" class="nav-link active" data-scroll-target="#wprowadzenie"><span class="header-section-number">1</span> Wprowadzenie</a></li>
-  <li><a href="#cztery-siostry-kombinatoryczne" id="toc-cztery-siostry-kombinatoryczne" class="nav-link" data-scroll-target="#cztery-siostry-kombinatoryczne"><span class="header-section-number">2</span> Cztery siostry kombinatoryczne</a></li>
+  <li><a href="#cztery-motywy-kombinatoryczne" id="toc-cztery-motywy-kombinatoryczne" class="nav-link" data-scroll-target="#cztery-motywy-kombinatoryczne"><span class="header-section-number">2</span> Cztery motywy kombinatoryczne</a></li>
   <li><a href="#przykład-zadanie-z-kangura" id="toc-przykład-zadanie-z-kangura" class="nav-link" data-scroll-target="#przykład-zadanie-z-kangura"><span class="header-section-number">3</span> Przykład: zadanie z Kangura</a></li>
   <li><a href="#ścieżka-o-ekstremalnej-sumie" id="toc-ścieżka-o-ekstremalnej-sumie" class="nav-link" data-scroll-target="#ścieżka-o-ekstremalnej-sumie"><span class="header-section-number">4</span> Ścieżka o ekstremalnej sumie</a>
   <ul class="collapse">
@@ -430,8 +430,8 @@ window.Quarto = {
 <p>W tym wykładzie poznamy cztery najważniejsze funkcje z modułu <code>itertools</code> — generujące iloczyn kartezjański, permutacje, kombinacje oraz kombinacje z powtórzeniami. Pokażemy je w akcji na dwóch zadaniach typu brute force. W wykładzie XIII zajmiemy się szerszą rodziną funkcji <code>itertools</code> służących do komponowania strumieni danych.</p>
 <hr>
 </section>
-<section id="cztery-siostry-kombinatoryczne" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="cztery-siostry-kombinatoryczne"><span class="header-section-number">2</span> Cztery siostry kombinatoryczne</h2>
+<section id="cztery-motywy-kombinatoryczne" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="cztery-motywy-kombinatoryczne"><span class="header-section-number">2</span> Cztery motywy kombinatoryczne</h2>
 <p>Wyobraź sobie, że masz zbiór <code>n</code> elementów i chcesz wybrać z niego <code>r</code> elementów. To pojedyncze sformułowanie kryje w sobie cztery różne pojęcia, w zależności od dwóch decyzji:</p>
 <ul>
 <li>czy w wyborze mogą się powtarzać te same elementy (<strong>z powtórzeniami</strong> / <strong>bez powtórzeń</strong>);</li>
@@ -537,7 +537,7 @@ window.Quarto = {
 <span id="cb4-3"><a href="#cb4-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(product(<span class="st">'AB'</span>, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]))</span>
 <span id="cb4-4"><a href="#cb4-4"></a>[(<span class="st">'A'</span>, <span class="dv">1</span>), (<span class="st">'A'</span>, <span class="dv">2</span>), (<span class="st">'A'</span>, <span class="dv">3</span>), (<span class="st">'B'</span>, <span class="dv">1</span>), (<span class="st">'B'</span>, <span class="dv">2</span>), (<span class="st">'B'</span>, <span class="dv">3</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Zapis <code>product(seq, repeat=k)</code> jest skrótem dla <code>product(seq, seq, ..., seq)</code> z <code>k</code> powtórzeniami.</p>
-<p>W brute force najczęściej korzystamy z <code>product</code> i <code>combinations</code> — pokażemy te dwie funkcje w akcji, każdą w innym zadaniu.</p>
+<p>Pokażemy teraz <code>product</code> i <code>combinations</code> w akcji, każdą w innym zadaniu.</p>
 <hr>
 </section>
 <section id="przykład-zadanie-z-kangura" class="level2" data-number="3">
@@ -564,7 +564,7 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">sorted</span>(wyniki)</span>
 <span id="cb7-2"><a href="#cb7-2"></a>[<span class="dv">12</span>, <span class="dv">14</span>, <span class="dv">16</span>, <span class="dv">17</span>, <span class="dv">18</span>, <span class="dv">20</span>, <span class="dv">22</span>, <span class="dv">24</span>, <span class="dv">26</span>, <span class="dv">28</span>, <span class="dv">36</span>, <span class="dv">40</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Z odpowiedzi A–E brakuje liczby <code>30</code> — to ona „nigdy nie będzie równa E”.</p>
-<p>Program robi dokładnie to, co miał zrobić, ale nie jest skalowalny. Gdyby zadanie miało nie pięć liter, tylko dziesięć, musielibyśmy ręcznie dopisać sześć dodatkowych pętli. To znak, że pora po <code>product</code>.</p>
+<p>Program robi dokładnie to, co miał zrobić, ale nie jest skalowalny. Gdyby zadanie miało nie pięć liter, tylko dziesięć, musielibyśmy ręcznie dopisać sześć dodatkowych pętli. Zamiast tego możemy użyć <code>product</code>.</p>
 <p>Iteracja po wszystkich ciągach operatorów to dokładnie iloczyn kartezjański <code>ops × ops × ops × ops</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(product([<span class="st">'+4'</span>, <span class="st">'*2'</span>], repeat<span class="op">=</span><span class="dv">4</span>))</span>
 <span id="cb8-2"><a href="#cb8-2"></a>[(<span class="st">'+4'</span>, <span class="st">'+4'</span>, <span class="st">'+4'</span>, <span class="st">'+4'</span>),</span>
@@ -605,7 +605,7 @@ window.Quarto = {
 <span id="cb13-3"><a href="#cb13-3"></a>[<span class="dv">12</span>, <span class="dv">14</span>, <span class="dv">16</span>, <span class="dv">17</span>, <span class="dv">18</span>, <span class="dv">20</span>, <span class="dv">22</span>, <span class="dv">24</span>, <span class="dv">26</span>, <span class="dv">28</span>, <span class="dv">36</span>, <span class="dv">40</span>]</span>
 <span id="cb13-4"><a href="#cb13-4"></a><span class="op">&gt;&gt;&gt;</span> wartości_końcowe(A<span class="op">=</span><span class="dv">10</span>, liczba_liter<span class="op">=</span><span class="dv">3</span>, ops<span class="op">=</span>ops)</span>
 <span id="cb13-5"><a href="#cb13-5"></a>[<span class="dv">18</span>, <span class="dv">24</span>, <span class="dv">28</span>, <span class="dv">40</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Wracając do zadania z Kangura — <code>30</code> nie pojawia się na liście dla pięciu liter. Ale dla innych parametrów wszystko jest możliwe.</p>
+<p>Wracając do zadania z Kangura — <code>30</code> nie pojawia się na liście dla pięciu liter.</p>
 <p><strong>Zadanie do samodzielnego rozwiązania.</strong></p>
 <blockquote class="blockquote">
 <p><em>Za każdą literę A₁ A₂ … A₁₀ wstawiamy liczbę o jeden większą, o pięć większą lub dwa razy większą niż poprzednia. Jeżeli A₁ = 1, to która z liczb nigdy nie będzie równa A₁₀?</em></p>
@@ -654,7 +654,7 @@ krok 4 → w dół:   (1,3) → (2,3), wartość pola: 8</code></pre>
 <span id="cb17-4"><a href="#cb17-4"></a> (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">1</span>, <span class="dv">3</span>), (<span class="dv">1</span>, <span class="dv">4</span>),</span>
 <span id="cb17-5"><a href="#cb17-5"></a> (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">4</span>),</span>
 <span id="cb17-6"><a href="#cb17-6"></a> (<span class="dv">3</span>, <span class="dv">4</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Pozostaje dla każdej kombinacji odtworzyć kolejne pola ścieżki i zsumować ich wartości. Robimy to jednym przejściem — sama kombinacja w pełni koduje ścieżkę, żadne pośrednie reprezentacje typu napis <code>'DPPDP'</code> nie są nam potrzebne:</p>
+<p>Pozostaje dla każdej kombinacji odtworzyć kolejne pola ścieżki i zsumować ich wartości. Robimy to jednym przejściem — sama kombinacja w pełni koduje ścieżkę:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a><span class="im">from</span> itertools <span class="im">import</span> combinations</span>
 <span id="cb18-2"><a href="#cb18-2"></a></span>
 <span id="cb18-3"><a href="#cb18-3"></a></span>
@@ -714,20 +714,7 @@ krok 4 → w dół:   (1,3) → (2,3), wartość pola: 8</code></pre>
 <p>Przykładowe wyjście (rząd wielkości zależny od maszyny):</p>
 <pre><code>maksimum: 338
 minimum:  197
-czas:     9.45 s</code></pre>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span><code>time.perf_counter</code>
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Funkcja <code>time.perf_counter()</code> zwraca aktualny moment jako liczbę zmiennoprzecinkową sekund odmierzaną od arbitralnego punktu. Sama wartość nie ma żadnego sensu — sensowna jest dopiero <strong>różnica</strong> dwóch jej wywołań. To najczęściej zalecany sposób pomiaru czasu krótkich fragmentów kodu w Pythonie; ma najwyższą rozdzielczość spośród zegarów dostępnych w module <code>time</code>. W notatnikach Jupytera ten sam efekt daje magia <code>%%time</code>, ale poza Jupyterem (w skryptach, modułach, testach) musimy mierzyć ręcznie.</p>
-</div>
-</div>
+czas:     2.53 s</code></pre>
 <section id="tablice-o-większych-rozmiarach" class="level3" data-number="4.1">
 <h3 data-number="4.1" class="anchored" data-anchor-id="tablice-o-większych-rozmiarach"><span class="header-section-number">4.1</span> Tablice o większych rozmiarach</h3>
 <p>Czy ten sam pomysł zadziała dla tablicy 30×30? Liczba ścieżek wynosi:</p>
@@ -747,7 +734,7 @@ czas:     9.45 s</code></pre>
 <p>Pojęcia z tego wykładu:</p>
 <ul>
 <li><strong>Brute force</strong> (wyszukiwanie wyczerpujące, siłowe) — strategia rozwiązywania problemu przez przeliczenie wszystkich możliwych przypadków. Zalety: prostota, kompletność, niezawodność. Wada: szybko rosnący czas i pamięć.</li>
-<li><strong>Cztery siostry kombinatoryczne</strong> z modułu <code>itertools</code>, ułożone w siatkę 2×2 wzdłuż osi „kolejność” i „powtórzenia”:
+<li><strong>Cztery motywy kombinatoryczne</strong> z modułu <code>itertools</code>, ułożone w siatkę 2×2 wzdłuż osi „kolejność” i „powtórzenia”:
 <ul>
 <li><code>product(seq, repeat=r)</code> — iloczyn kartezjański, <span class="math inline">\(n^r\)</span> uporządkowanych krotek z powtórzeniami;</li>
 <li><code>permutations(seq, r)</code> — uporządkowane krotki bez powtórzeń, <span class="math inline">\(n!/(n-r)!\)</span> sztuk;</li>

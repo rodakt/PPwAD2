@@ -245,7 +245,7 @@ class Fib:
     >>> fib(100)
     354224848179261915075
     >>> fib = Fib()
-    >>> fib(5000) # test sprawdza, czy implementacja jest rekurencyjna
+    >>> fib(5000) # test sprawdza, czy implementacja jest rekurencyjna  # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     RecursionError: maximum recursion depth exceeded

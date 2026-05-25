@@ -1,0 +1,349 @@
+---
+title: "Lab XIII: Wyszukiwanie wyczerpujące. Moduł itertools"
+subtitle: Podstawy programowania (AD) 2
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+Te ćwiczenia nawiązują do wykładu XII — wyszukiwania wyczerpującego (brute force) oraz czterech funkcji kombinatorycznych modułu `itertools`: `product`, `permutations`, `combinations` i `combinations_with_replacement`. Zadania prowadzą po kolei przez te cztery funkcje, a na końcu wracają do jednego z nich (komiwojażera) jako poligonu do pomiaru czasu i obserwacji eksplozji kombinatorycznej. Większość zadań to schemat: opisz przestrzeń możliwych przypadków odpowiednią funkcją `itertools`, przejrzyj ją w całości i wybierz to, co spełnia warunek. Poprawność rozwiązań weryfikuj za pomocą dołączonych plików z testami albo doctestów.
+
+## Rozgrzewka: cztery motywy kombinatoryczne
+
+Dla każdego z poniższych pytań najpierw udziel odpowiedzi samodzielnie, a następnie sprawdź ją w interpreterze.
+
+**1.** Każde z poniższych wywołań pokazuje wynik dla tego samego wejścia — łańcucha `'xyz'` i `r = 2` — ale nazwa funkcji została ukryta jako `???`. Dla każdego przypadku wskaż, która z czterech funkcji `itertools` go wyprodukowała.
+
+```python
+# (a)
+list(???('xyz', 2))
+[('x', 'y'), ('x', 'z'), ('y', 'z')]
+
+# (b)
+list(???('xyz', 2))
+[('x', 'x'), ('x', 'y'), ('x', 'z'), ('y', 'y'), ('y', 'z'), ('z', 'z')]
+
+# (c)
+list(???('xyz', 2))
+[('x', 'y'), ('x', 'z'), ('y', 'x'), ('y', 'z'), ('z', 'x'), ('z', 'y')]
+
+# (d)
+list(???('xyz', repeat=2))
+[('x', 'x'), ('x', 'y'), ('x', 'z'),
+ ('y', 'x'), ('y', 'y'), ('y', 'z'),
+ ('z', 'x'), ('z', 'y'), ('z', 'z')]
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+- (a) `combinations` — bez kolejności, bez powtórzeń; para `('x', 'y')` reprezentowana raz, `('x', 'x')` nie występuje. Trzy krotki, zgodnie z $\binom{3}{2} = 3$.
+- (b) `combinations_with_replacement` — bez kolejności, ale z powtórzeniami; pojawia się `('x', 'x')`, lecz `('y', 'x')` już nie. Sześć krotek, $\binom{3 + 2 - 1}{2} = 6$.
+- (c) `permutations` — z kolejnością, bez powtórzeń; `('x', 'y')` i `('y', 'x')` to dwie różne krotki, ale `('x', 'x')` nie występuje. Sześć krotek, $3 \cdot 2 = 6$.
+- (d) `product` — z kolejnością, z powtórzeniami; wszystkie uporządkowane pary, łącznie z `('x', 'x')`. Dziewięć krotek, $3^2 = 9$. Zwróć uwagę na inną składnię: `product` wywołujemy z `repeat=2`, a nie z `2` jako drugim argumentem pozycyjnym.
+
+To wprost siatka 2×2 z wykładu wzdłuż osi „kolejność" i „powtórzenia".
+:::
+
+**2.** Niech `n = 6` elementów i `r = 3`. Bez uruchamiania interpretera podaj, ile krotek zwróci każda z czterech funkcji:
+
+```python
+product(seq, repeat=3)
+permutations(seq, 3)
+combinations(seq, 3)
+combinations_with_replacement(seq, 3)
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Ze wzorów z wykładu:
+
+- `product`: $n^r = 6^3 = 216$;
+- `permutations`: $\dfrac{n!}{(n-r)!} = 6 \cdot 5 \cdot 4 = 120$;
+- `combinations`: $\dbinom{6}{3} = 20$;
+- `combinations_with_replacement`: $\dbinom{6 + 3 - 1}{3} = \dbinom{8}{3} = 56$.
+
+Sprawdzenie: `6**3`, `math.perm(6, 3)`, `math.comb(6, 3)` i `math.comb(8, 3)`.
+:::
+
+**3.** Co wypisze poniższy kod? Co stałoby się przy próbie wywołania `len(c)`?
+
+```python
+from itertools import combinations
+
+c = combinations('abc', 2)
+print(list(c))
+print(list(c))
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+Wypisze `[('a', 'b'), ('a', 'c'), ('b', 'c')]`, a następnie `[]`.
+
+`combinations` (jak wszystkie cztery funkcje z tej grupy) zwraca **iterator**, a nie listę. Iterator można przebiec tylko raz — po pierwszym `list(c)` strumień jest wyczerpany i drugie `list(c)` zastaje pustkę. Z tego samego powodu `len(c)` rzuca `TypeError: object of type 'itertools.combinations' has no len()`: iterator nie zna z góry swojej długości, bo wytwarza elementy dopiero w trakcie iteracji. Liczność trzeba albo policzyć ze wzoru (`math.comb`), albo zmaterializować iterator do listy i zmierzyć `len(list(...))`.
+:::
+
+**4.** Co zwróci każde z poniższych wywołań?
+
+```python
+from itertools import product, permutations, combinations
+
+list(combinations('ABC', 5))
+list(permutations('AB', 0))
+list(product([], repeat=2))
+```
+
+::: {.callout-note collapse="true"}
+## Odpowiedź
+- `list(combinations('ABC', 5))` → `[]`. Nie da się wybrać 5 elementów z 3 bez powtórzeń — $\binom{3}{5} = 0$.
+- `list(permutations('AB', 0))` → `[()]`. Istnieje dokładnie jeden sposób wyboru zera elementów: wybór pusty. Stąd jednoelementowa lista zawierająca pustą krotkę (nie pusta lista!).
+- `list(product([], repeat=2))` → `[]`. Iloczyn kartezjański z pustym czynnikiem jest pusty — nie ma z czego budować par.
+
+Te trzy przypadki brzegowe łatwo przeoczyć w kodzie brute force; warto je znać, bo często wyznaczają warunek stopu albo bazowy.
+:::
+
+***
+
+## Plus czy minus
+
+Mając ciąg liczb, wstawiamy między kolejne wyrazy znak `+` albo `-` i obliczamy wartość powstałego wyrażenia. Pierwsza liczba zostaje bez zmian. Na przykład dla `[1, 2, 3]` możliwe wyrażenia to `1 + 2 + 3`, `1 + 2 - 3`, `1 - 2 + 3`, `1 - 2 - 3` — czyli wartości `6`, `0`, `2`, `-4`.
+
+Napisz moduł `reachable.py` zawierający funkcję `reachable(numbers)` zwracającą posortowaną listę **różnych** wartości osiągalnych w ten sposób.
+
+```python
+def reachable(numbers):
+    """Posortowana lista różnych wartości wyrażeń
+    numbers[0] ± numbers[1] ± ... ± numbers[-1].
+
+    >>> reachable([1, 2, 3])
+    [-4, 0, 2, 6]
+    >>> reachable([5])
+    [5]
+    >>> reachable([10, 10])
+    [0, 20]
+    """
+    pass
+```
+
+::: {.callout-tip}
+## Wskazówka
+Wyboru znaków jest dokładnie tyle, ile ciągów o długości `len(numbers) - 1` nad dwuelementowym zbiorem znaków — to iloczyn kartezjański, czyli `product(..., repeat=len(numbers) - 1)`. Znaki najwygodniej reprezentować jako `+1` i `-1`: wtedy wartość wyrażenia liczy się przez zsumowanie iloczynów znaku i liczby. Powtórzenia eliminuj zbiorem, tak jak w przykładzie z Kangura na wykładzie.
+:::
+
+Testy: [`test_reachable.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XIII/test_reachable.py).
+
+***
+
+## Uzyskaj 100
+
+Klasyczna łamigłówka: między cyfry `1 2 3 4 5 6 7 8 9` (w tej kolejności) wstaw w każdą z ośmiu przerw jeden z trzech wariantów — `+`, `-` albo „nic" (sklejenie cyfr w jedną liczbę, np. `12`). Napisz funkcję `make_expressions(digits, target)` zwracającą posortowaną leksykograficznie listę tych napisów-wyrażeń złożonych z cyfr `digits`, które są równe `target`.
+
+```python
+def make_expressions(digits, target):
+    """Lista napisów-wyrażeń złożonych z cyfr `digits` równych `target`.
+
+    W każdą z przerw między cyframi wstawiamy '+', '-' lub ''
+    (sklejenie sąsiednich cyfr w jedną liczbę).
+    Wyrażenia w kolejności leksykograficznej.
+
+    >>> make_expressions('12', 3)
+    ['1+2']
+    >>> make_expressions('12', -1)
+    ['1-2']
+    >>> make_expressions('123', 6)
+    ['1+2+3']
+    >>> '1+2+3-4+5+6+78+9' in make_expressions('123456789', 100)
+    True
+    """
+    pass
+```
+
+Testy: [`test_make_expressions.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XIII/test_make_expressions.py).
+
+***
+
+## Kryptarytmy
+
+[Kryptarytm](https://en.wikipedia.org/wiki/Verbal_arithmetic) to działanie, w którym cyfry zastąpiono literami. Każda litera oznacza inną cyfrę, ta sama litera zawsze tę samą cyfrę, a litera rozpoczynająca słowo nie może oznaczać zera. Najsłynniejszy przykład:
+
+```
+  S E N D
++ M O R E
+---------
+M O N E Y
+```
+
+Rozwiązanie polega na takim przyporządkowaniu cyfr literom, by działanie było prawdziwe. Liter jest tu osiem (`S E N D M O R Y`), więc kandydatów na przyporządkowanie jest `permutations(range(10), 8)` — niespełna dwa miliony. Dla każdego z nich sprawdzamy, czy działanie się zgadza. To brute force po permutacjach.
+
+Napisz moduł `cryptarithm.py` zawierający funkcję `solve_cryptarithm(*words)`. Ostatnie ze słów jest sumą wszystkich poprzednich. Funkcja zwraca listę rozwiązań; każde rozwiązanie to krotka wartości liczbowych słów (w kolejności argumentów). Słowa zapisujemy wielkimi literami alfabetu łacińskiego.
+
+```python
+def solve_cryptarithm(*words):
+    """Brute force rozwiązań kryptarytmu: suma words[:-1] == words[-1].
+
+    Każda litera oznacza inną cyfrę; litera wiodąca nie może być zerem.
+    Zwraca listę krotek wartości liczbowych słów — po jednej na rozwiązanie.
+
+    >>> solve_cryptarithm('A', 'A', 'B')        # A + A == B
+    [(1, 1, 2), (2, 2, 4), (3, 3, 6), (4, 4, 8)]
+    >>> len(solve_cryptarithm('SEND', 'MORE', 'MONEY'))
+    1
+    """
+    pass
+```
+
+::: {.callout-tip}
+## Wskazówka
+Zbierz wszystkie różne litery występujące w słowach (np. `sorted(set(...))`) i osobno litery wiodące (pierwsze litery każdego słowa). Dla każdej permutacji cyfr zbuduj słownik `litera -> cyfra`, odrzuć przyporządkowania z zerem na pozycji wiodącej, a następnie zamień każde słowo na liczbę i sprawdź równość sumy. Konwersja słowa na liczbę: złóż jego cyfry w napis i użyj `int(...)`, albo licz wartość pozycyjnie.
+:::
+
+Testy: [`test_cryptarithm.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XIII/test_cryptarithm.py).
+
+Gdy funkcja działa, rozwiąż nią `SEND + MORE == MONEY` i wypisz znalezione cyfry. Następnie spróbuj swoich sił na dwóch zagadkach do samodzielnego rozwiązania:
+
+- `TWO + TWO == FOUR` — uwaga: rozwiązań jest więcej niż jedno. Ile dokładnie? Kryptarytm nie musi być jednoznaczny.
+- `CROSS + ROADS == DANGER` — dziewięć różnych liter, więc przestrzeń to `permutations(range(10), 9)`, czyli ponad trzy miliony przypadków. Rozwiązanie jest jedno, ale obliczenie potrwa zauważalnie dłużej — poczujesz, jak rośnie koszt brute force, gdy liczba liter zbliża się do dziesięciu.
+
+***
+
+## Komiwojażer
+
+[Problem komiwojażera](https://pl.wikipedia.org/wiki/Problem_komiwoja%C5%BCera) (TSP): dane jest `n` miast i odległości między każdą parą. Komiwojażer wyrusza z miasta `0`, ma odwiedzić każde pozostałe miasto **dokładnie raz** i wrócić do `0`. Szukamy trasy o najmniejszej łącznej długości.
+
+Odległości podajemy symetryczną macierzą kwadratową `matrix`, gdzie `matrix[i][j]` to odległość między miastem `i` a `j` (z zerami na przekątnej). Trasa to cykl zaczynający i kończący się w `0` — wystarczy ustalić kolejność, w jakiej odwiedzamy miasta `1, 2, ..., n - 1`. Takich kolejności jest `(n - 1)!`, a każda z nich to jedna permutacja. Brute force: przejrzyj wszystkie permutacje, dla każdej policz długość cyklu, zapamiętaj najkrótszą.
+
+Napisz moduł `route.py` zawierający funkcję `shortest_route(matrix)` zwracającą krotkę `(długość, trasa)`, gdzie `trasa` to krotka kolejnych miast zaczynająca i kończąca się w `0`.
+
+```python
+def shortest_route(matrix):
+    """(długość, trasa) najkrótszego cyklu odwiedzającego wszystkie miasta.
+
+    Trasa zaczyna się i kończy w mieście 0. `matrix[i][j]` to odległość
+    między miastem i a j.
+
+    >>> M = [[0, 10, 15, 20],
+    ...      [10, 0, 35, 25],
+    ...      [15, 35, 0, 30],
+    ...      [20, 25, 30, 0]]
+    >>> length, route = shortest_route(M)
+    >>> length
+    80
+    """
+    pass
+```
+
+::: {.callout-note}
+## Dwie trasy o tej samej długości
+Każdy cykl ma swój odwrotny — `(0, 1, 3, 2, 0)` i `(0, 2, 3, 1, 0)` mają tę samą długość, bo macierz jest symetryczna. Obie trasy są poprawnymi odpowiedziami; funkcja może zwrócić którąkolwiek z nich.
+:::
+
+Testy: [`test_route.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XIII/test_route.py).
+
+***
+
+## Podzbiory o zadanej sumie
+
+Kombinacja to wybór podzbioru — i właśnie podzbiorów dotyczy to zadanie. Mając listę liczb, chcemy znaleźć wszystkie jej podzbiory (niepuste), których elementy sumują się do zadanej wartości. To brute force po wszystkich kombinacjach każdej możliwej długości.
+
+Napisz moduł `subsets.py` zawierający funkcję `subsets_with_sum(numbers, target)`. Funkcja zwraca listę krotek — wszystkich podzbiorów `numbers` o sumie `target`. Każdy podzbiór reprezentuj jako krotkę elementów w kolejności, w jakiej występują w `numbers`. Podzbiory uporządkuj rosnąco według liczby elementów (najpierw najmniejsze), a w obrębie tej samej liczności — w porządku, w jakim zwraca je `combinations`.
+
+```python
+def subsets_with_sum(numbers, target):
+    """Wszystkie niepuste podzbiory `numbers` o sumie równej `target`.
+
+    >>> subsets_with_sum([2, 3, 5, 7], 10)
+    [(3, 7), (2, 3, 5)]
+    >>> subsets_with_sum([1, 2, 3, 4, 5], 5)
+    [(5,), (1, 4), (2, 3)]
+    >>> subsets_with_sum([1, 2, 3], 100)
+    []
+    """
+    pass
+```
+
+::: {.callout-tip}
+## Wskazówka
+Podzbiór może mieć od `1` do `len(numbers)` elementów. Przejdź pętlą po długości `r` od `1` w górę i dla każdej `r` weź `combinations(numbers, r)`. Dla każdej kombinacji sprawdź, czy jej suma równa się `target`. Kolejność wymagana w specyfikacji bierze się wprost z tej pętli: najpierw wszystkie pasujące jednoelementowe, potem dwuelementowe, i tak dalej.
+:::
+
+Testy: [`test_subsets.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XIII/test_subsets.py).
+
+***
+
+## Wydawanie reszty raz jeszcze
+
+Na lab IX rozwiązywaliśmy problem wydawania reszty rekurencyjnie: funkcja `count_change(amount, coins)` **liczyła** sposoby wydania kwoty `amount` monetami o nominałach `coins`. Tutaj wracamy do tego samego problemu od innej strony — zamiast liczyć sposoby, **wyliczymy je wprost**, a liczba wytworzonych sposobów okaże się zgodna z `count_change`.
+
+Każdy sposób wydania to wybór monet bez znaczenia kolejności, z dopuszczeniem wielokrotnego użycia tego samego nominału — czyli dokładnie `combinations_with_replacement`. Nie wiemy z góry, z ilu monet składa się dany sposób, więc przeglądamy kombinacje wszystkich możliwych długości.
+
+Napisz moduł `change.py` zawierający funkcję `make_change(amount, coins)` zwracającą listę krotek — wszystkich sposobów wydania kwoty `amount`. Każdą krotkę uporządkuj rosnąco (monety rosnąco), a całą listę — rosnąco według liczby monet.
+
+```python
+def make_change(amount, coins):
+    """Wszystkie sposoby wydania kwoty `amount` monetami o nominałach `coins`.
+
+    Każdy sposób to krotka użytych monet (rosnąco). Kolejność monet
+    w sposobie nie ma znaczenia, każdego nominału można użyć dowolnie wiele razy.
+
+    >>> make_change(5, [1, 2, 5])
+    [(5,), (1, 2, 2), (1, 1, 1, 2), (1, 1, 1, 1, 1)]
+    >>> len(make_change(5, [1, 2, 5]))
+    4
+    >>> make_change(4, [2, 5])
+    [(2, 2)]
+    """
+    pass
+```
+
+::: {.callout-tip}
+## Wskazówka
+Posortuj nominały rosnąco. Liczba monet w jednym sposobie nie przekroczy `amount // min(coins)` — to górna granica `r` w pętli. Dla każdego `r` weź `combinations_with_replacement(coins, r)` i zachowaj te kombinacje, których suma równa się `amount`.
+:::
+
+Testy: [`test_change.py`](https://raw.githubusercontent.com/rodakt/PPwAD2/rok_akademicki_26/lab_XIII/test_change.py).
+
+::: {.callout-note}
+## Wprost czy rekurencyjnie?
+Sprawdź, że `len(make_change(amount, coins))` daje to samo, co `count_change(amount, coins)` z lab IX — na przykład `len(make_change(10, [1, 2, 5]))` równa się `count_change(10, [1, 2, 5])`, czyli `10`.
+
+Choć wynik jest ten sam, oba podejścia liczą inaczej. Rekurencyjne `count_change` przechodzi drzewo decyzji „użyć tego nominału, czy nie" i — zwłaszcza z `@cache` — odwiedza niewiele różnych stanów. Brute force po `combinations_with_replacement` generuje i sprawdza **wszystkie** wielozbiory monet aż do długości `amount // min(coins)`, w tym ogromną większość o niewłaściwej sumie. Dla większych kwot różnica w liczbie kroków robi się dramatyczna. To dobra ilustracja granic brute force: metoda jest prosta i niezawodna, ale „przemyślany" algorytm potrafi tę samą odpowiedź policzyć znacznie taniej.
+:::
+
+***
+
+## Eksperyment: ściana brute force
+
+To zadanie nie ma testów — jest obserwacją. Wróćmy do komiwojażera. Liczba permutacji do sprawdzenia rośnie jak $(n-1)!$, a silnia rośnie szybciej niż jakakolwiek funkcja wykładnicza. Zmierzmy, gdzie leży praktyczna granica metody.
+
+Napisz program, który:
+
+1. Dla rosnącej liczby miast `n` (powiedzmy od `5` do `12`) generuje losową symetryczną macierz odległości o wymiarach `n × n` (z zerami na przekątnej; odległości całkowite, np. z przedziału `1`–`99`).
+2. Mierzy czas wywołania `shortest_route` na tej macierzy za pomocą `time.perf_counter()`.
+3. Wypisuje tabelę: `n`, liczbę permutacji $(n-1)!$ oraz zmierzony czas.
+
+Przykładowy generator macierzy:
+
+```python
+import random
+
+
+def losowa_macierz(n, lo=1, hi=99):
+    """Losowa symetryczna macierz n×n odległości całkowitych (zera na przekątnej)."""
+    M = [[0] * n for _ in range(n)]
+    for i in range(n):
+        for j in range(i + 1, n):
+            d = random.randint(lo, hi)
+            M[i][j] = d
+            M[j][i] = d
+    return M
+```
+
+Na podstawie tabeli odpowiedz:
+
+- Przy której liczbie miast czas przekracza sekundę? A dziesięć sekund?
+- Ile (z grubsza) permutacji na sekundę przelicza Twój komputer? Czy ta liczba jest mniej więcej stała, niezależnie od `n`?
+- Załóżmy, że jesteś gotów czekać na wynik najwyżej godzinę. Korzystając z oszacowanej prędkości, oszacuj największe `n`, dla którego brute force się wyrobi. Porównaj wynik z granicą $10^9$–$10^{10}$ przypadków z wykładu.
+
+::: {.callout-note}
+## Co dalej
+Brute force po permutacjach kończy się dla komiwojażera bardzo szybko — już kilkanaście miast wystarcza, by trasa stała się nieobliczalna w rozsądnym czasie. To nie przypadek: TSP należy do problemów, dla których nie znamy żadnego algorytmu istotnie szybszego niż wykładniczy w najgorszym przypadku. W praktyce stosuje się programowanie dynamiczne (które przesuwa granicę do ~20 miast) oraz algorytmy przybliżone i heurystyki, które dla setek miast znajdują trasę bliską optymalnej, nie gwarantując, że jest dokładnie najkrótsza. Sam brute force pozostaje jednak najprostszym i niezawodnym punktem odniesienia — wzorcem, względem którego sprawdza się poprawność tych sprytniejszych metod na małych danych.
+:::

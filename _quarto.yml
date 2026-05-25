@@ -52,6 +52,7 @@ website:
           - file: lab_X/lab_X.qmd
           - file: lab_XI/lab_XI.qmd
           - file: lab_XII/lab_XII.qmd
+          - file: lab_XIII/lab_XIII.qmd
 
 format:
   html:

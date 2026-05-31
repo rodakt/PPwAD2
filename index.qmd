@@ -28,6 +28,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 - [Wykład X: Klasy i obiekty II: metody specjalne](wyklad_X.qmd)
 - [Wykład XI: Iteratory i generatory](wyklad_XI.qmd)
 - [Wykład XII: Wyszukiwanie wyczerpujące. Moduł itertools, część I](wyklad_XII.qmd)
+- [Wykład XIII: Moduł itertools, część II. Komponowanie strumieni danych](wyklad_XIII.qmd)
 
 ## Laboratoria
 
@@ -44,6 +45,7 @@ Wprowadzenie do programowania w języku Python na poziomie średniozaawansowanym
 - [Laboratorium 11: Metody specjalne i dziedziczenie](lab_XI/lab_XI.qmd)
 - [Laboratorium 12: Iteratory i generatory](lab_XII/lab_XII.qmd)
 - [Laboratorium 13: Wyszukiwanie wyczerpujące. Moduł itertools](lab_XIII/lab_XIII.qmd)
+
 
 ## Zaliczenie
 

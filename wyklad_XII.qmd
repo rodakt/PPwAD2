@@ -441,3 +441,4 @@ Wykład XIII będzie drugą częścią opowieści o `itertools`. Tym razem zajmi
 Bohaterami będą też funkcje z modułów [`functools`](https://docs.python.org/3/library/functools.html) (`reduce`, `partial`) i [`operator`](https://docs.python.org/3/library/operator.html) (`itemgetter`, `attrgetter`), które naturalnie współpracują z `itertools` w wątku **programowania funkcyjnego**.
 
 Na koniec warto zajrzeć do [`itertools` recipes](https://docs.python.org/3/library/itertools.html#itertools-recipes) — sekcji w dokumentacji modułu, w której pokazane są gotowe przepisy na typowe zadania (jak zgrupować elementy po `n`, znaleźć unikalne elementy zachowując kolejność, podzielić iterator na dwa), wszystkie zbudowane z funkcji wprowadzonych w XII i XIII.
+

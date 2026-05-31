@@ -1245,7 +1245,7 @@
     "href": "index.html#wykłady",
     "title": "Podstawy programowania (AD) 2",
     "section": "2 Wykłady",
-    "text": "2 Wykłady\n\nWykład I: Błędy i wyjątki\nWykład II: Testy jednostkowe\nWykład III: Zmienne. Instrukcja przypisania\nWykład IV: Wypakowywanie obiektów iterowalnych. Parametry i argumenty\nWykład V: Przestrzenie nazw i moduły\nWykład VI: Funkcje jako obiekty. Domknięcia\nWykład VII: Dekoratory\nWykład VIII: Rekurencja\nWykład IX: Klasy i obiekty\nWykład X: Klasy i obiekty II: metody specjalne\nWykład XI: Iteratory i generatory\nWykład XII: Wyszukiwanie wyczerpujące. Moduł itertools, część I",
+    "text": "2 Wykłady\n\nWykład I: Błędy i wyjątki\nWykład II: Testy jednostkowe\nWykład III: Zmienne. Instrukcja przypisania\nWykład IV: Wypakowywanie obiektów iterowalnych. Parametry i argumenty\nWykład V: Przestrzenie nazw i moduły\nWykład VI: Funkcje jako obiekty. Domknięcia\nWykład VII: Dekoratory\nWykład VIII: Rekurencja\nWykład IX: Klasy i obiekty\nWykład X: Klasy i obiekty II: metody specjalne\nWykład XI: Iteratory i generatory\nWykład XII: Wyszukiwanie wyczerpujące. Moduł itertools, część I\nWykład XIII: Moduł itertools, część II. Komponowanie strumieni danych",
     "crumbs": [
       "Strona główna"
     ]

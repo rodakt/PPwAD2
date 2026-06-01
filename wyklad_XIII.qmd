@@ -1,0 +1,485 @@
+---
+title: "Moduł itertools, część II. Komponowanie strumieni danych"
+subtitle: "Podstawy programowania (AD) 2"
+author: Tomasz Rodak
+execute:
+  enabled: false
+---
+
+## Wprowadzenie
+
+Wykład XI pokazał, że iterator to leniwy strumień danych — wartości produkowane na żądanie, w stałej pamięci, w razie potrzeby nieskończony. Pisaliśmy wtedy własne strumienie (kwadraty, ciąg Fibonacciego, punkty kraty) i braliśmy ich skończony prefiks funkcją `islice` lub wyrażeniem listowym/generatora. Wykład XII dorzucił cztery funkcje kombinatoryczne z modułu `itertools`. Teraz poznamy funkcje, które strumieni nie tyle wytwarzają od zera, co je **komponują** — sklejają, ucinają, grupują, akumulują.
+
+Wszystkie działają wedle jednego schematu: biorą jeden lub więcej iteratorów na wejściu i zwracają nowy, leniwy iterator. Dzięki temu składają się jak klocki — wynik jednej funkcji podajemy jako wejście kolejnej i budujemy **potok**: źródło danych → odsianie i przekształcenie → redukcja do wyniku. Zamiast jednej dużej pętli z ręcznie prowadzonym stanem łączymy drobne, wyspecjalizowane elementy. Po drodze poznamy dwóch naturalnych towarzyszy `itertools` — funkcję `reduce` z modułu `functools` oraz moduł `operator`.
+
+Na koniec złożymy poznane narzędzia w program generujący ciąg „mów, co widzisz" — miejsce, w którym nieskończony strumień i grupowanie spotykają się w jednej, krótkiej funkcji.
+
+***
+
+## Strumienie nieskończone i ich tamowanie
+
+Spośród wszystkich funkcji `itertools` strumienie nieskończone wytwarzają dokładnie trzy: `count`, `cycle` i `repeat` — pod nazwą *infinite iterators* zbiera je sama dokumentacja modułu. Od nich zaczniemy. Osobno poznamy narzędzia tnące — `islice`, `takewhile`, `dropwhile` — obcinają *dowolny* iterator. Wprowadzamy je razem z prostego powodu: skoro strumień nieskończony trzeba czymś zawsze zatrzymać, źródło i nożyce to naturalna para.
+
+### Trzy źródła nieskończone
+
+`count(start=0, step=1)` to nieskończony ciąg arytmetyczny — `range` bez górnej granicy (i, inaczej niż `range`, działający też dla liczb zmiennoprzecinkowych):
+
+```python
+>>> from itertools import count, islice
+>>> list(islice(count(), 5))
+[0, 1, 2, 3, 4]
+>>> list(islice(count(10), 5))
+[10, 11, 12, 13, 14]
+>>> list(islice(count(0, 2), 5))
+[0, 2, 4, 6, 8]
+>>> list(islice(count(1.0, 0.5), 5))
+[1.0, 1.5, 2.0, 2.5, 3.0]
+```
+
+`cycle(iterable)` w kółko powtarza elementy podanego obiektu:
+
+```python
+>>> from itertools import cycle
+>>> list(islice(cycle('AB'), 5))
+['A', 'B', 'A', 'B', 'A']
+```
+
+`repeat(element, times=None)` zwraca ten sam element w nieskończoność, a z argumentem `times` — skończenie wiele razy. To jedyne z trzech źródeł, które potrafi być skończone:
+
+```python
+>>> from itertools import repeat
+>>> list(islice(repeat('x'), 4))
+['x', 'x', 'x', 'x']
+>>> list(repeat('x', 4))
+['x', 'x', 'x', 'x']
+```
+
+W tej skończonej postaci `repeat` przydaje się jako „stały" argument dla `map` czy `zip` — na przykład do podniesienia każdej liczby do kwadratu przez `pow`:
+
+```python
+>>> list(map(pow, range(5), repeat(2)))
+[0, 1, 4, 9, 16]
+```
+
+Wszystkie trzy są w gruncie rzeczy generatorami, jakie umiemy już napisać sami — to wzorzec `while True: yield` z wykładu XI. Oto ich z grubsza równoważne odpowiedniki w czystym Pythonie (oryginały z `itertools` napisane są w C i bywają bogatsze o detale):
+
+```python
+def count(start=0, step=1):
+    n = start
+    while True:
+        yield n
+        n += step
+
+
+def repeat(obj, times=None):
+    if times is None:
+        while True:
+            yield obj
+    else:
+        for _ in range(times):
+            yield obj
+
+
+def cycle(iterable):
+    zapamietane = []
+    for element in iterable:        # pierwsze okrążenie — i zapis do bufora
+        yield element
+        zapamietane.append(element)
+    while zapamietane:                # kolejne okrążenia — już z bufora
+        for element in zapamietane:
+            yield element
+```
+
+Dwie z tych implementacji rzeczywiście działają w stałej pamięci — `count` trzyma jedną liczbę, `repeat` jeden obiekt. `cycle` jest wyjątkiem: żeby powtarzać wejście w kółko, musi je najpierw **w całości zapamiętać** (lista `zapamietane`). To jedyne z trzech źródeł, które rośnie w pamięci wraz z długością wejścia — drobny wyłom w regule „iterator = stała pamięć" z otwarcia wykładu XI.
+
+::: {.callout-warning}
+## Nie materializuj strumienia nieskończonego
+`list(count())` albo `for x in cycle('AB'): ...` bez warunku stopu zapętli się i wyczerpie pamięć. Strumień nieskończony trzeba zawsze obciąć — `islice`, `takewhile`/`dropwhile` albo zwykłą pętlą `for` z `break`.
+:::
+
+### Nożyce: islice, takewhile, dropwhile
+
+`islice` poznaliśmy już w XI jako leniwy odpowiednik krojenia listy. Pełna składnia odwzorowuje wycinek `it[start:stop:step]`:
+
+```python
+>>> list(islice(count(), 5))         # jak it[:5]
+[0, 1, 2, 3, 4]
+>>> list(islice(count(), 2, 7))      # jak it[2:7]
+[2, 3, 4, 5, 6]
+>>> list(islice(count(), 0, 10, 3))  # jak it[0:10:3]
+[0, 3, 6, 9]
+```
+
+Jedyna różnica wobec krojenia list: `islice` nie przyjmuje indeksów ujemnych — iterator nie zna swojej długości i nie umie liczyć od końca.
+
+`islice` tnie po **liczbie** elementów. Czasem chcemy ciąć po **warunku** — tu wchodzą `takewhile` i `dropwhile`:
+
+```python
+>>> from itertools import takewhile, dropwhile
+>>> list(takewhile(lambda x: x < 5, [1, 4, 6, 4, 1]))
+[1, 4]
+>>> list(dropwhile(lambda x: x < 5, [1, 4, 6, 4, 1]))
+[6, 4, 1]
+```
+
+`takewhile` oddaje elementy **dopóki** warunek jest prawdziwy i zatrzymuje się przy pierwszym fałszu — kończy na `6` i nigdy nie zagląda dalej. `dropwhile` robi rzecz odwrotną: pomija elementy, dopóki warunek zachodzi, a po pierwszym fałszu oddaje **całą resztę** bez ponownego sprawdzania. Dlatego końcowe `4, 1` zostają w wyniku `dropwhile`, choć są mniejsze od `5`.
+
+Tej różnicy łatwo nie zauważyć, dopóki nie zestawi się `takewhile` z `filter`:
+
+```python
+>>> list(filter(lambda x: x < 5, [1, 4, 6, 4, 1]))
+[1, 4, 4, 1]
+```
+
+`filter` przegląda **cały** strumień i przepuszcza każdy element spełniający warunek. `takewhile` przerywa przy pierwszym, który go nie spełnia. Na strumieniu skończonym różnica bywa subtelna; na nieskończonym jest zasadnicza — `takewhile` może się zatrzymać, `filter` (bez dodatkowego obcięcia) nie.
+
+### Potok w akcji: liczby pierwsze
+
+Mając prosty test pierwszości:
+
+```python
+def pierwsza(n):
+    """Czy n jest liczbą pierwszą?"""
+    if n < 2:
+        return False
+    d = 2
+    while d * d <= n:
+        if n % d == 0:
+            return False
+        d += 1
+    return True
+```
+
+dziesięć pierwszych liczb pierwszych dostajemy jednym potokiem — bez pętli i bez wskazywania z góry, gdzie ich szukać:
+
+```python
+>>> from itertools import count, islice
+>>> list(islice(filter(pierwsza, count(2)), 10))
+[2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+```
+
+Czyta się to od środka na zewnątrz: `count(2)` to nieskończone źródło `2, 3, 4, …`; `filter(pierwsza, …)` przepuszcza z niego tylko liczby pierwsze (wciąż nieskończenie wiele, wciąż leniwie); `islice(…, 10)` bierze pierwszych dziesięć i na tym poprzestaje. W żadnym momencie nie powstaje nieskończona lista — każda warstwa produkuje wartość dopiero wtedy, gdy następna o nią poprosi.
+
+A gdybyśmy chcieli nie „pierwszych dziesięć", lecz „wszystkie poniżej 30", wystarczy zamienić nożyce — `islice` (tnie po liczbie) na `takewhile` (tnie po warunku):
+
+```python
+>>> list(takewhile(lambda n: n < 30, filter(pierwsza, count(2))))
+[2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+```
+
+::: {.callout-note}
+## A nie wystarczą wyrażenia listowe/generatora?
+
+Często wystarczą. `map` i `filter` mają wprost odpowiedniki w składni wyrażeń — `map(f, it)` to `(f(x) for x in it)`, a `filter(pred, it)` to `(x for x in it if pred(x))`. Wyrażenie generatora jest przy tym równie leniwe, więc nasz potok liczb pierwszych ma czytelnego bliźniaka:
+
+```python
+>>> list(islice((n for n in count(2) if pierwsza(n)), 10))
+[2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+```
+
+Granica jest tam, gdzie potrzeba **stanu** albo **wczesnego stopu** — a tego wyrażenie nie ma. Jego `if` to `filter`, nie `takewhile`: sprawdza każdy element i nigdy się nie zatrzymuje. Dlatego wariant „pierwsze poniżej 30", który z `takewhile` po prostu się kończył, jako wyrażenie zapętla się bez końca — `count(2)` produkuje liczby w nieskończoność, a `n < 30` tylko przestaje je przepuszczać:
+
+```python
+>>> list(n for n in count(2) if pierwsza(n) and n < 30)   # nigdy nie wraca!
+```
+
+Stąd prosty podział pracy: bezstanowe *przekształć i odsiej* czytelniej zapiszesz wyrażeniem; **wczesny stop** (`takewhile`, `dropwhile`), **akumulację** (`accumulate`, `reduce`) i **patrzenie na sąsiadów** (`pairwise`, `groupby`) daje dopiero `itertools` — i to jest właśnie to, czym ten moduł zarabia na swoje istnienie.
+:::
+
+***
+
+## Sklejanie i parowanie
+
+Sekcja poprzednia robiła i przycinała pojedyncze strumienie. Teraz dwie funkcje, które patrzą na więcej niż jeden element naraz: `chain` skleja strumienie koniec w koniec, `pairwise` zestawia sąsiadów.
+
+### Sklejanie: chain
+
+`chain` traktuje kilka iterowalnych obiektów jak jeden ciągły strumień — przebiega pierwszy do końca, potem drugi, i tak dalej. Typy mogą być różne:
+
+```python
+>>> from itertools import chain
+>>> list(chain([1, 2], [3, 4], [5]))
+[1, 2, 3, 4, 5]
+>>> list(chain('AB', range(3)))
+['A', 'B', 0, 1, 2]
+```
+
+Bywa, że strumienie do sklejenia mamy już zebrane w jednym obiekcie — na przykład listę list. Wtedy zamiast rozpakowywać ją gwiazdką sięgamy po `chain.from_iterable`, które bierze **jeden** obiekt iterowalny obiektów iterowalnych:
+
+```python
+>>> wiersze = [[1, 2, 3], [4, 5], [6]]
+>>> list(chain.from_iterable(wiersze))
+[1, 2, 3, 4, 5, 6]
+```
+
+To wygodny sposób na **spłaszczenie** jednego poziomu zagnieżdżenia. `chain(*wiersze)` dałoby ten sam wynik, ale rozpakowanie gwiazdką musi z góry znać wszystkie elementy zewnętrznego obiektu — `chain.from_iterable` przegląda go leniwie i zadziała nawet, gdy sam zewnętrzny strumień jest nieskończony.
+
+Oba sprowadzają się do krótkiej pętli `yield from` — różni je tylko nagłówek:
+
+```python
+def chain(*iterowalne):
+    for it in iterowalne:
+        yield from it
+
+
+def from_iterable(iterowalne):
+    for it in iterowalne:
+        yield from it
+```
+
+`chain` dostaje strumienie jako osobne argumenty, więc musi je poznać z góry; `from_iterable` — jako jeden obiekt iterowalny, po którym idzie leniwie. Stąd ta druga radzi sobie z nieskończonym strumieniem zewnętrznym.
+
+### Sąsiedztwo: pairwise
+
+`pairwise` przesuwa po strumieniu okno szerokości dwa, zwracając kolejne **sąsiednie pary**. Z `n` elementów powstaje `n - 1` par:
+
+```python
+>>> from itertools import pairwise
+>>> list(pairwise('ABCD'))
+[('A', 'B'), ('B', 'C'), ('C', 'D')]
+```
+
+To wprost narzędzie do liczenia czegoś „między kolejnymi pomiarami" — na przykład różnic wartości:
+
+```python
+>>> dane = [10, 13, 9, 14, 14]
+>>> [b - a for a, b in pairwise(dane)]
+[3, -4, 5, 0]
+```
+
+Dla strumienia krótszego niż dwa elementy nie ma żadnej pary, więc wynik jest pusty:
+
+```python
+>>> list(pairwise('A'))
+[]
+```
+
+::: {.callout-note}
+## Wersja Pythona
+`pairwise` pojawiło się w Pythonie 3.10. We wcześniejszych wersjach trzeba je było złożyć samemu — zobaczymy taki przepis w sekcji o `itertools` recipes.
+:::
+
+***
+
+## Akumulacja i redukcja
+
+Dwie funkcje sprowadzają cały strumień do wyniku przez wielokrotne złożenie tej samej operacji dwuargumentowej. Różni je to, co oddają: `accumulate` — każdy krok po drodze, `reduce` — tylko wartość końcową.
+
+### accumulate — wszystkie kroki
+
+`accumulate` zwraca ciąg wyników częściowych. Domyślnie dodaje, więc dostajemy kolejne **sumy częściowe**:
+
+```python
+>>> from itertools import accumulate
+>>> list(accumulate([1, 2, 3, 4, 5]))
+[1, 3, 6, 10, 15]
+```
+
+Pierwszy element przepisywany jest bez zmian, każdy następny to poprzedni wynik plus bieżący element: `1`, `1+2`, `3+3`, `6+4`, `10+5`. Widać tu **stan niesiony przez obliczenie** — zmienną, w której gromadzi się dotychczasowy wynik. To właśnie ona odróżnia `accumulate` od wyrażenia generatora (zob. callout wyżej); z grubsza:
+
+```python
+def accumulate(iterowalny, func=operator.add):
+    it = iter(iterowalny)
+    try:
+        biezacy = next(it)
+    except StopIteration:
+        return                     # puste wejście → pusty iterator
+    yield biezacy
+    for element in it:
+        biezacy = func(biezacy, element)
+        yield biezacy
+```
+
+Zmienna `biezacy` przeżywa między kolejnymi `yield` — i to jest dokładnie ta pamięć, której wyrażenie `(... for ... in ...)` mieć nie może.
+
+Operację można podmienić, podając funkcję dwuargumentową jako drugi argument. Można tu wstawić lambdę, ale dla typowych działań arytmetycznych gotowe funkcje daje moduł `operator` — `operator.mul` zamiast `lambda x, y: x * y` jest krótsze, nazwane i szybsze:
+
+```python
+>>> import operator
+>>> list(accumulate([1, 2, 3, 4, 5], operator.mul))
+[1, 2, 6, 24, 120]
+```
+
+To biegnące **iloczyny** częściowe — przy okazji kolejne silnie `1!, 2!, …, 5!`. Funkcja nie musi być arytmetyczna; z wbudowanym `max` dostajemy „największą wartość do tej pory":
+
+```python
+>>> list(accumulate([3, 1, 4, 1, 5, 9, 2, 6], max))
+[3, 3, 4, 4, 5, 9, 9, 9]
+```
+
+Moduł `operator` zawiera funkcyjne odpowiedniki operatorów: `add`, `sub`, `mul`, `truediv`, `floordiv`, `mod`, `pow`, `neg` i wiele innych. Przydają się wszędzie tam, gdzie funkcja wyższego rzędu oczekuje funkcji, a my chcemy jej podać zwykłe działanie bez pisania lambdy.
+
+### functools.reduce — sam wynik
+
+Gdy kroki pośrednie nas nie interesują i chcemy tylko wartość końcową, służy do tego `reduce` z modułu `functools`. Składa strumień tą samą operacją, ale zwraca jedną liczbę:
+
+```python
+>>> from functools import reduce
+>>> reduce(operator.add, [1, 2, 3, 4, 5])
+15
+>>> reduce(operator.mul, [1, 2, 3, 4, 5])
+120
+```
+
+Związek z `accumulate` jest dosłowny — `reduce` to ostatni element tego, co wyprodukowałby `accumulate`:
+
+```python
+>>> list(accumulate([1, 2, 3, 4, 5], operator.mul))[-1]
+120
+```
+
+Opcjonalny trzeci argument to wartość początkowa, od której zaczyna się składanie:
+
+```python
+>>> reduce(operator.add, [1, 2, 3, 4, 5], 100)
+115
+```
+
+Wartość początkowa rozstrzyga też przypadki brzegowe. Bez niej `reduce` na pustym strumieniu rzuca `TypeError` — nie ma czego zwrócić; z nią oddaje po prostu tę wartość. `accumulate` na pustym wejściu zwraca pusty iterator.
+
+::: {.callout-note}
+## reduce — używać z umiarem
+W Pythonie 2 `reduce` było funkcją wbudowaną; w Pythonie 3 Guido van Rossum przeniósł je do `functools`, uznając, że zagnieżdżone składanie bywa trudniejsze do odczytania niż zwykła pętla. Gdy istnieje wyspecjalizowana funkcja — `sum`, `max`, `min`, `any`, `all`, `math.prod` — niemal zawsze jest czytelniejsza niż `reduce` z odpowiednim operatorem. `reduce` zostaw na operacje dwuargumentowe, dla których takiej gotowej funkcji nie ma.
+:::
+
+***
+
+## Grupowanie
+
+`groupby` przebiega strumień i skleja **kolejne** elementy o tym samym kluczu w jedną grupę. Zwraca pary `(klucz, grupa)`, gdzie `grupa` to iterator po elementach tej serii.
+
+### Podstawy
+
+Bez klucza grupuje po samej wartości elementu:
+
+```python
+>>> from itertools import groupby
+>>> [(k, list(g)) for k, g in groupby('AAABBBCCD')]
+[('A', ['A', 'A', 'A']), ('B', ['B', 'B', 'B']), ('C', ['C', 'C']), ('D', ['D'])]
+```
+
+Cztery serie, każda jako para `(litera, lista jej powtórzeń)`. Zwróć uwagę na konstrukcję `list(g)` — grupa jest iteratorem, więc żeby zobaczyć jej zawartość, trzeba ją skonsumować.
+
+::: {.callout-warning}
+## Grupa żyje tylko do następnego kroku
+Iterator grupy jest ważny **wyłącznie** dopóki nie sięgniemy po kolejną grupę. `groupby` współdzieli jeden bufor, a przejście do następnej pary unieważnia poprzednią. Dlatego materializacja samych par bez konsumpcji grup zawodzi:
+
+```python
+>>> [list(g) for k, g in list(groupby('AAB'))]
+[[], ['B']]
+```
+
+`list(groupby(...))` przebiegł cały zewnętrzny iterator, zanim ktokolwiek zajrzał do grup — i wszystkie poza ostatnią zdążyły się unieważnić. Bezpieczna postać to `[(k, list(g)) for k, g in groupby(...)]`: tu każdą grupę zamykamy w listę, **zanim** ruszymy dalej.
+:::
+
+### Pułapka: groupby grupuje sąsiadów, nie wszystkich równych
+
+Skoro grupowane są tylko *kolejne* równe elementy, te same klucze rozrzucone po strumieniu trafią do osobnych grup:
+
+```python
+>>> dane = [1, 1, 2, 1, 3, 3]
+>>> [(k, list(g)) for k, g in groupby(dane)]
+[(1, [1, 1]), (2, [2]), (1, [1]), (3, [3, 3])]
+```
+
+Klucz `1` pojawia się dwa razy, bo jedynki nie są wszystkie obok siebie. Gdy chcemy zgrupować **wszystkie** elementy o danym kluczu niezależnie od położenia, najpierw sortujemy po tym samym kluczu:
+
+```python
+>>> [(k, list(g)) for k, g in groupby(sorted(dane))]
+[(1, [1, 1, 1]), (2, [2]), (3, [3, 3])]
+```
+
+To najczęstszy błąd przy `groupby`: zapomniane sortowanie. Reguła jest prosta — **sortuj tym samym kluczem, którym grupujesz**.
+
+### Klucz: operator.itemgetter
+
+Argument `key` działa jak w `sorted` czy `max` — `groupby` grupuje po wartości funkcji, nie po samym elemencie. Dla rekordów-krotek klucz „weź pole numer `i`" najwygodniej zapisać przez `operator.itemgetter` (poznany w poprzedniej sekcji moduł `operator` dostarcza go obok funkcji arytmetycznych):
+
+```python
+>>> import operator
+>>> dane = [('owoc', 'jabłko'), ('warzywo', 'marchew'),
+...         ('owoc', 'gruszka'), ('warzywo', 'burak'), ('owoc', 'śliwka')]
+>>> klucz = operator.itemgetter(0)
+>>> for kategoria, grupa in groupby(sorted(dane, key=klucz), key=klucz):
+...     print(kategoria, [nazwa for _, nazwa in grupa])
+owoc ['jabłko', 'gruszka', 'śliwka']
+warzywo ['marchew', 'burak']
+```
+
+`operator.itemgetter(0)` zwraca funkcję, która z przekazanego obiektu pobiera element o indeksie `0` — czyli `lambda x: x[0]`, tylko czytelniej i bez lambdy. Ten sam klucz podajemy do `sorted` (żeby uniknąć pułapki sąsiedztwa) i do `groupby`. Analogiczny `operator.attrgetter('pole')` sięga po atrybut obiektu zamiast po element indeksowany.
+
+W capstonie na końcu wykładu zobaczymy `groupby` bez sortowania — i tym razem będzie to **zamierzone**: ciąg „mów, co widzisz" zlicza właśnie *kolejne* równe cyfry, więc sortowanie wszystko by zepsuło.
+
+***
+
+## Złożenie: ciąg „mów, co widzisz"
+
+Na koniec składamy poznane narzędzia w jeden program. Ciąg „mów, co widzisz" (*look-and-say*) powstaje przez głośne **odczytywanie** poprzedniego wyrazu: zliczamy serie kolejnych jednakowych cyfr i zapisujemy „ile, jaka cyfra". Start od `1`:
+
+```
+1        → „jedna jedynka"                        → 11
+11       → „dwie jedynki"                         → 21
+21       → „jedna dwójka, jedna jedynka"          → 1211
+1211     → „jedna jedynka, jedna dwójka, dwie jedynki" → 111221
+111221   → „trzy jedynki, dwie dwójki, jedna jedynka"  → 312211
+```
+
+Jeden krok — odczytanie pojedynczego wyrazu — to dosłownie zadanie dla `groupby`: pogrupuj kolejne równe cyfry, a dla każdej grupy podaj jej długość i cyfrę.
+
+```python
+from itertools import groupby
+
+
+def odczytaj(s):
+    """Jeden krok 'mów, co widzisz': odczytuje łańcuch cyfr.
+
+    >>> odczytaj('111221')
+    '312211'
+    """
+    fragmenty = []
+    for cyfra, grupa in groupby(s):
+        liczba = len(list(grupa))
+        fragmenty.append(f"{liczba}{cyfra}")
+    return ''.join(fragmenty)
+```
+
+Tu `groupby` celowo działa **bez** wcześniejszego sortowania. To dokładne przeciwieństwo pułapki z poprzedniej sekcji: tam zależało nam na wszystkich równych elementach i sortowanie było konieczne, tutaj liczą się właśnie *kolejne* równe cyfry — posortowanie `'111221'` na `'112112'` zlałoby rozdzielone serie i całkowicie zepsuło odczyt.
+
+A zwięźle, jednym wyrażeniem — `groupby` robi sąsiedztwo, wyrażenie generatora składa bezstanowo wynik (dokładnie podział pracy z callouta o wyrażeniach):
+
+```python
+def odczytaj(s):
+    return ''.join(f"{len(list(grupa))}{cyfra}" for cyfra, grupa in groupby(s))
+```
+
+Sam ciąg jest nieskończony, więc opakowujemy `odczytaj` w generator — wzorzec znany z wykładu XI: `yield` oddaje bieżący wyraz, po czym liczymy następny.
+
+```python
+def look_and_say(start='1'):
+    """Generator ciągu 'mów, co widzisz': 1, 11, 21, 1211, 111221, ..."""
+    obecny = start
+    while True:
+        yield obecny
+        obecny = odczytaj(obecny)
+```
+
+Generatora nie da się zmaterializować w całości — jak każdy strumień nieskończony trzeba go obciąć. Bierzemy `islice`:
+
+```python
+>>> from itertools import islice
+>>> list(islice(look_and_say(), 6))
+['1', '11', '21', '1211', '111221', '312211']
+```
+
+Cały wykład w jednym wyrażeniu: nieskończone źródło (`look_and_say`, sekcja o strumieniach), którego pojedynczy krok napędza `groupby` (sekcja o grupowaniu), tamowane `islice` do skończonego prefiksu.
+
+Warto jeszcze zerknąć, jak szybko rosną kolejne wyrazy — to widać, mierząc ich długości:
+
+```python
+>>> list(map(len, islice(look_and_say(), 8)))
+[1, 2, 2, 4, 6, 6, 8, 12]
+```
+
+Długości pną się nieograniczenie i wyrazy nigdy się nie powtarzają — strumień jest naprawdę nieskończony, a `islice` to jedyne, co dzieli nas od pętli bez końca.
+
+***

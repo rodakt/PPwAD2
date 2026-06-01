@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tomasz Rodak">
+
+<title>Moduł itertools, część II. Komponowanie strumieni danych – Podstawy programowania (AD) 2</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-965a04fcf813d12fd61c5755cc13b8fb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./wyklad_I.html">Wykłady</a></li><li class="breadcrumb-item"><a href="./wyklad_XIII.html">Moduł itertools, część II. Komponowanie strumieni danych</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Podstawy programowania (AD) 2</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Strona główna</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Wykłady</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Zmienne. Instrukcja przypisania</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wypakowywanie obiektów iterowalnych. Parametry i argumenty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Przestrzenie nazw i moduły</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Funkcje jako obiekty. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rekurencja</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_IX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Klasy i obiekty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_X.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Klasy i obiekty II: metody specjalne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_XI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Iteratory i generatory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_XII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wyszukiwanie wyczerpujące. Moduł itertools, część I</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./wyklad_XIII.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Moduł itertools, część II. Komponowanie strumieni danych</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Laboratoria</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_I/lab_I.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab I: Zadania na rozgrzewkę</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_II/lab_II.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab II: Błędy i wyjątki</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_III/lab_III.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab III: Testy jednostkowe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_IV/lab_IV.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IV: Zmienne, aliasy, kopie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_V/lab_V.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab V: Wypakowywanie i parametry funkcji</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_VI/lab_VI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VI: Geometria żółwia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_VII/lab_VII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VII: Funkcje wyższego rzędu. Domknięcia</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_VIII/lab_VIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab VIII: Dekoratory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_IX/lab_IX.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab IX: Rekurencja</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_X/lab_X.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab X: Klasy i obiekty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_XI/lab_XI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab XI: Metody specjalne i dziedziczenie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_XII/lab_XII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab XII: Iteratory i generatory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lab_XIII/lab_XIII.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab XIII: Wyszukiwanie wyczerpujące. Moduł itertools</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Spis treści</h2>
+   
+  <ul>
+  <li><a href="#wprowadzenie" id="toc-wprowadzenie" class="nav-link active" data-scroll-target="#wprowadzenie"><span class="header-section-number">1</span> Wprowadzenie</a></li>
+  <li><a href="#strumienie-nieskończone-i-ich-tamowanie" id="toc-strumienie-nieskończone-i-ich-tamowanie" class="nav-link" data-scroll-target="#strumienie-nieskończone-i-ich-tamowanie"><span class="header-section-number">2</span> Strumienie nieskończone i ich tamowanie</a>
+  <ul class="collapse">
+  <li><a href="#trzy-źródła-nieskończone" id="toc-trzy-źródła-nieskończone" class="nav-link" data-scroll-target="#trzy-źródła-nieskończone"><span class="header-section-number">2.1</span> Trzy źródła nieskończone</a></li>
+  <li><a href="#nożyce-islice-takewhile-dropwhile" id="toc-nożyce-islice-takewhile-dropwhile" class="nav-link" data-scroll-target="#nożyce-islice-takewhile-dropwhile"><span class="header-section-number">2.2</span> Nożyce: islice, takewhile, dropwhile</a></li>
+  <li><a href="#potok-w-akcji-liczby-pierwsze" id="toc-potok-w-akcji-liczby-pierwsze" class="nav-link" data-scroll-target="#potok-w-akcji-liczby-pierwsze"><span class="header-section-number">2.3</span> Potok w akcji: liczby pierwsze</a></li>
+  </ul></li>
+  <li><a href="#sklejanie-i-parowanie" id="toc-sklejanie-i-parowanie" class="nav-link" data-scroll-target="#sklejanie-i-parowanie"><span class="header-section-number">3</span> Sklejanie i parowanie</a>
+  <ul class="collapse">
+  <li><a href="#sklejanie-chain" id="toc-sklejanie-chain" class="nav-link" data-scroll-target="#sklejanie-chain"><span class="header-section-number">3.1</span> Sklejanie: chain</a></li>
+  <li><a href="#sąsiedztwo-pairwise" id="toc-sąsiedztwo-pairwise" class="nav-link" data-scroll-target="#sąsiedztwo-pairwise"><span class="header-section-number">3.2</span> Sąsiedztwo: pairwise</a></li>
+  </ul></li>
+  <li><a href="#akumulacja-i-redukcja" id="toc-akumulacja-i-redukcja" class="nav-link" data-scroll-target="#akumulacja-i-redukcja"><span class="header-section-number">4</span> Akumulacja i redukcja</a>
+  <ul class="collapse">
+  <li><a href="#accumulate-wszystkie-kroki" id="toc-accumulate-wszystkie-kroki" class="nav-link" data-scroll-target="#accumulate-wszystkie-kroki"><span class="header-section-number">4.1</span> accumulate — wszystkie kroki</a></li>
+  <li><a href="#functools.reduce-sam-wynik" id="toc-functools.reduce-sam-wynik" class="nav-link" data-scroll-target="#functools.reduce-sam-wynik"><span class="header-section-number">4.2</span> functools.reduce — sam wynik</a></li>
+  </ul></li>
+  <li><a href="#grupowanie" id="toc-grupowanie" class="nav-link" data-scroll-target="#grupowanie"><span class="header-section-number">5</span> Grupowanie</a>
+  <ul class="collapse">
+  <li><a href="#podstawy" id="toc-podstawy" class="nav-link" data-scroll-target="#podstawy"><span class="header-section-number">5.1</span> Podstawy</a></li>
+  <li><a href="#pułapka-groupby-grupuje-sąsiadów-nie-wszystkich-równych" id="toc-pułapka-groupby-grupuje-sąsiadów-nie-wszystkich-równych" class="nav-link" data-scroll-target="#pułapka-groupby-grupuje-sąsiadów-nie-wszystkich-równych"><span class="header-section-number">5.2</span> Pułapka: groupby grupuje sąsiadów, nie wszystkich równych</a></li>
+  <li><a href="#klucz-operator.itemgetter" id="toc-klucz-operator.itemgetter" class="nav-link" data-scroll-target="#klucz-operator.itemgetter"><span class="header-section-number">5.3</span> Klucz: operator.itemgetter</a></li>
+  </ul></li>
+  <li><a href="#złożenie-ciąg-mów-co-widzisz" id="toc-złożenie-ciąg-mów-co-widzisz" class="nav-link" data-scroll-target="#złożenie-ciąg-mów-co-widzisz"><span class="header-section-number">6</span> Złożenie: ciąg „mów, co widzisz”</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./wyklad_I.html">Wykłady</a></li><li class="breadcrumb-item"><a href="./wyklad_XIII.html">Moduł itertools, część II. Komponowanie strumieni danych</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Moduł itertools, część II. Komponowanie strumieni danych</h1>
+<p class="subtitle lead">Podstawy programowania (AD) 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tomasz Rodak </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="wprowadzenie" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="wprowadzenie"><span class="header-section-number">1</span> Wprowadzenie</h2>
+<p>Wykład XI pokazał, że iterator to leniwy strumień danych — wartości produkowane na żądanie, w stałej pamięci, w razie potrzeby nieskończony. Pisaliśmy wtedy własne strumienie (kwadraty, ciąg Fibonacciego, punkty kraty) i braliśmy ich skończony prefiks funkcją <code>islice</code> lub wyrażeniem listowym/generatora. Wykład XII dorzucił cztery funkcje kombinatoryczne z modułu <code>itertools</code>. Teraz poznamy funkcje, które strumieni nie tyle wytwarzają od zera, co je <strong>komponują</strong> — sklejają, ucinają, grupują, akumulują.</p>
+<p>Wszystkie działają wedle jednego schematu: biorą jeden lub więcej iteratorów na wejściu i zwracają nowy, leniwy iterator. Dzięki temu składają się jak klocki — wynik jednej funkcji podajemy jako wejście kolejnej i budujemy <strong>potok</strong>: źródło danych → odsianie i przekształcenie → redukcja do wyniku. Zamiast jednej dużej pętli z ręcznie prowadzonym stanem łączymy drobne, wyspecjalizowane elementy. Po drodze poznamy dwóch naturalnych towarzyszy <code>itertools</code> — funkcję <code>reduce</code> z modułu <code>functools</code> oraz moduł <code>operator</code>.</p>
+<p>Na koniec złożymy poznane narzędzia w program generujący ciąg „mów, co widzisz” — miejsce, w którym nieskończony strumień i grupowanie spotykają się w jednej, krótkiej funkcji.</p>
+<hr>
+</section>
+<section id="strumienie-nieskończone-i-ich-tamowanie" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="strumienie-nieskończone-i-ich-tamowanie"><span class="header-section-number">2</span> Strumienie nieskończone i ich tamowanie</h2>
+<p>Spośród wszystkich funkcji <code>itertools</code> strumienie nieskończone wytwarzają dokładnie trzy: <code>count</code>, <code>cycle</code> i <code>repeat</code> — pod nazwą <em>infinite iterators</em> zbiera je sama dokumentacja modułu. Od nich zaczniemy. Osobno poznamy narzędzia tnące — <code>islice</code>, <code>takewhile</code>, <code>dropwhile</code> — obcinają <em>dowolny</em> iterator. Wprowadzamy je razem z prostego powodu: skoro strumień nieskończony trzeba czymś zawsze zatrzymać, źródło i nożyce to naturalna para.</p>
+<section id="trzy-źródła-nieskończone" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="trzy-źródła-nieskończone"><span class="header-section-number">2.1</span> Trzy źródła nieskończone</h3>
+<p><code>count(start=0, step=1)</code> to nieskończony ciąg arytmetyczny — <code>range</code> bez górnej granicy (i, inaczej niż <code>range</code>, działający też dla liczb zmiennoprzecinkowych):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> count, islice</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice(count(), <span class="dv">5</span>))</span>
+<span id="cb1-3"><a href="#cb1-3"></a>[<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>]</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice(count(<span class="dv">10</span>), <span class="dv">5</span>))</span>
+<span id="cb1-5"><a href="#cb1-5"></a>[<span class="dv">10</span>, <span class="dv">11</span>, <span class="dv">12</span>, <span class="dv">13</span>, <span class="dv">14</span>]</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice(count(<span class="dv">0</span>, <span class="dv">2</span>), <span class="dv">5</span>))</span>
+<span id="cb1-7"><a href="#cb1-7"></a>[<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>]</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice(count(<span class="fl">1.0</span>, <span class="fl">0.5</span>), <span class="dv">5</span>))</span>
+<span id="cb1-9"><a href="#cb1-9"></a>[<span class="fl">1.0</span>, <span class="fl">1.5</span>, <span class="fl">2.0</span>, <span class="fl">2.5</span>, <span class="fl">3.0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>cycle(iterable)</code> w kółko powtarza elementy podanego obiektu:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> cycle</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice(cycle(<span class="st">'AB'</span>), <span class="dv">5</span>))</span>
+<span id="cb2-3"><a href="#cb2-3"></a>[<span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'A'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>repeat(element, times=None)</code> zwraca ten sam element w nieskończoność, a z argumentem <code>times</code> — skończenie wiele razy. To jedyne z trzech źródeł, które potrafi być skończone:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> repeat</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice(repeat(<span class="st">'x'</span>), <span class="dv">4</span>))</span>
+<span id="cb3-3"><a href="#cb3-3"></a>[<span class="st">'x'</span>, <span class="st">'x'</span>, <span class="st">'x'</span>, <span class="st">'x'</span>]</span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(repeat(<span class="st">'x'</span>, <span class="dv">4</span>))</span>
+<span id="cb3-5"><a href="#cb3-5"></a>[<span class="st">'x'</span>, <span class="st">'x'</span>, <span class="st">'x'</span>, <span class="st">'x'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>W tej skończonej postaci <code>repeat</code> przydaje się jako „stały” argument dla <code>map</code> czy <code>zip</code> — na przykład do podniesienia każdej liczby do kwadratu przez <code>pow</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(<span class="bu">map</span>(<span class="bu">pow</span>, <span class="bu">range</span>(<span class="dv">5</span>), repeat(<span class="dv">2</span>)))</span>
+<span id="cb4-2"><a href="#cb4-2"></a>[<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">16</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wszystkie trzy są w gruncie rzeczy generatorami, jakie umiemy już napisać sami — to wzorzec <code>while True: yield</code> z wykładu XI. Oto ich z grubsza równoważne odpowiedniki w czystym Pythonie (oryginały z <code>itertools</code> napisane są w C i bywają bogatsze o detale):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">def</span> count(start<span class="op">=</span><span class="dv">0</span>, step<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    n <span class="op">=</span> start</span>
+<span id="cb5-3"><a href="#cb5-3"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb5-4"><a href="#cb5-4"></a>        <span class="cf">yield</span> n</span>
+<span id="cb5-5"><a href="#cb5-5"></a>        n <span class="op">+=</span> step</span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="kw">def</span> repeat(obj, times<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb5-9"><a href="#cb5-9"></a>    <span class="cf">if</span> times <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb5-10"><a href="#cb5-10"></a>        <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb5-11"><a href="#cb5-11"></a>            <span class="cf">yield</span> obj</span>
+<span id="cb5-12"><a href="#cb5-12"></a>    <span class="cf">else</span>:</span>
+<span id="cb5-13"><a href="#cb5-13"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(times):</span>
+<span id="cb5-14"><a href="#cb5-14"></a>            <span class="cf">yield</span> obj</span>
+<span id="cb5-15"><a href="#cb5-15"></a></span>
+<span id="cb5-16"><a href="#cb5-16"></a></span>
+<span id="cb5-17"><a href="#cb5-17"></a><span class="kw">def</span> cycle(iterable):</span>
+<span id="cb5-18"><a href="#cb5-18"></a>    zapamietane <span class="op">=</span> []</span>
+<span id="cb5-19"><a href="#cb5-19"></a>    <span class="cf">for</span> element <span class="kw">in</span> iterable:        <span class="co"># pierwsze okrążenie — i zapis do bufora</span></span>
+<span id="cb5-20"><a href="#cb5-20"></a>        <span class="cf">yield</span> element</span>
+<span id="cb5-21"><a href="#cb5-21"></a>        zapamietane.append(element)</span>
+<span id="cb5-22"><a href="#cb5-22"></a>    <span class="cf">while</span> zapamietane:                <span class="co"># kolejne okrążenia — już z bufora</span></span>
+<span id="cb5-23"><a href="#cb5-23"></a>        <span class="cf">for</span> element <span class="kw">in</span> zapamietane:</span>
+<span id="cb5-24"><a href="#cb5-24"></a>            <span class="cf">yield</span> element</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dwie z tych implementacji rzeczywiście działają w stałej pamięci — <code>count</code> trzyma jedną liczbę, <code>repeat</code> jeden obiekt. <code>cycle</code> jest wyjątkiem: żeby powtarzać wejście w kółko, musi je najpierw <strong>w całości zapamiętać</strong> (lista <code>zapamietane</code>). To jedyne z trzech źródeł, które rośnie w pamięci wraz z długością wejścia — drobny wyłom w regule „iterator = stała pamięć” z otwarcia wykładu XI.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Nie materializuj strumienia nieskończonego
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>list(count())</code> albo <code>for x in cycle('AB'): ...</code> bez warunku stopu zapętli się i wyczerpie pamięć. Strumień nieskończony trzeba zawsze obciąć — <code>islice</code>, <code>takewhile</code>/<code>dropwhile</code> albo zwykłą pętlą <code>for</code> z <code>break</code>.</p>
+</div>
+</div>
+</section>
+<section id="nożyce-islice-takewhile-dropwhile" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="nożyce-islice-takewhile-dropwhile"><span class="header-section-number">2.2</span> Nożyce: islice, takewhile, dropwhile</h3>
+<p><code>islice</code> poznaliśmy już w XI jako leniwy odpowiednik krojenia listy. Pełna składnia odwzorowuje wycinek <code>it[start:stop:step]</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice(count(), <span class="dv">5</span>))         <span class="co"># jak it[:5]</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>[<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>]</span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice(count(), <span class="dv">2</span>, <span class="dv">7</span>))      <span class="co"># jak it[2:7]</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>[<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]</span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice(count(), <span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">3</span>))  <span class="co"># jak it[0:10:3]</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>[<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">9</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Jedyna różnica wobec krojenia list: <code>islice</code> nie przyjmuje indeksów ujemnych — iterator nie zna swojej długości i nie umie liczyć od końca.</p>
+<p><code>islice</code> tnie po <strong>liczbie</strong> elementów. Czasem chcemy ciąć po <strong>warunku</strong> — tu wchodzą <code>takewhile</code> i <code>dropwhile</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> takewhile, dropwhile</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(takewhile(<span class="kw">lambda</span> x: x <span class="op">&lt;</span> <span class="dv">5</span>, [<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">1</span>]))</span>
+<span id="cb7-3"><a href="#cb7-3"></a>[<span class="dv">1</span>, <span class="dv">4</span>]</span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(dropwhile(<span class="kw">lambda</span> x: x <span class="op">&lt;</span> <span class="dv">5</span>, [<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">1</span>]))</span>
+<span id="cb7-5"><a href="#cb7-5"></a>[<span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>takewhile</code> oddaje elementy <strong>dopóki</strong> warunek jest prawdziwy i zatrzymuje się przy pierwszym fałszu — kończy na <code>6</code> i nigdy nie zagląda dalej. <code>dropwhile</code> robi rzecz odwrotną: pomija elementy, dopóki warunek zachodzi, a po pierwszym fałszu oddaje <strong>całą resztę</strong> bez ponownego sprawdzania. Dlatego końcowe <code>4, 1</code> zostają w wyniku <code>dropwhile</code>, choć są mniejsze od <code>5</code>.</p>
+<p>Tej różnicy łatwo nie zauważyć, dopóki nie zestawi się <code>takewhile</code> z <code>filter</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(<span class="bu">filter</span>(<span class="kw">lambda</span> x: x <span class="op">&lt;</span> <span class="dv">5</span>, [<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">1</span>]))</span>
+<span id="cb8-2"><a href="#cb8-2"></a>[<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>filter</code> przegląda <strong>cały</strong> strumień i przepuszcza każdy element spełniający warunek. <code>takewhile</code> przerywa przy pierwszym, który go nie spełnia. Na strumieniu skończonym różnica bywa subtelna; na nieskończonym jest zasadnicza — <code>takewhile</code> może się zatrzymać, <code>filter</code> (bez dodatkowego obcięcia) nie.</p>
+</section>
+<section id="potok-w-akcji-liczby-pierwsze" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="potok-w-akcji-liczby-pierwsze"><span class="header-section-number">2.3</span> Potok w akcji: liczby pierwsze</h3>
+<p>Mając prosty test pierwszości:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">def</span> pierwsza(n):</span>
+<span id="cb9-2"><a href="#cb9-2"></a>    <span class="co">"""Czy n jest liczbą pierwszą?"""</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>    <span class="cf">if</span> n <span class="op">&lt;</span> <span class="dv">2</span>:</span>
+<span id="cb9-4"><a href="#cb9-4"></a>        <span class="cf">return</span> <span class="va">False</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>    d <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>    <span class="cf">while</span> d <span class="op">*</span> d <span class="op">&lt;=</span> n:</span>
+<span id="cb9-7"><a href="#cb9-7"></a>        <span class="cf">if</span> n <span class="op">%</span> d <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb9-8"><a href="#cb9-8"></a>            <span class="cf">return</span> <span class="va">False</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a>        d <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a>    <span class="cf">return</span> <span class="va">True</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>dziesięć pierwszych liczb pierwszych dostajemy jednym potokiem — bez pętli i bez wskazywania z góry, gdzie ich szukać:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> count, islice</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice(<span class="bu">filter</span>(pierwsza, count(<span class="dv">2</span>)), <span class="dv">10</span>))</span>
+<span id="cb10-3"><a href="#cb10-3"></a>[<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">11</span>, <span class="dv">13</span>, <span class="dv">17</span>, <span class="dv">19</span>, <span class="dv">23</span>, <span class="dv">29</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Czyta się to od środka na zewnątrz: <code>count(2)</code> to nieskończone źródło <code>2, 3, 4, …</code>; <code>filter(pierwsza, …)</code> przepuszcza z niego tylko liczby pierwsze (wciąż nieskończenie wiele, wciąż leniwie); <code>islice(…, 10)</code> bierze pierwszych dziesięć i na tym poprzestaje. W żadnym momencie nie powstaje nieskończona lista — każda warstwa produkuje wartość dopiero wtedy, gdy następna o nią poprosi.</p>
+<p>A gdybyśmy chcieli nie „pierwszych dziesięć”, lecz „wszystkie poniżej 30”, wystarczy zamienić nożyce — <code>islice</code> (tnie po liczbie) na <code>takewhile</code> (tnie po warunku):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(takewhile(<span class="kw">lambda</span> n: n <span class="op">&lt;</span> <span class="dv">30</span>, <span class="bu">filter</span>(pierwsza, count(<span class="dv">2</span>))))</span>
+<span id="cb11-2"><a href="#cb11-2"></a>[<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">11</span>, <span class="dv">13</span>, <span class="dv">17</span>, <span class="dv">19</span>, <span class="dv">23</span>, <span class="dv">29</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>A nie wystarczą wyrażenia listowe/generatora?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Często wystarczą. <code>map</code> i <code>filter</code> mają wprost odpowiedniki w składni wyrażeń — <code>map(f, it)</code> to <code>(f(x) for x in it)</code>, a <code>filter(pred, it)</code> to <code>(x for x in it if pred(x))</code>. Wyrażenie generatora jest przy tym równie leniwe, więc nasz potok liczb pierwszych ma czytelnego bliźniaka:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice((n <span class="cf">for</span> n <span class="kw">in</span> count(<span class="dv">2</span>) <span class="cf">if</span> pierwsza(n)), <span class="dv">10</span>))</span>
+<span id="cb12-2"><a href="#cb12-2"></a>[<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">11</span>, <span class="dv">13</span>, <span class="dv">17</span>, <span class="dv">19</span>, <span class="dv">23</span>, <span class="dv">29</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Granica jest tam, gdzie potrzeba <strong>stanu</strong> albo <strong>wczesnego stopu</strong> — a tego wyrażenie nie ma. Jego <code>if</code> to <code>filter</code>, nie <code>takewhile</code>: sprawdza każdy element i nigdy się nie zatrzymuje. Dlatego wariant „pierwsze poniżej 30”, który z <code>takewhile</code> po prostu się kończył, jako wyrażenie zapętla się bez końca — <code>count(2)</code> produkuje liczby w nieskończoność, a <code>n &lt; 30</code> tylko przestaje je przepuszczać:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(n <span class="cf">for</span> n <span class="kw">in</span> count(<span class="dv">2</span>) <span class="cf">if</span> pierwsza(n) <span class="kw">and</span> n <span class="op">&lt;</span> <span class="dv">30</span>)   <span class="co"># nigdy nie wraca!</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Stąd prosty podział pracy: bezstanowe <em>przekształć i odsiej</em> czytelniej zapiszesz wyrażeniem; <strong>wczesny stop</strong> (<code>takewhile</code>, <code>dropwhile</code>), <strong>akumulację</strong> (<code>accumulate</code>, <code>reduce</code>) i <strong>patrzenie na sąsiadów</strong> (<code>pairwise</code>, <code>groupby</code>) daje dopiero <code>itertools</code> — i to jest właśnie to, czym ten moduł zarabia na swoje istnienie.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="sklejanie-i-parowanie" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="sklejanie-i-parowanie"><span class="header-section-number">3</span> Sklejanie i parowanie</h2>
+<p>Sekcja poprzednia robiła i przycinała pojedyncze strumienie. Teraz dwie funkcje, które patrzą na więcej niż jeden element naraz: <code>chain</code> skleja strumienie koniec w koniec, <code>pairwise</code> zestawia sąsiadów.</p>
+<section id="sklejanie-chain" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="sklejanie-chain"><span class="header-section-number">3.1</span> Sklejanie: chain</h3>
+<p><code>chain</code> traktuje kilka iterowalnych obiektów jak jeden ciągły strumień — przebiega pierwszy do końca, potem drugi, i tak dalej. Typy mogą być różne:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> chain</span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(chain([<span class="dv">1</span>, <span class="dv">2</span>], [<span class="dv">3</span>, <span class="dv">4</span>], [<span class="dv">5</span>]))</span>
+<span id="cb14-3"><a href="#cb14-3"></a>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>]</span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(chain(<span class="st">'AB'</span>, <span class="bu">range</span>(<span class="dv">3</span>)))</span>
+<span id="cb14-5"><a href="#cb14-5"></a>[<span class="st">'A'</span>, <span class="st">'B'</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Bywa, że strumienie do sklejenia mamy już zebrane w jednym obiekcie — na przykład listę list. Wtedy zamiast rozpakowywać ją gwiazdką sięgamy po <code>chain.from_iterable</code>, które bierze <strong>jeden</strong> obiekt iterowalny obiektów iterowalnych:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a><span class="op">&gt;&gt;&gt;</span> wiersze <span class="op">=</span> [[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>], [<span class="dv">4</span>, <span class="dv">5</span>], [<span class="dv">6</span>]]</span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(chain.from_iterable(wiersze))</span>
+<span id="cb15-3"><a href="#cb15-3"></a>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To wygodny sposób na <strong>spłaszczenie</strong> jednego poziomu zagnieżdżenia. <code>chain(*wiersze)</code> dałoby ten sam wynik, ale rozpakowanie gwiazdką musi z góry znać wszystkie elementy zewnętrznego obiektu — <code>chain.from_iterable</code> przegląda go leniwie i zadziała nawet, gdy sam zewnętrzny strumień jest nieskończony.</p>
+<p>Oba sprowadzają się do krótkiej pętli <code>yield from</code> — różni je tylko nagłówek:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">def</span> chain(<span class="op">*</span>iterowalne):</span>
+<span id="cb16-2"><a href="#cb16-2"></a>    <span class="cf">for</span> it <span class="kw">in</span> iterowalne:</span>
+<span id="cb16-3"><a href="#cb16-3"></a>        <span class="cf">yield</span> <span class="cf">from</span> it</span>
+<span id="cb16-4"><a href="#cb16-4"></a></span>
+<span id="cb16-5"><a href="#cb16-5"></a></span>
+<span id="cb16-6"><a href="#cb16-6"></a><span class="kw">def</span> from_iterable(iterowalne):</span>
+<span id="cb16-7"><a href="#cb16-7"></a>    <span class="cf">for</span> it <span class="kw">in</span> iterowalne:</span>
+<span id="cb16-8"><a href="#cb16-8"></a>        <span class="cf">yield</span> <span class="cf">from</span> it</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>chain</code> dostaje strumienie jako osobne argumenty, więc musi je poznać z góry; <code>from_iterable</code> — jako jeden obiekt iterowalny, po którym idzie leniwie. Stąd ta druga radzi sobie z nieskończonym strumieniem zewnętrznym.</p>
+</section>
+<section id="sąsiedztwo-pairwise" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="sąsiedztwo-pairwise"><span class="header-section-number">3.2</span> Sąsiedztwo: pairwise</h3>
+<p><code>pairwise</code> przesuwa po strumieniu okno szerokości dwa, zwracając kolejne <strong>sąsiednie pary</strong>. Z <code>n</code> elementów powstaje <code>n - 1</code> par:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> pairwise</span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(pairwise(<span class="st">'ABCD'</span>))</span>
+<span id="cb17-3"><a href="#cb17-3"></a>[(<span class="st">'A'</span>, <span class="st">'B'</span>), (<span class="st">'B'</span>, <span class="st">'C'</span>), (<span class="st">'C'</span>, <span class="st">'D'</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To wprost narzędzie do liczenia czegoś „między kolejnymi pomiarami” — na przykład różnic wartości:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a><span class="op">&gt;&gt;&gt;</span> dane <span class="op">=</span> [<span class="dv">10</span>, <span class="dv">13</span>, <span class="dv">9</span>, <span class="dv">14</span>, <span class="dv">14</span>]</span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="op">&gt;&gt;&gt;</span> [b <span class="op">-</span> a <span class="cf">for</span> a, b <span class="kw">in</span> pairwise(dane)]</span>
+<span id="cb18-3"><a href="#cb18-3"></a>[<span class="dv">3</span>, <span class="op">-</span><span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dla strumienia krótszego niż dwa elementy nie ma żadnej pary, więc wynik jest pusty:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(pairwise(<span class="st">'A'</span>))</span>
+<span id="cb19-2"><a href="#cb19-2"></a>[]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Wersja Pythona
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>pairwise</code> pojawiło się w Pythonie 3.10. We wcześniejszych wersjach trzeba je było złożyć samemu — zobaczymy taki przepis w sekcji o <code>itertools</code> recipes.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="akumulacja-i-redukcja" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="akumulacja-i-redukcja"><span class="header-section-number">4</span> Akumulacja i redukcja</h2>
+<p>Dwie funkcje sprowadzają cały strumień do wyniku przez wielokrotne złożenie tej samej operacji dwuargumentowej. Różni je to, co oddają: <code>accumulate</code> — każdy krok po drodze, <code>reduce</code> — tylko wartość końcową.</p>
+<section id="accumulate-wszystkie-kroki" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="accumulate-wszystkie-kroki"><span class="header-section-number">4.1</span> accumulate — wszystkie kroki</h3>
+<p><code>accumulate</code> zwraca ciąg wyników częściowych. Domyślnie dodaje, więc dostajemy kolejne <strong>sumy częściowe</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> accumulate</span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(accumulate([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>]))</span>
+<span id="cb20-3"><a href="#cb20-3"></a>[<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">15</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Pierwszy element przepisywany jest bez zmian, każdy następny to poprzedni wynik plus bieżący element: <code>1</code>, <code>1+2</code>, <code>3+3</code>, <code>6+4</code>, <code>10+5</code>. Widać tu <strong>stan niesiony przez obliczenie</strong> — zmienną, w której gromadzi się dotychczasowy wynik. To właśnie ona odróżnia <code>accumulate</code> od wyrażenia generatora (zob. callout wyżej); z grubsza:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">def</span> accumulate(iterowalny, func<span class="op">=</span>operator.add):</span>
+<span id="cb21-2"><a href="#cb21-2"></a>    it <span class="op">=</span> <span class="bu">iter</span>(iterowalny)</span>
+<span id="cb21-3"><a href="#cb21-3"></a>    <span class="cf">try</span>:</span>
+<span id="cb21-4"><a href="#cb21-4"></a>        biezacy <span class="op">=</span> <span class="bu">next</span>(it)</span>
+<span id="cb21-5"><a href="#cb21-5"></a>    <span class="cf">except</span> <span class="pp">StopIteration</span>:</span>
+<span id="cb21-6"><a href="#cb21-6"></a>        <span class="cf">return</span>                     <span class="co"># puste wejście → pusty iterator</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a>    <span class="cf">yield</span> biezacy</span>
+<span id="cb21-8"><a href="#cb21-8"></a>    <span class="cf">for</span> element <span class="kw">in</span> it:</span>
+<span id="cb21-9"><a href="#cb21-9"></a>        biezacy <span class="op">=</span> func(biezacy, element)</span>
+<span id="cb21-10"><a href="#cb21-10"></a>        <span class="cf">yield</span> biezacy</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zmienna <code>biezacy</code> przeżywa między kolejnymi <code>yield</code> — i to jest dokładnie ta pamięć, której wyrażenie <code>(... for ... in ...)</code> mieć nie może.</p>
+<p>Operację można podmienić, podając funkcję dwuargumentową jako drugi argument. Można tu wstawić lambdę, ale dla typowych działań arytmetycznych gotowe funkcje daje moduł <code>operator</code> — <code>operator.mul</code> zamiast <code>lambda x, y: x * y</code> jest krótsze, nazwane i szybsze:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> operator</span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(accumulate([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>], operator.mul))</span>
+<span id="cb22-3"><a href="#cb22-3"></a>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">24</span>, <span class="dv">120</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To biegnące <strong>iloczyny</strong> częściowe — przy okazji kolejne silnie <code>1!, 2!, …, 5!</code>. Funkcja nie musi być arytmetyczna; z wbudowanym <code>max</code> dostajemy „największą wartość do tej pory”:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(accumulate([<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">9</span>, <span class="dv">2</span>, <span class="dv">6</span>], <span class="bu">max</span>))</span>
+<span id="cb23-2"><a href="#cb23-2"></a>[<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">9</span>, <span class="dv">9</span>, <span class="dv">9</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Moduł <code>operator</code> zawiera funkcyjne odpowiedniki operatorów: <code>add</code>, <code>sub</code>, <code>mul</code>, <code>truediv</code>, <code>floordiv</code>, <code>mod</code>, <code>pow</code>, <code>neg</code> i wiele innych. Przydają się wszędzie tam, gdzie funkcja wyższego rzędu oczekuje funkcji, a my chcemy jej podać zwykłe działanie bez pisania lambdy.</p>
+</section>
+<section id="functools.reduce-sam-wynik" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="functools.reduce-sam-wynik"><span class="header-section-number">4.2</span> functools.reduce — sam wynik</h3>
+<p>Gdy kroki pośrednie nas nie interesują i chcemy tylko wartość końcową, służy do tego <code>reduce</code> z modułu <code>functools</code>. Składa strumień tą samą operacją, ale zwraca jedną liczbę:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> functools <span class="im">import</span> <span class="bu">reduce</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">reduce</span>(operator.add, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>])</span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="dv">15</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">reduce</span>(operator.mul, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>])</span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="dv">120</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Związek z <code>accumulate</code> jest dosłowny — <code>reduce</code> to ostatni element tego, co wyprodukowałby <code>accumulate</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(accumulate([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>], operator.mul))[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="dv">120</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Opcjonalny trzeci argument to wartość początkowa, od której zaczyna się składanie:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">reduce</span>(operator.add, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>], <span class="dv">100</span>)</span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="dv">115</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wartość początkowa rozstrzyga też przypadki brzegowe. Bez niej <code>reduce</code> na pustym strumieniu rzuca <code>TypeError</code> — nie ma czego zwrócić; z nią oddaje po prostu tę wartość. <code>accumulate</code> na pustym wejściu zwraca pusty iterator.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>reduce — używać z umiarem
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>W Pythonie 2 <code>reduce</code> było funkcją wbudowaną; w Pythonie 3 Guido van Rossum przeniósł je do <code>functools</code>, uznając, że zagnieżdżone składanie bywa trudniejsze do odczytania niż zwykła pętla. Gdy istnieje wyspecjalizowana funkcja — <code>sum</code>, <code>max</code>, <code>min</code>, <code>any</code>, <code>all</code>, <code>math.prod</code> — niemal zawsze jest czytelniejsza niż <code>reduce</code> z odpowiednim operatorem. <code>reduce</code> zostaw na operacje dwuargumentowe, dla których takiej gotowej funkcji nie ma.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="grupowanie" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="grupowanie"><span class="header-section-number">5</span> Grupowanie</h2>
+<p><code>groupby</code> przebiega strumień i skleja <strong>kolejne</strong> elementy o tym samym kluczu w jedną grupę. Zwraca pary <code>(klucz, grupa)</code>, gdzie <code>grupa</code> to iterator po elementach tej serii.</p>
+<section id="podstawy" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="podstawy"><span class="header-section-number">5.1</span> Podstawy</h3>
+<p>Bez klucza grupuje po samej wartości elementu:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> groupby</span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="op">&gt;&gt;&gt;</span> [(k, <span class="bu">list</span>(g)) <span class="cf">for</span> k, g <span class="kw">in</span> groupby(<span class="st">'AAABBBCCD'</span>)]</span>
+<span id="cb27-3"><a href="#cb27-3"></a>[(<span class="st">'A'</span>, [<span class="st">'A'</span>, <span class="st">'A'</span>, <span class="st">'A'</span>]), (<span class="st">'B'</span>, [<span class="st">'B'</span>, <span class="st">'B'</span>, <span class="st">'B'</span>]), (<span class="st">'C'</span>, [<span class="st">'C'</span>, <span class="st">'C'</span>]), (<span class="st">'D'</span>, [<span class="st">'D'</span>])]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cztery serie, każda jako para <code>(litera, lista jej powtórzeń)</code>. Zwróć uwagę na konstrukcję <code>list(g)</code> — grupa jest iteratorem, więc żeby zobaczyć jej zawartość, trzeba ją skonsumować.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Grupa żyje tylko do następnego kroku
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Iterator grupy jest ważny <strong>wyłącznie</strong> dopóki nie sięgniemy po kolejną grupę. <code>groupby</code> współdzieli jeden bufor, a przejście do następnej pary unieważnia poprzednią. Dlatego materializacja samych par bez konsumpcji grup zawodzi:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1"></a><span class="op">&gt;&gt;&gt;</span> [<span class="bu">list</span>(g) <span class="cf">for</span> k, g <span class="kw">in</span> <span class="bu">list</span>(groupby(<span class="st">'AAB'</span>))]</span>
+<span id="cb28-2"><a href="#cb28-2"></a>[[], [<span class="st">'B'</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>list(groupby(...))</code> przebiegł cały zewnętrzny iterator, zanim ktokolwiek zajrzał do grup — i wszystkie poza ostatnią zdążyły się unieważnić. Bezpieczna postać to <code>[(k, list(g)) for k, g in groupby(...)]</code>: tu każdą grupę zamykamy w listę, <strong>zanim</strong> ruszymy dalej.</p>
+</div>
+</div>
+</section>
+<section id="pułapka-groupby-grupuje-sąsiadów-nie-wszystkich-równych" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="pułapka-groupby-grupuje-sąsiadów-nie-wszystkich-równych"><span class="header-section-number">5.2</span> Pułapka: groupby grupuje sąsiadów, nie wszystkich równych</h3>
+<p>Skoro grupowane są tylko <em>kolejne</em> równe elementy, te same klucze rozrzucone po strumieniu trafią do osobnych grup:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1"></a><span class="op">&gt;&gt;&gt;</span> dane <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">3</span>]</span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="op">&gt;&gt;&gt;</span> [(k, <span class="bu">list</span>(g)) <span class="cf">for</span> k, g <span class="kw">in</span> groupby(dane)]</span>
+<span id="cb29-3"><a href="#cb29-3"></a>[(<span class="dv">1</span>, [<span class="dv">1</span>, <span class="dv">1</span>]), (<span class="dv">2</span>, [<span class="dv">2</span>]), (<span class="dv">1</span>, [<span class="dv">1</span>]), (<span class="dv">3</span>, [<span class="dv">3</span>, <span class="dv">3</span>])]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Klucz <code>1</code> pojawia się dwa razy, bo jedynki nie są wszystkie obok siebie. Gdy chcemy zgrupować <strong>wszystkie</strong> elementy o danym kluczu niezależnie od położenia, najpierw sortujemy po tym samym kluczu:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1"></a><span class="op">&gt;&gt;&gt;</span> [(k, <span class="bu">list</span>(g)) <span class="cf">for</span> k, g <span class="kw">in</span> groupby(<span class="bu">sorted</span>(dane))]</span>
+<span id="cb30-2"><a href="#cb30-2"></a>[(<span class="dv">1</span>, [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>]), (<span class="dv">2</span>, [<span class="dv">2</span>]), (<span class="dv">3</span>, [<span class="dv">3</span>, <span class="dv">3</span>])]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To najczęstszy błąd przy <code>groupby</code>: zapomniane sortowanie. Reguła jest prosta — <strong>sortuj tym samym kluczem, którym grupujesz</strong>.</p>
+</section>
+<section id="klucz-operator.itemgetter" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="klucz-operator.itemgetter"><span class="header-section-number">5.3</span> Klucz: operator.itemgetter</h3>
+<p>Argument <code>key</code> działa jak w <code>sorted</code> czy <code>max</code> — <code>groupby</code> grupuje po wartości funkcji, nie po samym elemencie. Dla rekordów-krotek klucz „weź pole numer <code>i</code>” najwygodniej zapisać przez <code>operator.itemgetter</code> (poznany w poprzedniej sekcji moduł <code>operator</code> dostarcza go obok funkcji arytmetycznych):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> operator</span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="op">&gt;&gt;&gt;</span> dane <span class="op">=</span> [(<span class="st">'owoc'</span>, <span class="st">'jabłko'</span>), (<span class="st">'warzywo'</span>, <span class="st">'marchew'</span>),</span>
+<span id="cb31-3"><a href="#cb31-3"></a>...         (<span class="st">'owoc'</span>, <span class="st">'gruszka'</span>), (<span class="st">'warzywo'</span>, <span class="st">'burak'</span>), (<span class="st">'owoc'</span>, <span class="st">'śliwka'</span>)]</span>
+<span id="cb31-4"><a href="#cb31-4"></a><span class="op">&gt;&gt;&gt;</span> klucz <span class="op">=</span> operator.itemgetter(<span class="dv">0</span>)</span>
+<span id="cb31-5"><a href="#cb31-5"></a><span class="op">&gt;&gt;&gt;</span> <span class="cf">for</span> kategoria, grupa <span class="kw">in</span> groupby(<span class="bu">sorted</span>(dane, key<span class="op">=</span>klucz), key<span class="op">=</span>klucz):</span>
+<span id="cb31-6"><a href="#cb31-6"></a>...     <span class="bu">print</span>(kategoria, [nazwa <span class="cf">for</span> _, nazwa <span class="kw">in</span> grupa])</span>
+<span id="cb31-7"><a href="#cb31-7"></a>owoc [<span class="st">'jabłko'</span>, <span class="st">'gruszka'</span>, <span class="st">'śliwka'</span>]</span>
+<span id="cb31-8"><a href="#cb31-8"></a>warzywo [<span class="st">'marchew'</span>, <span class="st">'burak'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>operator.itemgetter(0)</code> zwraca funkcję, która z przekazanego obiektu pobiera element o indeksie <code>0</code> — czyli <code>lambda x: x[0]</code>, tylko czytelniej i bez lambdy. Ten sam klucz podajemy do <code>sorted</code> (żeby uniknąć pułapki sąsiedztwa) i do <code>groupby</code>. Analogiczny <code>operator.attrgetter('pole')</code> sięga po atrybut obiektu zamiast po element indeksowany.</p>
+<p>W capstonie na końcu wykładu zobaczymy <code>groupby</code> bez sortowania — i tym razem będzie to <strong>zamierzone</strong>: ciąg „mów, co widzisz” zlicza właśnie <em>kolejne</em> równe cyfry, więc sortowanie wszystko by zepsuło.</p>
+<hr>
+</section>
+</section>
+<section id="złożenie-ciąg-mów-co-widzisz" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="złożenie-ciąg-mów-co-widzisz"><span class="header-section-number">6</span> Złożenie: ciąg „mów, co widzisz”</h2>
+<p>Na koniec składamy poznane narzędzia w jeden program. Ciąg „mów, co widzisz” (<em>look-and-say</em>) powstaje przez głośne <strong>odczytywanie</strong> poprzedniego wyrazu: zliczamy serie kolejnych jednakowych cyfr i zapisujemy „ile, jaka cyfra”. Start od <code>1</code>:</p>
+<pre><code>1        → „jedna jedynka"                        → 11
+11       → „dwie jedynki"                         → 21
+21       → „jedna dwójka, jedna jedynka"          → 1211
+1211     → „jedna jedynka, jedna dwójka, dwie jedynki" → 111221
+111221   → „trzy jedynki, dwie dwójki, jedna jedynka"  → 312211</code></pre>
+<p>Jeden krok — odczytanie pojedynczego wyrazu — to dosłownie zadanie dla <code>groupby</code>: pogrupuj kolejne równe cyfry, a dla każdej grupy podaj jej długość i cyfrę.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1"></a><span class="im">from</span> itertools <span class="im">import</span> groupby</span>
+<span id="cb33-2"><a href="#cb33-2"></a></span>
+<span id="cb33-3"><a href="#cb33-3"></a></span>
+<span id="cb33-4"><a href="#cb33-4"></a><span class="kw">def</span> odczytaj(s):</span>
+<span id="cb33-5"><a href="#cb33-5"></a>    <span class="co">"""Jeden krok 'mów, co widzisz': odczytuje łańcuch cyfr.</span></span>
+<span id="cb33-6"><a href="#cb33-6"></a></span>
+<span id="cb33-7"><a href="#cb33-7"></a><span class="co">    &gt;&gt;&gt; odczytaj('111221')</span></span>
+<span id="cb33-8"><a href="#cb33-8"></a><span class="co">    '312211'</span></span>
+<span id="cb33-9"><a href="#cb33-9"></a><span class="co">    """</span></span>
+<span id="cb33-10"><a href="#cb33-10"></a>    fragmenty <span class="op">=</span> []</span>
+<span id="cb33-11"><a href="#cb33-11"></a>    <span class="cf">for</span> cyfra, grupa <span class="kw">in</span> groupby(s):</span>
+<span id="cb33-12"><a href="#cb33-12"></a>        liczba <span class="op">=</span> <span class="bu">len</span>(<span class="bu">list</span>(grupa))</span>
+<span id="cb33-13"><a href="#cb33-13"></a>        fragmenty.append(<span class="ss">f"</span><span class="sc">{</span>liczba<span class="sc">}{</span>cyfra<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb33-14"><a href="#cb33-14"></a>    <span class="cf">return</span> <span class="st">''</span>.join(fragmenty)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Tu <code>groupby</code> celowo działa <strong>bez</strong> wcześniejszego sortowania. To dokładne przeciwieństwo pułapki z poprzedniej sekcji: tam zależało nam na wszystkich równych elementach i sortowanie było konieczne, tutaj liczą się właśnie <em>kolejne</em> równe cyfry — posortowanie <code>'111221'</code> na <code>'112112'</code> zlałoby rozdzielone serie i całkowicie zepsuło odczyt.</p>
+<p>A zwięźle, jednym wyrażeniem — <code>groupby</code> robi sąsiedztwo, wyrażenie generatora składa bezstanowo wynik (dokładnie podział pracy z callouta o wyrażeniach):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1"></a><span class="kw">def</span> odczytaj(s):</span>
+<span id="cb34-2"><a href="#cb34-2"></a>    <span class="cf">return</span> <span class="st">''</span>.join(<span class="ss">f"</span><span class="sc">{</span><span class="bu">len</span>(<span class="bu">list</span>(grupa))<span class="sc">}{</span>cyfra<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> cyfra, grupa <span class="kw">in</span> groupby(s))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Sam ciąg jest nieskończony, więc opakowujemy <code>odczytaj</code> w generator — wzorzec znany z wykładu XI: <code>yield</code> oddaje bieżący wyraz, po czym liczymy następny.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1"></a><span class="kw">def</span> look_and_say(start<span class="op">=</span><span class="st">'1'</span>):</span>
+<span id="cb35-2"><a href="#cb35-2"></a>    <span class="co">"""Generator ciągu 'mów, co widzisz': 1, 11, 21, 1211, 111221, ..."""</span></span>
+<span id="cb35-3"><a href="#cb35-3"></a>    obecny <span class="op">=</span> start</span>
+<span id="cb35-4"><a href="#cb35-4"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb35-5"><a href="#cb35-5"></a>        <span class="cf">yield</span> obecny</span>
+<span id="cb35-6"><a href="#cb35-6"></a>        obecny <span class="op">=</span> odczytaj(obecny)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Generatora nie da się zmaterializować w całości — jak każdy strumień nieskończony trzeba go obciąć. Bierzemy <code>islice</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> itertools <span class="im">import</span> islice</span>
+<span id="cb36-2"><a href="#cb36-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(islice(look_and_say(), <span class="dv">6</span>))</span>
+<span id="cb36-3"><a href="#cb36-3"></a>[<span class="st">'1'</span>, <span class="st">'11'</span>, <span class="st">'21'</span>, <span class="st">'1211'</span>, <span class="st">'111221'</span>, <span class="st">'312211'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cały wykład w jednym wyrażeniu: nieskończone źródło (<code>look_and_say</code>, sekcja o strumieniach), którego pojedynczy krok napędza <code>groupby</code> (sekcja o grupowaniu), tamowane <code>islice</code> do skończonego prefiksu.</p>
+<p>Warto jeszcze zerknąć, jak szybko rosną kolejne wyrazy — to widać, mierząc ich długości:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">list</span>(<span class="bu">map</span>(<span class="bu">len</span>, islice(look_and_say(), <span class="dv">8</span>)))</span>
+<span id="cb37-2"><a href="#cb37-2"></a>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">12</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Długości pną się nieograniczenie i wyrazy nigdy się nie powtarzają — strumień jest naprawdę nieskończony, a <code>islice</code> to jedyne, co dzieli nas od pętli bez końca.</p>
+<hr>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/rodakt\.github\.io\/PPwAD2\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<hr><center><small>Ostatnia aktualizacja: last-modified</small></center>
+
+
+
+
+</body></html>
